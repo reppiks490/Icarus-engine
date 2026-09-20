@@ -45,6 +45,13 @@ class Goal:
     max_top_decile_share: float = 65.0  # % of net profit from the best 10% of trades
     max_streak_vs_random: float = 2.0   # losing streak vs binomial expectation
 
+    # Winning streaks must dominate losing streaks. A system whose longest win
+    # run barely exceeds its longest loss run is a coin flip with commission;
+    # the equity curve grinds rather than steps, and every drawdown feels
+    # terminal because there is no run of wins to pull it back.
+    min_streak_ratio: float = 2.0       # max winning streak / max losing streak
+    min_mean_run_ratio: float = 1.3     # and on the MEAN run, not just the max
+
     def clears(self, hold: dict, tune: dict | None = None) -> bool:
         if "error" in hold:
             return False
@@ -65,6 +72,10 @@ class Goal:
             return False
         streak = hold.get("streak_vs_random", 0.0)
         if streak and streak > self.max_streak_vs_random:
+            return False
+        if hold.get("streak_ratio", 0.0) < self.min_streak_ratio:
+            return False
+        if hold.get("mean_run_ratio", 0.0) < self.min_mean_run_ratio:
             return False
 
         # The runner must either not exist, or must win on its own merits.
@@ -107,9 +118,10 @@ class Goal:
         # Ranking order mirrors the priority order: a runner that pays, then
         # consistency, then balance, then win rate, then size of edge.
         runner = (hold.get("runner_win_rate") or 100.0) * 1_000_000.0
+        streaks = min(hold.get("streak_ratio", 0.0), 8.0) * 200_000.0
         steady = hold.get("consistency", 0.0) * 500_000.0
         balance = max(0.0, 30.0 - hold.get("tp_gap_pp", 30.0)) * 100_000.0
-        return (runner + steady + balance
+        return (runner + streaks + steady + balance
                 + hold["win_rate"] * 1000.0
                 + min(hold["expectancy"], 5000.0) * 0.1
                 + min(hold["trades"], 1000.0) * 0.01)
@@ -137,6 +149,14 @@ class Goal:
                             f"(BE {hold.get('runner_breakeven_rate', 0):.0f}%)")
             if legs < self.min_runner_legs:
                 gaps.append(f"runner legs {legs}<{self.min_runner_legs}")
+        ratio = hold.get("streak_ratio", 0.0)
+        if ratio < self.min_streak_ratio:
+            gaps.append(f"streak ratio {ratio:.2f}<{self.min_streak_ratio} "
+                        f"(win {hold.get('max_winning_streak',0)} vs "
+                        f"lose {hold.get('max_losing_streak',0)})")
+        mrr = hold.get("mean_run_ratio", 0.0)
+        if mrr < self.min_mean_run_ratio:
+            gaps.append(f"mean run ratio {mrr:.2f}<{self.min_mean_run_ratio}")
         if hold.get("consistency", 0.0) < self.min_consistency:
             gaps.append(f"consistency {hold.get('consistency',0):.2f}<{self.min_consistency}")
         if hold.get("positive_block_rate", 0.0) < self.min_positive_block_rate:

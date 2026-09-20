@@ -97,6 +97,28 @@ def _max_streak(flags: list[bool]) -> int:
     return best
 
 
+def _run_lengths(flags: list[bool]) -> tuple[list[int], list[int]]:
+    """Every consecutive run, split into True-runs and False-runs.
+
+    Max streak alone is a single observation and mostly noise. The mean run
+    length says whether wins genuinely cluster or one lucky sequence flattered
+    the maximum.
+    """
+    wins: list[int] = []
+    losses: list[int] = []
+    if not flags:
+        return wins, losses
+    current, run = flags[0], 1
+    for flag in flags[1:]:
+        if flag == current:
+            run += 1
+        else:
+            (wins if current else losses).append(run)
+            current, run = flag, 1
+    (wins if current else losses).append(run)
+    return wins, losses
+
+
 def _drawdown_curve(profits: list[float]) -> tuple[float, int, float]:
     """Peak-to-trough on the cumulative curve: depth, duration in trades, ulcer index."""
     equity = peak = 0.0
@@ -146,6 +168,10 @@ class Report:
     gini: float = 0.0               # inequality of the profit distribution
     max_losing_streak: int = 0
     max_winning_streak: int = 0
+    mean_winning_run: float = 0.0
+    mean_losing_run: float = 0.0
+    streak_ratio: float = 0.0       # max winning streak / max losing streak
+    mean_run_ratio: float = 0.0     # mean winning run / mean losing run
     streak_vs_random: float = 0.0   # observed losing streak / binomial expectation
 
     # --- LEG STRUCTURE ----------------------------------------------------
@@ -234,6 +260,13 @@ def analyse(closed, *, span_days: float = 0.0, block_size: int = 25) -> Report:
 
     report.max_losing_streak = _max_streak([x <= 0 for x in profits])
     report.max_winning_streak = _max_streak([x > 0 for x in profits])
+    report.streak_ratio = _safe_div(report.max_winning_streak,
+                                    max(report.max_losing_streak, 1))
+    win_runs, lose_runs = _run_lengths([x > 0 for x in profits])
+    report.mean_winning_run = st.fmean(win_runs) if win_runs else 0.0
+    report.mean_losing_run = st.fmean(lose_runs) if lose_runs else 0.0
+    report.mean_run_ratio = _safe_div(report.mean_winning_run,
+                                      max(report.mean_losing_run, 1e-9))
     loss_p = _safe_div(len(losses) + len(flats), n)
     if 0.0 < loss_p < 1.0 and n > 1:
         expected = math.log(n * (1 - loss_p)) / -math.log(loss_p) if loss_p > 0 else 0.0

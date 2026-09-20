@@ -27,6 +27,7 @@ from icarus_engine.emulator import Emulator
 from icarus_engine.pine.timeframe import Bar as PulseBar
 from icarus_engine.strategy.inputs import Inputs
 from icarus_engine.strategy.pulse import PulseStrategy
+from tools.htf_context import ContextProvider
 
 # Neutral higher/lower-timeframe context. Held constant so that every run --
 # observed and surrogate alike -- sees the same external bias, which is what
@@ -42,7 +43,8 @@ def to_pulse_bars(bars) -> list[PulseBar]:
 
 def run_pulse(bars, *, tf_minutes: int, mintick: float = 0.25,
               point_value: float = 2.0, capital: float = 100_000.0,
-              tpsl_mode: str = "ATR-Based", **overrides) -> dict:
+              tpsl_mode: str = "ATR-Based", context: ContextProvider | None = None,
+              **overrides) -> dict:
     """Drive PulseStrategy over a tape and summarise the closed trades."""
     # "Fixed Points" carries NQ-sized distances (15/30/45 pts). On a 20m MNQ tape
     # a 45-point stop sits INSIDE one bar's range, which produces same-bar exits
@@ -56,7 +58,11 @@ def run_pulse(bars, *, tf_minutes: int, mintick: float = 0.25,
 
     for index, bar in enumerate(to_pulse_bars(bars)):
         em.process_bar(bar, index)
-        strat.on_bar(bar, index, HTF_NEUTRAL, LTF_NEUTRAL)
+        if context is None:
+            htf, ltf = HTF_NEUTRAL, LTF_NEUTRAL
+        else:
+            htf, ltf = context.at(bar.ts)
+        strat.on_bar(bar, index, htf, ltf)
 
     closed = list(em.closed)
     if not closed:
@@ -78,13 +84,24 @@ def run_pulse(bars, *, tf_minutes: int, mintick: float = 0.25,
     }
 
 
-def permutation_null(bars, *, runs: int, tf_minutes: int, seed: int = 3, **kw) -> dict:
-    observed = run_pulse(bars, tf_minutes=tf_minutes, **kw)
+def permutation_null(bars, *, runs: int, tf_minutes: int, seed: int = 3,
+                     context_source=None, chart_tf: str | None = None, **kw) -> dict:
+    """Surrogates get context rebuilt FROM THE SURROGATE, never from the real tape.
+
+    Reusing the observed tape's HTF series on a shuffled tape would leak the
+    real sequence back in through the context and hand the null an advantage
+    the strategy never had.
+    """
+    ctx = None
+    if context_source is not None and chart_tf:
+        ctx = ContextProvider(context_source, chart_tf)
+    observed = run_pulse(bars, tf_minutes=tf_minutes, context=ctx, **kw)
     rng = random.Random(seed)
     beats, nulls = 0, []
     for _ in range(runs):
         surrogate = shuffle_bars(bars, rng)
-        res = run_pulse(surrogate, tf_minutes=tf_minutes, **kw)
+        sctx = ContextProvider(surrogate, chart_tf) if chart_tf and context_source else None
+        res = run_pulse(surrogate, tf_minutes=tf_minutes, context=sctx, **kw)
         nulls.append(res["net"])
         if res["net"] >= observed["net"]:
             beats += 1

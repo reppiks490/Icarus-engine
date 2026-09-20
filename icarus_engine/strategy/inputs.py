@@ -226,6 +226,11 @@ class Inputs:
     use_family_confluence: bool = True
     family_min_for_bonus: int = 4
     family_discount: float = 0.90
+    # location premise (research knob H-LOC; 1.0 == the script as shipped)
+    # Scales the VWAP confluence vote: +1 keeps "long above VWAP / short below",
+    # 0 makes the vote abstain with half weight to each side, -1 flips it to the
+    # mean-reversion premise Icarus's own `location` layer uses.
+    vwap_vote_lambda: float = 1.0
     # pulse / conviction sizing
     pulse_conf_weight: float = 0.60
     use_conviction_sizing: bool = False

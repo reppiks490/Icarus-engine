@@ -928,9 +928,19 @@ class PulseStrategy:
         total_weight = sum(wts)
         active_votes = sum(1 for w_ in wts if w_ > 0.1)
         avg_weight = total_weight / float(active_votes) if active_votes > 0 else 1.0
-        votes_l = [mtf_long, rsi_long_ok, above_vwap, bull_conv, vol_surge, regime_accel, cci_long, xgb_long_ok, kf_long_ok, pma_long_ok, pe_long_ok, cc_long_ok]
-        votes_s = [mtf_short, rsi_short_ok, below_vwap, bear_conv, vol_surge, regime_accel, cci_short, xgb_short_ok, kf_short_ok, pma_short_ok, pe_short_ok, cc_short_ok]
-        raw_l = sum(wts[k] for k in range(12) if votes_l[k]); raw_s = sum(wts[k] for k in range(12) if votes_s[k])
+        # Location premise knob. `vwap_vote_lambda` scales the VWAP vote's
+        # contribution: 1.0 reproduces the script bit for bit (the term is 1.0
+        # when the vote fires and 0.0 when it does not, so `wts[2] * _loc_l`
+        # equals the original `wts[2] if votes_l[2]`), 0.0 abstains with half
+        # weight to each side, -1.0 flips the premise.
+        _lam_loc = i.vwap_vote_lambda
+        _loc_l = 0.5 + _lam_loc * ((1.0 if above_vwap else 0.0) - 0.5)
+        _loc_s = 0.5 + _lam_loc * ((1.0 if below_vwap else 0.0) - 0.5)
+        vwap_vote_l = _loc_l > 0.5; vwap_vote_s = _loc_s > 0.5
+        votes_l = [mtf_long, rsi_long_ok, vwap_vote_l, bull_conv, vol_surge, regime_accel, cci_long, xgb_long_ok, kf_long_ok, pma_long_ok, pe_long_ok, cc_long_ok]
+        votes_s = [mtf_short, rsi_short_ok, vwap_vote_s, bear_conv, vol_surge, regime_accel, cci_short, xgb_short_ok, kf_short_ok, pma_short_ok, pe_short_ok, cc_short_ok]
+        raw_l = sum(wts[k] for k in range(12) if k != 2 and votes_l[k]) + wts[2] * _loc_l
+        raw_s = sum(wts[k] for k in range(12) if k != 2 and votes_s[k]) + wts[2] * _loc_s
         cyc_mod_l = (avg_weight if cycle_rising else -avg_weight) if (i.use_cycle and in_sess) else 0.0
         cyc_mod_s = (avg_weight if cycle_falling else -avg_weight) if (i.use_cycle and in_sess) else 0.0
         adj_l = raw_l + cyc_mod_l; adj_s = raw_s + cyc_mod_s
@@ -950,11 +960,11 @@ class PulseStrategy:
         eff_thresh = float(i.conf_min_votes)
         if i.use_adaptive_threshold and active_votes > 0:
             eff_thresh = float(base_thresh) * (total_weight / float(active_votes))
-        fam_trend_l = int(mtf_long) + int(above_vwap) + int(pma_long_ok)
+        fam_trend_l = int(mtf_long) + int(vwap_vote_l) + int(pma_long_ok)
         fam_momo_l = int(rsi_long_ok) + int(bull_conv) + int(cci_long) + int(kf_long_ok)
         fam_vol_l = int(vol_surge) + int(regime_accel); fam_stat_l = int(xgb_long_ok) + int(pe_long_ok); fam_cyc_l = int(cc_long_ok)
         families_l = int(fam_trend_l > 0) + int(fam_momo_l > 0) + int(fam_vol_l > 0) + int(fam_stat_l > 0) + int(fam_cyc_l > 0)
-        fam_trend_s = int(mtf_short) + int(below_vwap) + int(pma_short_ok)
+        fam_trend_s = int(mtf_short) + int(vwap_vote_s) + int(pma_short_ok)
         fam_momo_s = int(rsi_short_ok) + int(bear_conv) + int(cci_short) + int(kf_short_ok)
         fam_vol_s = int(vol_surge) + int(regime_accel); fam_stat_s = int(xgb_short_ok) + int(pe_short_ok); fam_cyc_s = int(cc_short_ok)
         families_s = int(fam_trend_s > 0) + int(fam_momo_s > 0) + int(fam_vol_s > 0) + int(fam_stat_s > 0) + int(fam_cyc_s > 0)

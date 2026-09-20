@@ -1,0 +1,394 @@
+"""Live runtime: one AssetRunner per symbol (feed → 1m bars → timeframe chains →
+strategy → broker emulator), a Portfolio that owns them, and the journal.
+
+Warm-up is built exactly like live operation: every chart bar after `T_w`
+(the start of the warm-up window, aligned to a UTC day boundary) is aggregated
+from 1-minute candles, so there is no seam between history and realtime.
+Slower timeframes get deeper native history before `T_w` so their
+SuperTrend/ADX are seeded before the chart bars start.
+"""
+from __future__ import annotations
+
+import collections
+import json
+import math
+import sqlite3
+import threading
+import time
+from dataclasses import dataclass, field
+from typing import Any, Deque, Dict, List, Optional
+
+from .emulator import Emulator, Fill
+from .feeds import Coinbase, Kraken, normalize_symbol
+from .pine.series import NAN, na
+from .pine.timeframe import Aggregator, Bar, bucket_start, tf_minutes, utc_date_str
+from .strategy.inputs import Inputs, crypto_profile
+from .strategy.pulse import PulseStrategy
+from .strategy.security import TFChain
+
+
+def _clean(x: Any) -> Any:
+    """NaN → None for JSON."""
+    if isinstance(x, float):
+        return None if x != x or x in (float("inf"), float("-inf")) else x
+    if isinstance(x, dict):
+        return {k: _clean(v) for k, v in x.items()}
+    if isinstance(x, (list, tuple)):
+        return [_clean(v) for v in x]
+    return x
+
+
+class Journal:
+    """SQLite journal (WAL) + small in-memory tails for the dashboard."""
+
+    def __init__(self, path: str):
+        self.path = path
+        self._lock = threading.RLock()
+        self.con = sqlite3.connect(path, check_same_thread=False)
+        self.con.execute("PRAGMA journal_mode=WAL")
+        self.con.executescript("""
+        CREATE TABLE IF NOT EXISTS trades (id INTEGER PRIMARY KEY, symbol TEXT, entry_id TEXT, direction INTEGER, qty INTEGER,
+            entry_price REAL, entry_ts INTEGER, exit_price REAL, exit_ts INTEGER, exit_comment TEXT, profit REAL, live INTEGER);
+        CREATE TABLE IF NOT EXISTS fills (id INTEGER PRIMARY KEY, symbol TEXT, ts INTEGER, entry_id TEXT, side TEXT, qty INTEGER,
+            price REAL, kind TEXT, comment TEXT, profit REAL, position_after INTEGER, live INTEGER);
+        CREATE TABLE IF NOT EXISTS equity (ts REAL, equity REAL);
+        CREATE TABLE IF NOT EXISTS log (ts REAL, level TEXT, msg TEXT);
+        """)
+        self.con.commit()
+        self.log_tail: Deque[Dict[str, Any]] = collections.deque(maxlen=300)
+
+    def log(self, level: str, msg: str) -> None:
+        row = {"ts": time.time(), "level": level, "msg": msg}
+        with self._lock:
+            self.log_tail.append(row)
+            self.con.execute("INSERT INTO log VALUES (?,?,?)", (row["ts"], level, msg))
+            self.con.commit()
+
+    def add_trade(self, symbol: str, t, live: bool) -> None:
+        with self._lock:
+            self.con.execute("INSERT INTO trades (symbol,entry_id,direction,qty,entry_price,entry_ts,exit_price,exit_ts,exit_comment,profit,live) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+                             (symbol, t.entry_id, t.direction, t.qty, t.entry_price, t.entry_ts, t.exit_price, t.exit_ts, t.exit_comment, t.profit, int(live)))
+            self.con.commit()
+
+    def add_fill(self, symbol: str, f: Fill, live: bool) -> None:
+        with self._lock:
+            self.con.execute("INSERT INTO fills (symbol,ts,entry_id,side,qty,price,kind,comment,profit,position_after,live) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+                             (symbol, f.ts, f.entry_id, f.side, f.qty, f.price, f.kind, f.comment, f.profit, f.position_after, int(live)))
+            self.con.commit()
+
+    def add_equity(self, equity: float) -> None:
+        with self._lock:
+            self.con.execute("INSERT INTO equity VALUES (?,?)", (time.time(), equity))
+            self.con.commit()
+
+    def equity_series(self, since_sec: float = 86400.0, max_points: int = 600) -> List[Dict[str, float]]:
+        with self._lock:
+            rows = self.con.execute("SELECT ts, equity FROM equity WHERE ts >= ? ORDER BY ts", (time.time() - since_sec,)).fetchall()
+        if len(rows) > max_points:
+            step = len(rows) / max_points
+            rows = [rows[int(k * step)] for k in range(max_points)] + [rows[-1]]
+        return [{"ts": r[0], "equity": r[1]} for r in rows]
+
+
+@dataclass
+class RunnerConfig:
+    symbol: str
+    chart_tf: str = "5"
+    capital: float = 100000.0
+    commission: float = 2.0
+    contract_size: float = 0.0          # units of the asset per "contract"; 0 = derive from contract_notional
+    contract_notional: float = 100000.0 # dollars per contract when contract_size == 0 (1 BTC-sized contract, like TradingView on BTC)
+    warmup_bars: int = 2000
+    inputs: Optional[Inputs] = None
+    profile: str = "crypto"          # crypto | nq
+    pts_ref_price: float = 0.0       # >0: *_pts inputs are NQ points at this NQ price → rescaled to the asset's price
+
+
+class AssetRunner:
+    def __init__(self, cfg: RunnerConfig, journal: Journal, feed: Optional[Coinbase] = None):
+        self.cfg = cfg
+        self.journal = journal
+        self.feed = feed or Coinbase()
+        self.kraken = Kraken()
+        self.symbol = cfg.symbol.upper().split("-")[0].split("/")[0].split(":")[-1]
+        self.product = normalize_symbol(cfg.symbol)
+        self.chart_minutes = tf_minutes(cfg.chart_tf)
+        self.mintick = self.feed.mintick(self.product)
+        self.last_price: Optional[float] = None
+        self.last_price_ts: float = 0.0
+        self.em = Emulator(cfg.capital, cfg.commission, self.mintick, cfg.contract_size or 1.0, pyramiding=2)
+        self.inputs: Inputs = cfg.inputs or (crypto_profile(0.0, self.mintick) if cfg.profile == "crypto" else Inputs())
+        self.strat: Optional[PulseStrategy] = None
+        self.htf_tfs = [tf_minutes(t) for t in (self.inputs.htf_tf_1, self.inputs.htf_tf_2, self.inputs.htf_tf_3, self.inputs.htf_tf_4, self.inputs.htf_tf_5)]
+        self.chains: Dict[int, TFChain] = {m: TFChain(m) for m in sorted(set(self.htf_tfs + [2, 5]))}
+        self.chart_agg = Aggregator(self.chart_minutes)
+        self.bar_index = -1
+        self.bars: Deque[Bar] = collections.deque(maxlen=900)
+        self.overlays: Deque[Dict[str, Any]] = collections.deque(maxlen=900)
+        self.state: Dict[str, Any] = {}
+        self.live_from_ts: Optional[int] = None
+        self.last_1m_ts: Optional[int] = None
+        self._fills_seen = 0
+        self._closed_seen = 0
+        self.paused = False
+        self.errors = 0
+        self.last_error = ""
+        self.last_poll_ok = 0.0
+        self.warm = False
+        self.lock = threading.RLock()
+        self.recent_fills: Deque[Dict[str, Any]] = collections.deque(maxlen=200)
+        self.recent_events: Deque[Dict[str, Any]] = collections.deque(maxlen=200)
+
+    # ── core bar path ──
+    def _on_chart_bar(self, cb: Bar, live: bool) -> None:
+        if self.strat is None:
+            price = cb.c
+            if self.cfg.inputs is None and self.cfg.profile == "crypto":
+                self.inputs = crypto_profile(price, self.mintick)
+            if self.cfg.pts_ref_price > 0:
+                k = price / self.cfg.pts_ref_price
+                from dataclasses import replace as _replace
+                self.inputs = _replace(self.inputs, tp1_pts=self.inputs.tp1_pts * k, tp2_pts=self.inputs.tp2_pts * k,
+                                       sl_pts=self.inputs.sl_pts * k, be_offset_pts=max(self.mintick, self.inputs.be_offset_pts * k))
+                self.journal.log("INFO", f"[{self.symbol}] NQ-point inputs rescaled x{k:.6g} (price {price:.6g} / NQ ref {self.cfg.pts_ref_price:.6g}): tp1 {self.inputs.tp1_pts:.6g} tp2 {self.inputs.tp2_pts:.6g} sl {self.inputs.sl_pts:.6g} be {self.inputs.be_offset_pts:.6g}")
+            self.strat = PulseStrategy(self.inputs, self.em, mintick=self.mintick, tf_minutes=self.chart_minutes,
+                                       session_key=utc_date_str)
+        self.bar_index += 1
+        self.strat.paused = self.paused
+        self.em.process_bar(cb, self.bar_index)
+        htf = [self.chains[m].htf_values(cb.ts) for m in self.htf_tfs]
+        ltf = [self.chains[2].ltf_values(cb.ts, self.chart_minutes), self.chains[5].ltf_values(cb.ts, self.chart_minutes)]
+        st = self.strat.on_bar(cb, self.bar_index, htf, ltf)
+        self.state = st
+        self.bars.append(cb)
+        self.overlays.append({"ts": cb.ts, "st": st["rate_st_line"], "up": st["rate_uptrend"], "tp1": st["tp1_price"], "tp2": st["tp2_price"],
+                              "sl": st["sl_price"], "vwap": st["vwap"], "kf": st["kf_level"], "pos": st["rate_qty_open"] * (1 if st["rate_pos_long"] else -1),
+                              "tide_hi": st["tide_hi"], "tide_lo": st["tide_lo"], "pulse": max(st["pulse_l"], st["pulse_s"])})
+        # journal new fills / closed trades
+        for f in self.em.fills[self._fills_seen:]:
+            self.recent_fills.append({"ts": f.ts, "bar": f.bar, "id": f.entry_id, "side": f.side, "qty": f.qty, "price": f.price,
+                                      "kind": f.kind, "comment": f.comment, "profit": f.profit, "pos": f.position_after, "live": live})
+            self.journal.add_fill(self.symbol, f, live)
+            if live:
+                self.journal.log("INFO", f"[{self.symbol}] FILL {f.side.upper()} {f.qty} @ {f.price:.6g} {f.kind} {f.comment}" + (f" P&L {f.profit:+.2f}" if f.profit is not None else "") + f" -> pos {f.position_after:+d}")
+        self._fills_seen = len(self.em.fills)
+        for t in self.em.closed[self._closed_seen:]:
+            self.journal.add_trade(self.symbol, t, live)
+        self._closed_seen = len(self.em.closed)
+        for ev in self.strat.events:
+            self.recent_events.append(dict(ev, live=live))
+            if live:
+                self.journal.log("INFO", f"[{self.symbol}] {ev['text']}")
+        self.strat.events.clear()
+
+    def on_1m(self, b: Bar, live: bool) -> None:
+        with self.lock:
+            if self.last_1m_ts is not None and b.ts <= self.last_1m_ts:
+                return
+            self.last_1m_ts = b.ts
+            for ch in self.chains.values():
+                ch.push_sub_bar(b, 1)
+            for cb in self.chart_agg.push(b, 1):
+                self._on_chart_bar(cb, live)
+            self.last_price = b.c
+
+    # ── warm-up ──
+    def warmup(self, now_ts: Optional[int] = None) -> None:
+        now = int(now_ts or time.time())
+        span = self.cfg.warmup_bars * self.chart_minutes * 60
+        T_w = bucket_start(now - span, 1440)                      # UTC day boundary: every chain's buckets align here
+        self.journal.log("INFO", f"[{self.symbol}] warm-up from {time.strftime('%Y-%m-%d %H:%M', time.gmtime(T_w))}Z ({self.cfg.warmup_bars} x {self.chart_minutes}m bars) mintick={self.mintick}")
+        cb = self.feed
+        # deep native history for the slow chains, ending at T_w
+        deep = {1440: (86400, 400 * 86400), 240: (3600, 45 * 86400), 60: (3600, 45 * 86400), 30: (900, 8 * 86400), 15: (900, 8 * 86400)}
+        cache: Dict[int, List[Bar]] = {}
+        for m, chain in self.chains.items():
+            if m not in deep:
+                continue
+            g, depth = deep[m]
+            if g not in cache:
+                cache[g] = cb.candles(self.product, g, T_w - depth, T_w)
+            sub_min = g // 60
+            for b in cache[g]:
+                chain.push_sub_bar(b, sub_min)
+        # 1-minute candles from T_w to now, fed exactly like live data
+        ones = cb.candles(self.product, 60, T_w, now - 60)
+        if not self.cfg.contract_size and ones:
+            self.em.contract_size = round(self.cfg.contract_notional / ones[0].c, 8)
+        self.journal.log("INFO", f"[{self.symbol}] {len(ones)} one-minute candles fetched; 1 contract = {self.em.contract_size:.6g} {self.symbol} (~${self.cfg.contract_notional:,.0f}); replaying")
+        for b in ones:
+            self.on_1m(b, live=False)
+        self.live_from_ts = now
+        self.warm = True
+        self.last_price = ones[-1].c if ones else self.feed.ticker(self.product)
+        self.journal.log("INFO", f"[{self.symbol}] warm-up done: {self.bar_index + 1} chart bars, {len(self.em.closed)} historical trades, net {self.em.netprofit:+.2f}; LIVE")
+
+    # ── live polling ──
+    def poll(self) -> None:
+        now = time.time()
+        try:
+            bars = self.feed.recent(self.product, 60)
+            src = "coinbase"
+        except Exception as ex:
+            try:
+                bars = self.kraken.recent(self.product, 1)
+                src = "kraken"
+            except Exception as ex2:
+                self.errors += 1
+                self.last_error = f"{ex} / {ex2}"
+                return
+        cutoff = now - 65                                          # a 1m candle is final once its minute is over (+ lag)
+        new = [b for b in bars if (self.last_1m_ts is None or b.ts > self.last_1m_ts) and b.ts + 60 <= cutoff + 60]
+        for b in new:
+            self.on_1m(b, live=True)
+        with self.lock:
+            for ch in self.chains.values():
+                ch.flush_if_stale(now - 45)
+            stale = self.chart_agg.flush_if_stale(now - 45)
+            if stale is not None:
+                self._on_chart_bar(stale, True)
+        px = self.feed.ticker(self.product) or (bars[-1].c if bars else None)
+        if px:
+            self.last_price = px
+            self.last_price_ts = now
+        self.last_poll_ok = now
+
+    # ── admin ──
+    def flatten(self, reason: str = "manual") -> int:
+        """Close everything at the next bar open (Pine semantics) - and immediately at the last price for the emulator view."""
+        with self.lock:
+            n = 0
+            for t in list(self.em.open):
+                self.em.close(t.entry_id, comment="FLAT_" + reason.upper()[:8])
+                n += 1
+            # apply now at the last known price so the paper account reflects it without waiting a bar
+            if self.last_price and self.em.open:
+                fake = Bar(int(time.time()), self.last_price, self.last_price, self.last_price, self.last_price, 0.0)
+                self.em.process_bar(fake, self.bar_index)
+            self.journal.log("WARN", f"[{self.symbol}] FLATTEN ({reason}): {n} position(s)")
+            return n
+
+    # ── views ──
+    def summary(self) -> Dict[str, Any]:
+        st = self.state or {}
+        mark = self.last_price or (self.bars[-1].c if self.bars else None)
+        open_trades = [{"id": t.entry_id, "dir": t.direction, "qty": t.qty, "qty_orig": t.qty_orig, "entry": t.entry_price, "entry_ts": t.entry_ts,
+                        "upl": (t.direction * (mark - t.entry_price) * t.qty * self.em.contract_size) if mark else None} for t in self.em.open]
+        live_trades = [t for t in self.em.closed if self.live_from_ts and t.exit_ts >= self.live_from_ts]
+        wins = sum(1 for t in self.em.closed if t.profit > 0)
+        forming = self.chart_agg.forming_bar()
+        return _clean({
+            "symbol": self.symbol, "product": self.product, "tf": self.chart_minutes, "mintick": self.mintick, "contract_size": self.em.contract_size,
+            "price": mark, "price_age": (time.time() - self.last_price_ts) if self.last_price_ts else None,
+            "warm": self.warm, "paused": self.paused, "errors": self.errors, "last_error": self.last_error,
+            "poll_age": (time.time() - self.last_poll_ok) if self.last_poll_ok else None,
+            "bar_index": self.bar_index, "last_bar_ts": self.bars[-1].ts if self.bars else None,
+            "forming": (forming.__dict__ if forming else None),
+            "equity": self.em.equity(mark), "capital": self.cfg.capital, "netprofit": self.em.netprofit,
+            "open_profit": self.em.open_profit(mark) if mark else 0.0, "position": self.em.position_size,
+            "open_trades": open_trades, "exits": self.em.live_exits(), "pending": self.em.pending_view(),
+            "trades_total": len(self.em.closed), "wins_total": wins,
+            "live_trades": len(live_trades), "live_profit": sum(t.profit for t in live_trades),
+            "state": {k: st.get(k) for k in ("ts", "c", "rate_uptrend", "rate_st_line", "rate_regime", "rate_regime_str", "hurst", "fdi",
+                                             "rate_adx", "atr14", "armed_long", "armed_short", "bars_since_flip", "htf_dirs", "htf_bull", "htf_bear",
+                                             "ltf", "votes", "final_l", "final_s", "eff_thresh", "gate_long", "gate_short", "conf_long", "conf_short",
+                                             "entry_allowed", "diverge_veto_l", "diverge_veto_s", "cycle_rising", "phase_deg", "vwap", "kf_vel",
+                                             "pe_norm", "trc", "po3", "struct_bias", "pd_zone", "tide_hi", "tide_lo", "tide_broke_above",
+                                             "tide_broke_below", "tide_inrange_closes", "pulse_l", "pulse_s", "pulse_state", "shock_mult",
+                                             "families_l", "families_s", "rate_qty_open", "rate_pos_long", "rate_avg_price", "rate_qty_plan",
+                                             "rate_tp1_done", "rate_be_armed", "runner_stop", "runner_tag", "tp1_price", "tp2_price", "sl_price",
+                                             "h4_qty_open", "h4_pos_long", "h4_avg_price", "exec", "bars_since_stop", "daily_pnl",
+                                             "w_trade_count", "active_votes", "avg_weight", "tp1_dist", "tp2_dist", "sl_dist")},
+            "chains": {str(m): ch.state() for m, ch in self.chains.items()},
+            "inputs_profile": self.cfg.profile,
+        })
+
+    def chart(self, n: int = 240) -> Dict[str, Any]:
+        bars = list(self.bars)[-n:]
+        ov = list(self.overlays)[-n:]
+        fills = [f for f in self.recent_fills if bars and f["ts"] >= bars[0].ts]
+        forming = self.chart_agg.forming_bar()
+        f_row = None
+        if forming:
+            f_row = [forming.ts, forming.o, forming.h, forming.l, self.last_price or forming.c, forming.v]
+        elif bars and self.last_price and self.last_price_ts:
+            # the first 1m candle of a new chart bar arrives ~1 min after it opens: show the live price until then
+            nb = bucket_start(int(self.last_price_ts), self.chart_minutes)
+            if nb > bars[-1].ts:
+                f_row = [nb, self.last_price, self.last_price, self.last_price, self.last_price, 0.0]
+        return _clean({"symbol": self.symbol, "tf": self.chart_minutes, "mintick": self.mintick,
+                       "bars": [[b.ts, b.o, b.h, b.l, b.c, b.v] for b in bars],
+                       "forming": f_row,
+                       "overlays": ov, "fills": fills, "live_from": self.live_from_ts})
+
+    def trades(self, limit: int = 100) -> List[Dict[str, Any]]:
+        out = []
+        for t in self.em.closed[-limit:]:
+            out.append({"id": t.entry_id, "dir": t.direction, "qty": t.qty, "entry": t.entry_price, "entry_ts": t.entry_ts, "exit": t.exit_price,
+                        "exit_ts": t.exit_ts, "comment": t.exit_comment, "profit": t.profit, "kind": t.exit_kind,
+                        "live": bool(self.live_from_ts and t.exit_ts >= self.live_from_ts)})
+        return out
+
+
+class Portfolio:
+    def __init__(self, runners: List[AssetRunner], journal: Journal, poll_sec: float = 5.0):
+        self.runners = runners
+        self.journal = journal
+        self.poll_sec = poll_sec
+        self.started = time.time()
+        self.paused = False
+        self._threads: List[threading.Thread] = []
+        self._stop = threading.Event()
+
+    def start(self) -> None:
+        for r in self.runners:
+            t = threading.Thread(target=self._run, args=(r,), daemon=True, name=f"runner-{r.symbol}")
+            t.start()
+            self._threads.append(t)
+        threading.Thread(target=self._sampler, daemon=True, name="equity-sampler").start()
+
+    def _run(self, r: AssetRunner) -> None:
+        try:
+            r.warmup()
+        except Exception as ex:
+            r.errors += 1
+            r.last_error = f"warm-up failed: {type(ex).__name__}: {ex}"
+            self.journal.log("ERROR", f"[{r.symbol}] {r.last_error}")
+            return
+        while not self._stop.is_set():
+            try:
+                r.poll()
+            except Exception as ex:
+                r.errors += 1
+                r.last_error = f"{type(ex).__name__}: {ex}"
+                self.journal.log("ERROR", f"[{r.symbol}] poll: {r.last_error}")
+            self._stop.wait(self.poll_sec)
+
+    def _sampler(self) -> None:
+        while not self._stop.is_set():
+            try:
+                if all(r.warm for r in self.runners):
+                    self.journal.add_equity(self.equity())
+            except Exception:
+                pass
+            self._stop.wait(20)
+
+    def stop(self) -> None:
+        self._stop.set()
+
+    def equity(self) -> float:
+        return sum(r.em.equity(r.last_price) for r in self.runners)
+
+    def status(self) -> Dict[str, Any]:
+        rs = [r.summary() for r in self.runners]
+        eq = sum(x["equity"] or 0.0 for x in rs)
+        cap = sum(r.cfg.capital for r in self.runners)
+        live_profit = sum(x["live_profit"] for x in rs)
+        return _clean({
+            "now": time.time(), "uptime_sec": time.time() - self.started, "paused": self.paused,
+            "equity": eq, "capital": cap, "net": eq - cap, "live_profit": live_profit,
+            "open_profit": sum(x["open_profit"] or 0.0 for x in rs), "positions": sum(1 for x in rs if x["position"]),
+            "assets": rs, "log": list(self.journal.log_tail)[-60:],
+            "equity_series": self.journal.equity_series(min(86400.0, time.time() - self.started + 1.0)),   # this run only
+            "all_warm": all(r.warm for r in self.runners),
+        })

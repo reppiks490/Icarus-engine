@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ICARUS Engine</title>
+<style>
+:root {
+  color-scheme: light;
+  --page:#f9f9f7; --surface:#fcfcfb; --surface-2:#f3f2ee; --ink:#0b0b0b; --ink-2:#52514e; --muted:#898781;
+  --grid:#e1e0d9; --axis:#c3c2b7; --ring:rgba(11,11,11,.10);
+  --s1:#2a78d6; --s1-soft:rgba(42,120,214,.14); --s2:#eb6834; --s3:#1baf7a; --s7:#4a3aa7;
+  --good:#0ca30c; --good-text:#006300; --warn:#fab219; --serious:#ec835a; --crit:#d03b3b; --up:#0ca30c; --dn:#d03b3b;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page:#0d0d0d; --surface:#1a1a19; --surface-2:#232321; --ink:#ffffff; --ink-2:#c3c2b7; --muted:#898781;
+  --grid:#2c2c2a; --axis:#383835; --ring:rgba(255,255,255,.10);
+  --s1:#3987e5; --s1-soft:rgba(57,135,229,.16); --s2:#d95926; --s3:#199e70; --s7:#9085e9;
+  --good:#0ca30c; --good-text:#0ca30c; --warn:#fab219; --serious:#ec835a; --crit:#d03b3b; --up:#0ca30c; --dn:#d03b3b;
+}
+* { box-sizing:border-box }
+html,body { height:100% }
+body { margin:0; overflow-x:hidden; background:var(--page); color:var(--ink); font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; -webkit-font-smoothing:antialiased }
+button { font:inherit; color:inherit; background:var(--surface-2); border:1px solid var(--ring); border-radius:8px; padding:6px 12px; cursor:pointer }
+button:hover { border-color:var(--muted) } button.primary { background:var(--s1); border-color:var(--s1); color:#fff } button.danger { background:var(--crit); border-color:var(--crit); color:#fff } button.sm { padding:3px 9px; font-size:12px }
+input, select { font:inherit; color:var(--ink); background:var(--surface-2); border:1px solid var(--ring); border-radius:8px; padding:6px 9px }
+input[type=number] { width:120px } input[type=text] { width:150px } select { max-width:240px }
+.tnum { font-variant-numeric:tabular-nums } .muted { color:var(--muted) } .small { font-size:12px } .pos { color:var(--good-text) } .neg { color:var(--crit) }
+a { color:var(--s1) }
+
+.top { position:sticky; top:0; z-index:5; background:var(--surface); border-bottom:1px solid var(--ring) }
+.top-in { display:flex; align-items:center; gap:14px; padding:10px 22px; flex-wrap:wrap }
+.brand { display:flex; align-items:center; gap:10px; font-weight:600; letter-spacing:.14em; font-size:13px }
+.brand .dot { width:10px; height:10px; border-radius:50%; background:var(--good) } .brand .dot.live { animation:pulse 1.6s infinite } .brand .dot.stale { background:var(--warn) } .brand .dot.dead { background:var(--crit) }
+@keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(12,163,12,.55)} 70%{box-shadow:0 0 0 9px rgba(12,163,12,0)} 100%{box-shadow:0 0 0 0 rgba(12,163,12,0)} }
+.path { display:flex; align-items:center; gap:6px; margin-left:8px }
+.node { display:flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; border:1px solid var(--ring); font-size:12px; color:var(--ink-2); background:var(--surface-2) }
+.node i { width:7px; height:7px; border-radius:50%; background:var(--axis); display:inline-block }
+.node.on { border-color:var(--good); color:var(--ink) } .node.on i { background:var(--good) } .node.warn { border-color:var(--warn) } .node.warn i { background:var(--warn) } .node.bad { border-color:var(--crit) } .node.bad i { background:var(--crit) }
+.link { width:14px; height:1px; background:var(--axis) }
+.state { margin-left:auto; display:flex; align-items:center; gap:10px; flex-wrap:wrap }
+.badge { padding:5px 12px; border-radius:999px; font-weight:600; letter-spacing:.06em; font-size:12px; border:1px solid var(--ring) }
+.badge.armed { color:var(--good-text); border-color:var(--good) } .badge.paused { color:#fff; background:var(--crit); border-color:var(--crit) } .badge.warm { color:var(--warn); border-color:var(--warn) }
+.icon-btn { padding:5px 9px }
+.tabs { display:flex; gap:4px; padding:0 22px 8px; flex-wrap:wrap; align-items:center }
+.tab { padding:6px 12px; border-radius:8px 8px 0 0; border:1px solid transparent; border-bottom:none; cursor:pointer; color:var(--ink-2); font-size:13px; text-decoration:none }
+.tab:hover { background:var(--surface-2) } .tab.active { background:var(--page); border-color:var(--ring); color:var(--ink); font-weight:600 }
+.tab b.s { font-weight:700 } .tab .dot { display:inline-block; width:7px; height:7px; border-radius:50%; margin-right:6px; background:var(--axis) } .tab .dot.long { background:var(--good) } .tab .dot.short { background:var(--crit) } .tab .dot.closed { background:var(--warn) }
+.tab.util { margin-left:auto } .tab.util ~ .tab.util { margin-left:0 }
+
+.wrap { display:grid; grid-template-columns:repeat(12, minmax(0,1fr)); gap:14px; padding:16px 22px 40px; max-width:1800px; margin:0 auto }
+.card { background:var(--surface); border:1px solid var(--ring); border-radius:14px; padding:14px 16px; min-width:0 }
+.card h2 { margin:0 0 10px; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); font-weight:600; display:flex; align-items:center; gap:8px }
+.card h2 .sub { text-transform:none; letter-spacing:0; color:var(--ink-2); font-weight:400; margin-left:auto }
+.c3{grid-column:span 3}.c4{grid-column:span 4}.c5{grid-column:span 5}.c6{grid-column:span 6}.c7{grid-column:span 7}.c8{grid-column:span 8}.c9{grid-column:span 9}.c12{grid-column:span 12}
+@media (max-width:1200px){.c3,.c4,.c5{grid-column:span 6}.c7,.c8,.c9{grid-column:span 12}}
+@media (max-width:760px){.c3,.c4,.c5,.c6,.c7,.c8,.c9{grid-column:span 12}.path{display:none}}
+.hero { display:flex; flex-direction:column; gap:6px } .hero .n { font-size:52px; line-height:1; font-weight:600; letter-spacing:-.02em } .hero .n.up{color:var(--good-text)} .hero .n.dn{color:var(--crit)} .hero .pct { font-size:15px; color:var(--ink-2) }
+.tiles { display:grid; grid-template-columns:repeat(auto-fit, minmax(105px,1fr)); gap:10px; margin-top:8px }
+.tile { background:var(--surface-2); border-radius:10px; padding:9px 11px; border:1px solid var(--ring) } .tile .k { font-size:10.5px; color:var(--muted); letter-spacing:.08em; text-transform:uppercase } .tile .v { font-size:19px; font-weight:600; margin-top:2px }
+svg { display:block; width:100%; overflow:visible }
+.tip { position:fixed; pointer-events:none; background:var(--surface); border:1px solid var(--ring); border-radius:8px; padding:6px 9px; font-size:12px; box-shadow:0 6px 24px rgba(0,0,0,.25); z-index:40; display:none; white-space:nowrap }
+
+.assets { display:grid; grid-template-columns:repeat(auto-fit, minmax(min(360px,100%),1fr)); gap:14px; grid-column:span 12 }
+.asset { background:var(--surface); border:1px solid var(--ring); border-radius:14px; padding:12px 14px; min-width:0; cursor:pointer; transition:border-color .2s } .asset:hover { border-color:var(--muted) }
+.asset.long { box-shadow:inset 3px 0 0 var(--good) } .asset.short { box-shadow:inset 3px 0 0 var(--crit) }
+.ah { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap } .ah .sym { font-size:20px; font-weight:700; letter-spacing:.04em } .ah .px { font-size:20px; font-weight:600 } .ah .dir { font-size:16px; font-weight:700 } .dir.up{color:var(--good)} .dir.dn{color:var(--crit)}
+.chip { display:inline-block; padding:2px 8px; border-radius:999px; font-size:11px; border:1px solid var(--ring); color:var(--ink-2); white-space:nowrap }
+.chip.reg-STRONG { border-color:var(--good); color:var(--good-text) } .chip.reg-WEAK, .chip.reg-EMERGING { border-color:var(--s3); color:var(--s3) } .chip.reg-CHOPPY, .chip.reg-MEAN { border-color:var(--serious); color:var(--serious) }
+.chip.mkt-open { border-color:var(--good); color:var(--good-text) } .chip.mkt-closed { border-color:var(--warn); color:var(--warn) } .chip.b { border-color:var(--good); color:var(--good-text) } .chip.r { border-color:var(--crit); color:var(--crit) } .chip.w { border-color:var(--warn); color:var(--warn) }
+.pulse { display:flex; align-items:center; gap:8px; margin:8px 0 4px; font-size:11px; color:var(--muted); letter-spacing:.08em; text-transform:uppercase }
+.segs { display:flex; gap:2px } .segs i { width:12px; height:8px; border-radius:2px; background:var(--grid) } .segs i.on { background:var(--s1) } .segs i.hot { background:var(--warn) } .segs i.ign { background:var(--crit) }
+.votes { display:grid; grid-template-columns:repeat(12, minmax(0,1fr)); gap:3px; margin-top:8px }
+.vote { text-align:center; font-size:9.5px; letter-spacing:.02em; padding:4px 0; border-radius:6px; background:var(--surface-2); color:var(--muted); border:1px solid transparent; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0 }
+.vote.l { background:rgba(12,163,12,.16); color:var(--good-text); border-color:rgba(12,163,12,.35) } .vote.s { background:rgba(208,59,59,.16); color:var(--crit); border-color:rgba(208,59,59,.35) } .vote.ls { background:var(--s1-soft); color:var(--s1); border-color:var(--s1) }
+.score { display:grid; grid-template-columns:44px 1fr 74px; gap:8px; align-items:center; font-size:11.5px; margin-top:6px }
+.bar { height:8px; background:var(--grid); border-radius:4px; position:relative; overflow:hidden } .bar b { position:absolute; left:0; top:0; bottom:0; border-radius:4px; background:var(--s1) } .bar.l b{background:var(--good)} .bar.s b{background:var(--crit)}
+.posline { margin-top:8px; font-size:12.5px; display:flex; gap:10px; flex-wrap:wrap; align-items:center }
+.exec { font:12px ui-monospace,Consolas,monospace; color:var(--ink-2); margin-top:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+table { width:100%; border-collapse:collapse; font-size:12.5px } th,td { text-align:left; padding:6px 8px; border-bottom:1px solid var(--grid); white-space:nowrap; vertical-align:middle } th { color:var(--muted); font-weight:500; font-size:11px; letter-spacing:.06em; text-transform:uppercase }
+tbody tr:hover { background:var(--surface-2) } .scroll { overflow:auto; max-height:340px; max-width:100% }
+.side { font-weight:600 } .side.buy::before { content:"▲ "; color:var(--good) } .side.sell::before { content:"▼ "; color:var(--crit) }
+tr.new { animation:flash 1.4s ease-out } @keyframes flash { from { background:var(--s1-soft) } to { background:transparent } }
+.empty { color:var(--muted); padding:14px 6px; font-size:13px }
+.log { font:12px/1.5 ui-monospace,Consolas,"Cascadia Mono",monospace; max-height:420px; overflow:auto; white-space:pre-wrap; color:var(--ink-2) } .log .WARN{color:var(--warn)} .log .ERROR{color:var(--crit)}
+.tag { font-size:10px; padding:1px 6px; border-radius:999px; background:var(--surface-2); color:var(--muted); border:1px solid var(--ring) } .tag.live { color:var(--good-text); border-color:var(--good) }
+.modal { position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; align-items:flex-start; justify-content:center; z-index:30; overflow:auto; padding:30px 12px } .modal.open { display:flex }
+.modal .box { background:var(--surface); border:1px solid var(--ring); border-radius:14px; padding:18px 20px; width:min(720px, 96vw) }
+.row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:10px }
+.hud { display:grid; grid-template-columns:repeat(auto-fit, minmax(150px,1fr)); gap:8px; margin-top:10px } .hud .tile .v { font-size:15px }
+.ladder { display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; align-items:center }
+.callout { grid-column:span 12; border-radius:14px; padding:14px 16px; border:1px solid var(--warn); background:rgba(250,178,25,.08); display:flex; gap:14px } .callout b { display:block; margin-bottom:4px }
+.group { border:1px solid var(--ring); border-radius:12px; margin-bottom:8px; background:var(--surface) }
+.group > summary { cursor:pointer; padding:10px 14px; font-weight:600; font-size:13px; list-style:none; display:flex; align-items:center; gap:8px }
+.group > summary::-webkit-details-marker { display:none } .group > summary::before { content:"▸"; color:var(--muted) } .group[open] > summary::before { content:"▾" }
+.group .cnt { margin-left:auto; color:var(--muted); font-weight:400; font-size:12px }
+.irow { display:grid; grid-template-columns:minmax(220px,1.3fr) minmax(160px,1fr) 90px 1fr; gap:10px; align-items:center; padding:7px 14px; border-top:1px solid var(--grid); font-size:13px }
+.irow.dirty { background:var(--s1-soft) } .irow .lbl { display:flex; flex-direction:column } .irow .lbl small { color:var(--muted); font-size:11px }
+.irow .ov { font-size:11px } .irow .ov.set { color:var(--s1) }
+.toolbar { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:12px }
+.cmd { display:grid; grid-template-columns:200px 1fr 190px 100px; gap:10px; align-items:center; padding:9px 12px; border-top:1px solid var(--grid); font-size:13px }
+@media (max-width:900px){ .cmd { grid-template-columns:1fr 1fr } .irow { grid-template-columns:1fr 1fr } .hud { grid-template-columns:repeat(auto-fit, minmax(120px,1fr)) } }
+.cmd b { font-size:13.5px } .cmd .desc { color:var(--ink-2) }
+kbd { font:11px ui-monospace,monospace; background:var(--surface-2); border:1px solid var(--ring); border-radius:5px; padding:1px 5px }
+.pal { position:fixed; inset:0; background:rgba(0,0,0,.55); display:none; justify-content:center; align-items:flex-start; padding-top:12vh; z-index:50 } .pal.open { display:flex }
+.pal .box { width:min(640px,94vw); background:var(--surface); border:1px solid var(--ring); border-radius:14px; overflow:hidden }
+.pal input { width:100%; border:none; border-bottom:1px solid var(--ring); border-radius:0; padding:14px 16px; font-size:16px; background:transparent }
+.pal .item { padding:10px 16px; display:flex; gap:10px; align-items:center; cursor:pointer } .pal .item.sel, .pal .item:hover { background:var(--s1-soft) } .pal .item .k { margin-left:auto; color:var(--muted); font-size:12px }
+pre.cli { background:var(--surface-2); border:1px solid var(--ring); border-radius:10px; padding:12px; font:12px/1.5 ui-monospace,Consolas,monospace; overflow:auto; white-space:pre }
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="top-in">
+    <div class="brand"><span id="beat" class="dot"></span> ICARUS ENGINE</div>
+    <div class="path">
+      <span class="node" data-n="feed"><i></i>Feeds</span><span class="link"></span>
+      <span class="node" data-n="bars"><i></i>Bars</span><span class="link"></span>
+      <span class="node" data-n="strat"><i></i>Strategy</span><span class="link"></span>
+      <span class="node" data-n="paper"><i></i>Paper fills</span>
+    </div>
+    <div class="state">
+      <span class="small muted" id="meta">—</span>
+      <span class="badge" id="phase">—</span>
+      <span class="badge" id="armed">—</span>
+      <button class="icon-btn" id="btnPal" title="Command palette (Ctrl+K)">⌘ Commands</button>
+      <button class="icon-btn" id="btnControls">⚙︎ Token</button>
+      <button class="icon-btn" id="btnTheme" title="Toggle theme">◐</button>
+    </div>
+  </div>
+  <div class="tabs" id="tabs"></div>
+</div>
+
+<div class="wrap" id="view"></div>
+<div class="tip" id="tip"></div>
+
+<div class="modal" id="ctl"><div class="box" style="width:min(520px,92vw)">
+  <h3 style="margin:0 0 6px">Admin token</h3>
+  <div class="small muted">Commands call the engine's admin API with this token (terminal default <code>icarus</code>). Kept in this browser only.</div>
+  <div class="row"><input id="token" type="password" placeholder="admin token" style="width:260px"><button id="saveTok">Save</button><span id="ctlOut" class="small muted"></span></div>
+  <div class="row" style="justify-content:flex-end"><button id="closeCtl">Close</button></div>
+</div></div>
+
+<div class="pal" id="pal"><div class="box"><input id="palq" placeholder="Type a command… (pause NQ, flatten, inputs GC, add ES, export …)"><div id="palList"></div></div></div>
+
+<script>
+const $ = (s, r=document) => r.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt$ = (n, d=2) => (n==null||isNaN(n)) ? '—' : (n<0?'-':'') + '$' + Math.abs(n).toLocaleString(undefined,{minimumFractionDigits:d, maximumFractionDigits:d});
+const sgn$ = (n, d=2) => (n==null||isNaN(n)) ? '—' : (n>=0?'+':'') + fmt$(n, d);
+const dp = v => v==null ? 2 : v>=1000 ? 2 : v>=100 ? 2 : v>=1 ? 3 : v>=0.01 ? 5 : 7;
+const px = (v, d) => (v==null||isNaN(v)) ? '—' : Number(v).toLocaleString(undefined,{minimumFractionDigits:d??dp(v), maximumFractionDigits:d??dp(v)});
+const tm = t => t ? new Date(t*1000).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : '—';
+const tms = t => t ? new Date(t*1000).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'}) : '—';
+const dtm = t => t ? new Date(t*1000).toLocaleString([], {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'}) : '—';
+const age = s => s==null ? 'never' : s<60 ? `${Math.round(s)}s` : s<3600 ? `${Math.round(s/60)}m` : `${(s/3600).toFixed(1)}h`;
+const tip = $('#tip'); const showTip = (h,x,y) => { tip.innerHTML=h; tip.style.display='block'; tip.style.left=(x+14)+'px'; tip.style.top=(y+14)+'px'; }; const hideTip = () => tip.style.display='none';
+let last = null, charts = {}, seenFills = new Set(), first = true, tradesCache = {}, META = null, PRESETS = [], COMMANDS = [], REGISTRY = [];
+const params = new URLSearchParams(location.search);
+const solo = !!params.get('asset');
+let view = solo ? 'asset:' + params.get('asset').toUpperCase() : (location.hash.slice(1) || 'overview');
+
+/* theme + token */
+const root = document.documentElement; root.dataset.theme = localStorage.getItem('icarus-theme') || 'dark';
+$('#btnTheme').onclick = () => { root.dataset.theme = root.dataset.theme==='dark'?'light':'dark'; localStorage.setItem('icarus-theme', root.dataset.theme); if (last) { lastView=null; render(last); } };
+const tokKey = 'icarus-engine-token'; if (!localStorage.getItem(tokKey)) localStorage.setItem(tokKey, 'icarus'); $('#token').value = localStorage.getItem(tokKey);
+$('#btnControls').onclick = () => $('#ctl').classList.add('open'); $('#closeCtl').onclick = () => $('#ctl').classList.remove('open');
+$('#saveTok').onclick = () => { localStorage.setItem(tokKey, $('#token').value.trim()); $('#ctlOut').textContent='token saved'; };
+function toast(msg, bad) { let t = $('#toast'); if (!t) { t = document.createElement('div'); t.id='toast'; t.style.cssText='position:fixed;bottom:18px;left:50%;transform:translateX(-50%);padding:10px 16px;border-radius:10px;z-index:60;font-size:13px;box-shadow:0 6px 24px rgba(0,0,0,.3);max-width:90vw'; document.body.appendChild(t); }
+  t.style.background = bad ? 'var(--crit)' : 'var(--s1)'; t.style.color='#fff'; t.textContent = msg; t.style.display='block'; clearTimeout(t._h); t._h = setTimeout(()=>t.style.display='none', 3500); }
+async function admin(path, body, quiet) {
+  const tok = localStorage.getItem(tokKey) || $('#token').value.trim(); if (!tok) { $('#ctl').classList.add('open'); return null; }
+  const r = await fetch(path, {method:'POST', headers:{'Authorization':'Bearer '+tok,'Content-Type':'application/json'}, body: JSON.stringify(body||{})});
+  const j = await r.json().catch(()=>({})); const msg = r.ok ? (j.note||'ok') : ('error '+r.status+': '+(j.detail||''));
+  if (!quiet) toast(msg, !r.ok); setTimeout(refresh, 400); return r.ok ? j : null;
+}
+
+/* ── charts ── */
+function lineChart(el, series, {baseline=null, height=180}={}) {
+  if (!el) return; el.innerHTML = '';
+  if (!series || series.length < 2) { el.innerHTML = '<div class="empty">Collecting equity samples (one every 20 s once all assets are live)…</div>'; return; }
+  const W = el.clientWidth || 600, H = height, pl = 60, pr = 12, pt = 12, pb = 24;
+  const xs = series.map(p=>p.ts), ys = series.map(p=>p.equity);
+  let lo = Math.min(...ys, baseline ?? Infinity), hi = Math.max(...ys, baseline ?? -Infinity); if (hi-lo < 1) { hi += 1; lo -= 1; } const pad=(hi-lo)*.12; lo-=pad; hi+=pad;
+  const x = t => pl + (t-xs[0])/((xs[xs.length-1]-xs[0])||1)*(W-pl-pr), y = v => pt + (1-(v-lo)/(hi-lo))*(H-pt-pb);
+  const d = series.map((p,i)=>(i?'L':'M')+x(p.ts).toFixed(1)+' '+y(p.equity).toFixed(1)).join(' ');
+  const area = d + ` L${x(xs[xs.length-1]).toFixed(1)} ${H-pb} L${x(xs[0]).toFixed(1)} ${H-pb} Z`;
+  let g=''; for (let i=0;i<=4;i++){ const v=lo+(hi-lo)*i/4; g+=`<line x1="${pl}" x2="${W-pr}" y1="${y(v)}" y2="${y(v)}" stroke="var(--grid)"/><text x="${pl-8}" y="${y(v)+4}" text-anchor="end" font-size="11" fill="var(--muted)">${fmt$(v,0)}</text>`; }
+  const base = baseline!=null ? `<line x1="${pl}" x2="${W-pr}" y1="${y(baseline)}" y2="${y(baseline)}" stroke="var(--axis)" stroke-width="1.5" stroke-dasharray="4 4"/>` : '';
+  const l = series[series.length-1];
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" height="${H}">${g}${base}<path d="${area}" fill="var(--s1-soft)"/><path d="${d}" fill="none" stroke="var(--s1)" stroke-width="2" stroke-linejoin="round"/><circle cx="${x(l.ts)}" cy="${y(l.equity)}" r="4.5" fill="var(--s1)" stroke="var(--surface)" stroke-width="2"/>
+    ${W>380?`<text x="${pl}" y="${H-6}" font-size="11" fill="var(--muted)">${tm(xs[0])}</text>`:''}<text x="${W-pr}" y="${H-6}" font-size="11" fill="var(--muted)" text-anchor="end">${tm(xs[xs.length-1])}</text>
+    <g id="xh" style="display:none"><line y1="${pt}" y2="${H-pb}" stroke="var(--axis)"/><circle r="5" fill="var(--s1)" stroke="var(--surface)" stroke-width="2"/></g><rect id="hit" x="${pl}" y="${pt}" width="${W-pl-pr}" height="${H-pt-pb}" fill="transparent"/></svg>`;
+  const svg = el.firstElementChild, hit = svg.querySelector('#hit'), xh = svg.querySelector('#xh');
+  hit.addEventListener('mousemove', ev => { const r = svg.getBoundingClientRect(); const p2 = (ev.clientX-r.left)*(W/r.width); let b=0,bd=1e9; series.forEach((p,i)=>{const dd=Math.abs(x(p.ts)-p2); if(dd<bd){bd=dd;b=i;}}); const p=series[b];
+    xh.style.display=''; xh.querySelector('line').setAttribute('x1',x(p.ts)); xh.querySelector('line').setAttribute('x2',x(p.ts)); xh.querySelector('circle').setAttribute('cx',x(p.ts)); xh.querySelector('circle').setAttribute('cy',y(p.equity));
+    const dl = baseline!=null ? p.equity-baseline : null; showTip(`<b>${fmt$(p.equity,2)}</b> ${dl!=null?`<span class="${dl>=0?'pos':'neg'}">${sgn$(dl,2)}</span>`:''}<br><span class="muted">${new Date(p.ts*1000).toLocaleString()}</span>`, ev.clientX, ev.clientY); });
+  hit.addEventListener('mouseleave', () => { xh.style.display='none'; hideTip(); });
+}
+function candles(el, data, {height=170, compact=true}={}) {
+  if (!el) return;
+  if (!data || !data.bars || !data.bars.length) { el.innerHTML = '<div class="empty">no bars yet</div>'; return; }
+  const bars = data.bars.slice(), ov = data.overlays.slice(-bars.length); if (data.forming) bars.push(data.forming);
+  const W = el.clientWidth || 360, H = height, pl = 6, pr = compact ? 58 : 74, pt = 8, pb = compact ? 16 : 20;
+  const lows = bars.map(b=>b[3]), highs = bars.map(b=>b[2]);
+  const ovVals = []; ov.forEach(o => { ['st','tp1','tp2','sl'].forEach(k => { if (o[k]!=null) ovVals.push(o[k]); }); });
+  let lo = Math.min(...lows, ...ovVals), hi = Math.max(...highs, ...ovVals); const pad=(hi-lo)*.08||1; lo-=pad; hi+=pad;
+  const n = bars.length, slot = (W-pl-pr)/n, bw = Math.max(1.5, Math.min(9, slot*0.68));
+  const x = i => pl + i*slot + slot/2, y = v => pt + (1-(v-lo)/(hi-lo))*(H-pt-pb), yc = v => Math.max(pt, Math.min(H-pb, y(v)));
+  let s = '';
+  for (let i=0;i<=3;i++){ const v=lo+(hi-lo)*i/3; s+=`<line x1="${pl}" x2="${W-pr}" y1="${y(v)}" y2="${y(v)}" stroke="var(--grid)"/><text x="${W-pr+6}" y="${y(v)+4}" font-size="10.5" fill="var(--muted)">${px(v)}</text>`; }
+  const lastO = ov[ov.length-1] || {};
+  if (lastO.tide_hi!=null && lastO.tide_lo!=null) { const y1 = yc(lastO.tide_hi), y2 = yc(lastO.tide_lo); if (y2-y1 > 1) s += `<rect x="${pl}" y="${y1}" width="${W-pl-pr}" height="${y2-y1}" fill="rgba(250,178,25,.06)" stroke="rgba(250,178,25,.35)" stroke-dasharray="3 3"/><text x="${pl+4}" y="${y1+11}" font-size="9.5" fill="rgba(250,178,25,.8)">TIDE range</text>`; }
+  let seg = '', prevUp = null; ov.forEach((o,i) => { if (o.st==null) return; const X=x(i).toFixed(1), Y=y(o.st).toFixed(1); if (prevUp===null || prevUp!==o.up) { if (seg) s += `<path d="${seg}" fill="none" stroke="${prevUp?'var(--good)':'var(--crit)'}" stroke-width="2" stroke-linejoin="round"/>`; seg = `M${X} ${Y}`; prevUp = o.up; } else seg += ` L${X} ${Y}`; });
+  if (seg) s += `<path d="${seg}" fill="none" stroke="${prevUp?'var(--good)':'var(--crit)'}" stroke-width="2" stroke-linejoin="round"/>`;
+  let vw=''; ov.forEach((o,i)=>{ if (o.vwap!=null) vw += (vw?' L':'M')+x(i).toFixed(1)+' '+y(o.vwap).toFixed(1); }); if (vw) s += `<path d="${vw}" fill="none" stroke="var(--s7)" stroke-width="1" stroke-dasharray="2 3" opacity=".8"/>`;
+  bars.forEach((b,i) => { const up = b[4] >= b[1]; const col = up ? 'var(--up)' : 'var(--dn)'; const X = x(i); const top = y(Math.max(b[1],b[4])), bot = y(Math.min(b[1],b[4])); const forming = data.forming && i === n-1;
+    s += `<line x1="${X}" x2="${X}" y1="${y(b[2])}" y2="${y(b[3])}" stroke="${col}" stroke-width="1"/><rect x="${X-bw/2}" y="${top}" width="${bw}" height="${Math.max(1,bot-top)}" fill="${up?'var(--surface)':col}" stroke="${col}" stroke-width="1" ${forming?'stroke-dasharray="2 2"':''} data-i="${i}"/>`; });
+  if (lastO.pos) { [['sl',lastO.sl,'var(--crit)'],['tp1',lastO.tp1,'var(--good)'],['tp2',lastO.tp2,'var(--good)']].forEach(([k,v,c]) => { if (v==null) return; s += `<line x1="${pl}" x2="${W-pr}" y1="${y(v)}" y2="${y(v)}" stroke="${c}" stroke-width="1.2" stroke-dasharray="5 3"/><text x="${W-pr-4}" y="${y(v)-3}" text-anchor="end" font-size="10" fill="${c}">${k.toUpperCase()} ${px(v)}</text>`; }); }
+  const tsIndex = {}; data.bars.forEach((b,i)=>tsIndex[b[0]]=i);
+  (data.fills||[]).forEach(f => { const i = tsIndex[f.ts]; if (i==null) return; const buy = f.side==='buy'; const Y = buy ? y(f.price)+9 : y(f.price)-9; const X = x(i);
+    s += `<path d="${buy?`M${X} ${Y-6} l5 8 h-10 z`:`M${X} ${Y+6} l5 -8 h-10 z`}" fill="${f.kind==='entry'||f.kind==='reverse'?(buy?'var(--good)':'var(--crit)'):'var(--ink)'}" stroke="var(--surface)" stroke-width="1"><title>${esc(f.comment)} ${f.qty} @ ${px(f.price)}${f.profit!=null?' P&L '+f.profit.toFixed(2):''}</title></path>`; });
+  const lp = bars[n-1][4]; s += `<line x1="${pl}" x2="${W-pr}" y1="${y(lp)}" y2="${y(lp)}" stroke="var(--s1)" stroke-width="1" stroke-dasharray="1 3"/><rect x="${W-pr+2}" y="${y(lp)-8}" width="${pr-4}" height="16" rx="4" fill="var(--s1)"/><text x="${W-pr+(pr-4)/2+2}" y="${y(lp)+4}" text-anchor="middle" font-size="10.5" fill="#fff" font-weight="600">${px(lp)}</text>`;
+  s += `<text x="${pl}" y="${H-4}" font-size="10.5" fill="var(--muted)">${dtm(bars[0][0])}</text><text x="${W-pr}" y="${H-4}" font-size="10.5" fill="var(--muted)" text-anchor="end">${dtm(bars[n-1][0])} · ${data.tf}m${data.chart_type==='heikin_ashi'?' · HA':''}</text>`;
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" height="${H}">${s}</svg>`;
+  el.querySelectorAll('rect[data-i]').forEach(r => { r.addEventListener('mousemove', ev => { const b = bars[+r.dataset.i]; const o = ov[+r.dataset.i]||{}; showTip(`<b>${dtm(b[0])}</b><br>O ${px(b[1])} H ${px(b[2])} L ${px(b[3])} C ${px(b[4])}${o.real_c!=null&&data.chart_type==='heikin_ashi'?`<br>real close ${px(o.real_c)}`:''}<br><span class="muted">RATE ${o.st!=null?px(o.st):'—'} ${o.up?'▲':'▼'} · pulse ${o.pulse!=null?(o.pulse*100).toFixed(0)+'%':'—'}</span>`, ev.clientX, ev.clientY); }); r.addEventListener('mouseleave', hideTip); });
+}
+
+/* ── asset card ── */
+function regClass(s) { return 'reg-' + String(s||'').split(' ')[0].replace('-',''); }
+function pulseSegs(v, state) { const n = Math.round((v||0)*10); const cls = state==='IGNITION'?'ign':state==='CRITICAL'?'hot':'on'; let h=''; for (let i=1;i<=10;i++) h += `<i class="${i<=n?cls:''}"></i>`; return h; }
+function marketChip(a) { const m = a.market||{}; if (m.calendar==='crypto') return `<span class="chip mkt-open">24/7</span>`; const d = esc(m.describe||'closed'); const open = d.startsWith('open'); const delay = a.feed_delay ? ` · feed ${age(a.feed_delay)} behind` : ''; return `<span class="chip ${open?'mkt-open':'mkt-closed'}" title="${a.session_mode==='rth'?'TradingView Regular-trading-hours chart: bars 09:30-16:15 ET only':'full Globex session'}${a.contract?' · live contract '+esc(a.contract)+' (next '+esc(a.next_contract||'')+')':''}">${open?'CME '+d:d}${a.contract?' · '+esc(a.contract):''}${delay}</span>`; }
+function assetCard(a) {
+  const st = a.state || {}; const pos = a.position||0; const side = pos>0?'long':pos<0?'short':'';
+  const pulse = Math.max(st.pulse_l||0, st.pulse_s||0), pside = (st.pulse_l||0) >= (st.pulse_s||0) ? 'L' : 'S';
+  const votes = (st.votes||[]).map(v => `<div class="vote ${v.l&&v.s?'ls':v.l?'l':v.s?'s':''}" title="weight ${v.w}">${v.name}</div>`).join('');
+  const thr = st.eff_thresh||1; const bl = Math.min(1,(st.final_l||0)/thr), bs = Math.min(1,(st.final_s||0)/thr);
+  const ot = a.open_trades||[]; const upl = ot.reduce((s,t)=>s+(t.upl||0),0);
+  const posHtml = ot.length ? ot.map(t => `<span><b class="${t.dir>0?'pos':'neg'}">${t.dir>0?'LONG':'SHORT'} ${t.qty}</b> <span class="muted">${esc(t.id)} @ ${px(t.entry)}</span></span>`).join(' ') + ` <span class="${upl>=0?'pos':'neg'} tnum">${sgn$(upl)}</span>` + (st.runner_tag?` <span class="chip">${esc(st.runner_tag)}${st.rate_be_armed?' ✓':''}</span>`:'')
+    : `<span class="muted">flat</span>` + (st.armed_long?` <span class="chip b">ARMED LONG</span>`:'') + (st.armed_short?` <span class="chip r">ARMED SHORT</span>`:'');
+  const warm = a.warm ? (a.rewarming ? `<span class="chip w">re-warming</span>` : '') : `<span class="chip w">warming ${a.bar_index>=0?a.bar_index+1+' bars':''}</span>`;
+  return `<div class="asset ${side}" data-sym="${a.symbol}">
+    <div class="ah"><span class="sym">${a.symbol}</span><span class="px tnum">${px(a.price)}</span>
+      <span class="dir ${st.rate_uptrend?'up':'dn'}" title="RATE SuperTrend direction">${st.rate_uptrend==null?'':st.rate_uptrend?'▲':'▼'}</span>
+      <span class="chip ${regClass(st.rate_regime_str)}">${esc(st.rate_regime_str||'—')} ${st.rate_regime!=null?(st.rate_regime*100).toFixed(0)+'%':''}</span>${marketChip(a)}${warm}${a.paused?'<span class="chip r">paused</span>':''}
+      <span class="muted small" style="margin-left:auto">${a.tf}m${a.chart_type==='heikin_ashi'?' HA':''} · ${a.errors?`<span class="neg">${a.errors} err</span>`:'bar '+age(a.bar_age)}</span></div>
+    <div id="ch-${a.symbol}" style="margin-top:6px"></div>
+    <div class="pulse"><span>Pulse</span><div class="segs">${pulseSegs(pulse, st.pulse_state)}</div><span>${esc(st.pulse_state||'—')} ${pside} ${(pulse*100).toFixed(0)}%</span><span style="margin-left:auto">${st.po3||''} · fam ${Math.max(st.families_l||0, st.families_s||0)}/5</span></div>
+    <div class="votes">${votes}</div>
+    <div class="score"><span>LONG</span><div class="bar l"><b style="width:${bl*100}%"></b></div><span class="tnum">${(st.final_l||0).toFixed(2)} / ${thr.toFixed(2)}</span></div>
+    <div class="score"><span>SHORT</span><div class="bar s"><b style="width:${bs*100}%"></b></div><span class="tnum">${(st.final_s||0).toFixed(2)} / ${thr.toFixed(2)}</span></div>
+    <div class="posline">${posHtml}<span style="margin-left:auto" class="small"><span class="muted">net</span> <b class="${(a.netprofit||0)>=0?'pos':'neg'} tnum">${sgn$(a.netprofit)}</b> <span class="muted">· ${a.trades_total} pieces · ${a.trades_total?Math.round(a.wins_total/a.trades_total*100):0}% win</span></span></div>
+    <div class="exec" title="${esc(st.exec)}">${esc(st.exec||'')}</div>
+  </div>`;
+}
+async function loadChart(sym, n, el, opts) { try { const r = await fetch(`/api/chart/${sym}?n=${n}`, {cache:'no-store'}); const d = await r.json(); charts[sym+n] = d; if (el && el.isConnected) candles(el, d, opts); } catch(e) {} }
+
+/* ── views ── */
+function setView(v) { view = v; if (!solo) location.hash = v; lastView = null; if (last) render(last); if (v.startsWith('asset:')) { const s = v.slice(6); loadChart(s, 300, $('#dChart'), {height:360, compact:false}); refreshTrades(s).then(()=>{ if (last) render(last); }); } }
+function tabsHtml(A) {
+  if (solo) return `<span class="tab active"><b class="s">${esc(params.get('asset').toUpperCase())}</b> · solo view</span><a class="tab" href="/">← all assets</a>`;
+  const t = [`<span class="tab ${view==='overview'?'active':''}" data-v="overview">Overview</span>`];
+  A.forEach(a => { const pos = a.position||0; t.push(`<span class="tab ${view==='asset:'+a.symbol?'active':''}" data-v="asset:${a.symbol}"><span class="dot ${pos>0?'long':pos<0?'short':(a.market&&a.market.open===false?'closed':'')}"></span><b class="s">${a.symbol}</b> <span class="muted small tnum">${px(a.price)}</span></span>`); });
+  t.push(`<span class="tab" data-v="add" title="Add an asset">＋</span>`);
+  t.push(`<span class="tab util ${view==='inputs'?'active':''}" data-v="inputs">Inputs</span><span class="tab util ${view==='commands'?'active':''}" data-v="commands">Commands</span><span class="tab util ${view==='log'?'active':''}" data-v="log">Log</span>`);
+  return t.join('');
+}
+function overviewHtml(d, A) {
+  const sinceLive = (d.live_profit||0) + (d.open_profit||0), histNet = (d.net||0) - sinceLive;
+  return `
+  ${d.all_warm ? '' : `<div class="callout"><div>⏳</div><div><b>Warming up</b>Each asset replays its history (deep native bars for the slow timeframes, then 5-minute and 1-minute sub-bars aggregated exactly like live data). Futures cards then wait for the CME open; crypto goes live immediately.</div></div>`}
+  <section class="card c3" id="heroCard"><h2>Portfolio · since go-live</h2>
+    <div class="hero"><div class="n tnum ${sinceLive>=0?'up':'dn'}">${sgn$(sinceLive)}</div><div class="pct tnum">${d.capital?`${(sinceLive/d.capital*100).toFixed(2)}% on ${fmt$(d.capital,0)} · closed live trades + open positions`:''}</div></div>
+    <div class="tiles"><div class="tile"><div class="k">Equity</div><div class="v tnum">${fmt$(d.equity,0)}</div></div><div class="tile"><div class="k">Open P&amp;L</div><div class="v tnum ${(d.open_profit||0)>=0?'pos':'neg'}">${sgn$(d.open_profit)}</div></div><div class="tile"><div class="k">Closed live</div><div class="v tnum ${(d.live_profit||0)>=0?'pos':'neg'}">${sgn$(d.live_profit)}</div></div><div class="tile" title="P&amp;L of the historical trades replayed during warm-up (not live)"><div class="k">Warm-up replay</div><div class="v tnum ${histNet>=0?'pos':'neg'}">${sgn$(histNet)}</div></div><div class="tile"><div class="k">Positions</div><div class="v tnum">${d.positions}</div></div></div></section>
+  <section class="card c6"><h2>Equity · this run <span class="sub">${d.equity_series?.length?`${d.equity_series.length} samples · dashed = starting capital`:''}</span></h2><div id="eqChart"></div></section>
+  <section class="card c3" id="engineCard"><h2>Engine</h2><div class="tiles" style="margin-top:0"><div class="tile"><div class="k">Assets</div><div class="v tnum">${A.length}</div></div><div class="tile"><div class="k">Live trades</div><div class="v tnum">${A.reduce((s,a)=>s+(a.live_trades||0),0)}</div></div><div class="tile"><div class="k">Hist. pieces</div><div class="v tnum">${A.reduce((s,a)=>s+(a.trades_total||0),0)}</div></div><div class="tile"><div class="k">Uptime</div><div class="v tnum">${age(d.uptime_sec)}</div></div></div>
+    <div class="small muted" style="margin-top:8px">Preset <b>${esc(d.preset||'none')}</b> · NQ-point inputs scaled from NQ ${d.pts_ref&&d.pts_ref.price?px(d.pts_ref.price,0):'—'} · fills at real prices unless a card says otherwise · nothing leaves this PC.</div></section>
+  <div class="assets" id="assets">${A.map(assetCard).join('')}</div>
+  <section class="card c7"><h2>Paper fills <span class="sub" id="fillsSub"></span></h2><div class="scroll"><table id="fills"><thead><tr><th>Time</th><th>Asset</th><th>Side</th><th>Qty</th><th>Price</th><th>Kind</th><th>Signal</th><th>P&amp;L</th><th>Pos</th></tr></thead><tbody></tbody></table></div></section>
+  <section class="card c5"><h2>Engine log</h2><div class="log" id="log" style="max-height:300px"></div></section>
+  <section class="card c12"><h2>Closed trades <span class="sub">history (warm-up replay) and live, newest first</span></h2><div class="scroll" style="max-height:380px"><table id="trades"><thead><tr><th>Asset</th><th></th><th>Entry</th><th>Signal</th><th>Qty</th><th>Entry px</th><th>Exit</th><th>Exit px</th><th>Exit signal</th><th>P&amp;L</th></tr></thead><tbody></tbody></table></div></section>`;
+}
+function assetHead(a) {
+  const st = a.state||{}; const tfs = (a.htf_tfs||[]).map(m => m>=10080?'W':m>=1440?'D':m>=60?(m/60)+'h':m+'m'); const dirs = st.htf_dirs||[];
+  const tiles = [['Regime', st.rate_regime!=null?`${esc(st.rate_regime_str)} ${(st.rate_regime*100).toFixed(0)}%`:'—'], ['Hurst / FDI', `${st.hurst?.toFixed(3)??'—'} / ${st.fdi?.toFixed(3)??'—'}`], ['ADX / ATR14', `${st.rate_adx?.toFixed(1)??'—'} / ${px(st.atr14)}`], ['RATE line', px(st.rate_st_line)],
+    ['Gate L / S', `${(st.final_l||0).toFixed(2)} / ${(st.final_s||0).toFixed(2)} vs ${(st.eff_thresh||0).toFixed(2)}`], ['Kalman vel', st.kf_vel?.toFixed(4)??'—'], ['PE', (st.pe_norm?.toFixed(3)??'—') + (st.trc?' TRC':'')], ['Cycle', (st.cycle_rising?'rising ':'falling ') + (st.phase_deg!=null?st.phase_deg.toFixed(0)+'°':'')],
+    ['Po3', st.po3], ['Structure', (st.struct_bias>0?'bull':st.struct_bias<0?'bear':'—') + ' · ' + (st.pd_zone||'')], ['Shock ×', st.shock_mult?.toFixed(2)], ['Veto L / S', `${st.diverge_veto_l?'VETO':'ok'} / ${st.diverge_veto_s?'VETO':'ok'}`],
+    ['TIDE range', st.tide_hi!=null?`${px(st.tide_lo)} – ${px(st.tide_hi)}`:'—'], ['TIDE state', st.tide_broke_above?`broke above, ${st.tide_inrange_closes} back`:st.tide_broke_below?`broke below, ${st.tide_inrange_closes} back`:'inside'],
+    ['Exit geometry', `tp1 ${px(st.tp1_dist)} · tp2 ${px(st.tp2_dist)} · sl ${px(st.sl_dist)}`], ['Position', st.rate_qty_open?`${st.rate_pos_long?'LONG':'SHORT'} ${st.rate_qty_open}/${st.rate_qty_plan} @ ${px(st.rate_avg_price)}`:'flat'],
+    ['TP1 / TP2 / SL', st.rate_qty_open?`${px(st.tp1_price)} / ${px(st.tp2_price)} / ${px(st.sl_price)}`:'—'], ['Runner', st.runner_tag?`${st.runner_tag}${st.rate_be_armed?' (BE armed)':''}`:'—'],
+    ['Adaptive weights', `${st.w_trade_count} trades · ${st.active_votes} active · avg ${st.avg_weight?.toFixed(2)}`], ['Daily P&L', sgn$(st.daily_pnl)], ['Session / entries', `${st.in_session?'in session':'outside'} · ${st.entry_allowed?'allowed':'blocked'}`], ['Bars since stop', st.bars_since_stop]];
+  const pending = (a.pending||[]).map(p => p.close ? `close ${p.close} (${p.comment})` : `${p.dir>0?'BUY':'SELL'} ${p.qty} ${p.id}${p.limit?' @ '+px(p.limit):' @ open'}`).join(', ');
+  const exits = (a.exits||[]).map(e => `${e.id}: ${e.qty??'all'} tp ${px(e.limit)} / sl ${px(e.stop)}`).join(' · ');
+  return `<div style="display:flex; align-items:baseline; gap:12px; flex-wrap:wrap">
+    <h3 style="margin:0;font-size:22px">${a.symbol} <span class="muted" style="font-size:14px;font-weight:400">${esc(a.name)} · ${esc(a.product)} · ${a.tf}m</span></h3><span class="tnum" style="font-size:22px;font-weight:600">${px(a.price)}</span>
+    ${marketChip(a)}<span class="chip ${regClass(st.rate_regime_str)}">${esc(st.rate_regime_str||'')}</span><span class="chip">${a.chart_type==='heikin_ashi'?'Heikin Ashi chart':'real bars'} · fills on ${a.fill_on==='chart'?'HA bars':'real prices'} · slip ${a.slippage_ticks}t</span><span class="chip">preset ${esc(a.preset||'none')}</span>${a.paused?'<span class="chip r">paused</span>':''}${a.rewarming?'<span class="chip w">re-warming</span>':''}
+    <span style="margin-left:auto;display:flex;gap:6px;flex-wrap:wrap"><button class="sm" data-cmd="pause" data-a="${a.symbol}">Pause</button><button class="sm" data-cmd="resume" data-a="${a.symbol}">Resume</button><button class="sm danger" data-cmd="flatten" data-a="${a.symbol}">Flatten</button><button class="sm" data-cmd="inputs" data-a="${a.symbol}">Inputs</button><button class="sm" data-cmd="rewarm" data-a="${a.symbol}">Re-warm</button><button class="sm" data-cmd="export" data-a="${a.symbol}">Export CSV</button>${solo?'':`<button class="sm" data-cmd="open-tab" data-a="${a.symbol}">Open in tab ↗</button>`}</span></div>
+    <div class="exec" style="margin-top:8px">${esc(st.exec||'')}${pending?` · pending: ${esc(pending)}`:''}${exits?` · resting: ${esc(exits)}`:''}</div>
+    <div id="dChart" style="margin-top:10px"></div>
+    <div class="ladder"><span class="muted small">HTF</span>${tfs.map((t,i)=>`<span class="chip ${dirs[i]===-1?'b':dirs[i]===1?'r':''}">${t} ${dirs[i]===-1?'▲':dirs[i]===1?'▼':'·'}</span>`).join('')}<span class="muted small" style="margin-left:8px">LTF</span>${(st.ltf||[]).map((l,i)=>`<span class="chip ${l[0]===-1?'b':l[0]===1?'r':''}">${i?'5m':'2m'} ${l[0]===-1?'▲':l[0]===1?'▼':'·'} ${l[1]!=null?l[1]+'b':''} r${l[2]!=null?(l[2]*100).toFixed(0):'—'}</span>`).join('')} <span class="chip">MTF ${st.htf_bull}▲ ${st.htf_bear}▼</span>
+      <span style="margin-left:auto" class="small"><span class="muted">net</span> <b class="${(a.netprofit||0)>=0?'pos':'neg'} tnum">${sgn$(a.netprofit)}</b> <span class="muted">· ${a.trades_total} pieces · ${a.trades_total?Math.round(a.wins_total/a.trades_total*100):0}% win · live ${sgn$(a.live_profit)} · open ${sgn$(a.open_profit)}</span></span></div>
+    <div class="votes" style="margin-top:10px">${(st.votes||[]).map(v => `<div class="vote ${v.l&&v.s?'ls':v.l?'l':v.s?'s':''}">${v.name}<br><span class="muted">${v.w}</span></div>`).join('')}</div>
+    <div class="hud">${tiles.map(([k,v])=>`<div class="tile"><div class="k">${k}</div><div class="v tnum">${esc(v??'—')}</div></div>`).join('')}</div>`;
+}
+function assetHtml(a) {
+  return `<section class="card c12" id="assetHead">${assetHead(a)}</section>
+  <section class="card c7"><h2>Closed trades · ${a.symbol}</h2><div class="scroll" style="max-height:420px"><table id="dTrades"><thead><tr><th></th><th>Entry</th><th>Signal</th><th>Qty</th><th>Entry px</th><th>Exit</th><th>Exit px</th><th>Exit signal</th><th>P&amp;L</th></tr></thead><tbody></tbody></table></div></section>
+  <section class="card c5"><h2>Fills · ${a.symbol}</h2><div class="scroll" style="max-height:420px"><table id="dFills"><thead><tr><th>Time</th><th>Side</th><th>Qty</th><th>Price</th><th>Signal</th><th>P&amp;L</th></tr></thead><tbody></tbody></table></div></section>`;
+}
+function inputsHtml(A) {
+  const opts = A.map(a => `<option value="${a.symbol}">${a.symbol}</option>`).join('');
+  return `<section class="card c12"><h2>Inputs <span class="sub">every strategy input, grouped like the TradingView dialog · changes re-warm the asset from cached history in seconds</span></h2>
+    <div class="toolbar"><label>Asset <select id="inAsset">${opts}<option value="*">All assets</option></select></label>
+      <label>Preset <select id="inPreset"><option value="">(none)</option>${PRESETS.map(p=>`<option value="${esc(p.name)}">${esc(p.name)} — ${p.count} inputs${p.meta&&p.meta.timeframe?' · '+p.meta.timeframe:''}${p.meta&&p.meta.chart_type==='heikin_ashi'?' · HA':''}</option>`).join('')}</select></label><button class="sm" id="inApplyPreset">Apply preset</button>
+      <input id="inSearch" type="text" placeholder="filter inputs…" style="width:200px"><span class="small muted" id="inSources"></span>
+      <span style="margin-left:auto;display:flex;gap:6px"><button class="sm" id="inRevert">Discard edits</button><button class="sm danger" id="inReset">Remove asset overrides</button><button class="primary" id="inApply">Apply &amp; re-warm</button></span></div>
+    <div id="inGroups"><div class="empty">loading…</div></div></section>`;
+}
+function commandsHtml(A) {
+  const opts = `<option value="*">all assets</option>` + A.map(a => `<option value="${a.symbol}">${a.symbol}</option>`).join('');
+  return `<section class="card c8"><h2>Commands <span class="sub">or press <kbd>Ctrl</kbd>+<kbd>K</kbd> anywhere</span></h2>
+    <div>${COMMANDS.map(c => `<div class="cmd"><b>${esc(c.label)}</b><span class="desc">${esc(c.desc)}</span><span>${c.scope!=='all'?`<select data-scope="${c.id}">${opts}</select>`:''}</span><button class="sm ${c.danger?'danger':''}" data-run="${c.id}">Run</button></div>`).join('')}</div>
+    <h2 style="margin-top:18px">Add an asset</h2>
+    <div class="row"><input id="addSym" type="text" placeholder="symbol (NQ, ES, GC, BTC…)" style="width:170px"><input id="addTf" type="text" placeholder="tf (20)" style="width:80px"><select id="addPreset"><option value="">preset: engine default</option>${PRESETS.map(p=>`<option value="${esc(p.name)}">${esc(p.name)}</option>`).join('')}</select><button class="primary sm" id="addBtn">Add</button></div>
+    <div class="small muted" style="margin-top:6px">Registry: ${REGISTRY.map(r=>`<code>${r.symbol}</code>`).join(' ')} — anything else is treated as a Coinbase spot pair.</div></section>
+  <section class="card c4"><h2>Terminal commands</h2><pre class="cli">py -3 -m icarus_engine.cli run --assets NQ,ES,YM,GC,SI,PL,PA,BTCF,BTC --tf 20
+py -3 -m icarus_engine.cli run --assets NQ@10 --preset NQ-10m-original
+py -3 -m icarus_engine.cli backtest --assets NQ --tf 20 --verbose 20
+py -3 -m icarus_engine.cli backtest --assets NQ --fill-on chart   # TradingView HA-bar fills
+py -3 -m icarus_engine.cli parity --asset NQ --tf 20 --tv-csv "List of Trades.csv"
+py -3 -m icarus_engine.cli import-tv "strategy export.xlsx" --name NQ-20m-mine
+py -3 -m icarus_engine.cli inputs --asset NQ --preset NQ-20m-ultracoded
+py -3 -m icarus_engine.cli assets</pre>
+    <div class="small muted">Files: <code>presets/*.json</code> (from TradingView exports), <code>inputs.json</code> (global overrides), <code>inputs.&lt;SYM&gt;.json</code> (per asset, written by this page), <code>history/&lt;SYM&gt;_&lt;tf&gt;m.csv</code> (a TradingView chart export used as exact warm-up bars).</div></section>`;
+}
+
+/* ── inputs editor ── */
+let inState = {asset:null, effective:{}, base:{}, overrides:{}, edits:{}, sources:[]};
+async function loadInputsTab(sym) {
+  if (!META) META = await fetch('/api/input-meta').then(r=>r.json());
+  const sel = $('#inAsset'); if (!sel || !last) return; if (sym) sel.value = sym; const a = sel.value === '*' ? (last.assets[0]||{}).symbol : sel.value; if (!a) return;
+  const d = await fetch(`/api/inputs/${a}`).then(r=>r.json());
+  inState = {asset: sel.value, effective: d.effective, base: d.base, overrides: d.overrides||{}, edits: {}, sources: d.sources||[], preset: d.preset};
+  $('#inSources').textContent = (sel.value==='*'?'editing ALL assets · showing '+a+' · ':'') + 'sources: ' + inState.sources.join(' → ') + (d.pts_scale && Math.abs(d.pts_scale-1)>1e-6 ? ` · *_pts scaled ×${d.pts_scale.toFixed(3)} at runtime` : '');
+  if ($('#inPreset')) $('#inPreset').value = d.preset || '';
+  renderInputs();
+}
+function ctrl(e, val) {
+  const name = e.name;
+  if (e.kind === 'bool') return `<label><input type="checkbox" data-in="${name}" ${val?'checked':''}> <span class="small muted">${val?'on':'off'}</span></label>`;
+  if (e.options) return `<select data-in="${name}">${e.options.map(o=>`<option ${o===val?'selected':''}>${esc(o)}</option>`).join('')}</select>`;
+  if (e.kind === 'timeframe') { const tfs = ['1','2','3','5','10','15','20','30','45','60','120','180','240','D','W']; if (!tfs.includes(String(val))) tfs.unshift(String(val)); return `<select data-in="${name}">${tfs.map(o=>`<option ${o===String(val)?'selected':''}>${esc(o)}</option>`).join('')}</select>`; }
+  if (e.kind === 'session') return `<input type="text" data-in="${name}" value="${esc(val)}" placeholder="HHMM-HHMM" style="width:130px">`;
+  if (e.kind === 'int' || e.kind === 'float') return `<input type="number" data-in="${name}" value="${esc(val)}" ${e.minval!=null?`min="${e.minval}"`:''} ${e.maxval!=null?`max="${e.maxval}"`:''} step="${e.step!=null?e.step:(e.kind==='int'?1:'any')}">`;
+  return `<input type="text" data-in="${name}" value="${esc(val)}">`;
+}
+function renderInputs() {
+  if (!META || !$('#inGroups')) return;
+  const q = ($('#inSearch')?.value||'').toLowerCase(); const groups = {};
+  META.forEach(e => { if (q && !(e.label.toLowerCase().includes(q) || e.name.toLowerCase().includes(q) || e.group.toLowerCase().includes(q))) return; (groups[e.group] = groups[e.group] || []).push(e); });
+  const cur = n => (n in inState.edits) ? inState.edits[n] : inState.base[n];
+  $('#inGroups').innerHTML = Object.entries(groups).map(([g, items]) => {
+    const dirty = items.filter(e => e.name in inState.edits).length, over = items.filter(e => e.name in inState.overrides).length;
+    return `<details class="group" ${q||dirty?'open':''}><summary>${esc(g)}<span class="cnt">${items.length} inputs${over?` · ${over} overridden`:''}${dirty?` · <span style="color:var(--s1)">${dirty} edited</span>`:''}</span></summary>
+      ${items.map(e => { const v = cur(e.name); const isOver = e.name in inState.overrides, isDirty = e.name in inState.edits; const isDef = JSON.stringify(v) === JSON.stringify(e.default);
+        return `<div class="irow ${isDirty?'dirty':''}"><div class="lbl"><span>${esc(e.label)}</span><small>${esc(e.name)}${e.tooltip?' · '+esc(e.tooltip).slice(0,140)+(e.tooltip.length>140?'…':''):''}</small></div><div>${ctrl(e, v)}</div><div class="ov ${isOver?'set':''}">${isDirty?'edited':isOver?'override':isDef?'default':'preset'}</div><div class="small muted">default ${esc(String(e.default))}${e.minval!=null||e.maxval!=null?` · ${e.minval??''}–${e.maxval??''}`:''}</div></div>`; }).join('')}</details>`; }).join('') || '<div class="empty">no input matches</div>';
+  $('#inGroups').querySelectorAll('[data-in]').forEach(el => { el.addEventListener('change', () => { const e = META.find(m=>m.name===el.dataset.in); let v = el.type==='checkbox' ? el.checked : el.value; if (e.kind==='int') v = parseInt(v,10); if (e.kind==='float') v = parseFloat(v); inState.edits[e.name] = v; el.closest('.irow').classList.add('dirty'); el.closest('.irow').querySelector('.ov').textContent = 'edited'; }); });
+}
+document.addEventListener('input', ev => { if (ev.target.id === 'inSearch') renderInputs(); });
+document.addEventListener('change', ev => { if (ev.target.id === 'inAsset') loadInputsTab(); });
+document.addEventListener('click', async ev => {
+  const b = ev.target.closest('button, .tab, .asset, [data-run]'); if (!b) return;
+  if (b.tagName === 'A') return;
+  if (b.dataset.v) { if (b.dataset.v === 'add') { setView('commands'); setTimeout(()=>$('#addSym')?.focus(), 50); } else setView(b.dataset.v); return; }
+  if (b.classList.contains('asset')) { setView('asset:' + b.dataset.sym); return; }
+  if (b.dataset.cmd) { await runCommand(b.dataset.cmd, b.dataset.a); return; }
+  if (b.dataset.run) { const sel = document.querySelector(`select[data-scope="${b.dataset.run}"]`); await runCommand(b.dataset.run, sel ? sel.value : '*'); return; }
+  if (b.id === 'inApply') { const vals = inState.edits; if (!Object.keys(vals).length) return toast('nothing edited'); const r = await admin('/admin/inputs', {asset: inState.asset, values: vals, persist: true}); if (r) { inState.edits = {}; setTimeout(()=>loadInputsTab(), 1500); } }
+  if (b.id === 'inRevert') { inState.edits = {}; renderInputs(); }
+  if (b.id === 'inReset') { if (confirm(`Remove all per-asset overrides for ${inState.asset}?`)) { await admin('/admin/inputs/reset', {asset: inState.asset}); setTimeout(()=>loadInputsTab(), 1500); } }
+  if (b.id === 'inApplyPreset') { await admin('/admin/preset', {asset: inState.asset, preset: $('#inPreset').value || null}); setTimeout(()=>loadInputsTab(), 1500); }
+  if (b.id === 'addBtn') { const s = $('#addSym').value.trim(); if (!s) return; await admin('/admin/assets/add', {symbol: s, tf: $('#addTf').value.trim() || undefined, preset: $('#addPreset').value || undefined}); }
+});
+async function runCommand(id, asset) {
+  const A = asset && asset !== '*' ? asset : null;
+  switch (id) {
+    case 'pause': return admin('/admin/pause', {asset: A, reason: 'dashboard'});
+    case 'resume': return admin('/admin/resume', {asset: A});
+    case 'flatten': if (confirm(`Close ALL paper positions on ${A||'every asset'} now?`)) return admin('/admin/flatten', {confirm: true, asset: A, reason: 'dashboard'}); return;
+    case 'rewarm': return admin('/admin/rewarm', {asset: A});
+    case 'inputs': setView('inputs'); setTimeout(()=>loadInputsTab(A), 120); return;
+    case 'preset': setView('inputs'); setTimeout(()=>{ loadInputsTab(A); $('#inPreset')?.focus(); }, 120); return;
+    case 'reset-inputs': if (A && confirm(`Remove all per-asset overrides for ${A}?`)) return admin('/admin/inputs/reset', {asset: A}); return;
+    case 'add-asset': setView('commands'); setTimeout(()=>$('#addSym')?.focus(), 50); return;
+    case 'remove-asset': if (A && confirm(`Remove ${A} from the engine?`)) return admin('/admin/assets/remove', {symbol: A}); return;
+    case 'export': if (A) window.open(`/api/export/${A}.csv`, '_blank'); return;
+    case 'open-tab': if (A) window.open(`/?asset=${A}`, '_blank'); return;
+    case 'theme': $('#btnTheme').click(); return;
+  }
+}
+/* palette */
+let palSel = 0;
+function palItems(q) {
+  const A = (last&&last.assets)||[]; const items = [];
+  COMMANDS.forEach(c => { if (c.scope === 'all') items.push({label:c.label, sub:'all assets', id:c.id, a:'*'}); else { if (c.scope.includes('all')) items.push({label:c.label, sub:'all assets', id:c.id, a:'*'}); A.forEach(a => items.push({label:`${c.label} ${a.symbol}`, sub:a.name, id:c.id, a:a.symbol})); } });
+  A.forEach(a => items.push({label:`Go to ${a.symbol}`, sub:'asset tab', id:'goto', a:a.symbol}));
+  items.push({label:'Overview', sub:'tab', id:'goto', a:'overview'}, {label:'Inputs tab', sub:'tab', id:'goto', a:'inputs'}, {label:'Commands tab', sub:'tab', id:'goto', a:'commands'}, {label:'Log tab', sub:'tab', id:'goto', a:'log'});
+  const words = q.toLowerCase().split(/\s+/).filter(Boolean);
+  return items.filter(it => words.every(w => (it.label+' '+it.sub).toLowerCase().includes(w))).slice(0, 14);
+}
+function renderPal() { const items = palItems($('#palq').value); palSel = Math.min(palSel, Math.max(0, items.length-1)); $('#palList').innerHTML = items.map((it,i)=>`<div class="item ${i===palSel?'sel':''}" data-i="${i}"><b>${esc(it.label)}</b><span class="muted small">${esc(it.sub)}</span><span class="k">${i===palSel?'↵':''}</span></div>`).join('') || '<div class="item muted">no match</div>'; $('#palList')._items = items; }
+function openPal() { $('#pal').classList.add('open'); $('#palq').value=''; palSel=0; renderPal(); setTimeout(()=>$('#palq').focus(), 30); }
+function closePal() { $('#pal').classList.remove('open'); }
+async function palRun(it) { closePal(); if (!it) return; if (it.id === 'goto') { setView(['overview','inputs','commands','log'].includes(it.a) ? it.a : 'asset:'+it.a); return; } await runCommand(it.id, it.a); }
+$('#btnPal').onclick = openPal; $('#palq').addEventListener('input', () => { palSel=0; renderPal(); });
+$('#palq').addEventListener('keydown', ev => { const items = $('#palList')._items||[]; if (ev.key==='ArrowDown') { palSel=Math.min(items.length-1, palSel+1); renderPal(); ev.preventDefault(); } else if (ev.key==='ArrowUp') { palSel=Math.max(0, palSel-1); renderPal(); ev.preventDefault(); } else if (ev.key==='Enter') { palRun(items[palSel]); } else if (ev.key==='Escape') closePal(); });
+$('#palList').addEventListener('click', ev => { const it = ev.target.closest('.item'); if (it && it.dataset.i!=null) palRun(($('#palList')._items||[])[+it.dataset.i]); });
+$('#pal').addEventListener('click', ev => { if (ev.target.id === 'pal') closePal(); });
+document.addEventListener('keydown', ev => { if ((ev.ctrlKey||ev.metaKey) && ev.key.toLowerCase()==='k') { ev.preventDefault(); openPal(); } if (ev.key==='Escape') { closePal(); $('#ctl').classList.remove('open'); } });
+
+/* ── render ── */
+let lastView = null;
+function render(d) {
+  last = d; const A = d.assets||[];
+  const feedAge = Math.min(...A.map(a => a.poll_age ?? 1e9)); const anyErr = A.some(a => a.last_error && a.poll_age==null);
+  $('#beat').className = 'dot ' + (anyErr ? 'dead' : feedAge < 60 ? 'live' : feedAge < 300 ? 'stale' : 'dead');
+  const set = (n, cls) => { $(`.node[data-n="${n}"]`).className = 'node ' + cls; };
+  set('feed', anyErr ? 'bad' : feedAge < 60 ? 'on' : feedAge < 300 ? 'warn' : 'bad'); set('bars', A.some(a=>a.bar_index>=0) ? 'on' : 'warn'); set('strat', d.all_warm ? (d.paused?'warn':'on') : 'warn');
+  set('paper', A.some(a => a.trades_total > 0 || a.position) ? 'on' : '');
+  $('#phase').textContent = d.all_warm ? 'LIVE' : `WARMING ${A.filter(a=>a.warm).length}/${A.length}`; $('#phase').className = 'badge ' + (d.all_warm?'armed':'warm');
+  $('#armed').textContent = d.paused ? 'PAUSED · entries off' : 'ARMED'; $('#armed').className = 'badge ' + (d.paused?'paused':'armed');
+  $('#meta').textContent = `${A.length} assets · preset ${d.preset||'none'}`;
+  $('#tabs').innerHTML = tabsHtml(A);
+  const viewAsset = view.startsWith('asset:') ? A.find(a => a.symbol === view.slice(6)) : null;
+  if (view.startsWith('asset:') && !viewAsset && !solo) view = 'overview';
+  const rebuild = lastView !== view;
+  if (view === 'overview') {
+    if (rebuild) $('#view').innerHTML = overviewHtml(d, A);
+    else { const g = $('#assets'); if (g) g.innerHTML = A.map(assetCard).join(''); const h = document.createElement('div'); h.innerHTML = overviewHtml(d, A); ['heroCard','engineCard'].forEach(id => { const nu = h.querySelector('#'+id), cur = $('#'+id); if (nu && cur) cur.replaceWith(nu); }); }
+    lineChart($('#eqChart'), d.equity_series, {baseline: d.capital});
+    A.forEach(a => { const el = $(`#ch-${a.symbol}`); if (el) { const c = charts[a.symbol+80]; if (c) candles(el, c, {height:170}); } });
+    const rows = []; A.forEach(a => (tradesCache[a.symbol]||[]).forEach(t => rows.push({...t, symbol:a.symbol}))); rows.sort((x,y)=>y.exit_ts-x.exit_ts);
+    $('#trades tbody').innerHTML = rows.slice(0,80).map(t => `<tr><td><b>${t.symbol}</b></td><td><span class="tag ${t.live?'live':''}">${t.live?'LIVE':'hist'}</span></td><td class="tnum">${dtm(t.entry_ts)}</td><td>${esc(t.id)}</td><td class="tnum">${t.qty}</td><td class="tnum">${px(t.entry)}</td><td class="tnum">${dtm(t.exit_ts)}</td><td class="tnum">${px(t.exit)}</td><td>${esc(t.comment)}</td><td class="tnum ${t.profit>=0?'pos':'neg'}">${sgn$(t.profit)}</td></tr>`).join('') || '<tr><td colspan=10 class="empty">no closed trades yet</td></tr>';
+    $('#log').innerHTML = (d.log||[]).slice().reverse().map(l => `<div class="${l.level}">${tms(l.ts)} ${l.level.padEnd(5)} ${esc(l.msg)}</div>`).join('');
+    refreshFills();
+  } else if (viewAsset) {
+    if (rebuild) { $('#view').innerHTML = assetHtml(viewAsset); }
+    else { const keep = $('#dChart') ? $('#dChart').innerHTML : ''; $('#assetHead').innerHTML = assetHead(viewAsset); $('#dChart').innerHTML = keep; }
+    const c = charts[viewAsset.symbol+300]; if (c) candles($('#dChart'), c, {height:360, compact:false}); else loadChart(viewAsset.symbol, 300, $('#dChart'), {height:360, compact:false});
+    const tr = (tradesCache[viewAsset.symbol]||[]).slice().reverse();
+    $('#dTrades tbody').innerHTML = tr.map(t => `<tr><td><span class="tag ${t.live?'live':''}">${t.live?'LIVE':'hist'}</span></td><td class="tnum">${dtm(t.entry_ts)}</td><td>${esc(t.id)}</td><td class="tnum">${t.qty}</td><td class="tnum">${px(t.entry)}</td><td class="tnum">${dtm(t.exit_ts)}</td><td class="tnum">${px(t.exit)}</td><td>${esc(t.comment)}</td><td class="tnum ${t.profit>=0?'pos':'neg'}">${sgn$(t.profit)}</td></tr>`).join('') || '<tr><td colspan=9 class="empty">no closed trades yet</td></tr>';
+    const fl = ((c&&c.fills)||[]).slice().reverse();
+    $('#dFills tbody').innerHTML = fl.map(f => `<tr><td class="tnum">${dtm(f.ts)}</td><td class="side ${f.side}">${f.side}</td><td class="tnum">${f.qty}</td><td class="tnum">${px(f.price)}</td><td>${esc(f.comment)} <span class="tag ${f.live?'live':''}">${f.live?'LIVE':'hist'}</span></td><td class="tnum ${f.profit==null?'':f.profit>=0?'pos':'neg'}">${f.profit!=null?sgn$(f.profit):''}</td></tr>`).join('') || '<tr><td colspan=6 class="empty">no fills in the chart window</td></tr>';
+  } else if (view === 'inputs') { if (rebuild) { $('#view').innerHTML = inputsHtml(A); loadInputsTab(); } }
+  else if (view === 'commands') { if (rebuild) $('#view').innerHTML = commandsHtml(A); }
+  else if (view === 'log') { if (rebuild) $('#view').innerHTML = `<section class="card c12"><h2>Engine log</h2><div class="log" id="log2" style="max-height:80vh"></div></section>`; $('#log2').innerHTML = (d.log||[]).slice().reverse().map(l => `<div class="${l.level}">${tms(l.ts)} ${l.level.padEnd(5)} ${esc(l.msg)}</div>`).join(''); }
+  lastView = view; first = false;
+}
+async function refreshFills() {
+  if (!last || !$('#fills')) return; const A = last.assets||[]; const all = [];
+  for (const a of A) { const c = charts[a.symbol+80]; if (c && c.fills) c.fills.forEach(f => all.push({...f, symbol:a.symbol})); }
+  all.sort((x,y)=>y.ts-x.ts);
+  $('#fills tbody').innerHTML = all.slice(0,60).map(f => { const k = f.symbol+f.ts+f.id+f.side+f.price; const nw = !first && !seenFills.has(k); seenFills.add(k);
+    return `<tr class="${nw?'new':''}"><td class="tnum">${dtm(f.ts)}</td><td><b>${f.symbol}</b> <span class="tag ${f.live?'live':''}">${f.live?'LIVE':'hist'}</span></td><td class="side ${f.side}">${f.side}</td><td class="tnum">${f.qty}</td><td class="tnum">${px(f.price)}</td><td>${f.kind}</td><td>${esc(f.comment)}</td><td class="tnum ${f.profit==null?'':f.profit>=0?'pos':'neg'}">${f.profit!=null?sgn$(f.profit):''}</td><td class="tnum">${f.pos>0?'+':''}${f.pos}</td></tr>`; }).join('') || '<tr><td colspan=9 class="empty">no paper fills yet</td></tr>';
+  const fs = $('#fillsSub'); if (fs) fs.textContent = all.length ? `${all.length} in the chart windows` : '';
+}
+async function refresh() { try { const r = await fetch('/status/public', {cache:'no-store'}); render(await r.json()); } catch (e) { $('#beat').className = 'dot dead'; $('#armed').textContent = 'ENGINE UNREACHABLE'; $('#armed').className = 'badge paused'; } }
+async function refreshCharts() { if (!last) return; if (view === 'overview') { for (const a of (last.assets||[])) await loadChart(a.symbol, 80, $(`#ch-${a.symbol}`), {height:170}); refreshFills(); } if (view.startsWith('asset:')) await loadChart(view.slice(6), 300, $('#dChart'), {height:360, compact:false}); }
+async function refreshTrades(only) { if (!last) return; for (const a of (last.assets||[])) { if (only && a.symbol !== only) continue; try { const r = await fetch(`/api/trades/${a.symbol}?limit=80`); tradesCache[a.symbol] = await r.json(); } catch(e) {} } }
+(async () => { [PRESETS, COMMANDS, REGISTRY] = await Promise.all([fetch('/api/presets').then(r=>r.json()).catch(()=>[]), fetch('/api/commands').then(r=>r.json()).catch(()=>[]), fetch('/api/assets').then(r=>r.json()).then(j=>j.registry).catch(()=>[])]);
+  await refresh(); await refreshCharts(); await refreshTrades(); if (last) render(last); })();
+setInterval(refresh, 3000); setInterval(refreshCharts, 8000); setInterval(()=>refreshTrades(), 20000);
+window.addEventListener('resize', () => { if (last) { lastView = null; render(last); } });
+window.addEventListener('hashchange', () => { if (!solo) { const v = location.hash.slice(1) || 'overview'; if (v !== view) { view = v; lastView = null; if (last) render(last); } } });
+</script>
+</body>
+</html>

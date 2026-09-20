@@ -1,0 +1,127 @@
+"""Run Astra's PulseStrategy through this session's permutation null.
+
+The question: does the edge in `icarus_engine/strategy/pulse.py` survive a tape
+whose sequence has been destroyed but whose bar-by-bar distribution is intact?
+
+Both engines are driven over the identical bars, and the surrogate tapes are
+built by the same `shuffle_bars` used on the Icarus engine, so the two results
+are directly comparable. `use_session` is switched off for both: the synthetic
+tape runs on a 24/7 UTC clock with no RTH, and session gating would otherwise
+reject nearly every bar for reasons unrelated to the strategy's edge.
+"""
+
+from __future__ import annotations
+
+import random
+import statistics as st
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+from icarus.backtest import shuffle_bars
+from icarus.config import AssetClass
+from icarus.data import synthetic_for
+from icarus.timeframe import resample
+from tools.metrics import analyse
+from icarus_engine.emulator import Emulator
+from icarus_engine.pine.timeframe import Bar as PulseBar
+from icarus_engine.strategy.inputs import Inputs
+from icarus_engine.strategy.pulse import PulseStrategy
+from tools.htf_context import ContextProvider
+
+# Neutral higher/lower-timeframe context. Held constant so that every run --
+# observed and surrogate alike -- sees the same external bias, which is what
+# makes the comparison fair. A real run feeds these from actual HTF series.
+HTF_NEUTRAL = [(0.0, 0.5)] * 5
+LTF_NEUTRAL = [(0.0, 10.0, 0.5)] * 2
+
+
+def to_pulse_bars(bars) -> list[PulseBar]:
+    return [PulseBar(int(b.ts.timestamp()), b.open, b.high, b.low, b.close, b.volume)
+            for b in bars]
+
+
+def run_pulse(bars, *, tf_minutes: int, mintick: float = 0.25,
+              point_value: float = 2.0, capital: float = 100_000.0,
+              tpsl_mode: str = "ATR-Based", context: ContextProvider | None = None,
+              **overrides) -> dict:
+    """Drive PulseStrategy over a tape and summarise the closed trades."""
+    # "Fixed Points" carries NQ-sized distances (15/30/45 pts). On a 20m MNQ tape
+    # a 45-point stop sits INSIDE one bar's range, which produces same-bar exits
+    # and tests the sizing, not the strategy. ATR-based scales to the instrument,
+    # which is the only way this is a fair read on the signal itself.
+    inp = Inputs(use_session=False, use_entry_window=False, use_eod_flat=False,
+                 use_session_bias=False, use_hour_breach=False, midday_mode="Off",
+                 tpsl_mode=tpsl_mode, point_value=point_value, **overrides)
+    em = Emulator(capital, 0.37, mintick, point_value)
+    strat = PulseStrategy(inp, em, mintick=mintick, tf_minutes=tf_minutes)
+
+    for index, bar in enumerate(to_pulse_bars(bars)):
+        em.process_bar(bar, index)
+        if context is None:
+            htf, ltf = HTF_NEUTRAL, LTF_NEUTRAL
+        else:
+            htf, ltf = context.at(bar.ts)
+        strat.on_bar(bar, index, htf, ltf)
+
+    closed = list(em.closed)
+    if not closed:
+        return {"trades": 0, "net": 0.0, "expectancy": 0.0, "win_rate": 0.0}
+
+    span_days = max((bars[-1].ts - bars[0].ts).total_seconds() / 86400.0, 1e-9)
+    return analyse(closed, span_days=span_days).as_dict()
+
+
+def permutation_null(bars, *, runs: int, tf_minutes: int, seed: int = 3,
+                     context_source=None, chart_tf: str | None = None, **kw) -> dict:
+    """Surrogates get context rebuilt FROM THE SURROGATE, never from the real tape.
+
+    Reusing the observed tape's HTF series on a shuffled tape would leak the
+    real sequence back in through the context and hand the null an advantage
+    the strategy never had.
+    """
+    ctx = None
+    if context_source is not None and chart_tf:
+        ctx = ContextProvider(context_source, chart_tf)
+    observed = run_pulse(bars, tf_minutes=tf_minutes, context=ctx, **kw)
+    rng = random.Random(seed)
+    beats, nulls = 0, []
+    for _ in range(runs):
+        surrogate = shuffle_bars(bars, rng)
+        sctx = ContextProvider(surrogate, chart_tf) if chart_tf and context_source else None
+        res = run_pulse(surrogate, tf_minutes=tf_minutes, context=sctx, **kw)
+        nulls.append(res["net"])
+        if res["net"] >= observed["net"]:
+            beats += 1
+    return {
+        "observed": observed,
+        "p_value": (beats + 1) / (runs + 1),
+        "null_median_net": st.median(nulls) if nulls else 0.0,
+        "null_best_net": max(nulls) if nulls else 0.0,
+        "runs": runs,
+    }
+
+
+if __name__ == "__main__":
+    n = int(sys.argv[1]) if len(sys.argv) > 1 else 12000
+    runs = int(sys.argv[2]) if len(sys.argv) > 2 else 20
+    tf = sys.argv[3] if len(sys.argv) > 3 else "20m"
+    minutes = int(tf.rstrip("m"))
+
+    src = synthetic_for(AssetClass.MICRO_FUTURES, n, seed=11, minutes=2)
+    tape = resample(src, tf)
+    print(f"pulse.py on {len(tape)} x {tf} MNQ bars, {runs} shuffled surrogates\n")
+
+    mode = sys.argv[4] if len(sys.argv) > 4 else "ATR-Based"
+    print(f"TP/SL mode: {mode}\n")
+    out = permutation_null(tape, runs=runs, tf_minutes=minutes, tpsl_mode=mode)
+    o = out["observed"]
+    print(f"OBSERVED   trades {o['trades']:4d}  net ${o['net']:+12,.0f}  "
+          f"per-trade ${o['expectancy']:+9,.0f}  win {o['win_rate']:5.1f}%  "
+          f"hold {o.get('mean_hold',0):.1f} bars")
+    print(f"           exits: {o.get('exits', {})}")
+    print(f"NULL       median ${out['null_median_net']:+12,.0f}   "
+          f"best of {out['runs']} ${out['null_best_net']:+12,.0f}")
+    print(f"\np = {out['p_value']:.4f}   "
+          f"{'SURVIVES the null' if out['p_value'] <= 0.05 else 'does NOT separate from shuffled noise'}")

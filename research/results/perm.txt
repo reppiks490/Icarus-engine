@@ -1,0 +1,12 @@
+MNQ 2m -- permutation null per policy
+policy     tf     n medHold sameBar%   stop%  riskATR     sumR      expR   win%     PF   MFEcap  maxDD%
+-------------------------------------------------------------------------------------------------------
+pulse      2m   195     5.0     12.8    84.6     1.11    -4.18    -0.021   42.6   0.95    -1.16   12.70
+suite      2m   182    11.5      3.3    69.8     1.90   +30.84    +0.169   45.1   1.35    -1.20   10.41
+hybrid     2m   182    12.0      4.9    83.5     1.60   +24.97    +0.137   42.9   1.22    -1.30   12.80
+
+best expectancy (>=20 trades): suite @ 2m -> +0.169R over 182 trades
+  pulse      2m  REJECT -- negative expectancy
+  suite      2m  ACCEPT -- expectancy 0.169R, p=0.038
+  hybrid     2m  ACCEPT -- expectancy 0.137R, p=0.038
+(956.1s)

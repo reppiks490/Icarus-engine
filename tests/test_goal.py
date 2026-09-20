@@ -23,7 +23,10 @@ def result(**kw):
                 hold_winners=10.0, hold_losers=6.0, hold_asymmetry=1.67,
                 hold_drift=0.05, r_per_bar=37.5,
                 overnight_rate=0.0, overnight_net_share=0.0,
-                intraday_net=60000.0, overnight_net=0.0)
+                intraday_net=60000.0, overnight_net=0.0,
+                # Bars are meaningless without the chart that produced them:
+                # 8 bars is 40 minutes at 5m and 4 hours at 30m.
+                tf_minutes=20)
     base.update(kw)
     return base
 
@@ -194,13 +197,13 @@ def test_streak_dominance_is_scored():
 # were the only reason it made money.
 
 def test_a_swing_hold_wearing_an_intraday_label_is_rejected():
-    swing = result(mean_hold=42.0, hold_p90=90.0, hold_max=160)
+    swing = result(mean_hold=42.0, hold_p90=90.0, hold_max=160)  # 14h at 20m
     assert not GOAL.clears(swing, swing)
 
 
 def test_a_bounded_mean_with_an_unbounded_tail_is_rejected():
     """The mean can sit inside the cap while the p90 is a different system."""
-    fat_tail = result(mean_hold=12.0, hold_p90=96.0, hold_max=210)
+    fat_tail = result(mean_hold=12.0, hold_p90=96.0, hold_max=210)  # mean 4h, p90 32h
     assert not GOAL.clears(fat_tail, fat_tail)
 
 
@@ -259,6 +262,26 @@ def test_shortfall_names_the_hold_criteria_it_failed():
                  overnight_net_share=356.0, hold_asymmetry=0.5,
                  same_bar_rate=20.0, r_per_bar=-1.0, hold_drift=0.9)
     gaps = " | ".join(GOAL.shortfall(bad))
-    for token in ("hold 44.0", "hold p90", "same-bar", "asymmetry",
+    for token in ("hold 44.0b/14.7h", "hold p90", "same-bar", "asymmetry",
                   "drift", "per-bar", "overnight"):
         assert token in gaps, f"shortfall never mentioned {token!r}: {gaps}"
+
+
+def test_a_result_with_no_timeframe_cannot_pass_the_hold_check():
+    """A bar count is not a duration, so an unlabelled result fails closed.
+
+    8 bars is 40 minutes on a 5m chart and four hours on a 30m chart. Without
+    the timeframe there is no way to show the envelope was met, and a criterion
+    that silently passes when its input is missing is not a criterion.
+    """
+    unlabelled = result()
+    del unlabelled["tf_minutes"]
+    assert not GOAL.clears(unlabelled, unlabelled)
+    assert any("tf_minutes" in g for g in GOAL.shortfall(unlabelled))
+
+
+def test_the_same_bar_count_passes_on_one_chart_and_fails_on_another():
+    """The whole point of the envelope, stated as a test."""
+    thirty_bars = result(mean_hold=30.0, hold_p90=40.0, hold_max=48)
+    assert GOAL.clears({**thirty_bars, "tf_minutes": 5}, thirty_bars)      # 2.5h
+    assert not GOAL.clears({**thirty_bars, "tf_minutes": 20}, thirty_bars)  # 10h

@@ -64,6 +64,57 @@ class Position:
         return min((leg.drawdown for leg in self.legs), default=0.0)
 
 
+@dataclass(slots=True)
+class _IcarusLeg:
+    """`icarus.execution.Trade` wearing the shape `assemble` expects.
+
+    The two engines log closed trades differently: Astra's emulator mirrors
+    Pine and records bar indices plus currency excursions, while `icarus/`
+    records timestamps and excursions in R. Rather than fork the metrics, the
+    narrower record is widened here -- bar indices come from the tape's own
+    ordering, and R is converted to currency through the trade's own realised
+    R-per-dollar so MFE capture stays a pure ratio.
+    """
+
+    direction: int
+    entry_bar: int
+    exit_bar: int
+    entry_ts: float
+    exit_ts: float
+    profit: float
+    runup: float
+    drawdown: float
+    exit_comment: str
+
+
+def from_icarus(trades, bars) -> list:
+    """Adapt `icarus/` trades onto the leg interface `assemble` consumes."""
+    index_of = {bar.ts: i for i, bar in enumerate(bars)}
+    legs = []
+    for trade in trades:
+        entry_bar = index_of.get(trade.entry_ts, 0)
+        exit_bar = index_of.get(trade.exit_ts, entry_bar + max(trade.bars_held, 0))
+        # pnl / r is dollars-per-R for THIS trade; it recovers the currency
+        # scale that mfe_r and mae_r were divided by. A scratch trade (r == 0)
+        # has no scale to recover, so its excursions stay at zero rather than
+        # being invented.
+        per_r = trade.pnl / trade.r if trade.r else 0.0
+        legs.append(
+            _IcarusLeg(
+                direction=trade.direction,
+                entry_bar=entry_bar,
+                exit_bar=exit_bar,
+                entry_ts=trade.entry_ts.timestamp(),
+                exit_ts=trade.exit_ts.timestamp(),
+                profit=trade.pnl,
+                runup=trade.mfe_r * per_r,
+                drawdown=trade.mae_r * per_r,
+                exit_comment=trade.reason_out,
+            )
+        )
+    return legs
+
+
 def assemble(closed) -> list[Position]:
     """Group closed legs into positions, keyed on the bar the entry filled."""
     grouped: dict[int, Position] = {}

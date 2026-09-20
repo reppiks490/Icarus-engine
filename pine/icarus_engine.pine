@@ -58,6 +58,37 @@ wLocation    = input.float(0.70, "Weight: location",      group = gScore, minval
 wMomentum    = input.float(0.45, "Weight: momentum",      group = gScore, minval = 0)
 minScore     = input.float(0.58, "Minimum score",         group = gScore, minval = 0, maxval = 1)
 
+gExit    = "Exit policy"
+exitPolicy   = input.string("hybrid", "Exit policy", options = ["pulse", "suite", "hybrid"],
+     group = gExit, tooltip = "pulse = v1.0 raid-extreme stop with fixed R targets. suite = ICARUS PROTO SUITE 01 geometry. hybrid = raid-extreme premise, ATR-floored stop, Kalman trail, structural endurance target.")
+minStopAtr   = input.float(1.6,  "Min stop (xATR)",  group = gExit, minval = 0.0,
+     tooltip = "The noise floor. A stop nearer than this sits inside one bar's expected range and the trade is a coin flip on its own entry bar.")
+maxStopAtr   = input.float(4.0,  "Max stop (xATR)",  group = gExit, minval = 0.5)
+suiteSlAtr   = input.float(4.5,  "Suite SL (xATR)",  group = gExit, minval = 0.5)
+suiteTp1Atr  = input.float(3.0,  "Suite TP1 (xATR)", group = gExit, minval = 0.1)
+useStructStop = input.bool(true, "Prefer the structural stop", group = gExit)
+structBufAtr = input.float(0.5,  "Structure SL buffer (xATR)", group = gExit, minval = 0.0)
+trailKalman  = input.bool(true,  "Trail on the Kalman estimate", group = gExit,
+     tooltip = "A trail anchored to the raw bar extreme ratchets on every noise spike and is then taken out by the next one.")
+kalTrailBuf  = input.float(0.3,  "Kalman trail buffer (xATR)", group = gExit, minval = 0.0)
+enduranceOn  = input.bool(true,  "Endurance target (opposite HTF edge)", group = gExit)
+htfRangeTf   = input.timeframe("240", "Endurance timeframe", group = gExit)
+enduranceMinR = input.float(2.0, "Endurance target min R", group = gExit, minval = 0.5)
+
+gKalman  = "Kalman / FDI"
+kfMeasBase   = input.float(0.15, "KF measurement noise (xATR)", group = gKalman, minval = 0.01)
+kfFdiGain    = input.float(0.35, "KF measurement noise FDI gain", group = gKalman, minval = 0.0)
+kfProcBase   = input.float(0.05, "KF process noise base", group = gKalman, minval = 0.001)
+fdiLen       = input.int(30,     "FDI length", group = gKalman, minval = 5)
+
+gBreaker = "Circuit breakers"
+useCooldown  = input.bool(true, "Cooldown after a stop",  group = gBreaker)
+cooldownBars = input.int(15,    "Cooldown bars",          group = gBreaker, minval = 0)
+useDailyStop = input.bool(true, "Daily loss breaker",     group = gBreaker)
+maxDailyLoss = input.float(-5000, "Max daily loss ($)",   group = gBreaker, maxval = 0)
+ptValue      = input.float(2.0, "$ per point per contract", group = gBreaker, minval = 0.01,
+     tooltip = "MNQ = 2.0, MES = 5.0, NQ = 20.0, ES = 50.0")
+
 gRisk    = "Risk"
 riskPct      = input.float(0.50, "Risk per trade (% equity)", group = gRisk, minval = 0.01)
 stopBufAtr   = input.float(0.35, "Stop buffer beyond raid (ATR)", group = gRisk, minval = 0.0)
@@ -198,6 +229,48 @@ momentumScore(int dir) =>
     math.max(0.0, math.min(1.0, base - 0.35 * math.min(1.0, tired)))
 
 // ---------------------------------------------------------------------------
+// Fractal Dimension Index -- how space-filling the tape is. ~1.0 clean trend,
+// ~1.5 random walk, ~2.0 pure chop. It modulates the Kalman filter's trust.
+// ---------------------------------------------------------------------------
+fdiRaw() =>
+    float hh = ta.highest(high, fdiLen)
+    float ll = ta.lowest(low, fdiLen)
+    float span = hh - ll
+    float total = 0.0
+    if span > 0
+        for i = 1 to fdiLen - 1
+            float cur  = (high[fdiLen - 1 - i] + low[fdiLen - 1 - i]) / 2.0
+            float prev = (high[fdiLen - i]     + low[fdiLen - i])     / 2.0
+            float step = (cur - prev) / span
+            total += math.sqrt(step * step + math.pow(1.0 / (fdiLen - 1), 2))
+    total > 0 ? math.min(2.0, math.max(1.0,
+         1.0 + (math.log(total) + math.log(2.0)) / math.log(2.0 * (fdiLen - 1)))) : 1.5
+
+fdi  = ta.ema(fdiRaw(), 5)
+chop = math.min(1.0, math.max(0.0, fdi - 1.0))
+
+// ---------------------------------------------------------------------------
+// Scalar random-walk Kalman filter. Measurement noise rises with chop, so in a
+// range the filter trusts itself and ignores the ticks; in a trend it tracks.
+// ---------------------------------------------------------------------------
+var float kfEst = na
+var float kfVar = na
+if na(kfEst)
+    kfEst := close
+    kfVar := math.pow(atr * 0.5, 2)
+else
+    float q     = math.pow(kfProcBase * atr, 2)
+    float prior = kfVar + q
+    float r     = math.pow(math.max((kfMeasBase + kfFdiGain * chop) * atr, syminfo.mintick), 2)
+    float k     = prior / (prior + r)
+    kfEst := kfEst + k * (close - kfEst)
+    kfVar := (1.0 - k) * prior
+
+// Higher-timeframe range: where the endurance target lives.
+htfHigh = request.security(syminfo.tickerid, htfRangeTf, high[1], lookahead = barmerge.lookahead_off)
+htfLow  = request.security(syminfo.tickerid, htfRangeTf, low[1],  lookahead = barmerge.lookahead_off)
+
+// ---------------------------------------------------------------------------
 // Liquidity sweep state machine
 // ---------------------------------------------------------------------------
 // Levels watched, richest pool first. Prior-session extremes carry the most
@@ -290,31 +363,90 @@ goLong  = sweepFired and sweepDir > 0 and regimeOk and inSession and score >= mi
 goShort = sweepFired and sweepDir < 0 and regimeOk and inSession and score >= minScore and strategy.position_size == 0
 
 // ---------------------------------------------------------------------------
-// Risk envelope
+// Risk envelope -- selected by the exit policy
+// ---------------------------------------------------------------------------
+// The defect the policies exist to fix: a stop parked just beyond the raid
+// extreme sits ~1 ATR from entry, which is INSIDE a single bar's expected
+// range. Expected time-to-stop under diffusion scales with the square of the
+// barrier distance, so flooring the stop at 1.6-1.9 ATR is worth roughly an
+// order of magnitude in survival -- and survival is what lets a runner run.
 // ---------------------------------------------------------------------------
 var float entryPx   = na
 var float stopPx    = na
 var float riskUnit  = na
 var float target1   = na
-var float target2   = na
+var float target2   = na       // na means "no static target -- the trail decides"
 var int   entryBar  = na
 var bool  scaled    = false
+var int   lastStopBar = -10000
+var float dayPnL    = 0.0
 
-if goLong or goShort
-    int   dir    = goLong ? 1 : -1
+if newDay
+    dayPnL := 0.0
+
+cooledDown = not useCooldown or (bar_index - lastStopBar) >= cooldownBars
+dayOk      = not useDailyStop or dayPnL > maxDailyLoss
+
+// Structural protective level: the swing that must break for us to be wrong.
+structStopLong  = lastPL
+structStopShort = lastPH
+
+canEnter = (goLong or goShort) and cooledDown and dayOk
+
+if canEnter
+    int   dir = goLong ? 1 : -1
     float anchor = sweepExtreme
-    float stop   = anchor - dir * stopBufAtr * atr
-    float unit   = math.abs(close - stop)
-    if unit <= 0
-        unit := math.max(atr * stopBufAtr, syminfo.mintick)
-        stop := close - dir * unit
-    float qty = (strategy.equity * riskPct / 100.0) / unit
+
+    // 1. Raw stop, per policy.
+    float raw = na
+    if exitPolicy == "pulse"
+        raw := anchor - dir * stopBufAtr * atr
+    else if exitPolicy == "suite"
+        float structural = dir > 0 ? structStopLong : structStopShort
+        raw := useStructStop and not na(structural) and dir * (close - structural) > 0
+             ? structural - dir * structBufAtr * atr
+             : close - dir * suiteSlAtr * atr
+    else                                            // hybrid
+        raw := anchor - dir * stopBufAtr * atr
+        float structural = dir > 0 ? structStopLong : structStopShort
+        if useStructStop and not na(structural)
+            float candidate = structural - dir * stopBufAtr * atr
+            // Respect a swing the market has already defended, if it sits further out.
+            if dir * (raw - candidate) > 0 and dir * (close - candidate) > 0
+                raw := candidate
+
+    // 2. Clamp the distance into [min, max] ATRs. This is the whole ballgame.
+    float dist = math.abs(close - raw)
+    if exitPolicy != "pulse"
+        dist := math.max(minStopAtr * atr, math.min(dist, maxStopAtr * atr))
+    if dist <= 0
+        dist := math.max(atr * stopBufAtr, syminfo.mintick)
+
+    float stop = close - dir * dist
+    float unit = dist
+
+    // 3. First target.
+    float tp1 = exitPolicy == "pulse" ? close + dir * firstTargetR * unit
+              : exitPolicy == "suite" ? close + dir * suiteTp1Atr * atr
+              :                         close + dir * firstTargetR * unit
+
+    // 4. Runner: a fixed R multiple caps the winner at exactly the size the
+    //    stop-dominated loser side cannot pay for. Only "pulse" still does that.
+    float tp2 = na
+    if exitPolicy == "pulse"
+        tp2 := close + dir * runnerR * unit
+    else if enduranceOn
+        float edge = dir > 0 ? htfHigh : htfLow
+        if not na(edge) and dir * (edge - close) >= enduranceMinR * unit
+            tp2 := edge
+
+    float qty = (strategy.equity * riskPct / 100.0) / (unit * ptValue)
 
     entryPx  := close
     stopPx   := stop
     riskUnit := unit
-    target1  := close + dir * firstTargetR * unit
-    target2  := close + dir * runnerR * unit
+    target1  := tp1
+    target2  := tp2
     entryBar := bar_index
     scaled   := false
 
@@ -323,28 +455,43 @@ if goLong or goShort
     else
         strategy.entry("S", strategy.short, qty = qty)
 
-// Manage the live position: scale out, breakeven, ATR trail, time stop, flatten.
+// ---------------------------------------------------------------------------
+// Management: scale out, breakeven, trail, endurance, time stop, flatten
+// ---------------------------------------------------------------------------
 if strategy.position_size != 0 and not na(stopPx)
-    int dir = strategy.position_size > 0 ? 1 : -1
-    string id = dir > 0 ? "L" : "S"
+    int    dir = strategy.position_size > 0 ? 1 : -1
+    string id  = dir > 0 ? "L" : "S"
 
     bool hitFirst = dir > 0 ? high >= target1 : low <= target1
     if hitFirst and not scaled
         scaled := true
-        stopPx := entryPx                                // risk removed
+        stopPx := entryPx                                    // risk removed
 
+    // The trail rides the FILTERED price, not the bar extreme.
     if scaled and trailAtr > 0
-        float cand = dir > 0 ? high - trailAtr * atr : low + trailAtr * atr
+        float anchor = trailKalman ? kfEst : (dir > 0 ? high : low)
+        float buffer = trailKalman ? kalTrailBuf * atr : 0.0
+        float cand   = anchor - dir * (trailAtr * atr + buffer)
         stopPx := dir > 0 ? math.max(stopPx, cand) : math.min(stopPx, cand)
 
     if scaleOutPct > 0 and not scaled
         strategy.exit("T1", from_entry = id, qty_percent = scaleOutPct, limit = target1, stop = stopPx)
-    strategy.exit("T2", from_entry = id, limit = target2, stop = stopPx)
+    if na(target2)
+        strategy.exit("TRAIL", from_entry = id, stop = stopPx)
+    else
+        strategy.exit("T2", from_entry = id, limit = target2, stop = stopPx)
 
     bool timedOut = bar_index - entryBar >= timeStopBars and dir * (close - entryPx) < 0.5 * riskUnit
     bool mustFlat = flatAtEnd and sessionEnd
     if timedOut or mustFlat
         strategy.close_all(comment = timedOut ? "time-stop" : "session-flatten")
+
+// Circuit-breaker bookkeeping.
+if strategy.position_size == 0 and strategy.position_size[1] != 0
+    float closedPnL = strategy.netprofit - strategy.netprofit[1]
+    dayPnL := dayPnL + closedPnL
+    if closedPnL < 0
+        lastStopBar := bar_index
 
 // ---------------------------------------------------------------------------
 // Visuals
@@ -360,6 +507,11 @@ bgcolor(regimeOk and inSession ? na : color.new(color.gray, 92), title = "Stand-
 
 plot(strategy.position_size != 0 ? stopPx : na, "Stop", color = color.new(color.fuchsia, 0),
      style = plot.style_linebr)
+plot(trailKalman ? kfEst : na, "Kalman", color = color.new(color.aqua, 35))
+plot(strategy.position_size != 0 and not na(target2) ? target2 : na, "Endurance target",
+     color = color.new(color.yellow, 20), style = plot.style_linebr)
+plot(enduranceOn ? htfHigh : na, "HTF high", color = color.new(color.teal, 70), style = plot.style_linebr)
+plot(enduranceOn ? htfLow  : na, "HTF low",  color = color.new(color.teal, 70), style = plot.style_linebr)
 
 alertcondition(goLong,  "Icarus long",  "Icarus: long sweep reclaim confirmed")
 alertcondition(goShort, "Icarus short", "Icarus: short sweep reclaim confirmed")

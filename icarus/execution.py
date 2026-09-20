@@ -48,7 +48,7 @@ class Position:
     stop: float
     risk_unit: float                     # price distance of 1R at entry -- never re-based
     first_target: float
-    runner_target: float
+    runner_target: float | None
     initial_size: float
     score: float = 0.0
     reason: str = ""

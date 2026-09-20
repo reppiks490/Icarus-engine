@@ -28,8 +28,14 @@ from icarus.features.orderflow import OrderFlowEngine
 from icarus.features.sentiment import SentimentOverlay
 from icarus.features.structure import MarketStructure
 from icarus.features.volatility import VolatilityEngine
+from icarus.filters import AdaptiveKalman, FractalDimensionIndex
+from icarus.exits import (
+    ActionKind, ExitContext, ExitPolicy, HTFRange, ManageAction, make_policy,
+)
+from icarus.timeframe import at_timeframe, htf_bars
 from icarus.indicators import RSI, SessionVWAP
-from icarus.risk import RiskManager, build_risk_envelope
+from icarus.ml import MLGate
+from icarus.risk import RiskManager
 from icarus.signal import ConfluenceEngine, Signal
 
 try:                                    # tz database is present on any sane host
@@ -74,8 +80,20 @@ class IcarusEngine:
         starting_equity: float = 100_000.0,
         sentiment: SentimentOverlay | None = None,
         on_trade: Callable[[Trade], None] | None = None,
+        exit_policy: str | ExitPolicy | None = None,
+        ml: MLGate | None = None,
+        timeframe: str | int | None = None,
+        htf: str | int = "4h",
     ) -> None:
-        self.profile = profile if isinstance(profile, Profile) else profile_for(profile)
+        """Build the engine.
+
+        ``exit_policy`` overrides the profile's choice (``pulse`` | ``suite`` |
+        ``hybrid``). ``timeframe`` rescales every bar-count parameter onto a
+        different chart size. ``htf`` sets the higher-timeframe window whose
+        opposite edge becomes the endurance target.
+        """
+        base = profile if isinstance(profile, Profile) else profile_for(profile)
+        self.profile = at_timeframe(base, timeframe) if timeframe is not None else base
         profile_ = self.profile
 
         self.volatility = VolatilityEngine(
@@ -99,13 +117,27 @@ class IcarusEngine:
         self.vwap = SessionVWAP()
         self.rsi = RSI(14)
         self.sentiment = sentiment or SentimentOverlay()
+        # Inert unless a model is attached AND the profile gives `ml` weight.
+        self.ml = ml if ml is not None else MLGate()
         self.confluence = ConfluenceEngine(profile_.weights, min_score=profile_.min_confluence)
         self.risk = RiskManager(profile_)
         self.blotter = Blotter(starting_equity=starting_equity)
 
+        # --- exit layer: policy, filters, higher-timeframe context ---------
+        if isinstance(exit_policy, ExitPolicy):
+            self.exit_policy = exit_policy
+        else:
+            self.exit_policy = make_policy(exit_policy or profile_.exit_policy)
+        self.fdi = FractalDimensionIndex(
+            length=max(10, min(60, profile_.atr_period + 5)), ema_smooth=5
+        )
+        self.kalman = AdaptiveKalman()
+        self.htf = HTFRange(htf_bars(profile_.base_timeframe_min, htf))
+
         self._tz = ZoneInfo(profile_.timezone) if ZoneInfo is not None else None
         self._pending: _PendingEntry | None = None
         self._position: Position | None = None
+        self._last_flow = None          # most recent OrderFlowState, for the exit context
         self._session_key: object | None = None
         self._bar_index = -1
         self._on_trade = on_trade
@@ -182,6 +214,13 @@ class IcarusEngine:
         rsi = self.rsi.update(bar.close)
         sweep = self.liquidity.update(bar, volatility.atr)
 
+        # Filters that feed the exit layer. The Kalman estimate is what the
+        # trail rides; the raw bar extreme is what it must never ride.
+        self.fdi.update(bar.high, bar.low)
+        self.kalman.update(bar.close, volatility.atr, self.fdi.choppiness)
+        self.htf.update(bar)
+        self._last_flow = flow
+
         # 4. Manage the live position against this bar's real extremes.
         if self._position is not None:
             intents.extend(self._manage_position(bar, volatility.percentile))
@@ -194,6 +233,7 @@ class IcarusEngine:
                 ts=bar.ts, price=bar.close, sweep=sweep, volatility=volatility,
                 order_flow=flow, structure=self.structure, liquidity=self.liquidity,
                 vwap=self.vwap, sentiment=self.sentiment, rsi=rsi, session_open=session_open,
+                ml=self.ml,
             )
             if signal.actionable and not self.risk.halted and not self.risk.in_cooldown(self._bar_index):
                 self._pending = _PendingEntry(
@@ -214,81 +254,96 @@ class IcarusEngine:
         return intents
 
     # ------------------------------------------------------------------
+    # Exit context
+    # ------------------------------------------------------------------
+    def _exit_context(self, direction: int, price: float, atr: float) -> ExitContext:
+        """Snapshot everything the exit policy is allowed to see.
+
+        ``ltf_strength`` stands in for the Suite's 2m/5m signal-failure read:
+        with no second data feed in the core, order-flow pressure in the trade's
+        own direction is the honest proxy, and it is labelled as one.
+        """
+        flow = self._last_flow
+        strength = flow.pressure(direction) if flow is not None else 1.0
+        return ExitContext(
+            atr=atr,
+            atr_percentile=self.volatility.state.percentile,
+            bar_index=self._bar_index,
+            kalman=self.kalman.estimate,
+            choppiness=self.fdi.choppiness,
+            structure_stop=self.structure.protective_level(direction, price),
+            structure_target=self.structure.objective_level(direction, price),
+            htf_high=self.htf.high,
+            htf_low=self.htf.low,
+            ltf_strength=strength,
+        )
+
+    # ------------------------------------------------------------------
     # Position lifecycle
     # ------------------------------------------------------------------
     def _open_position(self, bar: Bar, pending: _PendingEntry) -> TradeIntent | None:
         """Fill the pending entry at this bar's open, after costs."""
         entry = apply_entry_cost(bar.open, pending.direction, self.profile.costs,
                                  self.volatility.state.percentile)
-        stop, risk_unit, first_target, runner_target = build_risk_envelope(
-            self.profile, pending.direction, entry, pending.stop_anchor, pending.atr
-        )
+        ctx = self._exit_context(pending.direction, entry, pending.atr)
+        envelope = self.exit_policy.build(self.profile, pending.direction, entry,
+                                          pending.stop_anchor, ctx)
+        if envelope is None:
+            return None
         # The gap through our own stop invalidates the premise before we are in it.
-        if pending.direction * (entry - stop) <= 0.0:
+        if pending.direction * (entry - envelope.stop) <= 0.0:
             return None
 
-        sizing = self.risk.size_for(self.blotter.equity, entry, stop, self._bar_index)
+        sizing = self.risk.size_for(self.blotter.equity, entry, envelope.stop,
+                                    self._bar_index, self.profile.point_value)
         if not sizing.allowed:
             return None
 
         self._position = Position(
             direction=pending.direction, size=sizing.size, entry_price=entry,
-            entry_ts=bar.ts, entry_index=self._bar_index, stop=stop, risk_unit=risk_unit,
-            first_target=first_target, runner_target=runner_target,
-            initial_size=sizing.size, score=pending.score, reason=pending.reason,
+            entry_ts=bar.ts, entry_index=self._bar_index, stop=envelope.stop,
+            risk_unit=envelope.risk_unit, first_target=envelope.first_target,
+            runner_target=envelope.runner_target,
+            initial_size=sizing.size, score=pending.score,
+            reason=f"{pending.reason} exit={envelope.reason}",
         )
         self.blotter.mark(bar.ts, -commission(sizing.size, self.profile.costs))
         return TradeIntent(IntentKind.ENTER, bar.ts, pending.direction, sizing.size,
                            entry, pending.reason, pending.score)
 
     def _manage_position(self, bar: Bar, atr_percentile: float) -> list[TradeIntent]:
-        """Stops, scale-outs, breakeven, trail, time stop, forced flatten."""
+        """Execute the exit policy's instructions for this bar.
+
+        The engine owns fills, costs and the blotter; the policy owns *when*.
+        Policies emit worst case first, so a stop that shares a bar with a
+        target is always taken as the stop.
+        """
         position = self._position
         assert position is not None
         intents: list[TradeIntent] = []
         position.track_excursion(bar.high, bar.low)
 
-        # Worst case first: if the stop and a target are both inside this bar's
-        # range, assume the stop filled. Optimistic ordering is how backtests lie.
-        if position.stop_hit(bar.high, bar.low):
-            intents.append(self._close_position(bar, position.stop, "stop"))
-            return intents
+        ctx = self._exit_context(position.direction, bar.close, self.volatility.state.atr)
+        for action in self.exit_policy.manage(position, bar, ctx, self.profile):
+            if action.kind is ActionKind.EXIT:
+                intents.append(self._close_position(bar, action.price, action.reason))
+                return intents
 
-        # Scale out at 1R and immediately remove the trade's downside.
-        if not position.scaled_out and position.target_hit(bar.high, bar.low, position.first_target):
-            scale_size = position.size * self.profile.scale_out_fraction
-            fill = apply_exit_cost(position.first_target, position.direction,
-                                   self.profile.costs, atr_percentile)
-            realised = position.direction * (fill - position.entry_price) * scale_size
-            realised -= commission(scale_size, self.profile.costs)
-            position.realised += realised
-            position.size -= scale_size
-            position.scaled_out = True
-            self.blotter.mark(bar.ts, realised)
-            intents.append(TradeIntent(IntentKind.SCALE_OUT, bar.ts, position.direction,
-                                       scale_size, fill, "first-target", position.score))
-            if self.profile.breakeven_at_r > 0.0:
-                position.stop = position.entry_price
-                position.breakeven_moved = True
-                intents.append(TradeIntent(IntentKind.MOVE_STOP, bar.ts, position.direction,
-                                           0.0, position.stop, "breakeven", position.score))
+            if action.kind is ActionKind.SCALE_OUT:
+                if position.scaled_out or action.fraction <= 0.0:
+                    continue
+                intents.append(self._scale_out(bar, action, atr_percentile))
+                if position.size <= 0.0:
+                    return intents
 
-        if position.size <= 0.0:
-            return intents
-
-        # Runner target.
-        if position.target_hit(bar.high, bar.low, position.runner_target):
-            intents.append(self._close_position(bar, position.runner_target, "runner-target"))
-            return intents
-
-        # ATR trail, armed only after the trade has paid for itself.
-        if position.scaled_out and self.profile.trail_atr_mult > 0.0:
-            trail_distance = self.profile.trail_atr_mult * self.volatility.state.atr
-            candidate = (bar.high - trail_distance) if position.direction > 0 else (bar.low + trail_distance)
-            if position.direction * (candidate - position.stop) > 0.0:
-                position.stop = candidate
-                intents.append(TradeIntent(IntentKind.MOVE_STOP, bar.ts, position.direction,
-                                           0.0, candidate, "atr-trail", position.score))
+            elif action.kind is ActionKind.MOVE_STOP:
+                # A stop may only ever move in the trade's favour.
+                if position.direction * (action.price - position.stop) > 0.0:
+                    position.stop = action.price
+                    if action.reason == "breakeven":
+                        position.breakeven_moved = True
+                    intents.append(TradeIntent(IntentKind.MOVE_STOP, bar.ts, position.direction,
+                                               0.0, action.price, action.reason, position.score))
 
         # Time stop: an idea that has not worked is an idea that was wrong.
         held = self._bar_index - position.entry_index
@@ -301,18 +356,33 @@ class IcarusEngine:
             intents.append(self._close_position(bar, bar.close, "session-flatten"))
         return intents
 
+    def _scale_out(self, bar: Bar, action: "ManageAction", atr_percentile: float) -> TradeIntent:
+        """Bank part of the position at the policy's level."""
+        position = self._position
+        assert position is not None
+        scale_size = position.size * action.fraction
+        fill = apply_exit_cost(action.price, position.direction, self.profile.costs, atr_percentile)
+        realised = position.direction * (fill - position.entry_price) * scale_size * self.profile.point_value
+        realised -= commission(scale_size, self.profile.costs)
+        position.realised += realised
+        position.size -= scale_size
+        position.scaled_out = True
+        self.blotter.mark(bar.ts, realised)
+        return TradeIntent(IntentKind.SCALE_OUT, bar.ts, position.direction, scale_size,
+                           fill, action.reason, position.score)
+
     def _close_position(self, bar: Bar, price: float, reason: str) -> TradeIntent:
         """Flatten the remaining size and book the trade."""
         position = self._position
         assert position is not None
         fill = apply_exit_cost(price, position.direction, self.profile.costs,
                                self.volatility.state.percentile)
-        realised = position.direction * (fill - position.entry_price) * position.size
+        realised = position.direction * (fill - position.entry_price) * position.size * self.profile.point_value
         realised -= commission(position.size, self.profile.costs)
         self.blotter.mark(bar.ts, realised)
 
         total = position.realised + realised
-        risk_at_entry = position.risk_unit * position.initial_size
+        risk_at_entry = position.risk_unit * position.initial_size * self.profile.point_value
         r_multiple = total / risk_at_entry if risk_at_entry > 0 else 0.0
 
         trade = Trade(

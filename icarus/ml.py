@@ -144,45 +144,61 @@ def triple_barrier(
     upper_atr: float = 2.0,
     lower_atr: float = 1.0,
     horizon: int = 24,
+    direction: int = 1,
 ) -> BarrierLabel | None:
-    """Label bar ``index`` by which barrier price reaches first.
+    """Label bar ``index`` by which barrier the trade reaches first.
 
-    This is the correct target for a trade-entry classifier: it asks 'did a
-    favourable move of ``upper_atr`` happen *before* an adverse move of
-    ``lower_atr``', which is the question the strategy actually faces. A plain
-    forward return conflates a clean winner with one that first ran the stop.
+    ``direction`` orients the barriers to the trade: ``upper_atr`` is always the
+    FAVOURABLE excursion and ``lower_atr`` always the ADVERSE one, whichever way
+    the setup is pointing. Getting this wrong is not cosmetic -- with fixed
+    price-space barriers a short "wins" on a 1-ATR move while a long needs 2
+    ATR, which manufactures a spurious correlation between every
+    direction-linked feature and the label. It briefly produced a +0.40
+    cross-validated "edge" on ``htf_position`` here that was pure labelling
+    artefact.
+
+    ``label`` is +1 when the trade worked, -1 when it did not, 0 when neither
+    barrier was touched inside the horizon. ``mfe_atr``/``mae_atr`` are likewise
+    in the trade's own frame, so both are comparable across longs and shorts.
 
     Returns None when the horizon runs past the end of the data, so a partially
     observed outcome is never labelled as a real one.
     """
     if atr <= 0.0:
         return None
+    if direction not in (-1, 1):
+        raise ValueError("direction must be -1 or +1")
     end = index + horizon
     if end >= len(bars):
         return None
 
     entry = bars[index].close
-    upper = entry + upper_atr * atr
-    lower = entry - lower_atr * atr
+    favourable = entry + direction * upper_atr * atr
+    adverse = entry - direction * lower_atr * atr
     best = worst = 0.0
     label, hit_at = 0, horizon
 
     for step in range(1, horizon + 1):
         bar = bars[index + step]
-        best = max(best, (bar.high - entry) / atr)
-        worst = min(worst, (bar.low - entry) / atr)
+        # Excursions in the TRADE's frame: a short profits as price falls.
+        best = max(best, direction * (bar.high - entry) / atr,
+                   direction * (bar.low - entry) / atr)
+        worst = min(worst, direction * (bar.high - entry) / atr,
+                    direction * (bar.low - entry) / atr)
         # Pessimistic ordering: if a bar spans both barriers, the adverse one won.
-        if bar.low <= lower:
+        adverse_hit = bar.low <= adverse if direction > 0 else bar.high >= adverse
+        favourable_hit = bar.high >= favourable if direction > 0 else bar.low <= favourable
+        if adverse_hit:
             label, hit_at = -1, step
             break
-        if bar.high >= upper:
+        if favourable_hit:
             label, hit_at = 1, step
             break
 
     return BarrierLabel(
         label=label,
         bars_to_hit=hit_at,
-        forward_atr=(bars[end].close - entry) / atr,
+        forward_atr=direction * (bars[end].close - entry) / atr,
         mfe_atr=best,
         mae_atr=worst,
     )
@@ -300,8 +316,9 @@ def export_training_set(
         if sweeps_only and not fired:
             continue
 
+        direction = int(sweep.direction) if fired else 1
         label = triple_barrier(bars, index, engine.volatility.state.atr,
-                               upper_atr, lower_atr, horizon)
+                               upper_atr, lower_atr, horizon, direction)
         if label is None:
             continue                                   # horizon not fully observed
         row = engine_features(engine, bar, sweep if fired else None, engine.state.signal)

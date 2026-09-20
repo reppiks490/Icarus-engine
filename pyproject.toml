@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "icarus-engine"
+version = "1.0.0"
+description = "One adaptive intraday liquidity-sweep system for equities, futures, forex and crypto"
+requires-python = ">=3.11"
+dependencies = []                      # the core runs on the standard library alone
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[project.scripts]
+icarus = "icarus.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["icarus*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

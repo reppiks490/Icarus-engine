@@ -759,3 +759,48 @@ genuinely untested rather than refuted:
 The structural result in N-003 also stands untouched: large HTF moves develop
 progressively and are reachable from a lower timeframe, on held-out data. What
 is missing is direction, not geometry.
+
+---
+
+## N-005 — Cross-sectional lead-lag (NEGATIVE in aggregate; what replicates is not tradeable)
+
+The last untested price-derived idea. N-002 asked whether cross-asset features
+predict MNQ; this asks whether any market in the thirteen-market panel leads
+any other, which is a different question.
+
+The test subtracts the lagging market's OWN past return from both the predictor
+and the target before measuring. Without that, a raw cross-correlation between
+two co-moving assets is mostly contemporaneous overlap plus each one's own
+autocorrelation, and reports "leads" that are neither predictive nor tradeable.
+Every ordered pair is split at the median of its own shared timestamps, because
+the panel's coverage is heterogeneous -- QQQ and NVDA sit in 2024 while most
+markets sit in 2026, so one calendar split leaves most pairs with no early half.
+
+**Aggregate: chance.**
+
+```
+lag 15min   60/116 pairs hold sign   52%   z = +0.37
+lag 30min   65/116 pairs hold sign   56%   z = +1.30
+lag 60min   55/116 pairs hold sign   47%   z = -0.56
+```
+
+**What replicates is the same exposure in two wrappers:**
+
+```
+TLT -> IEF   +0.092 / +0.098    both Treasury ETFs
+USO -> XLE   +0.104 / +0.078    oil -> oil companies
+SLV -> GLD   +0.056 / +0.068    silver -> gold
+```
+
+These are not leads. They are one piece of information arriving at two closely
+linked instruments at slightly different speeds, which is what the residual
+control cannot remove because the instruments genuinely share an underlying.
+Magnitudes of 0.05-0.10 residual correlation do not survive costs.
+
+The only cross-complex pair to hold was TLT -> IWM (+0.059 / +0.102 at 60min),
+rates leading small caps -- economically sensible, still far too small to
+trade, and IWM is not the instrument in question.
+
+**Verdict.** No tradeable lead-lag structure in the panel. With this, every
+price-derived conditioner has been tested and none carries usable direction at
+intraday horizons.

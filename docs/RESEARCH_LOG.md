@@ -804,3 +804,45 @@ trade, and IWM is not the instrument in question.
 **Verdict.** No tradeable lead-lag structure in the panel. With this, every
 price-derived conditioner has been tested and none carries usable direction at
 intraday horizons.
+
+---
+
+## N-003 (confirmed) — the capture geometry replicates across fourteen markets
+
+N-003 was the only positive structural result left standing after seven
+negatives, and it was measured on MNQ alone. Subjected to the same
+cross-market test that killed the sweep premise:
+
+```
+4,583 large HTF bars, 14 markets, 9 asset classes, both halves each
+arrived in a single LTF print:   24   (0.5%)
+per-market range:                0.0% - 5.1%
+concentration (median):          0.15 - 0.25 in every market
+directionality (median):         0.40 - 0.72
+```
+
+Equity indices, a single stock, metals, energy, an energy sector, rates, fx,
+volatility, emerging markets and futures. Every market, both halves.
+
+This is the first result in the project that got STRONGER under replication
+rather than dissolving. The contrast with F-004 is the point: there, adding six
+markets took FDR survivors from 4 to 1 and pooled sign agreement to 46.5%.
+Here, adding thirteen markets left the effect unchanged at 0.5%.
+
+The metals are the only mild exception -- GLD and SLV run 3-5% one-print bars
+against 0-1% elsewhere, so precious metals gap slightly more. Still negligible.
+
+**What this establishes.** Large intraday moves develop progressively across
+their constituent lower-timeframe bars. They are structurally reachable from
+below, universally, not as a property of MNQ.
+
+**What it does not establish.** It is a property of price PATHS, not an edge.
+It says a move can be entered after it begins; it says nothing about which way
+the next one goes. Paired with the seven negatives, the position is precise:
+
+  the execution half of the HTF/LTF idea is sound in every market tested
+  the direction half is unsolved, and no price-derived conditioner supplies it
+
+That is a real constraint rather than a dead end. It means any directional
+input that IS found -- order flow, options positioning, something not derived
+from the price series -- lands on an execution layer already known to work.

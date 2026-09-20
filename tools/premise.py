@@ -183,25 +183,35 @@ def matched_controls(tape, sweeps: list[Sweep], horizon: int,
         return atr_deciles - 1
 
     # What conditions did the sweeps actually occur in, and in which direction?
-    wanted: dict[tuple[int, int], list[int]] = {}
+    # Direction PROPORTIONS, not the set of directions present. An earlier
+    # version used set(directions), which turned a bucket of 90 long sweeps and
+    # 10 short ones into a 50/50 control mix. In a trending market that is
+    # fatal: the sweeps carry the drift while the controls average it away, and
+    # the drift is then reported as edge. It produced +1.3 ATR "effects" in a
+    # rising ETF and -1.4 ATR in a falling one -- equal and opposite, which is
+    # the signature of measuring trend rather than structure.
+    mix: dict[tuple[int, int], list[int]] = {}
     for s in sweeps:
-        wanted.setdefault((s.minute // minute_bucket, vol_bucket(s.atr)), []).append(s.direction)
+        bucket = mix.setdefault((s.minute // minute_bucket, vol_bucket(s.atr)), [0, 0])
+        bucket[0 if s.direction > 0 else 1] += 1
 
     controls: list[float] = []
     for i in range(20, tape.n - horizon):
         if i in swept or tape.atr[i] <= 0:
             continue
-        key = (tape.minute[i] // minute_bucket, vol_bucket(tape.atr[i]))
-        directions = wanted.get(key)
-        if not directions:
+        counts = mix.get((tape.minute[i] // minute_bucket, vol_bucket(tape.atr[i])))
+        if not counts:
             continue
-        # Score the control in the same direction mix the sweeps had here, so
-        # any directional drift in the bucket cancels rather than counting as
-        # edge.
-        for direction in set(directions):
-            value = forward_return(tape, i, horizon, direction)
-            if value is not None:
-                controls.append(value)
+        longs, shorts = counts
+        total = longs + shorts
+        if not total:
+            continue
+        # A short's forward return is the negative of a long's, so the
+        # mix-weighted control is just the long-direction return scaled by the
+        # net directional lean the sweeps actually had in this bucket.
+        forward = forward_return(tape, i, horizon, +1)
+        if forward is not None:
+            controls.append(forward * (longs - shorts) / total)
     return controls
 
 

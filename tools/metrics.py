@@ -24,6 +24,7 @@ import math
 import statistics as st
 from dataclasses import asdict, dataclass, field
 from collections import Counter, defaultdict
+from datetime import date, datetime, timedelta, timezone
 
 
 # ---------------------------------------------------------------------------
@@ -54,6 +55,14 @@ class Position:
     @property
     def bars_held(self) -> int:
         return max(leg.exit_bar for leg in self.legs) - self.entry_bar
+
+    @property
+    def exit_ts(self) -> float:
+        return max(leg.exit_ts for leg in self.legs)
+
+    @property
+    def leg_holds(self) -> list:
+        return [leg.exit_bar - self.entry_bar for leg in self.legs]
 
     @property
     def runup(self) -> float:
@@ -252,6 +261,45 @@ class Report:
     mae_ratio: float = 0.0          # how much heat per unit of result
     edge_ratio: float = 0.0         # mean MFE / mean |MAE|
 
+    # --- HOLD TIME --------------------------------------------------------
+    # Hold time is not one number. A 25-bar mean can be a system that rides
+    # winners and cuts losers, or one that does the reverse and survives on a
+    # handful of outliers, or one that is not intraday at all. These separate
+    # those cases, because they score very differently as a system to trade.
+    hold_p10: float = 0.0
+    hold_p25: float = 0.0
+    hold_p75: float = 0.0
+    hold_p90: float = 0.0
+    hold_max: int = 0
+    hold_std: float = 0.0
+    hold_iqr: float = 0.0
+
+    # The asymmetry that separates a trend system from a martingale: winners
+    # should be the trades allowed to run.
+    hold_winners: float = 0.0
+    hold_losers: float = 0.0
+    hold_asymmetry: float = 0.0     # mean winner hold / mean loser hold
+
+    # Where the time actually goes, by how the trade ended.
+    hold_to_tp1: float = 0.0
+    hold_to_tp2: float = 0.0
+    hold_to_stop: float = 0.0
+    runner_extra_bars: float = 0.0  # bars TP2 sits beyond TP1
+
+    # Capital velocity: an edge that takes four times as long is not the same
+    # edge, because the account can only hold one of it at a time.
+    r_per_bar: float = 0.0          # expectancy / mean hold
+    hold_drift: float = 0.0         # |first-half mean - second-half mean| / mean
+
+    # Session integrity. A position carried through the halt is not intraday,
+    # and its gap risk is not modelled by any of the numbers above.
+    overnight_rate: float = 0.0        # % of positions crossing an ET day
+    overnight_net_share: float = 0.0   # % of NET PROFIT from those positions
+    intraday_net: float = 0.0
+    overnight_net: float = 0.0
+
+    hold_buckets: dict = field(default_factory=dict)
+
     exits: dict = field(default_factory=dict)
 
     def as_dict(self) -> dict:
@@ -369,5 +417,128 @@ def analyse(closed, *, span_days: float = 0.0, block_size: int = 25) -> Report:
     report.edge_ratio = _safe_div(st.fmean(runups), st.fmean(draws)) if draws else 0.0
     report.mae_ratio = _safe_div(st.fmean(draws), abs(report.expectancy)) if report.expectancy else 0.0
 
+# --- HOLD TIME --------------------------------------------------------
+    _hold_time(report, positions, holds, closed)
+
     report.exits = dict(Counter(leg.exit_comment for leg in closed).most_common(10))
     return report
+
+
+# Eastern-time DST spans, stated rather than read from a tz database so the
+# session-crossing test gives the same answer on a machine without tzdata.
+_DST = (
+    (date(2024, 3, 10), date(2024, 11, 2)),
+    (date(2025, 3, 9), date(2025, 11, 1)),
+    (date(2026, 3, 8), date(2026, 10, 31)),
+)
+
+
+def _et_date(epoch: float):
+    """The Eastern calendar date an epoch stamp falls on."""
+    utc = datetime.fromtimestamp(epoch, timezone.utc)
+    shift = 4 if any(lo <= utc.date() <= hi for lo, hi in _DST) else 5
+    return (utc - timedelta(hours=shift)).date()
+
+
+def _quantile(sorted_values: list, q: float) -> float:
+    if not sorted_values:
+        return 0.0
+    idx = min(int(q * len(sorted_values)), len(sorted_values) - 1)
+    return float(sorted_values[idx])
+
+
+def _hold_time(report, positions, holds, closed) -> None:
+    """Every question worth asking about how long the system stays in.
+
+    Deliberately not summarised into one number. The mean alone hid that a
+    configuration reporting a 25-bar hold was carrying 28.5% of its positions
+    through the overnight halt, and that those positions were the only reason
+    it made money -- the trades that stayed intraday lost.
+    """
+    n = len(positions)
+    ordered = sorted(holds)
+    report.hold_p10 = _quantile(ordered, 0.10)
+    report.hold_p25 = _quantile(ordered, 0.25)
+    report.hold_p75 = _quantile(ordered, 0.75)
+    report.hold_p90 = _quantile(ordered, 0.90)
+    report.hold_max = int(max(holds)) if holds else 0
+    report.hold_std = st.pstdev(holds) if len(holds) > 1 else 0.0
+    report.hold_iqr = report.hold_p75 - report.hold_p25
+
+    win_holds = [p.bars_held for p in positions if p.profit > 0]
+    loss_holds = [p.bars_held for p in positions if p.profit < 0]
+    report.hold_winners = st.fmean(win_holds) if win_holds else 0.0
+    report.hold_losers = st.fmean(loss_holds) if loss_holds else 0.0
+    report.hold_asymmetry = _safe_div(report.hold_winners, report.hold_losers)
+
+    by_exit = defaultdict(list)
+    for position in positions:
+        for leg, hold in zip(position.legs, position.leg_holds):
+            by_exit[_exit_bucket(leg.exit_comment)].append(hold)
+    report.hold_to_tp1 = st.fmean(by_exit["tp1"]) if by_exit["tp1"] else 0.0
+    report.hold_to_tp2 = st.fmean(by_exit["tp2"]) if by_exit["tp2"] else 0.0
+    report.hold_to_stop = st.fmean(by_exit["stop"]) if by_exit["stop"] else 0.0
+    if report.hold_to_tp2 and report.hold_to_tp1:
+        report.runner_extra_bars = report.hold_to_tp2 - report.hold_to_tp1
+
+    report.r_per_bar = _safe_div(report.expectancy, report.mean_hold)
+
+    if n >= 4:
+        half = n // 2
+        first = st.fmean([p.bars_held for p in positions[:half]])
+        second = st.fmean([p.bars_held for p in positions[half:]])
+        report.hold_drift = _safe_div(abs(first - second), report.mean_hold)
+
+    # Session integrity, and whether the edge simply IS the overnight carry.
+    crossed = [p for p in positions if _et_date(p.entry_ts) != _et_date(p.exit_ts)]
+    stayed = [p for p in positions if _et_date(p.entry_ts) == _et_date(p.exit_ts)]
+    report.overnight_rate = _pct(len(crossed), n)
+    report.overnight_net = sum(p.profit for p in crossed)
+    report.intraday_net = sum(p.profit for p in stayed)
+    if report.net:
+        report.overnight_net_share = 100.0 * report.overnight_net / report.net
+
+    report.hold_buckets = _hold_buckets(positions)
+
+
+def _exit_bucket(comment: str) -> str:
+    text = (comment or "").upper()
+    if "TP2" in text:
+        return "tp2"
+    if "TP1" in text or "TP" in text:
+        return "tp1"
+    if "SL" in text or "STOP" in text:
+        return "stop"
+    return "other"
+
+
+_BANDS = ((0, 1), (1, 4), (4, 8), (8, 16), (16, 32), (32, 64), (64, 10 ** 9))
+
+
+def _hold_buckets(positions) -> dict:
+    """Slice performance by how long the trade was held.
+
+    This is the axis to tune on: if every band but one loses money, the system
+    has a hold regime, and a time stop that enforces it is a real input rather
+    than a curve fit. If the bands are flat, hold time is not where the edge
+    lives and a time stop only costs commission.
+    """
+    out = {}
+    for lo, hi in _BANDS:
+        members = [p for p in positions if lo <= p.bars_held < hi]
+        if not members:
+            continue
+        profits = [p.profit for p in members]
+        label = f"{lo}-{hi}" if hi < 10 ** 9 else f"{lo}+"
+        out[label] = {
+            "n": len(members),
+            "net": round(sum(profits), 2),
+            "expectancy": round(st.fmean(profits), 2),
+            "win_rate": round(_pct(sum(1 for x in profits if x > 0), len(members)), 1),
+            "share_of_net": round(_pct_f(sum(profits), sum(p.profit for p in positions)), 1),
+        }
+    return out
+
+
+def _pct_f(part: float, whole: float) -> float:
+    return 100.0 * part / whole if whole else 0.0

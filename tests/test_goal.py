@@ -13,7 +13,8 @@ def result(**kw):
                 expectancy=300.0, tp1_rate=20.0, tp2_rate=18.0, tp_gap_pp=2.0,
                 runner_legs=0, runner_win_rate=None, consistency=0.6,
                 positive_block_rate=75.0, top_decile_share=40.0,
-                streak_vs_random=1.2)
+                streak_vs_random=1.2, streak_ratio=3.0, mean_run_ratio=1.8,
+                max_winning_streak=9, max_losing_streak=3)
     base.update(kw)
     return base
 
@@ -148,3 +149,29 @@ def test_runner_quality_outranks_everything_in_the_score():
     paying = result(runner_legs=90, runner_win_rate=95.0, win_rate=83.0)
     unpaid = result(runner_legs=90, runner_win_rate=50.0, win_rate=99.0)
     assert GOAL.score(paying) > GOAL.score(unpaid)
+
+
+# --- streak dominance -------------------------------------------------------
+
+def test_streaks_must_favour_wins():
+    """A system whose longest win run barely beats its longest loss run is a
+    coin flip with commission."""
+    flat = result(streak_ratio=1.1, mean_run_ratio=1.0)
+    assert not GOAL.clears(flat, flat)
+
+
+def test_a_flattering_max_streak_is_caught_by_the_mean():
+    """Max ratio passes, mean ratio does not -- one lucky run, not dominance."""
+    lucky = result(streak_ratio=4.0, mean_run_ratio=1.05)
+    assert not GOAL.clears(lucky, lucky)
+
+
+def test_genuine_streak_dominance_clears():
+    strong = result(streak_ratio=3.0, mean_run_ratio=2.2)
+    assert GOAL.clears(strong, strong)
+
+
+def test_streak_dominance_is_scored():
+    dominant = result(streak_ratio=5.0)
+    even = result(streak_ratio=1.0)
+    assert GOAL.score(dominant) > GOAL.score(even)

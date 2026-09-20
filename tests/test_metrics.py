@@ -116,3 +116,28 @@ def test_mfe_capture_shows_profit_given_back():
 def test_trades_per_day_uses_the_supplied_span():
     legs = [Leg(i, i + 1, 10.0) for i in range(0, 100, 10)]
     assert analyse(legs, span_days=10.0).trades_per_day == pytest.approx(1.0)
+
+
+# --- streak dominance -------------------------------------------------------
+
+def test_streak_ratio_compares_longest_win_run_to_longest_loss_run():
+    seq = [1] * 6 + [-1] * 2 + [1] * 5 + [-1] * 1 + [1] * 4
+    report = analyse([Leg(i * 10, i * 10 + 2, 100.0 * v) for i, v in enumerate(seq)])
+    assert report.max_winning_streak == 6
+    assert report.max_losing_streak == 2
+    assert report.streak_ratio == pytest.approx(3.0)
+
+
+def test_mean_run_ratio_catches_a_flattering_maximum():
+    """One lucky long run can inflate the max while typical runs are short."""
+    seq = [1] * 9 + [-1] + [1, -1] * 12          # one 9-run, then alternating
+    report = analyse([Leg(i * 10, i * 10 + 2, 100.0 * v) for i, v in enumerate(seq)])
+    assert report.max_winning_streak == 9
+    assert report.mean_winning_run < 3.0, "mean must expose the alternation"
+
+
+def test_a_coin_flip_series_has_no_streak_dominance():
+    seq = [1, -1] * 40
+    report = analyse([Leg(i * 10, i * 10 + 2, 100.0 * v) for i, v in enumerate(seq)])
+    assert report.streak_ratio == pytest.approx(1.0)
+    assert report.mean_run_ratio == pytest.approx(1.0)

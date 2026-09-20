@@ -96,7 +96,7 @@ def climb(timeframes, meta, *, iterations: int, width: int, workers: int,
             best = deduped[: workers * 3]
             top = best[0][1]
             log(f"  step {step+1:2d}: best win {top['win_rate']:5.1f}%  "
-                f"n={top['trades']:4d}  hold={top.get('mean_bars',0):5.1f}  "
+                f"n={top['trades']:4d}  hold={top.get('mean_hold',0):5.1f}  "
                 f"exp=${top['expectancy']:+,.0f}")
 
     return best

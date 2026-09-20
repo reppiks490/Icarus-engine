@@ -55,7 +55,7 @@ print(f"{len(qualified)} VARIANTS CLEAR THE GOAL ON HELD-OUT DATA   (target: mor
 print("=" * 104)
 for i, (v, tr, hr, _) in enumerate(qualified[:25], 1):
     print(f"#{i:02d} {v.timeframe:>4s}  HOLD win={hr['win_rate']:5.1f}%  n={hr['trades']:4d}  "
-          f"tpd={hr['trades_per_day']:4.2f}  hold={hr['mean_bars']:5.1f}b  "
+          f"tpd={hr['trades_per_day']:4.2f}  hold={hr['mean_hold']:5.1f}b  "
           f"exp=${hr['expectancy']:+8,.0f}  net=${hr['net']:+11,.0f}")
     print(f"     {'':4s}  TUNE win={tr['win_rate']:5.1f}%  n={tr['trades']:4d}  "
           f"exp=${tr['expectancy']:+8,.0f}")

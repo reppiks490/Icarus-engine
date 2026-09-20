@@ -23,6 +23,7 @@ from icarus.backtest import shuffle_bars
 from icarus.config import AssetClass
 from icarus.data import synthetic_for
 from icarus.timeframe import resample
+from tools.metrics import analyse
 from icarus_engine.emulator import Emulator
 from icarus_engine.pine.timeframe import Bar as PulseBar
 from icarus_engine.strategy.inputs import Inputs
@@ -39,28 +40,6 @@ LTF_NEUTRAL = [(0.0, 10.0, 0.5)] * 2
 def to_pulse_bars(bars) -> list[PulseBar]:
     return [PulseBar(int(b.ts.timestamp()), b.open, b.high, b.low, b.close, b.volume)
             for b in bars]
-
-
-def _tp_rates(closed) -> dict:
-    """Share of trades exiting at each take-profit leg, and the gap between them.
-
-    A system where TP1 fills far more often than TP2 is a TP1-only system
-    carrying TP2's risk for nothing -- the runner almost never pays. The two
-    legs are supposed to work together, so the gap between them is the measure
-    that matters, not either rate alone.
-    """
-    total = len(closed) or 1
-    tp1 = sum(1 for t in closed if t.exit_comment.endswith("TP1"))
-    tp2 = sum(1 for t in closed if t.exit_comment.endswith("TP2"))
-    tp1_rate = 100.0 * tp1 / total
-    tp2_rate = 100.0 * tp2 / total
-    return {
-        "tp1_rate": tp1_rate,
-        "tp2_rate": tp2_rate,
-        "tp_gap_pp": abs(tp1_rate - tp2_rate),
-        "tp1_n": tp1,
-        "tp2_n": tp2,
-    }
 
 
 def run_pulse(bars, *, tf_minutes: int, mintick: float = 0.25,
@@ -90,21 +69,8 @@ def run_pulse(bars, *, tf_minutes: int, mintick: float = 0.25,
     if not closed:
         return {"trades": 0, "net": 0.0, "expectancy": 0.0, "win_rate": 0.0}
 
-    # ClosedTrade.profit is net of commission -- Pine's strategy.closedtrades.profit
-    pnl = [float(t.profit) for t in closed]
-    wins = [p for p in pnl if p > 0]
-    from collections import Counter
-    return {
-        "trades": len(closed),
-        "net": sum(pnl),
-        "expectancy": st.fmean(pnl),
-        "win_rate": 100.0 * len(wins) / len(closed),
-        "mean_bars": st.fmean([t.bars for t in closed]),
-        "mean_runup": st.fmean([t.runup for t in closed]),
-        "mean_dd": st.fmean([t.drawdown for t in closed]),
-        "exits": dict(Counter(t.exit_comment for t in closed).most_common(8)),
-        **_tp_rates(closed),
-    }
+    span_days = max((bars[-1].ts - bars[0].ts).total_seconds() / 86400.0, 1e-9)
+    return analyse(closed, span_days=span_days).as_dict()
 
 
 def permutation_null(bars, *, runs: int, tf_minutes: int, seed: int = 3,
@@ -153,7 +119,7 @@ if __name__ == "__main__":
     o = out["observed"]
     print(f"OBSERVED   trades {o['trades']:4d}  net ${o['net']:+12,.0f}  "
           f"per-trade ${o['expectancy']:+9,.0f}  win {o['win_rate']:5.1f}%  "
-          f"hold {o.get('mean_bars',0):.1f} bars")
+          f"hold {o.get('mean_hold',0):.1f} bars")
     print(f"           exits: {o.get('exits', {})}")
     print(f"NULL       median ${out['null_median_net']:+12,.0f}   "
           f"best of {out['runs']} ${out['null_best_net']:+12,.0f}")

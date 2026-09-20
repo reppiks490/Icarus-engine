@@ -14,7 +14,16 @@ def result(**kw):
                 runner_legs=0, runner_win_rate=None, consistency=0.6,
                 positive_block_rate=75.0, top_decile_share=40.0,
                 streak_vs_random=1.2, streak_ratio=3.0, mean_run_ratio=1.8,
-                max_winning_streak=9, max_losing_streak=3)
+                max_winning_streak=9, max_losing_streak=3,
+                # Hold time is scored as hard as everything else, so a "clean"
+                # result has to describe it: a bounded tail, winners held
+                # longer than losers, a stable hold across the run, profit per
+                # bar of exposure, and a book that is actually flat overnight.
+                hold_p90=18.0, hold_max=24, same_bar_rate=1.0,
+                hold_winners=10.0, hold_losers=6.0, hold_asymmetry=1.67,
+                hold_drift=0.05, r_per_bar=37.5,
+                overnight_rate=0.0, overnight_net_share=0.0,
+                intraday_net=60000.0, overnight_net=0.0)
     base.update(kw)
     return base
 
@@ -175,3 +184,81 @@ def test_streak_dominance_is_scored():
     dominant = result(streak_ratio=5.0)
     even = result(streak_ratio=1.0)
     assert GOAL.score(dominant) > GOAL.score(even)
+
+
+# --- hold time ---------------------------------------------------------------
+# Each of these is a way a result can look good on every other number and still
+# be a system nobody should trade. They exist because real MNQ produced the
+# overnight case for real: a configuration reporting a 25.4-bar intraday hold
+# was carrying a third of its positions through the halt, and those positions
+# were the only reason it made money.
+
+def test_a_swing_hold_wearing_an_intraday_label_is_rejected():
+    swing = result(mean_hold=42.0, hold_p90=90.0, hold_max=160)
+    assert not GOAL.clears(swing, swing)
+
+
+def test_a_bounded_mean_with_an_unbounded_tail_is_rejected():
+    """The mean can sit inside the cap while the p90 is a different system."""
+    fat_tail = result(mean_hold=12.0, hold_p90=96.0, hold_max=210)
+    assert not GOAL.clears(fat_tail, fat_tail)
+
+
+def test_holding_losers_longer_than_winners_is_rejected():
+    """The asymmetry that separates riding a trend from hoping one comes back."""
+    backwards = result(hold_winners=6.0, hold_losers=11.0, hold_asymmetry=0.55)
+    assert not GOAL.clears(backwards, backwards)
+
+
+def test_same_bar_exits_are_rejected():
+    scalp = result(same_bar_rate=31.0)
+    assert not GOAL.clears(scalp, scalp)
+
+
+def test_a_hold_that_drifts_across_the_run_is_rejected():
+    drifting = result(hold_drift=0.80)
+    assert not GOAL.clears(drifting, drifting)
+
+
+def test_no_profit_per_bar_of_exposure_is_rejected():
+    stalled = result(r_per_bar=0.0)
+    assert not GOAL.clears(stalled, stalled)
+
+
+def test_positions_carried_through_the_halt_are_rejected():
+    carried = result(overnight_rate=33.9)
+    assert not GOAL.clears(carried, carried)
+
+
+def test_an_edge_that_is_only_the_overnight_carry_is_rejected():
+    """The real failure, in the shape real MNQ produced it.
+
+    A third of positions crossing the halt supplied +$51,567 while the intraday
+    book lost $37,080 -- so the carry was 356% of net and the system had no
+    intraday edge at all. Overnight rate alone would catch this one, so the
+    share is checked with the rate inside its limit to prove it stands alone.
+    """
+    carry = result(overnight_rate=4.0, overnight_net_share=356.0,
+                   intraday_net=-37079.9, overnight_net=51567.4)
+    assert not GOAL.clears(carry, carry)
+
+
+def test_an_overnight_book_that_LOST_is_not_this_failure():
+    """A negative share means the intraday book carried the system.
+
+    That is the opposite situation and must not be rejected by a check aimed at
+    an edge made of gap risk.
+    """
+    intraday_carried = result(overnight_rate=3.0, overnight_net_share=-12.0,
+                              intraday_net=67000.0, overnight_net=-7000.0)
+    assert GOAL.clears(intraday_carried, intraday_carried)
+
+
+def test_shortfall_names_the_hold_criteria_it_failed():
+    bad = result(mean_hold=44.0, hold_p90=99.0, overnight_rate=33.9,
+                 overnight_net_share=356.0, hold_asymmetry=0.5,
+                 same_bar_rate=20.0, r_per_bar=-1.0, hold_drift=0.9)
+    gaps = " | ".join(GOAL.shortfall(bad))
+    for token in ("hold 44.0", "hold p90", "same-bar", "asymmetry",
+                  "drift", "per-bar", "overnight"):
+        assert token in gaps, f"shortfall never mentioned {token!r}: {gaps}"

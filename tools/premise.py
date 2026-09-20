@@ -153,25 +153,35 @@ def forward_return(tape, i: int, horizon: int, direction: int) -> float | None:
     return direction * (tape.bars[j].close - tape.bars[i].close) / atr
 
 
-def matched_controls(tape, sweeps: list[Sweep], horizon: int,
-                     *, minute_bucket: int = 30, atr_deciles: int = 5) -> list[float]:
-    """Non-sweep bars matched on time of day and volatility regime.
+def stratified_effect(tape, sweeps: list[Sweep], horizon: int,
+                      *, minute_bucket: int = 30, atr_deciles: int = 5):
+    """Effect estimated WITHIN strata, then pooled by sweep weight.
 
-    Without this, a sweep "edge" can be entirely the fact that sweeps cluster
-    at the open, where intraday drift and volatility differ from the rest of
-    the session. The comparison has to be against what an ordinary bar in the
-    same conditions did.
+    Matching each control bar to a stratum is not enough. Comparing a pooled
+    sweep mean against a pooled control mean still compares different mixtures
+    whenever the strata hold different proportions of the two groups: if most
+    sweeps land in the opening half hour and most control bars land at midday,
+    the pooled difference is mostly the difference between morning and midday.
 
-    Matching is bucketed rather than pairwise: a pairwise scan is bars x sweeps
-    per variant, which a few-hundred-variant grid cannot afford.
+    Two earlier versions of this function missed that. Both reported IWM at
+    +1.39 ATR and SPY at -1.51 ATR over windows where one instrument rose and
+    the other fell -- equal and opposite, in the same asset class, which is the
+    signature of measuring drift rather than structure. An expected move of
+    1.4 ATR would also be the most profitable signal in finance.
+
+    So the effect is computed inside each stratum, where conditions genuinely
+    are alike, then averaged across strata weighted by how many SWEEPS each
+    contributed. Values are returned re-centred on their stratum's control
+    mean, so a t-test over the pooled lists tests the stratified quantity
+    rather than the raw mixture.
     """
     if not sweeps:
-        return []
+        return 0.0, [], []
     swept = {s.index for s in sweeps}
 
     live = [tape.atr[i] for i in range(20, tape.n - horizon) if tape.atr[i] > 0]
     if not live:
-        return []
+        return 0.0, [], []
     live.sort()
     edges = [live[min(int(k * len(live) / atr_deciles), len(live) - 1)]
              for k in range(1, atr_deciles)]
@@ -182,37 +192,54 @@ def matched_controls(tape, sweeps: list[Sweep], horizon: int,
                 return k
         return atr_deciles - 1
 
-    # What conditions did the sweeps actually occur in, and in which direction?
-    # Direction PROPORTIONS, not the set of directions present. An earlier
-    # version used set(directions), which turned a bucket of 90 long sweeps and
-    # 10 short ones into a 50/50 control mix. In a trending market that is
-    # fatal: the sweeps carry the drift while the controls average it away, and
-    # the drift is then reported as edge. It produced +1.3 ATR "effects" in a
-    # rising ETF and -1.4 ATR in a falling one -- equal and opposite, which is
-    # the signature of measuring trend rather than structure.
-    mix: dict[tuple[int, int], list[int]] = {}
-    for s in sweeps:
-        bucket = mix.setdefault((s.minute // minute_bucket, vol_bucket(s.atr)), [0, 0])
-        bucket[0 if s.direction > 0 else 1] += 1
+    def key_of(minute: int, atr: float):
+        return (minute // minute_bucket, vol_bucket(atr))
 
-    controls: list[float] = []
+    treated: dict[tuple[int, int], list[float]] = {}
+    lean: dict[tuple[int, int], list[int]] = {}
+    for s in sweeps:
+        value = forward_return(tape, s.index, horizon, s.direction)
+        if value is None:
+            continue
+        key = key_of(s.minute, s.atr)
+        treated.setdefault(key, []).append(value)
+        counts = lean.setdefault(key, [0, 0])
+        counts[0 if s.direction > 0 else 1] += 1
+
+    controls: dict[tuple[int, int], list[float]] = {}
     for i in range(20, tape.n - horizon):
         if i in swept or tape.atr[i] <= 0:
             continue
-        counts = mix.get((tape.minute[i] // minute_bucket, vol_bucket(tape.atr[i])))
+        key = key_of(tape.minute[i], tape.atr[i])
+        counts = lean.get(key)
         if not counts:
             continue
         longs, shorts = counts
         total = longs + shorts
-        if not total:
-            continue
-        # A short's forward return is the negative of a long's, so the
-        # mix-weighted control is just the long-direction return scaled by the
-        # net directional lean the sweeps actually had in this bucket.
         forward = forward_return(tape, i, horizon, +1)
-        if forward is not None:
-            controls.append(forward * (longs - shorts) / total)
-    return controls
+        if forward is not None and total:
+            # A short's forward return is the negative of a long's, so the
+            # mix-weighted control is the long return scaled by this stratum's
+            # net directional lean.
+            controls.setdefault(key, []).append(forward * (longs - shorts) / total)
+
+    effect = 0.0
+    weight = 0
+    treated_c: list[float] = []
+    control_c: list[float] = []
+    for key, values in treated.items():
+        matched = controls.get(key)
+        if not matched or len(matched) < 5:
+            continue
+        control_mean = sum(matched) / len(matched)
+        effect += (sum(values) / len(values) - control_mean) * len(values)
+        weight += len(values)
+        treated_c.extend(v - control_mean for v in values)
+        control_c.extend(v - control_mean for v in matched)
+
+    if not weight:
+        return 0.0, [], []
+    return effect / weight, treated_c, control_c
 
 
 def welch_t(a: list[float], b: list[float]) -> tuple[float, float]:

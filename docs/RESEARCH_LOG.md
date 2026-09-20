@@ -473,3 +473,82 @@ horizon: they are constant across the life of a 25-bar trade, so they have no
 variance at the decision frequency and cannot discriminate between setups.
 Dealer gamma, opex and rebalance flow, and auction imbalance are the families
 that actually move intraday index price.
+
+---
+
+## N-003 — HTF capture from the LTF (structurally confirmed, not yet profitable)
+
+**The idea, from the operator:** stop predicting at the higher timeframe. Let
+the HTF define *what* the move is and use the LTF to define *where* to enter
+and exit. This is a capture question, not a prediction question, and the two
+failure modes are unrelated -- a signal can carry no directional edge while the
+market still hands over large, reachable moves.
+
+**Structure (HTF 60m, LTF 5m, real MNQ):**
+
+| | TUNE | HOLD |
+|---|---|---|
+| directionality, big bars | 0.59 | 0.58 |
+| concentration, big bars | 0.17 | 0.17 |
+| big bars where one 5m bar carried >60% of travel | 0/1204 | 0/1139 |
+
+Large HTF moves are genuinely directional and **not one a single print** --
+zero out of 2,343 big bars across both spans arrived in one LTF bar. They
+develop progressively, so they are structurally reachable from below. This is
+the operator's hypothesis, confirmed, and it is stable on held-out data.
+
+**Volatility conditioning does not help.** MFE/MAE sits at 0.86-1.02 across
+every prior-volatility quintile on both spans. Knowing volatility will be high
+predicts a BIGGER move, but MFE and MAE scale together and the ratio is
+invariant. Volatility predicts magnitude, and magnitude is symmetric.
+
+**The blocker is entry price, and it is measurable.** With a commitment trigger
+at 0.5 ATR from the window open:
+
+```
+stop  target   target-first   stop-first
+0.50    0.50        5.1%         94.8%
+0.50    1.50        2.5%         96.8%
+1.00    1.00       45.5%         50.7%
+```
+
+Entering ON commitment buys the local extreme of the move that just printed,
+then places a tight stop beneath it. The adverse excursion arrives first 95% of
+the time. Widening the stop converges to the coin flip an efficient market
+predicts. This is not the market refusing to trend; it is the entry paying the
+worst available price.
+
+**Pullback entry moves in the right direction but does not clear zero.**
+Waiting for a retracement after commitment, with the stop behind the leg's
+origin rather than under the spike, improves monotonically with retracement
+depth -- expectancy -0.312R to -0.127R, win rate 34% to 44%, TUNE and HOLD
+agreeing throughout. Still negative. Deeper retracements and structure-based
+stops are the open thread.
+
+**Status: open, not refuted.** The geometry is confirmed; the entry price is
+not solved.
+
+---
+
+## Methodology trap 8 — a biased comparison defeats every statistical gate
+
+Two versions of the premise estimator shipped a broken control group and both
+produced cells surviving false-discovery-rate control across 1,692 tests, with
+p-values to 0.00002 and effects of 1.4 ATR.
+
+The first used `set(directions)`, collapsing a bucket of 90 long sweeps and 10
+short into a 50/50 control mix, so on a trending tape the sweeps kept the drift
+the controls averaged away. The second fixed that per bar but still POOLED both
+groups before comparing, which compares a morning-heavy treated mean against an
+all-day control mean whenever the strata hold different proportions of each.
+
+What exposed it was not statistics but shape: IWM reported +1.39 ATR and SPY
+-1.51 ATR -- equal and opposite, same asset class, over windows where one rose
+and the other fell. An expected move of 1.4 ATR would be the most profitable
+signal in finance.
+
+FDR control, matched samples and two-span agreement all assume the comparison
+is sound. None can see a biased one. Only a synthetic tape where the answer is
+known by construction can, and it needs BOTH directions: tests that drift is
+removed, and a test that a planted effect still survives -- a control that
+erases everything is as useless as one that erases nothing.

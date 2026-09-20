@@ -1,68 +1,118 @@
-"""The control group has to neutralise drift, or drift is reported as edge.
+"""The comparison itself has to be sound, or every downstream gate is decoration.
 
-This exists because it did not. An earlier `matched_controls` used
-`set(directions)`, collapsing a bucket of 90 long sweeps and 10 short ones into
-a 50/50 control mix. On a trending tape the sweeps then carried the trend while
-the controls averaged it away, and the difference -- pure drift -- came back as
-a +1.3 ATR "effect" in a rising market and -1.4 ATR in a falling one. Equal and
-opposite across two instruments is the signature of measuring trend, not
-structure, and only a positive control catches it.
+FDR control, matched samples and two-span agreement all assume the treated and
+control groups are comparable. None of them can see a biased comparison. Two
+versions of this estimator shipped a biased one, and both produced IWM at
++1.39 ATR against SPY at -1.51 ATR -- equal and opposite, same asset class,
+over windows where one instrument rose and the other fell. That is drift, and
+it survived every statistical gate in the design.
+
+Only a synthetic tape where the answer is known by construction catches it.
 """
 
 from datetime import datetime, timedelta, timezone
 
-import pytest
-
 from icarus.data import Bar
-from tools.premise import Tape, forward_return, matched_controls, Sweep
+from tools.premise import Sweep, Tape, stratified_effect
 
 
-def _trending_tape(n: int = 3000, drift: float = 0.5) -> list[Bar]:
-    """A tape with a strong, perfectly steady uptrend and no structure at all.
+def _tape(n: int, drift_for) -> list[Bar]:
+    """A tape with NO structure -- price is a pure function of the clock.
 
-    Nothing here rewards a sweep: price simply rises every bar. Any method that
-    reports an edge on this tape is reporting the drift.
+    Nothing here rewards a sweep. Any method reporting an effect is reporting
+    the drift that `drift_for` puts in.
     """
-    start = datetime(2025, 1, 6, 14, 30, tzinfo=timezone.utc)
+    start = datetime(2025, 1, 6, 9, 0, tzinfo=timezone.utc)
     bars, price = [], 20_000.0
     for i in range(n):
-        price += drift
-        bars.append(Bar(ts=start + timedelta(minutes=5 * i),
-                        open=price - drift, high=price + 1.0,
-                        low=price - drift - 1.0, close=price, volume=100.0))
+        ts = start + timedelta(minutes=5 * i)
+        price += drift_for(ts)
+        bars.append(Bar(ts=ts, open=price - 0.5, high=price + 1.0,
+                        low=price - 1.5, close=price, volume=100.0))
     return bars
 
 
-def test_controls_cancel_drift_when_sweeps_lean_one_way():
-    tape = Tape(_trending_tape())
-    # A lopsided book of sweeps, as a trending market actually produces.
-    sweeps = [Sweep(index=i, direction=+1, reference=0.0,
-                    atr=tape.atr[i], minute=tape.minute[i])
-              for i in range(100, 2000, 7)]
-    sweeps += [Sweep(index=i, direction=-1, reference=0.0,
-                     atr=tape.atr[i], minute=tape.minute[i])
-               for i in range(103, 2000, 63)]
+def _sweeps(tape: Tape, indices, direction: int) -> list[Sweep]:
+    return [Sweep(index=i, direction=direction, reference=0.0,
+                  atr=tape.atr[i], minute=tape.minute[i]) for i in indices]
 
-    horizon = 12
-    treated = [v for v in (forward_return(tape, s.index, horizon, s.direction)
-                           for s in sweeps) if v is not None]
-    controls = matched_controls(tape, sweeps, horizon)
 
+def test_a_lopsided_sweep_book_does_not_pick_up_uniform_drift():
+    """90/10 long sweeps on a steadily rising tape must net to zero.
+
+    The first broken version used set(directions), turning a 90/10 book into a
+    50/50 control mix so the sweeps kept the drift the controls averaged away.
+    """
+    tape = Tape(_tape(3000, lambda ts: 0.5))
+    sweeps = (_sweeps(tape, range(100, 2000, 7), +1)
+              + _sweeps(tape, range(103, 2000, 63), -1))
+    effect, treated, controls = stratified_effect(tape, sweeps, 12)
     assert treated and controls
-    effect = sum(treated) / len(treated) - sum(controls) / len(controls)
-    # The tape has no structure, so whatever the drift is, matched controls
-    # must remove nearly all of it. The broken version scored about +1.3 here.
-    assert abs(effect) < 0.25, (
-        f"drift leaked into the effect: {effect:+.3f} ATR on a tape with no "
-        f"structure (treated {sum(treated)/len(treated):+.3f}, "
-        f"controls {sum(controls)/len(controls):+.3f})")
+    assert abs(effect) < 0.25, f"uniform drift leaked: {effect:+.3f} ATR"
 
 
-def test_a_balanced_book_also_cancels():
-    """With no directional lean the control mix is symmetric and nets to zero."""
-    tape = Tape(_trending_tape())
-    sweeps = ([Sweep(i, +1, 0.0, tape.atr[i], tape.minute[i]) for i in range(100, 2000, 11)]
-              + [Sweep(i, -1, 0.0, tape.atr[i], tape.minute[i]) for i in range(104, 2000, 11)])
-    controls = matched_controls(tape, sweeps, 12)
-    assert controls
-    assert abs(sum(controls) / len(controls)) < 0.05
+def test_sweeps_concentrated_in_one_stratum_do_not_pick_up_its_drift():
+    """The bug matching alone cannot catch, isolated.
+
+    Here the morning rises hard and the afternoon falls hard, and the sweeps
+    sit almost entirely in the morning while control bars are spread across
+    both. Matching each control bar to a stratum is not enough -- pooling the
+    two groups afterwards still compares a morning-heavy treated mean against
+    an all-day control mean, and reports the morning's drift as edge. Only
+    comparing WITHIN strata removes it.
+    """
+    def drift(ts):
+        return 1.0 if ts.hour < 13 else -1.0
+
+    bars = _tape(4000, drift)
+    tape = Tape(bars)
+    morning = [i for i in range(60, len(bars) - 60)
+               if bars[i].ts.hour < 13 and i % 3 == 0]
+    afternoon = [i for i in range(60, len(bars) - 60)
+                 if bars[i].ts.hour >= 13 and i % 40 == 0]
+    assert len(morning) > 200 and len(afternoon) > 10
+
+    sweeps = _sweeps(tape, morning, +1) + _sweeps(tape, afternoon, +1)
+    effect, treated, controls = stratified_effect(tape, sweeps, 12)
+    assert treated and controls
+    assert abs(effect) < 0.35, (
+        f"stratum-concentration drift leaked: {effect:+.3f} ATR on a tape "
+        f"whose only structure is the time of day")
+
+
+def test_a_balanced_book_nets_to_zero():
+    tape = Tape(_tape(3000, lambda ts: 0.5))
+    sweeps = (_sweeps(tape, range(100, 2000, 11), +1)
+              + _sweeps(tape, range(104, 2000, 11), -1))
+    effect, _, _ = stratified_effect(tape, sweeps, 12)
+    assert abs(effect) < 0.05
+
+
+def test_a_real_effect_is_still_detected():
+    """The estimator must not be so conservative it erases genuine signal.
+
+    A control that removes everything is as useless as one that removes
+    nothing. The planted move is SPARSE -- spaced far wider than the horizon --
+    so it is a post-sweep excursion rather than a trend. An earlier version of
+    this test spaced the plants closer together than the horizon they were
+    measured over, which merged them into a continuous drift; the estimator
+    removed it, correctly, and the test failed for the right reason.
+    """
+    horizon, stride = 12, 40
+    plants = set(range(200, 2800, stride))
+
+    def drift(ts):
+        return 0.0
+
+    bars = _tape(3000, drift)
+    # Rebuild with an upward push only in the bars FOLLOWING each plant.
+    pushed, level = [], 0.0
+    for i, b in enumerate(bars):
+        if any(p < i <= p + horizon for p in plants):
+            level += 1.5
+        pushed.append(Bar(ts=b.ts, open=b.open + level, high=b.high + level,
+                          low=b.low + level, close=b.close + level,
+                          volume=b.volume))
+    tape = Tape(pushed)
+    effect, _, _ = stratified_effect(tape, _sweeps(tape, sorted(plants), +1), horizon)
+    assert effect > 0.30, f"a planted effect was erased: {effect:+.3f} ATR"

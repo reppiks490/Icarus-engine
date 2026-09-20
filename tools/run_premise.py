@@ -37,7 +37,7 @@ from icarus.data import load_csv
 from tools.asset_panel import ASSET_CLASS, load_panel
 from tools.duration import HOLD
 from tools.premise import (Tape, benjamini_hochberg, find_sweeps,
-                           forward_return, matched_controls, welch_t)
+                           stratified_effect, welch_t)
 
 LOOKBACKS = (10, 20, 40)
 RECLAIMS = (1, 2, 3)
@@ -60,10 +60,8 @@ def run_market(name: str, bars, tf_minutes: float) -> list[dict]:
                     if len(sweeps) < 40:
                         continue
                     for horizon in horizons:
-                        treated = [v for v in
-                                   (forward_return(tape, s.index, horizon, s.direction)
-                                    for s in sweeps) if v is not None]
-                        controls = matched_controls(tape, sweeps, horizon)
+                        effect, treated, controls = stratified_effect(
+                            tape, sweeps, horizon)
                         if len(treated) < 40 or len(controls) < 40:
                             continue
                         t, p = welch_t(treated, controls)
@@ -72,7 +70,7 @@ def run_market(name: str, bars, tf_minutes: float) -> list[dict]:
                             "span": span_name, "lookback": lookback,
                             "reclaim": reclaim, "pen": pen, "horizon": horizon,
                             "n": len(treated), "t": t, "p": p,
-                            "effect": (sum(treated) / len(treated)) - (sum(controls) / len(controls)),
+                            "effect": effect,
                         })
     return results
 

@@ -1,0 +1,1815 @@
+[
+ {
+  "name": "tp1_pts",
+  "label": "TP1 (NQ pts)",
+  "kind": "float",
+  "default": 15.0,
+  "order": 0,
+  "group": "TP / SL",
+  "minval": 1.0,
+  "step": 1.0
+ },
+ {
+  "name": "tp2_pts",
+  "label": "TP2 (NQ pts)",
+  "kind": "float",
+  "default": 30.0,
+  "order": 1,
+  "group": "TP / SL",
+  "minval": 1.0,
+  "step": 1.0
+ },
+ {
+  "name": "sl_pts",
+  "label": "SL  (NQ pts)",
+  "kind": "float",
+  "default": 45.0,
+  "order": 2,
+  "group": "TP / SL",
+  "minval": 1.0,
+  "step": 1.0
+ },
+ {
+  "name": "rate_atr_len",
+  "label": "ATR Length",
+  "kind": "int",
+  "default": 14,
+  "order": 3,
+  "group": "RATE Engine",
+  "minval": 1
+ },
+ {
+  "name": "rate_adx_len",
+  "label": "ADX Length",
+  "kind": "int",
+  "default": 14,
+  "order": 4,
+  "group": "RATE Engine",
+  "minval": 1
+ },
+ {
+  "name": "rate_adx_smooth",
+  "label": "ADX Smooth",
+  "kind": "int",
+  "default": 14,
+  "order": 5,
+  "group": "RATE Engine",
+  "minval": 1
+ },
+ {
+  "name": "rate_atr_fast",
+  "label": "ATR Fast",
+  "kind": "int",
+  "default": 5,
+  "order": 6,
+  "group": "RATE Engine",
+  "minval": 1
+ },
+ {
+  "name": "rate_atr_slow",
+  "label": "ATR Slow",
+  "kind": "int",
+  "default": 30,
+  "order": 7,
+  "group": "RATE Engine",
+  "minval": 1
+ },
+ {
+  "name": "rate_eff_len",
+  "label": "Efficiency Lookback",
+  "kind": "int",
+  "default": 30,
+  "order": 8,
+  "group": "RATE Engine",
+  "minval": 5,
+  "maxval": 80
+ },
+ {
+  "name": "rate_min_mult",
+  "label": "Min ATR Mult",
+  "kind": "float",
+  "default": 2.0,
+  "order": 9,
+  "group": "RATE Engine",
+  "minval": 0.5,
+  "step": 0.1
+ },
+ {
+  "name": "rate_max_mult",
+  "label": "Max ATR Mult",
+  "kind": "float",
+  "default": 5.0,
+  "order": 10,
+  "group": "RATE Engine",
+  "minval": 1.0,
+  "step": 0.1
+ },
+ {
+  "name": "fdi_len",
+  "label": "FDI Length",
+  "kind": "int",
+  "default": 30,
+  "order": 11,
+  "group": "FDI / Ehlers Cycle",
+  "minval": 5,
+  "maxval": 100
+ },
+ {
+  "name": "fdi_smooth",
+  "label": "FDI EMA Smooth",
+  "kind": "int",
+  "default": 5,
+  "order": 12,
+  "group": "FDI / Ehlers Cycle",
+  "minval": 1,
+  "maxval": 50
+ },
+ {
+  "name": "use_cycle",
+  "label": "Cycle Phase Modifier",
+  "kind": "bool",
+  "default": true,
+  "order": 13,
+  "group": "FDI / Ehlers Cycle"
+ },
+ {
+  "name": "cycle_smooth",
+  "label": "Cycle EMA Smooth",
+  "kind": "int",
+  "default": 5,
+  "order": 14,
+  "group": "FDI / Ehlers Cycle",
+  "minval": 1,
+  "maxval": 20
+ },
+ {
+  "name": "use_mp",
+  "label": "Market Profile Modifier",
+  "kind": "bool",
+  "default": true,
+  "order": 15,
+  "group": "Market Profile"
+ },
+ {
+  "name": "mp_atr_div",
+  "label": "Bin Size ATR Divisor",
+  "kind": "int",
+  "default": 4,
+  "order": 16,
+  "group": "Market Profile",
+  "minval": 1,
+  "maxval": 20
+ },
+ {
+  "name": "qty_contracts",
+  "label": "Contracts",
+  "kind": "int",
+  "default": 5,
+  "order": 17,
+  "group": "Position Sizing",
+  "minval": 1
+ },
+ {
+  "name": "point_value",
+  "label": "$/pt/Contract (display only)",
+  "kind": "float",
+  "default": 20.0,
+  "order": 18,
+  "group": "Position Sizing",
+  "minval": 1.0
+ },
+ {
+  "name": "use_session",
+  "label": "RTH Session Gate",
+  "kind": "bool",
+  "default": true,
+  "order": 19,
+  "group": "Session (RTH)",
+  "tooltip": "Gate entries to 9:30-16:00 ET. Exits always run."
+ },
+ {
+  "name": "sess_window",
+  "label": "Session (ET)",
+  "kind": "session",
+  "default": "0930-1600",
+  "order": 20,
+  "group": "Session (RTH)"
+ },
+ {
+  "name": "use_cooldown",
+  "label": "Cooldown After SL",
+  "kind": "bool",
+  "default": true,
+  "order": 21,
+  "group": "Filters"
+ },
+ {
+  "name": "cooldown_bars",
+  "label": "Cooldown Bars",
+  "kind": "int",
+  "default": 3,
+  "order": 22,
+  "group": "Filters",
+  "minval": 1,
+  "maxval": 20
+ },
+ {
+  "name": "use_max_loss",
+  "label": "Daily Loss Breaker",
+  "kind": "bool",
+  "default": false,
+  "order": 23,
+  "group": "Filters"
+ },
+ {
+  "name": "max_daily_loss",
+  "label": "Max Daily Loss ($)",
+  "kind": "float",
+  "default": -5000.0,
+  "order": 24,
+  "group": "Filters",
+  "step": 500.0
+ },
+ {
+  "name": "use_confluence",
+  "label": "Enable Gate",
+  "kind": "bool",
+  "default": true,
+  "order": 25,
+  "group": "Confluence Gate"
+ },
+ {
+  "name": "use_adaptive_weights",
+  "label": "Adaptive Vote Weights",
+  "kind": "bool",
+  "default": true,
+  "order": 26,
+  "group": "Confluence Gate"
+ },
+ {
+  "name": "use_adaptive_threshold",
+  "label": "Adaptive Threshold",
+  "kind": "bool",
+  "default": true,
+  "order": 27,
+  "group": "Confluence Gate"
+ },
+ {
+  "name": "conf_min_votes",
+  "label": "Manual Min Votes (override)",
+  "kind": "int",
+  "default": 5,
+  "order": 28,
+  "group": "Confluence Gate",
+  "minval": 0,
+  "maxval": 10
+ },
+ {
+  "name": "cci_len",
+  "label": "CCI Length",
+  "kind": "int",
+  "default": 10,
+  "order": 29,
+  "group": "Confluence Gate",
+  "minval": 2,
+  "maxval": 50
+ },
+ {
+  "name": "zone_piv",
+  "label": "Pivot Length",
+  "kind": "int",
+  "default": 5,
+  "order": 30,
+  "group": "Supply / Demand Zones",
+  "minval": 3,
+  "maxval": 10
+ },
+ {
+  "name": "max_zones_n",
+  "label": "Max Zones Per Side",
+  "kind": "int",
+  "default": 5,
+  "order": 31,
+  "group": "Supply / Demand Zones",
+  "minval": 2,
+  "maxval": 8
+ },
+ {
+  "name": "zone_min_reac",
+  "label": "Min Reaction ATRx",
+  "kind": "float",
+  "default": 1.5,
+  "order": 32,
+  "group": "Supply / Demand Zones",
+  "minval": 0.5,
+  "step": 0.25
+ },
+ {
+  "name": "use_struct",
+  "label": "Enable Structure Engine",
+  "kind": "bool",
+  "default": true,
+  "order": 33,
+  "group": "Structure / BOS-CHoCH"
+ },
+ {
+  "name": "struct_piv",
+  "label": "Structure Pivot Length",
+  "kind": "int",
+  "default": 3,
+  "order": 34,
+  "group": "Structure / BOS-CHoCH",
+  "minval": 2,
+  "maxval": 10
+ },
+ {
+  "name": "sweep_min_level_age",
+  "label": "Min Level Age (bars)",
+  "kind": "int",
+  "default": 4,
+  "order": 35,
+  "group": "Liquidity Sweeps",
+  "minval": 0,
+  "maxval": 30,
+  "tooltip": "The swept level must have existed at least this many bars before being swept. Filters noise where struct_piv is short and a level barely forms before immediately getting poked."
+ },
+ {
+  "name": "sweep_min_wick_atr",
+  "label": "Min Wick Size (×ATR)",
+  "kind": "float",
+  "default": 0.15,
+  "order": 36,
+  "group": "Liquidity Sweeps",
+  "minval": 0.0,
+  "step": 0.05,
+  "tooltip": "The wick beyond the level must be at least this fraction of ATR. Filters trivial tick-level pokes that aren't meaningful liquidity events."
+ },
+ {
+  "name": "use_sweep",
+  "label": "Enable Liquidity Sweep Detection",
+  "kind": "bool",
+  "default": true,
+  "order": 37,
+  "group": "Liquidity Sweeps"
+ },
+ {
+  "name": "use_ob",
+  "label": "Enable Order Blocks",
+  "kind": "bool",
+  "default": true,
+  "order": 38,
+  "group": "Order Blocks"
+ },
+ {
+  "name": "ob_disp_mult",
+  "label": "Displacement Trigger (×ATR)",
+  "kind": "float",
+  "default": 1.4,
+  "order": 39,
+  "group": "Order Blocks",
+  "minval": 0.5,
+  "step": 0.1
+ },
+ {
+  "name": "ob_max_count",
+  "label": "Max OBs Per Side",
+  "kind": "int",
+  "default": 4,
+  "order": 40,
+  "group": "Order Blocks",
+  "minval": 1,
+  "maxval": 8
+ },
+ {
+  "name": "ob_invalidate_atr",
+  "label": "Invalidation Buffer (×ATR)",
+  "kind": "float",
+  "default": 0.4,
+  "order": 41,
+  "group": "Order Blocks",
+  "minval": 0.0,
+  "step": 0.1
+ },
+ {
+  "name": "use_premdisc",
+  "label": "Enable Premium/Discount Zones",
+  "kind": "bool",
+  "default": true,
+  "order": 42,
+  "group": "Premium / Discount"
+ },
+ {
+  "name": "use_smc_enhance",
+  "label": "Enable SMC Confluence Enhancement",
+  "kind": "bool",
+  "default": true,
+  "order": 43,
+  "group": "SMC Enhancement",
+  "tooltip": "Wraps structure/sweep/OB/FVG signals into RATE Mythos as a confidence enhancer — when a strong SMC rejection cluster agrees with a RATE signal's direction, the confluence threshold gets a small discount, same mechanism as TRC. Does not gate entries; only makes qualifying trades easier to confirm."
+ },
+ {
+  "name": "smc_enhance_discount",
+  "label": "SMC Agreement Discount",
+  "kind": "float",
+  "default": 0.9,
+  "order": 44,
+  "group": "SMC Enhancement",
+  "minval": 0.5,
+  "maxval": 1.0,
+  "step": 0.02
+ },
+ {
+  "name": "smc_confirm_window",
+  "label": "SMC Confirm Window (bars)",
+  "kind": "int",
+  "default": 5,
+  "order": 45,
+  "group": "SMC Enhancement",
+  "minval": 1,
+  "maxval": 15
+ },
+ {
+  "name": "use_trailing_tp2",
+  "label": "Enable Trailing TP2 (runner replaces static TP2)",
+  "kind": "bool",
+  "default": false,
+  "order": 46,
+  "group": "Trailing TP2",
+  "tooltip": "OFF (default): TP2 stays a fixed target exactly as before, zero behavior change. ON: once TP1 fills, the remaining position trails instead of sitting at a static TP2 — targets the portion of a move that a fixed exit gives up."
+ },
+ {
+  "name": "trail_atr_mult",
+  "label": "Trail Distance (×ATR)",
+  "kind": "float",
+  "default": 2.5,
+  "order": 47,
+  "group": "Trailing TP2",
+  "minval": 0.5,
+  "step": 0.25
+ },
+ {
+  "name": "trail_kf_buffer_atr",
+  "label": "Kalman Trail Buffer (×ATR)",
+  "kind": "float",
+  "default": 0.3,
+  "order": 48,
+  "group": "Trailing TP2",
+  "minval": 0.0,
+  "step": 0.1,
+  "tooltip": "Each bar, the trail uses whichever is MORE protective: an ATR-behind-price ratchet, or a small buffer behind the Kalman filter's own smoothed level."
+ },
+ {
+  "name": "use_ltf_trail_tighten",
+  "label": "Tighten Trail on LTF Weakness",
+  "kind": "bool",
+  "default": true,
+  "order": 49,
+  "group": "Trailing TP2",
+  "tooltip": "Reuses the 2m/5m regime-strength reads already computed for LTF failure detection — when both are soft, shrinks the trail distance so a weakening runner locks in profit faster instead of giving more back."
+ },
+ {
+  "name": "ltf_weak_thresh",
+  "label": "LTF Weak Threshold",
+  "kind": "float",
+  "default": 0.35,
+  "order": 50,
+  "group": "Trailing TP2",
+  "minval": 0.0,
+  "maxval": 1.0,
+  "step": 0.05
+ },
+ {
+  "name": "ltf_tighten_mult",
+  "label": "Tighten Multiplier",
+  "kind": "float",
+  "default": 0.55,
+  "order": 51,
+  "group": "Trailing TP2",
+  "minval": 0.1,
+  "maxval": 1.0,
+  "step": 0.05
+ },
+ {
+  "name": "use_arm_window",
+  "label": "Arming Window After RATE Flip",
+  "kind": "bool",
+  "default": true,
+  "order": 52,
+  "group": "Entry Timing (v2)",
+  "tooltip": "ON: a RATE SuperTrend flip arms that direction for the next N bars — the confluence gate may confirm on ANY bar in the window, not only the flip bar itself. OFF: v1 behaviour (gate must clear on the exact flip bar). One entry per flip, never more."
+ },
+ {
+  "name": "arm_bars",
+  "label": "Arming Window (bars after flip)",
+  "kind": "int",
+  "default": 3,
+  "order": 53,
+  "group": "Entry Timing (v2)",
+  "minval": 0,
+  "maxval": 10
+ },
+ {
+  "name": "arm_max_chase_atr",
+  "label": "Max Chase From Flip Close (×ATR)",
+  "kind": "float",
+  "default": 0.75,
+  "order": 54,
+  "group": "Entry Timing (v2)",
+  "minval": 0.0,
+  "step": 0.05,
+  "tooltip": "Inside the window, refuse an entry if price has already run more than this far past the flip bar's close in the trade direction. 0 = no chase limit."
+ },
+ {
+  "name": "use_entry_window",
+  "label": "Restrict New Entries to Window",
+  "kind": "bool",
+  "default": true,
+  "order": 55,
+  "group": "Entry Timing (v2)"
+ },
+ {
+  "name": "sess_entry_window",
+  "label": "Entry Window (ET)",
+  "kind": "session",
+  "default": "0930-1530",
+  "order": 56,
+  "group": "Entry Timing (v2)",
+  "tooltip": "New RATE entries only inside this window. The RTH session gate above still governs Market Profile / cycle modifiers; this one just stops fresh risk being opened into the close."
+ },
+ {
+  "name": "use_pullback_entry",
+  "label": "Pullback Limit Entry (instead of market)",
+  "kind": "bool",
+  "default": false,
+  "order": 57,
+  "group": "Entry Timing (v2)",
+  "tooltip": "OFF (default): market entry at next bar open, exactly as v1. ON: rests a limit order N×ATR below (long) / above (short) the signal close and waits up to the bar limit for a fill. Bracket exits are attached to the limit and go live on fill. Cancelled automatically if RATE flips against it or EOD arrives."
+ },
+ {
+  "name": "pullback_atr",
+  "label": "Pullback Depth (×ATR)",
+  "kind": "float",
+  "default": 0.35,
+  "order": 58,
+  "group": "Entry Timing (v2)",
+  "minval": 0.05,
+  "step": 0.05
+ },
+ {
+  "name": "pullback_max_bars",
+  "label": "Pullback Wait (bars)",
+  "kind": "int",
+  "default": 3,
+  "order": 59,
+  "group": "Entry Timing (v2)",
+  "minval": 1,
+  "maxval": 10
+ },
+ {
+  "name": "pullback_fallback",
+  "label": "Fallback to Market if Unfilled",
+  "kind": "bool",
+  "default": true,
+  "order": 60,
+  "group": "Entry Timing (v2)",
+  "tooltip": "If the limit hasn't filled by the bar limit, enter at market instead of abandoning the signal."
+ },
+ {
+  "name": "runner_mode",
+  "label": "Runner Stop Mode (after TP1)",
+  "kind": "string",
+  "default": "Net-BE → Delayed BE",
+  "order": 61,
+  "group": "Runner Protection (v3)",
+  "options": [
+   "Net-BE → Delayed BE",
+   "Immediate BE (v2)",
+   "Net-BE only",
+   "Original SL"
+  ],
+  "tooltip": "Net-BE → Delayed BE (default, evidence-backed): after TP1 the runner's stop moves to the level where TP1's banked profit exactly offsets the runner's loss — the trade can no longer lose while the runner keeps room to breathe. True BE+offset arms only once continuation is proven (bars + extension below). Immediate BE = v2 behaviour (five independent tests show this scratches too many winners at a 0.33R arm). Net-BE only = never tighten past net break-even. Original SL = no change after TP1."
+ },
+ {
+  "name": "be_offset_pts",
+  "label": "Break-Even Offset (pts)",
+  "kind": "float",
+  "default": 1.0,
+  "order": 62,
+  "group": "Runner Protection (v3)",
+  "minval": 0.0,
+  "step": 0.25,
+  "tooltip": "Distance beyond entry for the armed break-even stop. 1.0 pt on NQ ($20) covers the $4 round-trip commission so a BE exit still books as a winner."
+ },
+ {
+  "name": "be_delay_bars",
+  "label": "Delayed BE: Min Bars After TP1",
+  "kind": "int",
+  "default": 3,
+  "order": 63,
+  "group": "Runner Protection (v3)",
+  "minval": 0,
+  "maxval": 30,
+  "tooltip": "BE cannot arm until this many bars have passed since TP1 filled (r/algotrading ES test: bar-delayed BE kept the long tail; price-triggered BE killed it)."
+ },
+ {
+  "name": "be_extend_atr",
+  "label": "Delayed BE: Min Extension Past TP1 (×ATR)",
+  "kind": "float",
+  "default": 0.5,
+  "order": 64,
+  "group": "Runner Protection (v3)",
+  "minval": 0.0,
+  "step": 0.1,
+  "tooltip": "BE also cannot arm until price has travelled this far beyond the TP1 level — the 'quite a bit of movement away' the evidence requires before protecting."
+ },
+ {
+  "name": "runner_weak_be",
+  "label": "Immediate BE When Regime Is Weak",
+  "kind": "bool",
+  "default": true,
+  "order": 65,
+  "group": "Runner Protection (v3)",
+  "tooltip": "Trading Rush (100 trades): BE hurts in strong trends but HELPS when the trend is slow/weak. If at TP1 the regime score is below the threshold, LTF health is weak, or volume-delta exhaustion opposes the position, BE arms immediately instead of waiting."
+ },
+ {
+  "name": "runner_weak_regime",
+  "label": "Weak-Regime Threshold (regime score)",
+  "kind": "float",
+  "default": 0.4,
+  "order": 66,
+  "group": "Runner Protection (v3)",
+  "minval": 0.0,
+  "maxval": 1.0,
+  "step": 0.05
+ },
+ {
+  "name": "tide_be_after_tp1",
+  "label": "TIDE: Break-Even After T1",
+  "kind": "bool",
+  "default": true,
+  "order": 67,
+  "group": "Runner Protection (v3)",
+  "tooltip": "TIDE's runner (range-fade, small size) keeps the simple BE rule."
+ },
+ {
+  "name": "size_mode",
+  "label": "Sizing Mode",
+  "kind": "string",
+  "default": "Fixed",
+  "order": 68,
+  "group": "Position Sizing (v3)",
+  "options": [
+   "Fixed",
+   "Risk-$ per trade",
+   "Vol-regime tercile"
+  ],
+  "tooltip": "Fixed = Contracts input, unchanged (default so your baseline comparison stays clean). Risk-$ = contracts sized so the initial stop risks a fixed dollar amount (Kaufman: capital ÷ dollar volatility). Vol-regime tercile = full size when ATR is in its upper tercile, 0.75× middle, 0.5× lower — an ES/NQ momentum trader reported −40% flat-regime drawdown with no loss of capture. Conviction sizing (if on) multiplies on top."
+ },
+ {
+  "name": "risk_usd_per_trade",
+  "label": "Risk-$ per Trade (Risk-$ mode)",
+  "kind": "float",
+  "default": 1500.0,
+  "order": 69,
+  "group": "Position Sizing (v3)",
+  "minval": 50.0,
+  "step": 50.0
+ },
+ {
+  "name": "vol_rank_bars",
+  "label": "Vol-Regime Lookback (bars)",
+  "kind": "int",
+  "default": 500,
+  "order": 70,
+  "group": "Position Sizing (v3)",
+  "minval": 50,
+  "maxval": 2000
+ },
+ {
+  "name": "vol_low_mult",
+  "label": "Vol-Regime: Lower-Tercile Size ×",
+  "kind": "float",
+  "default": 0.5,
+  "order": 71,
+  "group": "Position Sizing (v3)",
+  "minval": 0.1,
+  "maxval": 1.0,
+  "step": 0.05
+ },
+ {
+  "name": "vol_mid_mult",
+  "label": "Vol-Regime: Middle-Tercile Size ×",
+  "kind": "float",
+  "default": 0.75,
+  "order": 72,
+  "group": "Position Sizing (v3)",
+  "minval": 0.1,
+  "maxval": 1.0,
+  "step": 0.05
+ },
+ {
+  "name": "use_session_bias",
+  "label": "Enable Session Structure Bias",
+  "kind": "bool",
+  "default": true,
+  "order": 73,
+  "group": "Session Structure Bias (v3)",
+  "tooltip": "Day-level directional prior from NQ's own 10-year statistics: before 10:30 ET, RTH open vs the overnight (18:00–09:30) midpoint (76% predicts which overnight level breaks first); after the Initial Balance (09:30–10:30) closes, IB close vs IB midpoint (82%/77% predicts which IB extreme breaks by the close), reinforced when the IB's last extreme agrees; after 15:00, the sign of the first half-hour's return (Gao et al., JFE 2018). Applied as a soft vote modifier, never a gate."
+ },
+ {
+  "name": "sess_bias_weight",
+  "label": "Bias Weight (×avg vote weight)",
+  "kind": "float",
+  "default": 0.5,
+  "order": 74,
+  "group": "Session Structure Bias (v3)",
+  "minval": 0.0,
+  "maxval": 1.5,
+  "step": 0.1
+ },
+ {
+  "name": "use_hour_breach",
+  "label": "Enable Hour-Breach Timing Modifier",
+  "kind": "bool",
+  "default": true,
+  "order": 75,
+  "group": "Session Structure Bias (v3)",
+  "tooltip": "nqstats (17,701 events): a breach of the prior hour's range in the first 20 minutes of an hour reverts to the hour open 67–87% of the time; in the last 20 minutes only 10–33%. When the entry bar IS that breach: penalty early in the hour, bonus late."
+ },
+ {
+  "name": "hour_breach_weight",
+  "label": "Hour-Breach Weight (×avg vote weight)",
+  "kind": "float",
+  "default": 0.5,
+  "order": 76,
+  "group": "Session Structure Bias (v3)",
+  "minval": 0.0,
+  "maxval": 1.5,
+  "step": 0.1
+ },
+ {
+  "name": "midday_mode",
+  "label": "Midday Window Handling",
+  "kind": "string",
+  "default": "Penalize",
+  "order": 77,
+  "group": "Intraday Timing (v3)",
+  "options": [
+   "Off",
+   "Penalize",
+   "Block"
+  ],
+  "tooltip": "11:30–13:00 ET has the smallest MFE/MAE ratios of the session in NQ's 10-year hour stats and is the practitioner-consensus chop window. Penalize (default) subtracts 0.5×avg vote weight from both sides; Block refuses new entries. The per-hour tracker (Time-of-Day group) will confirm on your own data."
+ },
+ {
+  "name": "midday_window",
+  "label": "Midday Window (ET)",
+  "kind": "session",
+  "default": "1130-1300",
+  "order": 78,
+  "group": "Intraday Timing (v3)"
+ },
+ {
+  "name": "use_event_blackout",
+  "label": "FOMC-Day Blackout",
+  "kind": "bool",
+  "default": true,
+  "order": 79,
+  "group": "Intraday Timing (v3)",
+  "tooltip": "No new RATE entries in the window below on FOMC decision days (Lucca & Moench: post-14:00 repricing; CME: largest volume shocks of the year). Dates are an editable list — VERIFY against federalreserve.gov each year."
+ },
+ {
+  "name": "fomc_dates",
+  "label": "FOMC Decision Dates (YYYY-MM-DD, comma-separated)",
+  "kind": "string",
+  "default": "2025-01-29,2025-03-19,2025-05-07,2025-06-18,2025-07-30,2025-09-17,2025-10-29,2025-12-10,2026-01-28,2026-03-18,2026-04-29,2026-06-17,2026-07-29,2026-09-16,2026-10-28,2026-12-09",
+  "order": 80,
+  "group": "Intraday Timing (v3)"
+ },
+ {
+  "name": "fomc_window",
+  "label": "FOMC Blackout Window (ET)",
+  "kind": "session",
+  "default": "1345-1500",
+  "order": 81,
+  "group": "Intraday Timing (v3)"
+ },
+ {
+  "name": "use_hv_open_block",
+  "label": "CPI/NFP-Day Open Block",
+  "kind": "bool",
+  "default": false,
+  "order": 82,
+  "group": "Intraday Timing (v3)",
+  "tooltip": "OFF by default. When ON, no new entries in the window below on the listed dates (8:30 releases drive an unusually violent open — LSEG/CME)."
+ },
+ {
+  "name": "hv_open_dates",
+  "label": "CPI/NFP Dates (YYYY-MM-DD, comma-separated)",
+  "kind": "string",
+  "default": "",
+  "order": 83,
+  "group": "Intraday Timing (v3)"
+ },
+ {
+  "name": "hv_open_window",
+  "label": "CPI/NFP Open Block Window (ET)",
+  "kind": "session",
+  "default": "0930-1000",
+  "order": 84,
+  "group": "Intraday Timing (v3)"
+ },
+ {
+  "name": "tp1_split_pct",
+  "label": "TP1 Share of Position (%)",
+  "kind": "int",
+  "default": 50,
+  "order": 85,
+  "group": "Exit Management (v2)",
+  "minval": 10,
+  "maxval": 90,
+  "step": 5,
+  "tooltip": "Percent of contracts closed at TP1 (floored). 50% on 5 lots = 2 at TP1, 3 run — identical to v1's split."
+ },
+ {
+  "name": "use_flip_exit",
+  "label": "Exit / Reverse on Opposite RATE Flip",
+  "kind": "bool",
+  "default": true,
+  "order": 86,
+  "group": "Exit Management (v2)",
+  "tooltip": "A RATE SuperTrend flip against an open RATE position is the thesis being invalidated — close it. If the confluence gate also clears for the new direction, the position is reversed in one order."
+ },
+ {
+  "name": "use_eod_flat",
+  "label": "Flatten RATE at Session End",
+  "kind": "bool",
+  "default": true,
+  "order": 87,
+  "group": "Exit Management (v2)",
+  "tooltip": "Closes any open RATE position at the trigger time below. v1 held positions through the 16:00 close and the Globex reopen with the full stop exposed."
+ },
+ {
+  "name": "eod_flat_hhmm",
+  "label": "EOD Flat Trigger (HHMM, ET)",
+  "kind": "int",
+  "default": 1555,
+  "order": 88,
+  "group": "Exit Management (v2)",
+  "minval": 0,
+  "maxval": 2359,
+  "tooltip": "Fires on the first bar whose CLOSE time is at/after this; the market close then fills at the NEXT bar's open. 1555 on a 5m or 1m chart = flat at 15:55. On a 15m chart the 15:45 bar closes at 16:00, so use 1545 there to be flat at 15:45."
+ },
+ {
+  "name": "eod_flat_tide",
+  "label": "Also Flatten TIDE at EOD",
+  "kind": "bool",
+  "default": false,
+  "order": 89,
+  "group": "Exit Management (v2)",
+  "tooltip": "OFF: TIDE keeps its own 05-17 ET window logic untouched."
+ },
+ {
+  "name": "tpsl_mode",
+  "label": "TP/SL Calculation Mode",
+  "kind": "string",
+  "default": "Fixed Points",
+  "order": 90,
+  "group": "TP/SL Mode",
+  "options": [
+   "Fixed Points",
+   "ATR-Based",
+   "Percentage-Based",
+   "Structure-Based"
+  ],
+  "tooltip": "Fixed Points = current behavior (unchanged default). Other modes recompute TP1/TP2/SL price levels using the same TP1/TP2/SL slots."
+ },
+ {
+  "name": "tp1_atr_mult",
+  "label": "TP1 ATR Multiple",
+  "kind": "float",
+  "default": 3.0,
+  "order": 91,
+  "group": "TP/SL Mode",
+  "minval": 0.5,
+  "step": 0.25
+ },
+ {
+  "name": "tp2_atr_mult",
+  "label": "TP2 ATR Multiple",
+  "kind": "float",
+  "default": 6.0,
+  "order": 92,
+  "group": "TP/SL Mode",
+  "minval": 0.5,
+  "step": 0.25
+ },
+ {
+  "name": "sl_atr_mult",
+  "label": "SL ATR Multiple",
+  "kind": "float",
+  "default": 4.5,
+  "order": 93,
+  "group": "TP/SL Mode",
+  "minval": 0.5,
+  "step": 0.25
+ },
+ {
+  "name": "tp1_pct",
+  "label": "TP1 % of Price",
+  "kind": "float",
+  "default": 0.12,
+  "order": 94,
+  "group": "TP/SL Mode",
+  "minval": 0.01,
+  "step": 0.01
+ },
+ {
+  "name": "tp2_pct",
+  "label": "TP2 % of Price",
+  "kind": "float",
+  "default": 0.24,
+  "order": 95,
+  "group": "TP/SL Mode",
+  "minval": 0.01,
+  "step": 0.01
+ },
+ {
+  "name": "sl_pct",
+  "label": "SL % of Price",
+  "kind": "float",
+  "default": 0.18,
+  "order": 96,
+  "group": "TP/SL Mode",
+  "minval": 0.01,
+  "step": 0.01
+ },
+ {
+  "name": "struct_sl_buffer_atr",
+  "label": "Structure SL Buffer (×ATR)",
+  "kind": "float",
+  "default": 0.5,
+  "order": 97,
+  "group": "TP/SL Mode",
+  "minval": 0.0,
+  "step": 0.1
+ },
+ {
+  "name": "struct_tp2_ext_mult",
+  "label": "Structure TP2 Extension (×Range)",
+  "kind": "float",
+  "default": 1.0,
+  "order": 98,
+  "group": "TP/SL Mode",
+  "minval": 0.25,
+  "step": 0.25
+ },
+ {
+  "name": "use_kalman",
+  "label": "Enable Kalman-CFV Engine",
+  "kind": "bool",
+  "default": true,
+  "order": 99,
+  "group": "Kalman / PMA Engine"
+ },
+ {
+  "name": "kf_r_base",
+  "label": "KF Measurement Noise Base (×ATR)",
+  "kind": "float",
+  "default": 0.15,
+  "order": 100,
+  "group": "Kalman / PMA Engine",
+  "minval": 0.02,
+  "step": 0.01
+ },
+ {
+  "name": "kf_r_fdi_gain",
+  "label": "KF Measurement Noise FDI Gain",
+  "kind": "float",
+  "default": 0.35,
+  "order": 101,
+  "group": "Kalman / PMA Engine",
+  "minval": 0.0,
+  "step": 0.05
+ },
+ {
+  "name": "use_adaptive_kf_r",
+  "label": "Adaptive Measurement Noise (innovation matching)",
+  "kind": "bool",
+  "default": true,
+  "order": 102,
+  "group": "Kalman / PMA Engine",
+  "tooltip": "Estimates R from the observed variance of recent innovations rather than assuming ATR x constant — the filter self-calibrates to the instrument instead of being told."
+ },
+ {
+  "name": "kf_adapt_blend",
+  "label": "Adaptive R Blend",
+  "kind": "float",
+  "default": 0.5,
+  "order": 103,
+  "group": "Kalman / PMA Engine",
+  "minval": 0.0,
+  "maxval": 1.0,
+  "step": 0.05,
+  "tooltip": "0 = pure heuristic (old behaviour), 1 = pure empirical. Blended by default so a short burst of unusual innovations cannot destabilise the filter."
+ },
+ {
+  "name": "kf_q_base",
+  "label": "KF Process Noise Base",
+  "kind": "float",
+  "default": 0.05,
+  "order": 104,
+  "group": "Kalman / PMA Engine",
+  "minval": 0.01,
+  "step": 0.01
+ },
+ {
+  "name": "use_pma",
+  "label": "Enable MAMA + FAMA",
+  "kind": "bool",
+  "default": true,
+  "order": 105,
+  "group": "Kalman / PMA Engine"
+ },
+ {
+  "name": "mama_fast_lim",
+  "label": "MAMA Fast Limit",
+  "kind": "float",
+  "default": 0.5,
+  "order": 106,
+  "group": "Kalman / PMA Engine",
+  "minval": 0.1,
+  "maxval": 0.9,
+  "step": 0.05
+ },
+ {
+  "name": "mama_slow_lim",
+  "label": "MAMA Slow Limit",
+  "kind": "float",
+  "default": 0.05,
+  "order": 107,
+  "group": "Kalman / PMA Engine",
+  "minval": 0.01,
+  "maxval": 0.2,
+  "step": 0.01
+ },
+ {
+  "name": "shock_z_thresh",
+  "label": "Shock Z-Score Trigger",
+  "kind": "float",
+  "default": 2.5,
+  "order": 108,
+  "group": "Kalman / PMA Engine",
+  "minval": 1.0,
+  "step": 0.1
+ },
+ {
+  "name": "shock_decay_bars",
+  "label": "Shock Threshold Decay (bars)",
+  "kind": "int",
+  "default": 8,
+  "order": 109,
+  "group": "Kalman / PMA Engine",
+  "minval": 1,
+  "maxval": 50
+ },
+ {
+  "name": "shock_boost_mult",
+  "label": "Shock Threshold Boost ×",
+  "kind": "float",
+  "default": 1.35,
+  "order": 110,
+  "group": "Kalman / PMA Engine",
+  "minval": 1.0,
+  "step": 0.05
+ },
+ {
+  "name": "use_pe",
+  "label": "Enable Permutation Entropy",
+  "kind": "bool",
+  "default": true,
+  "order": 111,
+  "group": "Permutation Entropy"
+ },
+ {
+  "name": "pe_len",
+  "label": "PE Lookback (bars)",
+  "kind": "int",
+  "default": 30,
+  "order": 112,
+  "group": "Permutation Entropy",
+  "minval": 10,
+  "maxval": 100
+ },
+ {
+  "name": "use_pe_weighted",
+  "label": "Amplitude-Weighted PE",
+  "kind": "bool",
+  "default": true,
+  "order": 113,
+  "group": "Permutation Entropy",
+  "tooltip": "Classic PE is amplitude-blind: a 1-tick wiggle and a large move with the same ordinal shape score identically. Weighting by window range makes structured large moves count for more than micro-noise."
+ },
+ {
+  "name": "pe_thresh",
+  "label": "PE Ordered Threshold",
+  "kind": "float",
+  "default": 0.75,
+  "order": 114,
+  "group": "Permutation Entropy",
+  "minval": 0.3,
+  "maxval": 1.0,
+  "step": 0.01
+ },
+ {
+  "name": "pe_trc_fdi",
+  "label": "TRC FDI Upper Bound",
+  "kind": "float",
+  "default": 1.35,
+  "order": 115,
+  "group": "Permutation Entropy",
+  "minval": 1.0,
+  "maxval": 1.6,
+  "step": 0.01
+ },
+ {
+  "name": "pe_trc_hst",
+  "label": "TRC Hurst Lower Bound",
+  "kind": "float",
+  "default": 0.52,
+  "order": 116,
+  "group": "Permutation Entropy",
+  "minval": 0.3,
+  "maxval": 0.65,
+  "step": 0.01
+ },
+ {
+  "name": "use_cc",
+  "label": "Enable Cyber Cycle",
+  "kind": "bool",
+  "default": true,
+  "order": 117,
+  "group": "Kalman / PMA Engine"
+ },
+ {
+  "name": "cc_alpha_inp",
+  "label": "Cyber Cycle Alpha",
+  "kind": "float",
+  "default": 0.07,
+  "order": 118,
+  "group": "Kalman / PMA Engine",
+  "minval": 0.02,
+  "maxval": 0.25,
+  "step": 0.01
+ },
+ {
+  "name": "use_div_veto",
+  "label": "Composite Divergence Veto",
+  "kind": "bool",
+  "default": true,
+  "order": 119,
+  "group": "Permutation Entropy"
+ },
+ {
+  "name": "div_lkb",
+  "label": "Divergence Lookback (bars)",
+  "kind": "int",
+  "default": 20,
+  "order": 120,
+  "group": "Permutation Entropy",
+  "minval": 8,
+  "maxval": 50
+ },
+ {
+  "name": "div_adaptive",
+  "label": "Adaptive Lookback (uses dom period)",
+  "kind": "bool",
+  "default": true,
+  "order": 121,
+  "group": "Permutation Entropy"
+ },
+ {
+  "name": "dv_sd_mult",
+  "label": "Divergence Sensitivity (SD of own distribution)",
+  "kind": "float",
+  "default": 0.75,
+  "order": 122,
+  "group": "Permutation Entropy",
+  "minval": 0.1,
+  "maxval": 3.0,
+  "step": 0.05,
+  "tooltip": "Thresholds are now expressed in standard deviations of each metric's own recent distribution rather than hardcoded constants, so they self-scale across instruments and volatility regimes. Lower = more sensitive."
+ },
+ {
+  "name": "div_min_count",
+  "label": "Min Divergences to Veto",
+  "kind": "int",
+  "default": 2,
+  "order": 123,
+  "group": "Permutation Entropy",
+  "minval": 1,
+  "maxval": 3,
+  "tooltip": "Only 3 divergence signals exist (RATE regime, Kalman velocity, PE entropy) — 3 requires all of them to agree."
+ },
+ {
+  "name": "htf_tf_1",
+  "label": "HTF Connection 1",
+  "kind": "timeframe",
+  "default": "15",
+  "order": 124,
+  "group": "Higher Timeframe Bias (5 Connections)"
+ },
+ {
+  "name": "htf_tf_2",
+  "label": "HTF Connection 2",
+  "kind": "timeframe",
+  "default": "30",
+  "order": 125,
+  "group": "Higher Timeframe Bias (5 Connections)"
+ },
+ {
+  "name": "htf_tf_3",
+  "label": "HTF Connection 3",
+  "kind": "timeframe",
+  "default": "60",
+  "order": 126,
+  "group": "Higher Timeframe Bias (5 Connections)"
+ },
+ {
+  "name": "htf_tf_4",
+  "label": "HTF Connection 4",
+  "kind": "timeframe",
+  "default": "240",
+  "order": 127,
+  "group": "Higher Timeframe Bias (5 Connections)"
+ },
+ {
+  "name": "htf_tf_5",
+  "label": "HTF Connection 5",
+  "kind": "timeframe",
+  "default": "D",
+  "order": 128,
+  "group": "Higher Timeframe Bias (5 Connections)"
+ },
+ {
+  "name": "htf_min_bull_for_bias",
+  "label": "Min Bullish HTFs for MTF Vote",
+  "kind": "int",
+  "default": 3,
+  "order": 129,
+  "group": "Higher Timeframe Bias (5 Connections)",
+  "minval": 1,
+  "maxval": 5,
+  "tooltip": "How many of the 5 HTF connections must agree bullish (or bearish) for the MTF confluence vote to fire. Replaces the old fixed 2-of-2 ladder."
+ },
+ {
+  "name": "use_ltf_check",
+  "label": "Enable 2m/5m Signal-Failure Analysis",
+  "kind": "bool",
+  "default": true,
+  "order": 130,
+  "group": "Lower Timeframe Failure Detection",
+  "tooltip": "Reads RATE-style direction and regime strength directly from the 2-minute and 5-minute timeframes, independent of your chart timeframe."
+ },
+ {
+  "name": "ltf_instability_bars",
+  "label": "'Just Flipped' Threshold (LTF bars)",
+  "kind": "int",
+  "default": 3,
+  "order": 131,
+  "group": "Lower Timeframe Failure Detection",
+  "minval": 1,
+  "maxval": 10,
+  "tooltip": "A lower timeframe that changed direction within this many of its OWN bars is treated as an unproven / potentially-failed signal."
+ },
+ {
+  "name": "use_ltf_veto",
+  "label": "Apply as Entry Veto",
+  "kind": "bool",
+  "default": false,
+  "order": 132,
+  "group": "Lower Timeframe Failure Detection",
+  "tooltip": "OFF by default — informational only until enabled. When ON, blocks an entry if the 2m or 5m timeframe just flipped AGAINST that entry's direction."
+ },
+ {
+  "name": "use_real_ohlc",
+  "label": "Use Real OHLC for Calculations",
+  "kind": "bool",
+  "default": false,
+  "order": 133,
+  "group": "Real OHLC Data",
+  "tooltip": "OFF (default): script uses whatever open/high/low/close the chart is currently displaying — including Heikin Ashi if your Properties panel has Chart Type set to Heikin Ashi. ON: pulls genuine market OHLC via request.security, independent of chart display, and uses it for RATE's own ATR/ADX/flip-band (hand-rebuilt from real data — Pine's ta.atr/ta.dmi/ta.supertrend cannot be redirected to an alternate source directly), plus every other calculation in the script that accepts an explicit price source. Does not touch the 5 HTF / 2 LTF cross-timeframe connections."
+ },
+ {
+  "name": "use_rejection_cluster",
+  "label": "Enable Rejection Cluster",
+  "kind": "bool",
+  "default": true,
+  "order": 134,
+  "group": "Rejection / Expansion Cluster",
+  "tooltip": "ON by default — TIDE's entry confirmation depends on this. With it off, rej_cluster_* is permanently false and TIDE can never fire."
+ },
+ {
+  "name": "rej_min_cluster",
+  "label": "Min Level-Types in Cluster (of 4)",
+  "kind": "int",
+  "default": 2,
+  "order": 135,
+  "group": "Rejection / Expansion Cluster",
+  "minval": 1,
+  "maxval": 4
+ },
+ {
+  "name": "rej_cluster_window",
+  "label": "Cluster Window (bars)",
+  "kind": "int",
+  "default": 3,
+  "order": 136,
+  "group": "Rejection / Expansion Cluster",
+  "minval": 1,
+  "maxval": 10,
+  "tooltip": "How many recent bars count as 'simultaneous' when combining rejections across level types."
+ },
+ {
+  "name": "rej_min_wick_ratio",
+  "label": "Min Rejection Wick Ratio",
+  "kind": "float",
+  "default": 0.35,
+  "order": 137,
+  "group": "Rejection / Expansion Cluster",
+  "minval": 0.1,
+  "maxval": 0.9,
+  "step": 0.05
+ },
+ {
+  "name": "expansion_confirm_bars",
+  "label": "Expansion Confirm Window (bars)",
+  "kind": "int",
+  "default": 2,
+  "order": 138,
+  "group": "Rejection / Expansion Cluster",
+  "minval": 1,
+  "maxval": 5,
+  "tooltip": "After a rejection cluster, how many bars to check for real directional displacement (Power of Three's Distribution phase) before treating the rejection as confirmed."
+ },
+ {
+  "name": "expansion_min_atr",
+  "label": "Min Expansion Size (×ATR)",
+  "kind": "float",
+  "default": 0.6,
+  "order": 139,
+  "group": "Rejection / Expansion Cluster",
+  "minval": 0.1,
+  "step": 0.1
+ },
+ {
+  "name": "use_cisd",
+  "label": "Enable CISD (early CHoCH cousin)",
+  "kind": "bool",
+  "default": true,
+  "order": 140,
+  "group": "Rejection / Expansion Cluster"
+ },
+ {
+  "name": "fvg_min_size_atr",
+  "label": "FVG Min Size (×ATR)",
+  "kind": "float",
+  "default": 0.25,
+  "order": 141,
+  "group": "Rejection / Expansion Cluster",
+  "minval": 0.0,
+  "maxval": 2.0,
+  "step": 0.05,
+  "tooltip": "Gaps smaller than this are ignored. Previously any gap qualified, so a 1-tick imbalance weighed the same as a 50-point one."
+ },
+ {
+  "name": "fvg_max_age",
+  "label": "FVG Max Age (bars)",
+  "kind": "int",
+  "default": 120,
+  "order": 142,
+  "group": "Rejection / Expansion Cluster",
+  "minval": 10,
+  "maxval": 500,
+  "tooltip": "Gaps older than this expire. Previously they persisted indefinitely as 'live' structure."
+ },
+ {
+  "name": "use_po3",
+  "label": "Enable Po3 State Machine",
+  "kind": "bool",
+  "default": true,
+  "order": 143,
+  "group": "Power of Three"
+ },
+ {
+  "name": "po3_range_lkb",
+  "label": "Accumulation Range Lookback (bars)",
+  "kind": "int",
+  "default": 10,
+  "order": 144,
+  "group": "Power of Three",
+  "minval": 5,
+  "maxval": 30
+ },
+ {
+  "name": "po3_accum_range_mult",
+  "label": "Max Range for Accumulation (×ATR)",
+  "kind": "float",
+  "default": 2.0,
+  "order": 145,
+  "group": "Power of Three",
+  "minval": 0.5,
+  "step": 0.25
+ },
+ {
+  "name": "po3_accum_regime_max",
+  "label": "Max Regime Score for Accumulation",
+  "kind": "float",
+  "default": 0.4,
+  "order": 146,
+  "group": "Power of Three",
+  "minval": 0.1,
+  "maxval": 0.7,
+  "step": 0.05
+ },
+ {
+  "name": "po3_accum_adx_max",
+  "label": "Max ADX for Accumulation",
+  "kind": "float",
+  "default": 20.0,
+  "order": 147,
+  "group": "Power of Three",
+  "minval": 10.0,
+  "maxval": 35.0,
+  "step": 1.0
+ },
+ {
+  "name": "use_po3_gate_rejection",
+  "label": "Require Manipulation State for Rejection Clusters",
+  "kind": "bool",
+  "default": true,
+  "order": 148,
+  "group": "Power of Three",
+  "tooltip": "When ON, a rejection cluster only counts as confirmed if it fired during the Manipulation state — i.e. it actually followed genuine accumulation, not just noise mid-trend."
+ },
+ {
+  "name": "use_tide",
+  "label": "Enable TIDE",
+  "kind": "bool",
+  "default": true,
+  "order": 149,
+  "group": "TIDE (4H Range Fakeout)",
+  "tooltip": "Fully separate from RATE Mythos — no gate, no veto, no toggle relationship. Always on alongside RATE Mythos when enabled here."
+ },
+ {
+  "name": "tide_confirm_bars",
+  "label": "Confirm Bars (1-2)",
+  "kind": "int",
+  "default": 2,
+  "order": 150,
+  "group": "TIDE (4H Range Fakeout)",
+  "minval": 1,
+  "maxval": 2
+ },
+ {
+  "name": "tide_confirm_mode",
+  "label": "Confirmation Strictness",
+  "kind": "string",
+  "default": "Balanced",
+  "order": 151,
+  "group": "TIDE (4H Range Fakeout)",
+  "options": [
+   "Strict",
+   "Balanced",
+   "Loose"
+  ],
+  "tooltip": "Strict = full rejection cluster + delivery shift + Po3 Manipulation state (very rare). Balanced = rejection cluster + CISD/CHoCH. Loose = any one of rejection cluster, CISD, or CHoCH. Start Balanced; go Strict only if you're getting too many."
+ },
+ {
+  "name": "use_tide_poc_target",
+  "label": "Use Market Profile POC as Mid-Target",
+  "kind": "bool",
+  "default": true,
+  "order": 152,
+  "group": "TIDE (4H Range Fakeout)",
+  "tooltip": "Targets the volume-weighted fair value of the range (where the most business was done) instead of the arithmetic midpoint. Falls back to the midpoint when POC is unavailable or sits outside the range."
+ },
+ {
+  "name": "tide_qty",
+  "label": "TIDE Contracts (less than main)",
+  "kind": "int",
+  "default": 2,
+  "order": 153,
+  "group": "TIDE (4H Range Fakeout)",
+  "minval": 1
+ },
+ {
+  "name": "use_tide_regime_filter",
+  "label": "Extra Caution During Strong Trend",
+  "kind": "bool",
+  "default": true,
+  "order": 154,
+  "group": "TIDE (4H Range Fakeout)"
+ },
+ {
+  "name": "tide_ext_mult",
+  "label": "TP2 Extension Beyond Opposite Wall (×Range)",
+  "kind": "float",
+  "default": 1.0,
+  "order": 155,
+  "group": "TIDE (4H Range Fakeout)",
+  "minval": 0.0,
+  "maxval": 1.0,
+  "step": 0.1,
+  "tooltip": "0 = TP2 stops exactly at the range's opposite wall. Above 0 pushes it further, chasing continuation beyond the wall."
+ },
+ {
+  "name": "use_vol_delta",
+  "label": "Enable Volume Delta Exhaustion",
+  "kind": "bool",
+  "default": true,
+  "order": 156,
+  "group": "Volume Delta Exhaustion",
+  "tooltip": "Feeds the trailing exit's tightening logic alongside LTF weakness — does not touch entries."
+ },
+ {
+  "name": "vd_lookback",
+  "label": "Delta Lookback (bars)",
+  "kind": "int",
+  "default": 10,
+  "order": 157,
+  "group": "Volume Delta Exhaustion",
+  "minval": 5,
+  "maxval": 30
+ },
+ {
+  "name": "vd_spike_mult",
+  "label": "Volume Spike Multiple",
+  "kind": "float",
+  "default": 1.5,
+  "order": 158,
+  "group": "Volume Delta Exhaustion",
+  "minval": 1.0,
+  "step": 0.1
+ },
+ {
+  "name": "use_stagnation_exit",
+  "label": "Enable Stagnation Exit",
+  "kind": "bool",
+  "default": true,
+  "order": 159,
+  "group": "Stagnation Exit"
+ },
+ {
+  "name": "stagnation_bars",
+  "label": "Max Bars Without Progress",
+  "kind": "int",
+  "default": 15,
+  "order": 160,
+  "group": "Stagnation Exit",
+  "minval": 3,
+  "maxval": 100
+ },
+ {
+  "name": "stagnation_min_atr",
+  "label": "Min Progress Required (×ATR)",
+  "kind": "float",
+  "default": 0.5,
+  "order": 161,
+  "group": "Stagnation Exit",
+  "minval": 0.1,
+  "step": 0.1
+ },
+ {
+  "name": "use_empirical_tp",
+  "label": "Enable Empirical TP1 Override",
+  "kind": "bool",
+  "default": false,
+  "order": 162,
+  "group": "Empirical Percentile Adaptation",
+  "tooltip": "OFF by default. Overrides TP1 with a percentile of recent closed trades' favorable excursion. Falls back to Fixed Points TP1 until enough observations exist."
+ },
+ {
+  "name": "emp_window",
+  "label": "Rolling Window (trades)",
+  "kind": "int",
+  "default": 50,
+  "order": 163,
+  "group": "Empirical Percentile Adaptation",
+  "minval": 20,
+  "maxval": 200
+ },
+ {
+  "name": "emp_min_obs",
+  "label": "Minimum Observations Before Activating",
+  "kind": "int",
+  "default": 20,
+  "order": 164,
+  "group": "Empirical Percentile Adaptation",
+  "minval": 10,
+  "maxval": 100
+ },
+ {
+  "name": "emp_percentile",
+  "label": "Target Percentile",
+  "kind": "float",
+  "default": 40.0,
+  "order": 165,
+  "group": "Empirical Percentile Adaptation",
+  "minval": 10.0,
+  "maxval": 90.0,
+  "step": 5.0
+ },
+ {
+  "name": "emp_min_pct",
+  "label": "Hard Minimum (% of price)",
+  "kind": "float",
+  "default": 0.05,
+  "order": 166,
+  "group": "Empirical Percentile Adaptation",
+  "minval": 0.01,
+  "step": 0.01
+ },
+ {
+  "name": "emp_max_pct",
+  "label": "Hard Maximum (% of price)",
+  "kind": "float",
+  "default": 0.5,
+  "order": 167,
+  "group": "Empirical Percentile Adaptation",
+  "minval": 0.05,
+  "step": 0.05
+ },
+ {
+  "name": "use_emp_regime_split",
+  "label": "Split Calibration by Regime",
+  "kind": "bool",
+  "default": true,
+  "order": 168,
+  "group": "Empirical Percentile Adaptation",
+  "tooltip": "Keeps separate favorable-excursion distributions for trending vs choppy regimes — they are genuinely different populations, and pooling them produces a target wrong for both. Falls back to the pooled buffer until a regime has enough of its own observations."
+ },
+ {
+  "name": "emp_holdout_recent",
+  "label": "Holdout — Exclude N Most Recent From Calibration",
+  "kind": "int",
+  "default": 10,
+  "order": 169,
+  "group": "Empirical Percentile Adaptation",
+  "minval": 0,
+  "maxval": 30,
+  "tooltip": "Keeps the most recent N closed trades OUT of the percentile calculation, so they function as an implicit out-of-sample check rather than training on themselves."
+ },
+ {
+  "name": "use_tod_tracking",
+  "label": "Track Per-Hour Performance",
+  "kind": "bool",
+  "default": true,
+  "order": 170,
+  "group": "Time-of-Day Conditioning"
+ },
+ {
+  "name": "use_tod_filter",
+  "label": "Suppress Entries in Weak Hours",
+  "kind": "bool",
+  "default": false,
+  "order": 171,
+  "group": "Time-of-Day Conditioning",
+  "tooltip": "OFF by default — informational until you've seen enough data to trust it. When ON, blocks entries in hours whose realised win rate is below the threshold over at least the minimum sample."
+ },
+ {
+  "name": "tod_min_sample",
+  "label": "Min Trades Per Hour Before Filtering",
+  "kind": "int",
+  "default": 12,
+  "order": 172,
+  "group": "Time-of-Day Conditioning",
+  "minval": 5,
+  "maxval": 100
+ },
+ {
+  "name": "tod_min_winrate",
+  "label": "Min Hour Win Rate",
+  "kind": "float",
+  "default": 0.55,
+  "order": 173,
+  "group": "Time-of-Day Conditioning",
+  "minval": 0.0,
+  "maxval": 1.0,
+  "step": 0.05
+ },
+ {
+  "name": "use_family_confluence",
+  "label": "Enable Family Confluence",
+  "kind": "bool",
+  "default": true,
+  "order": 174,
+  "group": "Confluence Gate",
+  "tooltip": "Groups the 12 votes into 5 independent information families (trend/momentum/volatility/statistical/cycle) and rewards agreement ACROSS families rather than raw vote count — correlated votes inside one family no longer masquerade as independent confirmation."
+ },
+ {
+  "name": "family_min_for_bonus",
+  "label": "Min Families for Discount",
+  "kind": "int",
+  "default": 4,
+  "order": 175,
+  "group": "Confluence Gate",
+  "minval": 2,
+  "maxval": 5
+ },
+ {
+  "name": "family_discount",
+  "label": "Family Agreement Discount",
+  "kind": "float",
+  "default": 0.9,
+  "order": 176,
+  "group": "Confluence Gate",
+  "minval": 0.5,
+  "maxval": 1.0,
+  "step": 0.02
+ },
+ {
+  "name": "pulse_conf_weight",
+  "label": "Confluence Weight (rest goes to Magnitude)",
+  "kind": "float",
+  "default": 0.6,
+  "order": 177,
+  "group": "The Pulse",
+  "minval": 0.3,
+  "maxval": 0.9,
+  "step": 0.05
+ },
+ {
+  "name": "use_conviction_sizing",
+  "label": "Scale Size by Pulse Conviction",
+  "kind": "bool",
+  "default": false,
+  "order": 178,
+  "group": "Conviction Sizing",
+  "tooltip": "OFF by default (fixed size, unchanged). When ON, contracts scale with the Pulse's conviction reading at entry — full size at high conviction, reduced at low. Never exceeds your configured Contracts value."
+ },
+ {
+  "name": "conv_min_mult",
+  "label": "Minimum Size Multiplier",
+  "kind": "float",
+  "default": 0.4,
+  "order": 179,
+  "group": "Conviction Sizing",
+  "minval": 0.1,
+  "maxval": 1.0,
+  "step": 0.05
+ },
+ {
+  "name": "conv_floor",
+  "label": "Conviction Floor (below = min size)",
+  "kind": "float",
+  "default": 0.35,
+  "order": 180,
+  "group": "Conviction Sizing",
+  "minval": 0.0,
+  "maxval": 0.9,
+  "step": 0.05
+ },
+ {
+  "name": "conv_ceiling",
+  "label": "Conviction Ceiling (above = full size)",
+  "kind": "float",
+  "default": 0.85,
+  "order": 181,
+  "group": "Conviction Sizing",
+  "minval": 0.2,
+  "maxval": 1.0,
+  "step": 0.05
+ },
+ {
+  "name": "kf_cold_start_fix",
+  "label": "Kalman cold-start fix (v3.2)",
+  "kind": "bool",
+  "default": false,
+  "order": 182,
+  "group": "Kalman / PMA Engine",
+  "tooltip": "Re-seed the Kalman filter (including its covariance) until every input is a number. Fixes vote #9 never firing; see PARITY.md."
+ },
+ {
+  "name": "pe_na_poison_fix",
+  "label": "PE na-poisoning fix (v3.3)",
+  "kind": "bool",
+  "default": false,
+  "order": 183,
+  "group": "Permutation Entropy",
+  "tooltip": "TradingView: with amplitude weighting the PE bins are poisoned by na on the first bars, pe_norm is stuck at 0 and vote #10 fires on every bar. OFF reproduces that; ON skips the block until its inputs are numbers (v3.3 patch)."
+ },
+ {
+  "name": "ltf_intrabar",
+  "label": "LTF connection intrabar (engine)",
+  "kind": "string",
+  "default": "first",
+  "order": 184,
+  "group": "HTF/LTF Connections",
+  "tooltip": "Which intrabar the 2m/5m request.security(expr[1], lookahead_on) calls return: 'first' = TradingView on historical bars (your backtests), 'last' = TradingView on realtime bars.",
+  "options": [
+   "first",
+   "last"
+  ]
+ }
+]

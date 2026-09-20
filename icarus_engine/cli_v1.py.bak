@@ -1,0 +1,174 @@
+"""icarus-engine CLI.
+
+  icarus-engine run       --assets BTC,ETH,SOL,AVAX,LINK [--tf 5] [--port 8791] [--capital 100000] [--warmup 2000]
+  icarus-engine backtest  --assets BTC [--tf 5] [--warmup 2000] [--csv out.csv]
+  icarus-engine parity    --asset BTC --tv-csv "List of Trades.csv" [--tf 5] [--warmup 2000]
+  icarus-engine inputs    [--profile crypto|nq]
+"""
+from __future__ import annotations
+
+import argparse
+import csv
+import json
+import os
+import sys
+import time
+from typing import List, Optional
+
+from .runtime import AssetRunner, Journal, Portfolio, RunnerConfig
+from .strategy.inputs import Inputs, crypto_profile
+
+
+def _runners(args: argparse.Namespace, journal: Journal) -> List[AssetRunner]:
+    assets = [a.strip() for a in args.assets.split(",") if a.strip()]
+    out = []
+    for a in assets:
+        cfg = RunnerConfig(symbol=a, chart_tf=args.tf, capital=args.capital, commission=args.commission,
+                           contract_size=args.contract_size, contract_notional=args.contract_notional,
+                           warmup_bars=args.warmup, profile=args.profile, pts_ref_price=args.pts_ref)
+        path = getattr(args, "inputs_json", None) or (os.path.join(os.getcwd(), "inputs.json") if os.path.exists("inputs.json") else None)
+        if path:
+            with open(path, "r", encoding="utf-8") as fh:
+                d = {k: v for k, v in json.load(fh).items() if not k.startswith("_")}   # "_comment" keys are notes
+            unknown = [k for k in d if k not in Inputs().to_dict()]
+            if unknown:
+                raise SystemExit(f"inputs file {path}: unknown input names {unknown} (see `icarus-engine inputs`)")
+            base = (crypto_profile() if args.profile == "crypto" else Inputs()).to_dict(); base.update(d)
+            cfg.inputs = Inputs(**base)
+            journal.log("INFO", f"[{a}] inputs loaded from {path}: {len(d)} value(s) override the {args.profile} profile")
+        out.append(AssetRunner(cfg, journal))
+    return out
+
+
+def _summary(r: AssetRunner) -> str:
+    cl = r.em.closed
+    n = len(cl); wins = sum(1 for t in cl if t.profit > 0)
+    gp = sum(t.profit for t in cl if t.profit > 0); gl = -sum(t.profit for t in cl if t.profit <= 0)
+    pf = (gp / gl) if gl > 0 else float("inf") if gp > 0 else 0.0
+    # max drawdown on closed-trade equity
+    eq = r.cfg.capital; peak = eq; dd = 0.0
+    for t in cl:
+        eq += t.profit; peak = max(peak, eq); dd = max(dd, peak - eq)
+    rate_n = sum(1 for t in cl if t.entry_id in ("Long", "Short")); tide_n = n - rate_n
+    return (f"{r.symbol:>6} {r.chart_minutes}m  bars={r.bar_index + 1}  trades={n} (RATE {rate_n} / TIDE {tide_n})  "
+            f"win={wins / n * 100 if n else 0:.1f}%  net={r.em.netprofit:+.2f}  PF={pf:.2f}  maxDD={dd:.2f}  open={r.em.position_size:+d}")
+
+
+def cmd_backtest(args: argparse.Namespace) -> int:
+    journal = Journal(args.db)
+    t0 = time.time()
+    for r in _runners(args, journal):
+        r.warmup()
+        print(_summary(r))
+        if args.csv:
+            path = args.csv if len(args.assets.split(",")) == 1 else args.csv.replace(".csv", f"_{r.symbol}.csv")
+            with open(path, "w", newline="", encoding="utf-8") as fh:
+                w = csv.writer(fh)
+                w.writerow(["Trade #", "Type", "Date/Time (UTC)", "Signal", "Price", "Contracts", "Profit", "Cum. Profit"])
+                cum = 0.0
+                for k, t in enumerate(r.em.closed, 1):
+                    cum += t.profit
+                    side = "long" if t.direction > 0 else "short"
+                    w.writerow([k, f"Entry {side}", time.strftime("%Y-%m-%d %H:%M", time.gmtime(t.entry_ts)), t.entry_comment or t.entry_id, f"{t.entry_price:.6g}", t.qty, "", ""])
+                    w.writerow([k, f"Exit {side}", time.strftime("%Y-%m-%d %H:%M", time.gmtime(t.exit_ts)), t.exit_comment, f"{t.exit_price:.6g}", t.qty, f"{t.profit:.2f}", f"{cum:.2f}"])
+            print(f"   trades -> {path}")
+        if args.verbose:
+            for t in r.em.closed[-args.verbose:]:
+                print(f"   {time.strftime('%m-%d %H:%M', time.gmtime(t.entry_ts))} {t.entry_id:<9} x{t.qty} {t.entry_price:.6g} -> "
+                      f"{time.strftime('%m-%d %H:%M', time.gmtime(t.exit_ts))} {t.exit_price:.6g} {t.exit_comment:<8} {t.profit:+.2f}")
+    print(f"done in {time.time() - t0:.1f}s")
+    return 0
+
+
+def cmd_run(args: argparse.Namespace) -> int:
+    from .server import serve
+    journal = Journal(args.db)
+    runners = _runners(args, journal)
+    port = Portfolio(runners, journal, poll_sec=args.poll)
+    journal.log("INFO", f"ICARUS Engine starting: {[r.symbol for r in runners]} tf={args.tf}m capital/asset={args.capital:,.0f} profile={args.profile}")
+    port.start()
+    print(f"\nICARUS ENGINE  assets={[r.symbol for r in runners]}  tf={args.tf}m  profile={args.profile}")
+    print(f"  dashboard : http://127.0.0.1:{args.port}/     admin token: {args.token}")
+    print("  warming up each asset from Coinbase history, then LIVE (Ctrl+C to stop)\n")
+    if args.open:
+        import webbrowser
+        webbrowser.open(f"http://127.0.0.1:{args.port}/")
+    try:
+        serve(port, args.port, args.token)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        port.stop()
+    return 0
+
+
+def cmd_inputs(args: argparse.Namespace) -> int:
+    d = (crypto_profile() if args.profile == "crypto" else Inputs()).to_dict()
+    print(json.dumps(d, indent=2, ensure_ascii=False))
+    return 0
+
+
+def cmd_parity(args: argparse.Namespace) -> int:
+    """Compare this engine's trades with a TradingView Strategy Tester 'List of Trades' export."""
+    from .parity import compare
+    journal = Journal(args.db)
+    args.assets = args.asset
+    r = _runners(args, journal)[0]
+    r.warmup()
+    print(_summary(r))
+    rep = compare(r, args.tv_csv, tol_bars=args.tol)
+    print(json.dumps(rep["summary"], indent=2))
+    for line in rep["lines"][:60]:
+        print("  " + line)
+    return 0
+
+
+def main(argv: Optional[list] = None) -> int:
+    p = argparse.ArgumentParser(prog="icarus-engine", description="THE PULSE OF ICARUS - self-contained paper-trading engine")
+    sub = p.add_subparsers(dest="cmd", required=True)
+
+    def common(s: argparse.ArgumentParser, multi: bool = True) -> None:
+        if multi:
+            s.add_argument("--assets", default="BTC,ETH,SOL,AVAX,LINK", help="comma list (Coinbase USD pairs)")
+        s.add_argument("--tf", default="5", help="chart timeframe in minutes (the strategy's chart)")
+        s.add_argument("--capital", type=float, default=500000.0, help="initial capital PER asset (script default 500000)")
+        s.add_argument("--commission", type=float, default=2.0, help="cash per contract per fill (script default 2.0)")
+        s.add_argument("--contract-size", type=float, default=0.0, help="units of the asset per 'contract'; 1 = exact TradingView semantics; 0 = use --contract-notional")
+        s.add_argument("--contract-notional", type=float, default=100000.0, help="dollars per contract when --contract-size is 0 (default 100k = one BTC-sized contract)")
+        s.add_argument("--warmup", type=int, default=2000, help="chart bars of history to replay before going live")
+        s.add_argument("--pts-ref", type=float, default=0.0, help="treat *_pts inputs as NQ points at this NQ price and rescale them to each asset's price (e.g. 20000); 0 = use pts literally")
+        s.add_argument("--profile", default="crypto", choices=["crypto", "nq"])
+        s.add_argument("--inputs-json", default=None, help="JSON file overriding any strategy input")
+        s.add_argument("--db", default="icarus_engine.db")
+
+    s = sub.add_parser("run", help="live paper trading + dashboard")
+    common(s)
+    s.add_argument("--port", type=int, default=8791)
+    s.add_argument("--token", default="icarus")
+    s.add_argument("--poll", type=float, default=5.0)
+    s.add_argument("--open", action="store_true")
+    s.set_defaults(fn=cmd_run)
+
+    b = sub.add_parser("backtest", help="replay history only and print the strategy's results")
+    common(b)
+    b.add_argument("--csv", default=None, help="write the trade list (TradingView-like columns)")
+    b.add_argument("--verbose", type=int, default=0, help="print the last N trades")
+    b.set_defaults(fn=cmd_backtest)
+
+    q = sub.add_parser("parity", help="compare with a TradingView 'List of Trades' CSV export")
+    common(q, multi=False)
+    q.add_argument("--asset", required=True)
+    q.add_argument("--tv-csv", required=True)
+    q.add_argument("--tol", type=int, default=1, help="bars of tolerance when matching entries")
+    q.set_defaults(fn=cmd_parity)
+
+    n = sub.add_parser("inputs", help="print the strategy inputs as JSON (edit + pass with --inputs-json)")
+    n.add_argument("--profile", default="crypto", choices=["crypto", "nq"])
+    n.set_defaults(fn=cmd_inputs)
+
+    args = p.parse_args(argv)
+    return int(args.fn(args) or 0)
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ICARUS Bridge</title>
+<style>
+/* ── tokens: validated reference palette (dark-first; light mirrors it) ── */
+:root {
+  color-scheme: light;
+  --page:#f9f9f7; --surface:#fcfcfb; --surface-2:#f3f2ee; --ink:#0b0b0b; --ink-2:#52514e; --muted:#898781;
+  --grid:#e1e0d9; --axis:#c3c2b7; --ring:rgba(11,11,11,.10);
+  --s1:#2a78d6; --s1-soft:rgba(42,120,214,.14); --s2:#eb6834; --s3:#1baf7a; --s7:#4a3aa7;
+  --good:#0ca30c; --good-text:#006300; --warn:#fab219; --serious:#ec835a; --crit:#d03b3b;
+  --div-mid:#f0efec;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page:#0d0d0d; --surface:#1a1a19; --surface-2:#232321; --ink:#ffffff; --ink-2:#c3c2b7; --muted:#898781;
+  --grid:#2c2c2a; --axis:#383835; --ring:rgba(255,255,255,.10);
+  --s1:#3987e5; --s1-soft:rgba(57,135,229,.16); --s2:#d95926; --s3:#199e70; --s7:#9085e9;
+  --good:#0ca30c; --good-text:#0ca30c; --warn:#fab219; --serious:#ec835a; --crit:#d03b3b;
+  --div-mid:#383835;
+}
+* { box-sizing:border-box }
+html,body { height:100% }
+body { margin:0; overflow-x:hidden; background:var(--page); color:var(--ink); font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; -webkit-font-smoothing:antialiased; }
+a { color:inherit }
+button { font:inherit; color:inherit; background:var(--surface-2); border:1px solid var(--ring); border-radius:8px; padding:6px 12px; cursor:pointer; }
+button:hover { border-color:var(--muted) }
+button.primary { background:var(--s1); border-color:var(--s1); color:#fff }
+button.danger { background:var(--crit); border-color:var(--crit); color:#fff }
+button:disabled { opacity:.45; cursor:not-allowed }
+.tnum { font-variant-numeric: tabular-nums }
+
+/* ── top bar ── */
+.top { position:sticky; top:0; z-index:5; background:var(--surface); border-bottom:1px solid var(--ring); }
+.top-in { display:flex; align-items:center; gap:18px; padding:10px 22px; flex-wrap:wrap; }
+.brand { display:flex; align-items:center; gap:10px; font-weight:600; letter-spacing:.14em; font-size:13px; }
+.brand .dot { width:10px; height:10px; border-radius:50%; background:var(--good); box-shadow:0 0 0 0 rgba(12,163,12,.5); }
+.brand .dot.live { animation: pulse 1.6s infinite }
+.brand .dot.stale { background:var(--warn); box-shadow:none }
+.brand .dot.dead { background:var(--crit); box-shadow:none }
+@keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(12,163,12,.55)} 70%{box-shadow:0 0 0 9px rgba(12,163,12,0)} 100%{box-shadow:0 0 0 0 rgba(12,163,12,0)} }
+.path { display:flex; align-items:center; gap:6px; margin-left:8px; }
+.node { display:flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; border:1px solid var(--ring); font-size:12px; color:var(--ink-2); background:var(--surface-2); transition: all .25s; }
+.node i { width:7px; height:7px; border-radius:50%; background:var(--axis); display:inline-block }
+.node.on { border-color:var(--good); color:var(--ink) } .node.on i { background:var(--good) }
+.node.warn { border-color:var(--warn) } .node.warn i { background:var(--warn) }
+.node.bad { border-color:var(--crit) } .node.bad i { background:var(--crit) }
+.link { width:14px; height:1px; background:var(--axis) }
+.state { margin-left:auto; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.badge { padding:5px 12px; border-radius:999px; font-weight:600; letter-spacing:.06em; font-size:12px; border:1px solid var(--ring) }
+.badge.armed { color:var(--good-text); border-color:var(--good) }
+.badge.paused { color:#fff; background:var(--crit); border-color:var(--crit) }
+.badge.shadow { color:var(--warn); border-color:var(--warn) }
+.clock { font-size:12px; color:var(--ink-2) } .clock b { color:var(--ink); font-weight:600 }
+.icon-btn { padding:5px 9px; border-radius:8px }
+
+/* ── layout ── */
+.wrap { display:grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap:14px; padding:16px 22px 40px; max-width:1720px; margin:0 auto; }
+.card { background:var(--surface); border:1px solid var(--ring); border-radius:14px; padding:14px 16px; min-width:0; }
+.card h2 { margin:0 0 10px; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); font-weight:600; display:flex; align-items:center; gap:8px; }
+.card h2 .sub { text-transform:none; letter-spacing:0; color:var(--ink-2); font-weight:400; margin-left:auto }
+.c3 { grid-column: span 3 } .c4 { grid-column: span 4 } .c5 { grid-column: span 5 } .c6 { grid-column: span 6 } .c7 { grid-column: span 7 } .c8 { grid-column: span 8 } .c9 { grid-column: span 9 } .c12 { grid-column: span 12 }
+@media (max-width: 1200px) { .c3,.c4,.c5 { grid-column: span 6 } .c7,.c8,.c9 { grid-column: span 12 } }
+@media (max-width: 760px) { .c3,.c4,.c5,.c6,.c7,.c8,.c9 { grid-column: span 12 } .top-in { gap:10px } .path { display:none } }
+
+/* ── hero ── */
+.hero { display:flex; flex-direction:column; gap:6px; }
+.hero .n { font-size:56px; line-height:1; font-weight:600; letter-spacing:-.02em }
+.hero .n.up { color:var(--good-text) } .hero .n.dn { color:var(--crit) }
+.hero .pct { font-size:16px; color:var(--ink-2) }
+.tiles { display:grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap:10px; margin-top:8px }
+.tile { background:var(--surface-2); border-radius:10px; padding:10px 12px; border:1px solid var(--ring) }
+.tile .k { font-size:11px; color:var(--muted); letter-spacing:.08em; text-transform:uppercase }
+.tile .v { font-size:20px; font-weight:600; margin-top:2px; }
+.tile .v small { font-size:12px; color:var(--ink-2); font-weight:400; margin-left:4px }
+
+/* ── charts ── */
+svg { display:block; width:100%; overflow:visible }
+.tip { position:fixed; pointer-events:none; background:var(--surface); border:1px solid var(--ring); border-radius:8px; padding:6px 9px; font-size:12px; box-shadow:0 6px 24px rgba(0,0,0,.25); z-index:20; display:none; white-space:nowrap }
+.legend { display:flex; gap:14px; font-size:12px; color:var(--ink-2); margin-top:6px } .legend i { display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:6px; vertical-align:-1px }
+
+/* ── tables ── */
+table { width:100%; border-collapse:collapse; font-size:12.5px; }
+th, td { text-align:left; padding:6px 8px; border-bottom:1px solid var(--grid); white-space:nowrap; vertical-align:middle }
+th { color:var(--muted); font-weight:500; font-size:11px; letter-spacing:.06em; text-transform:uppercase }
+tbody tr:hover { background:var(--surface-2) }
+.scroll { overflow:auto; max-height:360px; max-width:100% }
+.chip { display:inline-block; padding:2px 8px; border-radius:999px; font-size:11px; border:1px solid var(--ring); color:var(--ink-2) }
+.chip.RATE { border-color:var(--s1); color:var(--s1) } .chip.TIDE { border-color:var(--s7); color:var(--s7) } .chip.OTHER { }
+.st { font-size:11px; padding:2px 8px; border-radius:999px; background:var(--surface-2); color:var(--ink-2) }
+.st.executed, .st.filled, .st.done, .st.accepted, .st.new { color:var(--good-text); background:rgba(12,163,12,.12) }
+.st.partial, .st.duplicate, .st.journaled, .st.skipped_market_closed, .st.skipped_paused, .st.skipped_unmapped, .st.skipped_loosen, .st.skipped_flat, .st.canceled { color:var(--warn); background:rgba(250,178,25,.12) }
+.st.error, .st.skipped_risk, .st.rejected { color:var(--crit); background:rgba(208,59,59,.12) }
+.side { font-weight:600 } .side.buy::before { content:"▲ "; color:var(--good) } .side.sell::before { content:"▼ "; color:var(--crit) }
+.pos { color:var(--good-text) } .neg { color:var(--crit) }
+.empty { color:var(--muted); padding:14px 6px; font-size:13px }
+tr.new { animation: flash 1.4s ease-out } @keyframes flash { from { background: var(--s1-soft) } to { background: transparent } }
+
+/* ── ladder ── */
+.ladders { display:flex; flex-wrap:wrap; gap:14px }
+.ladder { flex:1 1 300px; display:grid; grid-template-columns: 120px 180px; gap:10px; justify-content:space-between; background:var(--surface-2); border:1px solid var(--ring); border-radius:12px; padding:10px }
+.ladder .meta { font-size:12px; color:var(--ink-2); display:flex; flex-direction:column; gap:4px }
+.ladder .meta b { color:var(--ink); font-size:15px }
+.ladder .meta .q { font-size:22px; font-weight:600; color:var(--ink); margin-top:2px }
+.ladder svg { width:180px }
+@media (max-width: 520px) { .ladder { grid-template-columns: 1fr } .ladder svg { width:100%; max-width:220px } }
+
+/* ── log ── */
+.log { font: 12px/1.5 ui-monospace, Consolas, "Cascadia Mono", monospace; max-height:260px; overflow:auto; white-space:pre-wrap; color:var(--ink-2) }
+.log .WARN { color:var(--warn) } .log .ERROR { color:var(--crit) } .log .INFO { color:var(--ink-2) }
+
+/* ── callouts / modal ── */
+.callout { grid-column: span 12; border-radius:14px; padding:14px 16px; border:1px solid var(--warn); background:rgba(250,178,25,.08); display:flex; gap:14px; align-items:flex-start }
+.callout.bad { border-color:var(--crit); background:rgba(208,59,59,.08) }
+.callout b { display:block; margin-bottom:4px }
+.callout code { background:var(--surface-2); padding:1px 6px; border-radius:6px }
+.modal { position:fixed; inset:0; background:rgba(0,0,0,.55); display:none; align-items:center; justify-content:center; z-index:30 }
+.modal.open { display:flex }
+.modal .box { background:var(--surface); border:1px solid var(--ring); border-radius:14px; padding:18px 20px; width:min(520px, 92vw) }
+.modal input { width:100%; padding:8px 10px; border-radius:8px; border:1px solid var(--ring); background:var(--surface-2); color:var(--ink); font:inherit }
+.row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-top:10px }
+.muted { color:var(--muted) } .small { font-size:12px }
+</style>
+</head>
+<body>
+
+<div class="top"><div class="top-in">
+  <div class="brand"><span id="beat" class="dot"></span> ICARUS BRIDGE</div>
+  <div class="path" id="path">
+    <span class="node" data-n="tv"><i></i>TradingView</span><span class="link"></span>
+    <span class="node" data-n="tunnel"><i></i>Tunnel</span><span class="link"></span>
+    <span class="node" data-n="bridge"><i></i>Bridge</span><span class="link"></span>
+    <span class="node" data-n="broker"><i></i>Alpaca</span><span class="link"></span>
+    <span class="node" data-n="fill"><i></i>Filled</span>
+  </div>
+  <div class="state">
+    <span class="clock" id="clock">—</span>
+    <span class="badge" id="mode">—</span>
+    <span class="badge" id="armed">—</span>
+    <button class="icon-btn" id="btnControls" title="Controls (needs admin token)">⚙︎ Controls</button>
+    <button class="icon-btn" id="btnTheme" title="Toggle theme">◐</button>
+  </div>
+</div></div>
+
+<div class="wrap" id="wrap">
+  <div id="calloutBroker" class="callout bad" style="display:none"><div>⚠️</div><div><b>Alpaca is not connected</b><span id="brokerErr"></span><br>Add <code>ALPACA_API_KEY</code> and <code>ALPACA_SECRET_KEY</code> (paper keys) to <code>.env</code>, then restart <code>icarus-bridge serve</code>. Run <code>icarus-bridge doctor</code> to verify.</div></div>
+  <div id="calloutTunnel" class="callout" style="display:none"><div>🌐</div><div><b>No public webhook URL yet</b>TradingView can't reach this PC until a tunnel is up. <code>serve</code> starts ngrok automatically — if this stays empty, run <code>ngrok config add-authtoken &lt;token&gt;</code> once (free at dashboard.ngrok.com) and restart, or use <code>serve --tunnel cloudflared</code>.</div></div>
+
+  <!-- hero + tiles -->
+  <section class="card c3">
+    <h2>Today <span class="sub" id="dayDate"></span></h2>
+    <div class="hero"><div class="n tnum" id="pnl">—</div><div class="pct tnum" id="pnlPct">vs day start</div></div>
+    <div class="tiles">
+      <div class="tile"><div class="k">Equity</div><div class="v tnum" id="equity">—</div></div>
+      <div class="tile"><div class="k">Buying power</div><div class="v tnum" id="bp">—</div></div>
+      <div class="tile"><div class="k">Unrealized</div><div class="v tnum" id="unreal">—</div></div>
+      <div class="tile"><div class="k">Exposure</div><div class="v tnum" id="exposure">—</div></div>
+    </div>
+  </section>
+
+  <section class="card c6">
+    <h2>Equity · last 24h <span class="sub" id="eqSub"></span></h2>
+    <div id="eqChart"></div>
+    <div class="legend"><span><i style="background:var(--s1)"></i>equity</span><span><i style="background:var(--axis)"></i>day start</span></div>
+  </section>
+
+  <section class="card c3">
+    <h2>Pipeline today</h2>
+    <div class="tiles" style="margin-top:0">
+      <div class="tile"><div class="k">Alerts</div><div class="v tnum" id="alertsN">—</div></div>
+      <div class="tile"><div class="k">Executed</div><div class="v tnum" id="execN">—</div></div>
+      <div class="tile"><div class="k">Skipped</div><div class="v tnum" id="skipN">—</div></div>
+      <div class="tile"><div class="k">Errors</div><div class="v tnum" id="errN">—</div></div>
+      <div class="tile"><div class="k">Median latency</div><div class="v tnum" id="latMed">—</div></div>
+      <div class="tile"><div class="k">Median slippage</div><div class="v tnum" id="slipMed">—</div></div>
+    </div>
+    <div class="small muted" style="margin-top:8px" id="sysMix"></div>
+  </section>
+
+  <!-- ladders + orders -->
+  <section class="card c8">
+    <h2>Positions · price ladder <span class="sub">entry · stop · TP1 · TP2 vs live quote</span></h2>
+    <div class="ladders" id="ladders"></div>
+  </section>
+  <section class="card c4">
+    <h2>Resting orders on Alpaca</h2>
+    <div class="scroll"><table id="oo"><thead><tr><th>Type</th><th>Side</th><th>Qty</th><th>Stop</th><th>Limit</th><th>Status</th></tr></thead><tbody></tbody></table></div>
+  </section>
+
+  <!-- streams -->
+  <section class="card c7">
+    <h2>Alerts from TradingView <span class="sub" id="lastAlert"></span></h2>
+    <div class="scroll"><table id="alerts"><thead><tr><th>Time</th><th>Sys</th><th>Ticker</th><th>Fill</th><th>Order · comment</th><th>TV px</th><th>Pos after</th><th>Status</th><th>Note</th></tr></thead><tbody></tbody></table></div>
+  </section>
+  <section class="card c5">
+    <h2>Paper orders</h2>
+    <div class="scroll"><table id="orders"><thead><tr><th>Time</th><th>Sym</th><th>Side</th><th>Qty</th><th>Kind</th><th>Purpose</th><th>Stop</th><th>Fill</th><th>Status</th></tr></thead><tbody></tbody></table></div>
+  </section>
+
+  <!-- reality gap -->
+  <section class="card c4">
+    <h2>Latency · alert → paper order <span class="sub">seconds, last 40</span></h2>
+    <div id="latChart"></div>
+  </section>
+  <section class="card c4">
+    <h2>Slippage vs quote at alert <span class="sub">bps, + = worse</span></h2>
+    <div id="slipChart"></div>
+  </section>
+  <section class="card c4">
+    <h2>Reality gap · recent pairs</h2>
+    <div class="scroll" style="max-height:200px"><table id="gap"><thead><tr><th>Time</th><th>Fill</th><th>Quote@alert</th><th>Paper fill</th><th>Slip</th><th>Lat</th></tr></thead><tbody></tbody></table></div>
+  </section>
+
+  <section class="card c12">
+    <h2>Log <span class="sub" id="uptime"></span></h2>
+    <div class="log" id="log"></div>
+  </section>
+</div>
+
+<div class="tip" id="tip"></div>
+
+<div class="modal" id="modal"><div class="box">
+  <h3 style="margin:0 0 6px">Controls</h3>
+  <div class="small muted">Actions call the bridge's admin API. Paste the <code>ADMIN_TOKEN</code> from <code>.env</code> once — it's kept in this browser only.</div>
+  <div class="row"><input id="token" type="password" placeholder="ADMIN_TOKEN"><button id="saveTok">Save</button></div>
+  <div class="row">
+    <button id="btnPause">⏸ Pause</button><button id="btnResume" class="primary">▶ Resume</button>
+    <button id="btnFlatten" class="danger">⛔ Flatten all</button>
+  </div>
+  <div class="row small muted">Simulate a strategy fill (in shadow mode nothing leaves the PC; in mirror mode this places real PAPER orders):</div>
+  <div class="row"><button id="simLong">Sim LONG 5</button><button id="simShort">Sim SHORT 5</button><button id="simFlat">Sim FLAT</button><span id="simOut" class="small muted"></span></div>
+  <div class="row" style="justify-content:flex-end"><button id="closeModal">Close</button></div>
+</div></div>
+
+<script>
+const $ = (s, r=document) => r.querySelector(s);
+const fmt$ = (n, d=0) => (n==null||isNaN(n)) ? '—' : (n<0?'-':'') + '$' + Math.abs(n).toLocaleString(undefined,{minimumFractionDigits:d, maximumFractionDigits:d});
+const fmt = (n, d=2) => (n==null||isNaN(n)) ? '—' : Number(n).toLocaleString(undefined,{minimumFractionDigits:d, maximumFractionDigits:d});
+const tm = (t) => t ? new Date(t*1000).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'}) : '—';
+const tmShort = (t) => t ? new Date(t*1000).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : '—';
+const age = (s) => s==null ? 'never' : s<60 ? `${Math.round(s)}s ago` : s<3600 ? `${Math.round(s/60)}m ago` : `${(s/3600).toFixed(1)}h ago`;
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const tip = $('#tip');
+function showTip(html, x, y) { tip.innerHTML = html; tip.style.display='block'; tip.style.left = (x+14)+'px'; tip.style.top = (y+14)+'px'; }
+function hideTip() { tip.style.display='none'; }
+let seenAlerts = new Set(), seenOrders = new Set(), first = true, lastData = null;
+
+/* ── theme ── */
+const root = document.documentElement;
+root.dataset.theme = localStorage.getItem('icarus-theme') || 'dark';
+$('#btnTheme').onclick = () => { root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark'; localStorage.setItem('icarus-theme', root.dataset.theme); if (lastData) render(lastData); };
+
+/* ── admin controls ── */
+const tokKey = 'icarus-admin-token';
+$('#token').value = localStorage.getItem(tokKey) || '';
+$('#btnControls').onclick = () => $('#modal').classList.add('open');
+$('#closeModal').onclick = () => $('#modal').classList.remove('open');
+$('#saveTok').onclick = () => { localStorage.setItem(tokKey, $('#token').value.trim()); $('#simOut').textContent = 'token saved'; };
+async function admin(path, body) {
+  const tok = localStorage.getItem(tokKey) || $('#token').value.trim();
+  if (!tok) { $('#simOut').textContent = 'paste the ADMIN_TOKEN first'; return null; }
+  const r = await fetch(path, {method:'POST', headers:{'Authorization':'Bearer '+tok, 'Content-Type':'application/json'}, body: JSON.stringify(body||{})});
+  const j = await r.json().catch(()=>({}));
+  $('#simOut').textContent = r.ok ? (j.note || j.status || 'ok') : ('error ' + r.status + ': ' + (j.detail || ''));
+  refresh(); return j;
+}
+$('#btnPause').onclick = () => admin('/admin/pause', {reason:'paused from dashboard'});
+$('#btnResume').onclick = () => admin('/admin/resume');
+$('#btnFlatten').onclick = () => { if (confirm('Cancel ALL open orders and close ALL paper positions?')) admin('/admin/flatten', {confirm:true, reason:'dashboard'}); };
+function simPayload(side, contracts, posAfter, prev, comment) {
+  const mp = Math.abs(posAfter) < 1e-9 ? 'flat' : (posAfter > 0 ? 'long' : 'short');
+  const px = (lastData && lastData.quotes && lastData.quotes.QQQ) ? Math.round(lastData.quotes.QQQ * 40) : 20000; // rough NQ-equivalent for the demo
+  return {event:'order_fill', ticker:'NQ1!', action: side==='long'?'buy':'sell', contracts:String(contracts), order_id: side==='long'?'Long':'Short',
+          comment: comment||'', order_price:String(px), position_size:String(Math.abs(posAfter)), market_position: mp, prev_market_position: prev,
+          bar_close:String(px), time:'dashboard-sim', meta:`sys=RATE;side=${side};tp1=15;tp2=30;sl=45;q1=2;q2=3;ref=${px}`};
+}
+$('#simLong').onclick = () => admin('/admin/simulate', simPayload('long', 5, 5, 'flat'));
+$('#simShort').onclick = () => admin('/admin/simulate', simPayload('short', 5, -5, 'flat'));
+$('#simFlat').onclick = () => { const p = (lastData && lastData.positions && lastData.positions[0]) ? lastData.positions[0].qty : 0; admin('/admin/simulate', simPayload(p >= 0 ? 'short' : 'long', 5, 0, p>0?'long':'short', 'L_EOD')); };
+
+/* ── charts (plain SVG) ── */
+function lineChart(el, series, {baseline=null, height=190, fmtY=(v)=>fmt(v,0), fmtX=(t)=>tmShort(t)}={}) {
+  el.innerHTML = '';
+  if (!series || series.length < 2) { el.innerHTML = '<div class="empty">Collecting equity samples (one every 20 s)…</div>'; return; }
+  const W = el.clientWidth || 600, H = height, pl = 54, pr = 12, pt = 12, pb = 24;
+  const xs = series.map(p => p.ts), ys = series.map(p => p.equity);
+  let lo = Math.min(...ys, baseline ?? Infinity), hi = Math.max(...ys, baseline ?? -Infinity);
+  if (hi - lo < 1) { hi += 1; lo -= 1; } const pad = (hi-lo)*0.12; lo -= pad; hi += pad;
+  const x = t => pl + (t - xs[0]) / (xs[xs.length-1] - xs[0] || 1) * (W - pl - pr);
+  const y = v => pt + (1 - (v - lo)/(hi - lo)) * (H - pt - pb);
+  const d = series.map((p,i) => (i?'L':'M') + x(p.ts).toFixed(1) + ' ' + y(p.equity).toFixed(1)).join(' ');
+  const area = d + ` L${x(xs[xs.length-1]).toFixed(1)} ${(H-pb).toFixed(1)} L${x(xs[0]).toFixed(1)} ${(H-pb).toFixed(1)} Z`;
+  const ticks = 4, gy = [];
+  for (let i=0;i<=ticks;i++){ const v = lo + (hi-lo)*i/ticks; gy.push(`<line x1="${pl}" x2="${W-pr}" y1="${y(v)}" y2="${y(v)}" stroke="var(--grid)" stroke-width="1"/><text x="${pl-8}" y="${y(v)+4}" text-anchor="end" font-size="11" fill="var(--muted)">${fmtY(v)}</text>`); }
+  const base = baseline!=null ? `<line x1="${pl}" x2="${W-pr}" y1="${y(baseline)}" y2="${y(baseline)}" stroke="var(--axis)" stroke-width="1.5" stroke-dasharray="4 4"/>` : '';
+  const last = series[series.length-1];
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" height="${H}">
+    ${gy.join('')}${base}
+    <path d="${area}" fill="var(--s1-soft)"/>
+    <path d="${d}" fill="none" stroke="var(--s1)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+    <circle cx="${x(last.ts)}" cy="${y(last.equity)}" r="4.5" fill="var(--s1)" stroke="var(--surface)" stroke-width="2"/>
+    ${W > 380 ? `<text x="${pl}" y="${H-6}" font-size="11" fill="var(--muted)">${fmtX(xs[0])}</text>` : ''}
+    <text x="${W-pr}" y="${H-6}" font-size="11" fill="var(--muted)" text-anchor="end">${fmtX(xs[xs.length-1])}</text>
+    <g id="xh" style="display:none"><line y1="${pt}" y2="${H-pb}" stroke="var(--axis)" stroke-width="1"/><circle r="5" fill="var(--s1)" stroke="var(--surface)" stroke-width="2"/></g>
+    <rect x="${pl}" y="${pt}" width="${W-pl-pr}" height="${H-pt-pb}" fill="transparent" id="hit"/></svg>`;
+  const svg = el.firstElementChild, hit = svg.querySelector('#hit'), xh = svg.querySelector('#xh');
+  hit.addEventListener('mousemove', ev => {
+    const r = svg.getBoundingClientRect(); const px = (ev.clientX - r.left) * (W / r.width);
+    let best = 0, bd = Infinity; series.forEach((p,i) => { const dd = Math.abs(x(p.ts)-px); if (dd<bd){bd=dd;best=i;} });
+    const p = series[best]; xh.style.display=''; xh.querySelector('line').setAttribute('x1', x(p.ts)); xh.querySelector('line').setAttribute('x2', x(p.ts));
+    xh.querySelector('circle').setAttribute('cx', x(p.ts)); xh.querySelector('circle').setAttribute('cy', y(p.equity));
+    const delta = baseline!=null ? p.equity - baseline : null;
+    showTip(`<b>${fmt$(p.equity,2)}</b> ${delta!=null?`<span class="${delta>=0?'pos':'neg'}">${delta>=0?'+':''}${fmt$(delta,2)}</span>`:''}<br><span class="muted">${new Date(p.ts*1000).toLocaleString()}</span>`, ev.clientX, ev.clientY);
+  });
+  hit.addEventListener('mouseleave', () => { xh.style.display='none'; hideTip(); });
+}
+function barChart(el, values, {height=150, diverging=false, fmtV=(v)=>fmt(v,2), unit=''}={}) {
+  el.innerHTML = '';
+  if (!values || !values.length) { el.innerHTML = '<div class="empty">No paired fills yet — appears after the first alert executes.</div>'; return; }
+  const W = el.clientWidth || 400, H = height, pl = 40, pr = 8, pt = 10, pb = 18;
+  const vmax = Math.max(...values.map(Math.abs), 1e-9); const lo = diverging ? -vmax : 0, hi = diverging ? vmax : Math.max(...values);
+  const y = v => pt + (1 - (v - lo)/((hi - lo)||1)) * (H - pt - pb); const y0 = y(0);
+  const n = values.length, slot = (W - pl - pr) / n, bw = Math.min(24, Math.max(3, slot - 2));
+  const bars = values.map((v,i) => { const x = pl + i*slot + (slot-bw)/2, top = Math.min(y(v), y0), h = Math.max(1, Math.abs(y(v)-y0));
+    const col = diverging ? (v > 0 ? 'var(--crit)' : 'var(--s1)') : 'var(--s1)'; const r = Math.min(4, bw/2);
+    const path = v >= 0 ? `M${x} ${top+h} V${top+r} a${r} ${r} 0 0 1 ${r} -${r} H${x+bw-r} a${r} ${r} 0 0 1 ${r} ${r} V${top+h} Z` : `M${x} ${top} V${top+h-r} a${r} ${r} 0 0 0 ${r} ${r} H${x+bw-r} a${r} ${r} 0 0 0 ${r} -${r} V${top} Z`;
+    return `<path d="${path}" fill="${col}" data-i="${i}"/>`; }).join('');
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" height="${H}">
+    <line x1="${pl}" x2="${W-pr}" y1="${y0}" y2="${y0}" stroke="var(--axis)"/>
+    <text x="${pl-6}" y="${y(hi)+4}" text-anchor="end" font-size="11" fill="var(--muted)">${fmtV(hi)}${unit}</text>
+    ${diverging?`<text x="${pl-6}" y="${y(lo)+4}" text-anchor="end" font-size="11" fill="var(--muted)">${fmtV(lo)}${unit}</text>`:''}
+    <text x="${pl-6}" y="${y0+4}" text-anchor="end" font-size="11" fill="var(--muted)">0</text>${bars}</svg>`;
+  el.querySelectorAll('path').forEach(p => { p.addEventListener('mousemove', ev => showTip(`<b>${fmtV(values[+p.dataset.i])}${unit}</b>`, ev.clientX, ev.clientY)); p.addEventListener('mouseleave', hideTip); });
+}
+function ladder(sym, st, pos, quote) {
+  const long = pos ? pos.qty > 0 : st.side === 'long'; const entry = (pos && pos.avg_entry_price) || st.entry_fill; const stop = st.stop_price;
+  const sgn = long ? 1 : -1; const tp1 = entry && st.tp1_pct ? entry*(1+sgn*st.tp1_pct) : null, tp2 = entry && st.tp2_pct ? entry*(1+sgn*st.tp2_pct) : null;
+  const lv = [['stop', stop, 'var(--crit)'], ['entry', entry, 'var(--ink-2)'], ['TP1', tp1, 'var(--good)'], ['TP2', tp2, 'var(--good)'], ['now', quote, 'var(--s1)']].filter(l => l[1]);
+  const ys = lv.map(l => l[1]); let lo = Math.min(...ys), hi = Math.max(...ys); const pad = Math.max((hi-lo)*0.15, (entry||1)*0.0005); lo -= pad; hi += pad;
+  const H = 150, W = 180, y = v => 8 + (1-(v-lo)/(hi-lo))*(H-16);
+  const marks = lv.map(([k,v,c]) => k==='now' ? `<line x1="16" x2="${W-16}" y1="${y(v)}" y2="${y(v)}" stroke="${c}" stroke-width="2"/><circle cx="${W-16}" cy="${y(v)}" r="4.5" fill="${c}" stroke="var(--surface-2)" stroke-width="2"/><text x="${W-26}" y="${y(v)-6}" text-anchor="end" font-size="11" fill="var(--ink)">${fmt(v,2)}</text>`
+    : `<line x1="16" x2="${W-40}" y1="${y(v)}" y2="${y(v)}" stroke="${c}" stroke-width="1.5" stroke-dasharray="${k==='entry'?'3 3':'0'}"/><text x="18" y="${y(v)-4}" font-size="10.5" fill="var(--muted)">${k} ${fmt(v,2)}</text>`).join('');
+  const unreal = pos ? pos.unrealized_pl : null; const dist = quote && stop ? ((quote-stop)/quote*100*sgn).toFixed(2)+'% to stop' : '';
+  return `<div class="ladder"><div class="meta"><b>${sym} <span class="chip ${st.system||'OTHER'}">${st.system||''}</span></b>
+    <div class="q ${long?'pos':'neg'}">${pos? (pos.qty>0?'+':'')+pos.qty : '0'} <span class="small muted">sh</span></div>
+    <div>${long?'LONG':'SHORT'} · avg ${fmt(entry,2)}</div>
+    <div class="${(unreal||0)>=0?'pos':'neg'}">${unreal!=null? (unreal>=0?'+':'')+fmt$(unreal,2) : ''}</div>
+    <div class="muted small">${st.stop_tag ? 'stop: '+st.stop_tag : ''} ${dist}</div></div>
+    <svg viewBox="0 0 ${W} ${H}" height="${H}"><line x1="16" x2="16" y1="8" y2="${H-8}" stroke="var(--grid)"/>${marks}</svg></div>`;
+}
+
+/* ── render ── */
+function render(d) {
+  lastData = d;
+  const acct = d.account || {}, mkt = d.market || {};
+  // top bar
+  const stale = d.last_alert_age_sec == null ? 'stale' : d.last_alert_age_sec < 900 ? 'live' : d.last_alert_age_sec < 7200 ? 'stale' : 'dead';
+  $('#beat').className = 'dot ' + (d.broker_error ? 'dead' : stale);
+  const set = (n, cls) => { const el = $(`.node[data-n="${n}"]`); el.className = 'node ' + cls; };
+  set('tv', d.last_alert_age_sec != null && d.last_alert_age_sec < 3600 ? 'on' : d.last_alert_age_sec != null ? 'warn' : '');
+  set('tunnel', d.public_url ? 'on' : 'warn');
+  set('bridge', d.paused ? 'warn' : 'on');
+  set('broker', d.broker_error ? 'bad' : (acct.equity ? 'on' : 'warn'));
+  const lastOrder = (d.orders||[]).find(o => o.kind === 'market');
+  set('fill', lastOrder ? (lastOrder.status === 'filled' ? 'on' : lastOrder.status === 'rejected' ? 'bad' : 'warn') : '');
+  $('#mode').textContent = `${d.mode.toUpperCase()} · ${d.broker}${acct.paper===false?' · LIVE':''}`; $('#mode').className = 'badge ' + (d.mode==='shadow'?'shadow':'');
+  $('#armed').textContent = d.paused ? `PAUSED · ${d.pause_reason||''}` : 'ARMED'; $('#armed').className = 'badge ' + (d.paused ? 'paused' : 'armed');
+  const next = mkt.is_open ? mkt.next_close : mkt.next_open; let cd = '';
+  if (next) { const ms = new Date(next) - Date.now(); if (ms > 0 && ms < 48*3600e3) { const h = Math.floor(ms/3600e3), m = Math.floor(ms%3600e3/60e3); cd = ` · ${mkt.is_open?'closes':'opens'} in ${h}h ${m}m`; } }
+  $('#clock').innerHTML = mkt.is_open == null ? '—' : `market <b>${mkt.is_open?'OPEN':'CLOSED'}</b>${cd}`;
+  $('#calloutBroker').style.display = d.broker_error ? '' : 'none'; $('#brokerErr').textContent = d.broker_error ? ' — ' + d.broker_error : '';
+  $('#calloutTunnel').style.display = (!d.public_url && d.mode !== 'shadow') ? '' : 'none';
+  // hero
+  const pnl = (acct.equity != null && d.day_start_equity != null) ? acct.equity - d.day_start_equity : null;
+  $('#pnl').textContent = pnl == null ? '—' : (pnl>=0?'+':'') + fmt$(pnl, 2); $('#pnl').className = 'n tnum ' + (pnl==null?'':pnl>=0?'up':'dn');
+  $('#pnlPct').textContent = pnl == null ? 'waiting for the first equity sample' : `${(pnl/d.day_start_equity*100).toFixed(2)}% vs day start ${fmt$(d.day_start_equity,0)}`;
+  $('#dayDate').textContent = d.day_start_date || '';
+  $('#equity').textContent = fmt$(acct.equity, 2); $('#bp').textContent = fmt$(acct.buying_power, 0);
+  const unreal = (d.positions||[]).reduce((s,p)=>s+(p.unrealized_pl||0),0); $('#unreal').textContent = (d.positions||[]).length ? (unreal>=0?'+':'')+fmt$(unreal,2) : '—'; $('#unreal').className = 'v tnum ' + (unreal>=0?'pos':'neg');
+  const expo = (d.positions||[]).reduce((s,p)=>s+Math.abs(p.market_value||0),0); $('#exposure').innerHTML = expo ? fmt$(expo,0) + `<small>${(d.positions||[]).map(p=>p.symbol+' '+(p.qty>0?'+':'')+p.qty).join(', ')}</small>` : 'flat';
+  // pipeline tiles
+  const c = d.counts_today || {}, bs = c.by_status || {}; const tot = Object.values(bs).reduce((a,b)=>a+b,0);
+  const ex = (bs.executed||0)+(bs.partial||0), er = (bs.error||0)+(bs.skipped_risk||0), sk = tot-ex-er;
+  $('#alertsN').textContent = tot; $('#execN').textContent = ex; $('#skipN').textContent = sk; $('#errN').textContent = er; $('#errN').className = 'v tnum ' + (er?'neg':'');
+  $('#latMed').textContent = d.gap && d.gap.median_latency_sec != null ? d.gap.median_latency_sec.toFixed(2)+'s' : '—';
+  $('#slipMed').textContent = d.gap && d.gap.median_slippage_bps != null ? (d.gap.median_slippage_bps>=0?'+':'')+d.gap.median_slippage_bps.toFixed(1)+' bps' : '—';
+  $('#sysMix').textContent = Object.entries(c.by_system||{}).map(([k,v])=>`${k} ${v}`).join(' · ') + (c.paper_fills ? ` · ${c.paper_fills} paper fills` : '');
+  // equity chart
+  lineChart($('#eqChart'), d.equity_series, {baseline: d.day_start_equity});
+  $('#eqSub').textContent = d.equity_series && d.equity_series.length ? `${d.equity_series.length} samples` : '';
+  // ladders
+  const stMap = d.symbol_state || {}; const posMap = Object.fromEntries((d.positions||[]).map(p=>[p.symbol,p]));
+  const syms = new Set([...Object.keys(stMap).filter(s=>stMap[s]&&Object.keys(stMap[s]).length), ...Object.keys(posMap)]);
+  $('#ladders').innerHTML = syms.size ? [...syms].map(s => ladder(s, stMap[s]||{}, posMap[s], (d.quotes||{})[s])).join('') : `<div class="empty">Flat. Quotes: ${Object.entries(d.quotes||{}).filter(([k,v])=>v).map(([k,v])=>k+' '+fmt(v,2)).join(' · ') || '—'}</div>`;
+  // resting orders
+  const flat = []; (d.open_orders||[]).forEach(o => { flat.push(o); (o.legs||[]).forEach(l => flat.push({...l, kind:'↳ '+l.kind})); });
+  $('#oo tbody').innerHTML = flat.map(o => `<tr><td>${o.kind}</td><td class="side ${o.side}">${o.side}</td><td class="tnum">${o.qty}</td><td class="tnum">${fmt(o.stop_price)}</td><td class="tnum">${fmt(o.limit_price)}</td><td><span class="st ${o.status}">${o.status}</span></td></tr>`).join('') || '<tr><td colspan=6 class="empty">none resting</td></tr>';
+  // alerts
+  $('#alerts tbody').innerHTML = (d.alerts||[]).map(a => `<tr class="${!first && !seenAlerts.has(a.id) ? 'new':''}"><td class="tnum">${tm(a.received_at)}</td><td><span class="chip ${a.system||'OTHER'}">${a.system||a.event}</span></td><td>${esc(a.ticker)}<span class="muted">→${esc(a.symbol||'?')}</span></td><td class="side ${a.action}">${a.action||a.event} ${a.contracts??''}</td><td>${esc(a.order_id)} <span class="muted">${esc(a.comment)}</span></td><td class="tnum">${fmt(a.order_price,2)}</td><td class="tnum">${a.position_size??''}</td><td><span class="st ${a.status}">${a.status}</span></td><td class="muted" title="${esc(a.note)}">${esc((a.note||'').slice(0,60))}</td></tr>`).join('') || '<tr><td colspan=9 class="empty">No alerts yet. Send one with <code>icarus-bridge test-alert</code> or the Controls → Sim buttons.</td></tr>';
+  (d.alerts||[]).forEach(a => seenAlerts.add(a.id));
+  $('#lastAlert').textContent = 'last ' + age(d.last_alert_age_sec);
+  // orders
+  $('#orders tbody').innerHTML = (d.orders||[]).map(o => `<tr class="${!first && !seenOrders.has(o.id)?'new':''}"><td class="tnum">${tm(o.ts)}</td><td>${o.symbol}</td><td class="side ${o.side}">${o.side}</td><td class="tnum">${o.qty}</td><td>${o.kind}</td><td>${o.purpose}</td><td class="tnum">${fmt(o.stop_price)}</td><td class="tnum">${fmt(o.fill_price)}</td><td><span class="st ${o.status}">${o.status}</span></td></tr>`).join('') || '<tr><td colspan=9 class="empty">no paper orders yet</td></tr>';
+  (d.orders||[]).forEach(o => seenOrders.add(o.id));
+  // gap
+  barChart($('#latChart'), (d.gap&&d.gap.latency)||[], {fmtV:v=>v.toFixed(2), unit:'s'});
+  barChart($('#slipChart'), (d.gap&&d.gap.slippage_bps)||[], {diverging:true, fmtV:v=>v.toFixed(1), unit:''});
+  $('#gap tbody').innerHTML = ((d.gap&&d.gap.rows)||[]).map(r => `<tr><td class="tnum">${tm(r.received_at)}</td><td class="side ${r.action}">${r.action} ${r.order_id}</td><td class="tnum">${fmt(r.proxy_quote,2)}</td><td class="tnum">${fmt(r.paper_fill_avg,2)}</td><td class="tnum ${r.slippage_bps>0?'neg':'pos'}">${r.slippage_bps!=null?(r.slippage_bps>=0?'+':'')+r.slippage_bps.toFixed(1):'—'}</td><td class="tnum">${r.latency_sec!=null?r.latency_sec.toFixed(2)+'s':'—'}</td></tr>`).join('') || '<tr><td colspan=6 class="empty">no pairs yet</td></tr>';
+  // log
+  $('#log').innerHTML = (d.log||[]).map(l => `<div class="${l.level}">${tm(l.ts)} ${l.level.padEnd(5)} ${esc(l.msg)}</div>`).join('');
+  $('#uptime').textContent = `up ${age(d.uptime_sec).replace(' ago','')} · ${d.public_url ? d.public_url + '/webhook' : 'no tunnel'}`;
+  first = false;
+}
+async function refresh() {
+  try { const r = await fetch('/status/public', {cache:'no-store'}); render(await r.json()); }
+  catch (e) { $('#beat').className = 'dot dead'; $('#armed').textContent = 'BRIDGE UNREACHABLE'; $('#armed').className = 'badge paused'; }
+}
+refresh(); setInterval(refresh, 3000);
+window.addEventListener('resize', () => { if (lastData) render(lastData); });
+</script>
+</body>
+</html>

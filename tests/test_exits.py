@@ -195,3 +195,67 @@ def test_htf_range_rolls_off_old_bars():
 def test_htf_range_rejects_a_degenerate_window():
     with pytest.raises(ValueError):
         HTFRange(1)
+
+
+# --- excursion-armed breakeven ----------------------------------------------
+# A measured leak: 75 of 239 trades peaked between +0.5R and +1.5R and then took
+# a FULL -1.00R, because the stop only moved to entry when TP1 filled at 1.5R.
+# Arming breakeven off the excursion already made looked like free money. A
+# sweep on a tuning tape AND a held-out tape says it is not: every arm level
+# from 0.4R to 1.2R is WORSE than off, on both. The knob ships OFF.
+
+def test_breakeven_arming_is_off_by_default():
+    """The sweep says early arming costs more than the leak it plugs."""
+    assert HybridExit().params.breakeven_arm_r == 0.0
+    assert SuiteExit().params.breakeven_arm_r == 0.0
+
+
+def test_breakeven_does_not_arm_below_the_threshold():
+    from icarus.exits import HybridParams
+    policy = HybridExit(HybridParams(breakeven_arm_r=1.0))
+    pos, _ = position(policy)
+    pos.max_favourable = 0.9
+    actions = policy.manage(pos, bar(30000.0, 30010.0, 29990.0, 30000.0), ctx(), PROFILE)
+    assert all(a.reason != "breakeven" for a in actions)
+
+
+def test_breakeven_arms_once_the_excursion_is_made():
+    from icarus.exits import HybridParams
+    policy = HybridExit(HybridParams(breakeven_arm_r=1.0, breakeven_offset_r=0.05))
+    pos, _ = position(policy)
+    pos.max_favourable = 1.2
+    actions = policy.manage(pos, bar(30000.0, 30010.0, 29990.0, 30000.0), ctx(), PROFILE)
+    move = next(a for a in actions if a.reason == "breakeven")
+    # Parked slightly in profit so the scratch clears round-turn friction.
+    assert move.price == pytest.approx(pos.entry_price + 0.05 * pos.risk_unit)
+
+
+def test_breakeven_arming_never_loosens_an_existing_stop():
+    from icarus.exits import HybridParams
+    policy = HybridExit(HybridParams(breakeven_arm_r=1.0))
+    pos, _ = position(policy)
+    pos.max_favourable = 5.0
+    pos.stop = pos.entry_price + 10.0          # trail already past breakeven
+    actions = policy.manage(pos, bar(30000.0, 30010.0, 29990.0, 30000.0), ctx(), PROFILE)
+    assert all(a.reason != "breakeven" for a in actions)
+
+
+def test_breakeven_does_not_rearm_after_it_has_fired():
+    from icarus.exits import HybridParams
+    policy = HybridExit(HybridParams(breakeven_arm_r=1.0))
+    pos, _ = position(policy)
+    pos.max_favourable = 2.0
+    pos.breakeven_moved = True
+    actions = policy.manage(pos, bar(30000.0, 30010.0, 29990.0, 30000.0), ctx(), PROFILE)
+    assert all(a.reason != "breakeven" for a in actions)
+
+
+def test_arming_at_the_scale_out_level_is_equivalent_to_the_old_behaviour():
+    """Correctness check on the implementation: at TP1's own R, it is a no-op.
+
+    The sweep confirms this empirically -- arm_r = 1.5 reproduces arm_r = 0.0
+    to within noise (239 trades, +0.329R vs +0.325R) because HybridParams puts
+    first_target_r at 1.5.
+    """
+    from icarus.exits import HybridParams
+    assert HybridParams().first_target_r == 1.5

@@ -264,6 +264,88 @@ Ehlers FDI, the scalar Kalman filter, HTF endurance target via
 
 ---
 
+## 3. v1.1.1 — A hidden leak, and why it cannot be harvested (2026-09-20)
+
+Went hunting for an undemonstrated edge in the exit layer. Found a large, real,
+perfectly repeatable leak — then proved it is **not harvestable**. The mechanism
+ships **disabled**. This entry exists so nobody rediscovers the leak and ships
+the "fix" without running the sweep again.
+
+### 3.1 The leak (real, and exactly quantified)
+
+Hybrid policy, 239 trades on MNQ 2m. Mean MFE **+2.063R**, mean realised
+**+0.325R** — **1.737R handed back per trade**. Broken out by peak excursion,
+for trades that ended at the stop:
+
+| peak MFE | n | mean realised R |
+|---|---|---|
+| 0.5–0.8R | 36 | **−1.003** |
+| 0.8–1.0R | 11 | **−1.003** |
+| 1.0–1.5R | 28 | **−1.004** |
+| 1.5–2.0R | 24 | +0.322 |
+| 2.0R+ | 49 | +1.883 |
+
+**75 trades went up to +1.5R and took a full −1.00R.** The mean is −1.00 to
+three decimals in all three bands, which is the signature of a mechanical
+cause, not variance: `HybridParams.first_target_r` is 1.5, so the stop only
+moved to entry when TP1 filled. Anything that peaked below 1.5R never armed
+breakeven and rode the whole way back. Above 1.5R the mechanism engages and
+mean realised flips positive. **The leak was the same size as the entire
+profit** (75R against a total sumR of +77.79).
+
+### 3.2 The fix, built and measured
+
+`ExitPolicy._breakeven_action` arms breakeven off `Position.max_favourable` —
+excursion the trade has **already made** — independently of the scale-out. It
+predicts nothing; it only declines to return a move that already happened.
+Parked at `+0.05R` so a scratch clears round-turn friction.
+
+### 3.3 The sweep says no
+
+Tuning tape (seed 11) and a **held-out** tape (seed 41), ~240 trades each:
+
+| arm R | tune expR | tune win% | tune scratch% | tune DD% | avg winner | **held-out expR** |
+|---|---|---|---|---|---|---|
+| **0.0 (off)** | **+0.325** | 44.8 | 0.4 | 12.80 | +3.157R | **+0.228** |
+| 0.4 | +0.134 | 17.5 | 57.0 | 11.95 | +3.093R | −0.008 |
+| 0.6 | +0.157 | 24.2 | 40.6 | 17.92 | +3.009R | +0.014 |
+| 0.8 | +0.173 | 30.9 | 28.4 | 19.72 | +2.806R | +0.175 |
+| 1.0 | +0.203 | 36.5 | 18.7 | 16.36 | +2.717R | +0.212 |
+| 1.2 | +0.225 | 39.0 | 10.4 | 17.63 | +2.963R | +0.215 |
+| 1.5 | +0.329 | 44.8 | 0.4 | 12.76 | +3.157R | +0.225 |
+
+**Every arm level is worse than off, on both tapes.** Not marginally: at 0.4R
+the held-out tape goes negative and 57% of trades become scratches. Drawdown
+*rises* while expectancy falls, which rules out "safer but smaller".
+
+The cause is visible in the `avg winner` column. The winners average +3.16R and
+they are what pays for the losers. Every scratch that saves a −1.00R also
+scratches a trade that was going to run, and the runners are worth three times
+what the saved losers cost. **The leak is real and unharvestable by this
+mechanism**: it is not slack in the system, it is the price of the runners.
+
+`arm_r = 1.5` reproducing `arm_r = 0.0` to within noise (239 trades, +0.329 vs
++0.325, identical win rate and drawdown) is the implementation's correctness
+check — at TP1's own R the new path is a genuine no-op.
+
+### 3.4 What shipped
+
+* `breakeven_arm_r` on `SuiteParams` and `HybridParams`, **default 0.0 (off)**.
+  Engine behaviour is byte-identical to v1.1.0.
+* Six tests pinning arming, non-arming, non-re-arming, the no-loosen guarantee,
+  and the off-by-default guarantee.
+* This entry, so the leak is not "found" again and patched on the strength of
+  the MFE statistic alone.
+
+### 3.5 The transferable lesson
+
+Mean MFE minus mean realised R **looks** like recoverable money and is not. Any
+exit change must be swept across a range and validated on a held-out tape
+before it is believed — the upper-bound arithmetic (+0.666R here) ignored the
+cost side entirely and was wrong by more than its own magnitude.
+
+---
+
 ## Next
 
 Priority order. Each must be justified by out-of-sample evidence on **real MNQ

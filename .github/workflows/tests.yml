@@ -1,0 +1,123 @@
+name: tests
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+# A superseded run on the same branch is wasted CI time.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # The suite, including the no-look-ahead guarantee and the pulse regression
+  # control. These are the invariants that rot silently under future edits.
+  tests:
+    name: pytest (py${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest
+
+      - name: Run the suite
+        run: pytest -q
+
+  # The repository's central architectural claim is that the engine core runs on
+  # the standard library alone, so the same code path is valid in a research
+  # loop and inside a live broker callback. Nothing is installed in this job:
+  # if a third-party import ever creeps into icarus/, this is what catches it.
+  stdlib-only:
+    name: core runs with zero dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Assert icarus/ imports nothing outside the standard library
+        run: |
+          python - <<'PY'
+          import ast, pathlib, sys
+
+          allowed = set(sys.stdlib_module_names) | {"icarus"}
+          offenders = []
+          for path in sorted(pathlib.Path("icarus").rglob("*.py")):
+              tree = ast.parse(path.read_text(encoding="utf-8"))
+              for node in ast.walk(tree):
+                  if isinstance(node, ast.Import):
+                      offenders += [(path, a.name) for a in node.names
+                                    if a.name.split(".")[0] not in allowed]
+                  elif isinstance(node, ast.ImportFrom) and node.level == 0 and node.module:
+                      if node.module.split(".")[0] not in allowed:
+                          offenders.append((path, node.module))
+
+          for path, module in offenders:
+              print(f"::error file={path}::third-party import {module!r} in the engine core")
+          raise SystemExit(1 if offenders else 0)
+          PY
+
+      - name: Run the engine with nothing installed
+        run: |
+          python - <<'PY'
+          from icarus.backtest import backtest
+          from icarus.config import AssetClass
+          from icarus.data import synthetic_for
+
+          report = backtest(synthetic_for(AssetClass.MICRO_FUTURES, 3000, seed=11),
+                            AssetClass.MICRO_FUTURES)
+          assert report.bars == 3000, report.bars
+          print(f"stdlib-only run OK: {report.trades} trades, verdict = {report.verdict}")
+          PY
+
+  # Unit tests do not exercise argument parsing, so a broken CLI ships silently.
+  cli:
+    name: every CLI path
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: demo
+        run: python -m icarus demo --asset micro_futures --bars 4000 --policy hybrid
+
+      - name: backtest with the permutation null
+        run: python -m icarus backtest --asset crypto --bars 3000 --permutations 3
+
+      - name: compare exit policies across timeframes
+        run: |
+          python -m icarus compare --asset micro_futures --bars 12000 \
+            --timeframes 5m,10m --policies pulse,suite,hybrid
+
+      - name: walk-forward
+        run: python -m icarus walk --asset futures --bars 4000 --folds 3
+
+      - name: live replay
+        run: python -m icarus live --asset crypto --bars 3000 --tail 5
+
+      - name: export the labelled training matrix
+        run: |
+          python -m icarus export-features --asset micro_futures --bars 3000 --out training.csv
+          test -s training.csv

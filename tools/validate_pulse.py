@@ -42,7 +42,7 @@ def to_pulse_bars(bars) -> list[PulseBar]:
 
 def run_pulse(bars, *, tf_minutes: int, mintick: float = 0.25,
               point_value: float = 2.0, capital: float = 100_000.0,
-              tpsl_mode: str = "ATR-Based") -> dict:
+              tpsl_mode: str = "ATR-Based", **overrides) -> dict:
     """Drive PulseStrategy over a tape and summarise the closed trades."""
     # "Fixed Points" carries NQ-sized distances (15/30/45 pts). On a 20m MNQ tape
     # a 45-point stop sits INSIDE one bar's range, which produces same-bar exits
@@ -50,7 +50,7 @@ def run_pulse(bars, *, tf_minutes: int, mintick: float = 0.25,
     # which is the only way this is a fair read on the signal itself.
     inp = Inputs(use_session=False, use_entry_window=False, use_eod_flat=False,
                  use_session_bias=False, use_hour_breach=False, midday_mode="Off",
-                 tpsl_mode=tpsl_mode, point_value=point_value)
+                 tpsl_mode=tpsl_mode, point_value=point_value, **overrides)
     em = Emulator(capital, 0.37, mintick, point_value)
     strat = PulseStrategy(inp, em, mintick=mintick, tf_minutes=tf_minutes)
 

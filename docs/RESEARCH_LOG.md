@@ -187,7 +187,7 @@ an empirical question, not a design decision.
 
 ---
 
-## V-001 · pulse.py survives the permutation null — CONFIRMED, and the sizing was the whole story
+## V-001 · pulse.py survives the permutation null — CONFIRMED, but my reading of WHY was wrong
 
 **Status:** validated. p = 0.0164 on this session's synthetic MNQ tape.
 **Date:** 2026-09-20
@@ -224,6 +224,70 @@ Both p-values are exactly `1/(runs+1)` — **zero surrogates beat the observed
 result in either run.** The first number was the test running out of
 resolution, not a weak result, and reading it as "does not separate" was wrong.
 The true p is bounded above by 0.0164 and may be lower.
+
+
+### ⚠ CORRECTION (same day) — the tape was the problem, not the preset
+
+I wrote above that "Fixed Points ships NQ-sized distances ... that stop sits
+inside one bar's range", and concluded pulse.py was mis-sized. **That conclusion
+was wrong, and the error was mine.**
+
+Two mistakes, compounding:
+
+**1. I benchmarked against `Inputs()` defaults, not the shipped preset.** The
+defaults are tp1 15 / tp2 30 / sl 45. The preset the script actually ships with
+— revealed by `test_shipped_presets_load`, which was failing in CI at the time —
+is **tp1 100 / sl 80**. I never tested the real configuration.
+
+**2. My synthetic tape is roughly 5x too volatile for NQ.** Measured on the
+tape every result in this log was produced from:
+
+| | my synthetic 20m tape | real NQ 20m (typical) |
+|---|---|---|
+| index level | ~29,960 | ~similar |
+| median ATR(14) | **403.9 pts (1.35%/bar)** | ~60–90 pts (~0.25%/bar) |
+
+So the shipped 80-point stop is **0.20 ATR on my tape** and roughly **1.0 ATR on
+real NQ**. It is not a tight stop. My generator made it look like one.
+
+Re-run with the real preset values, all three on the same tape:
+
+| config | n | hold | win% | per-trade |
+|---|---|---|---|---|
+| `Inputs()` defaults 15/30/45 | 46 | 0.4 bars | 47.8% | −$24 |
+| **shipped preset 100/80** | 50 | **0.6 bars** | 42.0% | +$90 |
+| ATR-Based | 55 | 15.2 bars | 83.6% | +$5,457 |
+
+The shipped preset also exits same-bar **on this tape** — because 0.20 ATR is
+inside one bar either way. That is a statement about my generator, not about
+pulse.py.
+
+### What survives the correction
+- ATR-scaled sizing beat fixed-point sizing **on this tape**, p = 0.0164 with
+  zero of 60 surrogates beating it. That comparison is still valid: both
+  configurations met the identical tape and surrogates.
+- The general principle stands: a stop inside one bar's expected range makes the
+  trade a coin flip on its own entry bar.
+
+### What does NOT survive
+- **The "two engines, same defect" claim is withdrawn.** My engine's 1.0–1.2 ATR
+  median stop was genuinely tight in its own ATR terms. Astra's 80-point stop is
+  ~1.0 ATR on the instrument it was tuned for. Those are not the same finding,
+  and pairing them was flattering to my own diagnosis.
+- Any conclusion in this log that depends on an **absolute price distance** is
+  suspect until the generator is recalibrated. Relative comparisons between
+  variants are unaffected — every variant met the same tape.
+
+### Do not repeat
+- **Benchmark against the shipped configuration, not the library defaults.** A
+  dataclass default is not what the system runs.
+- **Calibrate the synthetic generator against the real instrument's ATR before
+  drawing any conclusion involving a price distance.** Checking one number —
+  median ATR as a percentage of price — would have caught this before it
+  produced a published finding.
+- A failing test can carry the information that invalidates your result. These
+  parameters came out of a CI failure I had already triaged as "just a missing
+  file".
 
 ### Why this matters beyond one script
 
@@ -269,7 +333,12 @@ this project.
    Zero of twelve surrogates had beaten it — the test had simply run out of
    runs. At 60 surrogates the same result reads p = 0.0164. Always check
    whether p equals its own floor before concluding anything.
-7. **Score-0 rows polluting a decile study.** 80% of exported rows carry
+7. **A mis-calibrated synthetic generator invalidates absolute results.**
+   The MNQ tape ran ~5x real NQ volatility (1.35% vs ~0.25% per 20m bar),
+   which made a correctly-sized 80-point stop look like a 0.20 ATR coin
+   flip. Relative comparisons survived; the causal story did not. Check
+   median ATR as a percent of price against the real instrument first.
+8. **Score-0 rows polluting a decile study.** 80% of exported rows carry
    `score = 0` because a hard gate vetoed before scoring. Including them made
    the confluence score look predictive when the deciles were mostly noise.
    Restrict any score study to actually-scored setups.

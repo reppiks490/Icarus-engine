@@ -37,9 +37,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install pytest
 
-      - name: Run the suite
-        run: pytest -q
+      - name: Run the combined suite (icarus + icarus_engine)
+        run: pytest tests tests_engine -q
 
+  # Scoped to icarus/ deliberately. icarus_bridge/ legitimately needs fastapi and
+  # httpx to talk to a broker; icarus/ is the part that claims to run bare, and
+  # that claim is what this job defends.
   # The repository's central architectural claim is that the engine core runs on
   # the standard library alone, so the same code path is valid in a research
   # loop and inside a live broker callback. Nothing is installed in this job:

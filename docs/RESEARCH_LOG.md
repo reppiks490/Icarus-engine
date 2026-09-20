@@ -649,3 +649,55 @@ tape have now inverted on real data: the 83.6% win rate, the location sign, the
 hold-time gradient, and the cross-asset breadth features. The tape is not a
 weak proxy for the market; it is an unrelated process that happens to look like
 one. Nothing measured on it should be carried forward without re-testing.
+
+---
+
+## F-004 (closed) — 16-market replication refutes the premise, and the continuation lead with it
+
+F-004 left two things open: whether the sweep premise replicates, and whether
+the CONTINUATION signal at MNQ 10m (73% half-to-half sign agreement, negative
+both halves) was real. Six more markets were added -- volatility, an energy
+sector, silver, intermediate rates, the dollar, emerging -- bringing the panel
+to 16 markets across nine asset classes, 2,772 cells.
+
+**Adding independent markets REDUCED the apparent signal:**
+
+| panel | cells | raw p<0.05 | expected by chance | survive FDR |
+|---|---|---|---|---|
+| 10 markets | 1,692 | 176 | ~85 | 4 |
+| **16 markets** | **2,772** | **245** | **~139** | **1** |
+
+The lone survivor is the same SPY cell as before: one span, longest lookback,
+longest horizon, in a window where SPY fell. If a real effect existed, more
+markets would sharpen it. Fewer survivors on more data is what multiple-testing
+noise does when the correction is applied honestly.
+
+**Sign agreement is BELOW chance:**
+
+```
+pooled          46.5%  over 1,386 paired cells   (chance 50%, z = -2.60)
+median market   50.0%  -- exactly chance
+below 50%       8 of 16 markets
+```
+
+Systematic *dis*agreement between halves is not noise and not a real effect.
+It is drift: each half carries its own directional tilt, and the sweep effect
+reads it with opposite sign in each. The swings are enormous -- IEF goes from
+13% positive cells to 83% (+70pp), EEM 90% to 27% (-63pp), VXX 77% to 26%.
+
+**The continuation lead was an order statistic.** MNQ 10m's 73% agreement is
+the MAXIMUM of sixteen draws whose median is exactly 50%. Nothing about it
+survives being placed next to fifteen siblings. It was logged as a thread to
+test rather than a result, and testing it is what killed it.
+
+**Verdict.** The liquidity-sweep premise -- reversal OR continuation -- is not
+supported in any market on the panel. This is consistent with everything
+downstream: a permutation null on the finished strategy at p=0.377 held-out is
+what an entry signal built on a false premise produces.
+
+**What this does not say.** It does not say the engine is worthless or that no
+intraday edge exists. It says that THIS trigger, taking out a prior extreme and
+reclaiming it, carries no directional information at these horizons. The
+structural result in N-003 still stands on held-out data: large HTF moves
+develop progressively and are reachable from a lower timeframe. That problem is
+an execution problem, and it is untouched by this.

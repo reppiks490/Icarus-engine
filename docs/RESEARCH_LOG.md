@@ -187,6 +187,70 @@ an empirical question, not a design decision.
 
 ---
 
+## V-001 · pulse.py survives the permutation null — CONFIRMED, and the sizing was the whole story
+
+**Status:** validated. p = 0.0164 on this session's synthetic MNQ tape.
+**Date:** 2026-09-20
+
+### The setup
+Astra's `icarus_engine/strategy/pulse.py` driven through this session's
+`shuffle_bars` permutation null (`tools/validate_pulse.py`), so both engines meet
+the same tape and the same surrogates. 2,400 x 20m MNQ bars, neutral HTF/LTF
+context, sessions off (the tape runs on a 24/7 UTC clock).
+
+### One input changed the entire result
+
+| | `Fixed Points` | `ATR-Based` |
+|---|---|---|
+| mean hold | **0.1 bars** | **15.2 bars** |
+| win rate | 50.0% | **83.6%** |
+| per-trade | −$87 | **+$5,457** |
+| trades | 24 | 55 |
+| net | −$2,097 | **+$300,111** |
+
+`Fixed Points` ships NQ-sized distances — tp1 15, tp2 30, **sl 45 points**. On a
+20-minute MNQ tape that stop sits **inside one bar's range**, so the trade is
+decided on its own entry bar. It is not a strategy result at all; it is a
+sizing artefact.
+
+### The null, resolved
+
+| runs | observed | null median | best surrogate | p |
+|---|---|---|---|---|
+| 12 | +$300,111 | −$13,661 | +$100,845 | 0.0769 |
+| 60 | +$300,111 | −$3,435 | +$100,845 | **0.0164** |
+
+Both p-values are exactly `1/(runs+1)` — **zero surrogates beat the observed
+result in either run.** The first number was the test running out of
+resolution, not a weak result, and reading it as "does not separate" was wrong.
+The true p is bounded above by 0.0164 and may be lower.
+
+### Why this matters beyond one script
+
+**Two engines, built independently, carried the same defect.**
+
+| | this session's engine | Astra's pulse.py |
+|---|---|---|
+| symptom | 8–21% of trades died on the entry bar | 0.1-bar mean hold |
+| measured stop | 1.0–1.2 ATR median | 45 fixed points, narrower than a bar |
+| fix | floor the stop in ATR terms (F-001 work) | `tpsl_mode = ATR-Based` |
+
+The shared root cause: **a stop closer than one bar of expected range makes the
+trade a coin flip on its own entry bar**, and no amount of signal quality
+upstream can survive it. Arriving at the same conclusion twice, from two
+codebases that share no lineage, is the strongest cross-validated finding in
+this project.
+
+### Do not over-read this
+- Synthetic tape from one generator. Not evidence about real MNQ.
+- HTF/LTF context was held neutral, which **disables the MTF vote** and likely
+  understates pulse.py rather than flattering it.
+- 55 trades is a modest sample.
+- The 83.6% win rate clears the 80% target, but on a tape that owes its
+  structure to a random-number generator.
+
+---
+
 ## Methodology traps this project has already hit
 
 1. **Upper-bound arithmetic ignores the cost side.** (F-001)
@@ -200,7 +264,12 @@ an empirical question, not a design decision.
 5. **A confluence layer can be anti-predictive.** `c_location` shipped at
    weight 0.70 with the wrong sign for the strategy it serves. Design
    intent is not evidence; score every layer against labelled outcomes.
-6. **Score-0 rows polluting a decile study.** 80% of exported rows carry
+6. **A p-value pinned at `1/(runs+1)` is a resolution limit, not a result.**
+   A first pass read p = 0.0769 and was reported as "does not separate".
+   Zero of twelve surrogates had beaten it — the test had simply run out of
+   runs. At 60 surrogates the same result reads p = 0.0164. Always check
+   whether p equals its own floor before concluding anything.
+7. **Score-0 rows polluting a decile study.** 80% of exported rows carry
    `score = 0` because a hard gate vetoed before scoring. Including them made
    the confluence score look predictive when the deciles were mostly noise.
    Restrict any score study to actually-scored setups.

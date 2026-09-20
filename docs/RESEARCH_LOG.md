@@ -701,3 +701,61 @@ reclaiming it, carries no directional information at these horizons. The
 structural result in N-003 still stands on held-out data: large HTF moves
 develop progressively and are reachable from a lower timeframe. That problem is
 an execution problem, and it is untouched by this.
+
+---
+
+## N-004 — Time of day (NEGATIVE), and the conditioning search closes
+
+Time of day was the last conditioner worth trying, and the only one known with
+certainty in advance: it is not forecast, it is the clock. Intraday
+seasonality is among the most durable regularities in equity markets, so if
+the commitment trigger carried direction anywhere, the open or the close were
+the places to look.
+
+Commitment entry at 0.5 ATR, HTF 60m, sliced into 23 ET hourly buckets, both
+spans:
+
+```
+buckets positive on BOTH spans:   2   (04:00 and 11:00)
+expected by chance:             5.75   (23 x 0.25)
+```
+
+Fewer than chance, and both survivors are hollow -- 11:00 is +0.000R on the
+tuning span, and 04:00 reads +0.046R against +0.292R, a six-fold discrepancy
+that is not a stable effect. Bucket means are predominantly negative
+throughout, which is what a trigger that enters at a local extreme and pays
+the spread produces.
+
+**The conditioning search is now complete:**
+
+| conditioner | tested on | result |
+|---|---|---|
+| sweep structure | 16 markets, 2,772 cells | no directional information (F-004) |
+| prior volatility | 5 quintiles, both spans | MFE/MAE invariant at ~0.90 |
+| cross-asset breadth | 9 features, two halves | 7 of 9 reverse sign (N-002) |
+| time of day | 23 buckets, both spans | fewer both-span positives than chance |
+
+**What this says, precisely.** At 5-to-60-minute horizons on MNQ, the direction
+of the next move is not predictable from any of: the sweep trigger, the
+volatility regime, related instruments, or the clock. That is what market
+efficiency looks like at this resolution, and it is consistent with the
+permutation null on the finished strategy (p=0.377 held-out).
+
+**What it does not say.** It does not say no edge exists. It says none of the
+PRICE-DERIVED conditioners tested carry direction. Three things remain
+genuinely untested rather than refuted:
+
+1. **True order flow.** Aggressor-side volume is the one input that is causal
+   to price formation rather than derived from it. Astra's
+   `icarus_engine/microstructure.py` is built and correct and waiting on a tick
+   feed this plan does not entitle.
+2. **Options positioning.** Dealer hedging is mechanical, published, and
+   largely ignored by retail. Per-strike aggregates ARE entitled; open
+   interest is not, so only a volume-weighted proxy is reachable.
+3. **Cross-sectional lead-lag.** N-002 tested cross-asset features against
+   MNQ. It did not test lead-lag STRUCTURE across the thirteen-market panel,
+   which is a different question and is now cheap to ask.
+
+The structural result in N-003 also stands untouched: large HTF moves develop
+progressively and are reachable from a lower timeframe, on held-out data. What
+is missing is direction, not geometry.

@@ -284,8 +284,29 @@ _SYNTHETIC_CALIBRATION = {
 
 
 def synthetic_for(asset_class, bars: int = 4000, seed: int = 7, **overrides) -> list[Bar]:
-    """Synthetic tape calibrated to an asset class's real price scale and vol."""
+    """Synthetic tape calibrated to an asset class's real price scale and vol.
+
+    ``base_vol`` in the calibration table is per-bar volatility at that entry's
+    own ``minutes``. Overriding ``minutes`` without rescaling it silently keeps
+    the coarser timeframe's volatility on finer bars -- a 2m tape built from a
+    10m calibration runs sqrt(5) ~= 2.2x too hot at the base, and because the
+    generator's regime runs are mildly trending (measured ATR scaling exponent
+    ~0.57 rather than a random walk's 0.5) that error compounds on resampling
+    to roughly 4x by the 20m timeframe.
+
+    That defect invalidated the absolute price distances in an earlier round of
+    results, so the rescale is applied here rather than left to callers.
+    """
     key = getattr(asset_class, "value", str(asset_class))
     params = dict(_SYNTHETIC_CALIBRATION[key])
+
+    requested_minutes = overrides.get("minutes")
+    if requested_minutes is not None and "base_vol" not in overrides:
+        native = params["minutes"]
+        if requested_minutes <= 0:
+            raise ValueError("minutes must be > 0")
+        # Volatility scales with the square root of the bar's duration.
+        params["base_vol"] *= math.sqrt(requested_minutes / native)
+
     params.update(overrides)
     return synthetic_series(bars=bars, seed=seed, **params)

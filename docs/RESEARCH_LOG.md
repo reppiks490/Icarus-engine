@@ -289,6 +289,52 @@ pulse.py.
   parameters came out of a CI failure I had already triaged as "just a missing
   file".
 
+
+### FOLLOW-UP — root cause found, tape fixed, finding re-run
+
+The 5x volatility was not a design flaw in the generator. It was a bug in
+`synthetic_for`:
+
+`_SYNTHETIC_CALIBRATION["micro_futures"]` sets `base_vol = 0.0011` for
+**10-minute** bars. Every sweep in this project called
+`synthetic_for(..., minutes=2)`, which overrode the bar size **and kept the 10m
+volatility**. A 2m bar should carry `0.0011 / sqrt(5) ~= 0.00049`, so the base
+tape ran 2.2x hot. The generator's regime runs are mildly trending — measured
+ATR scaling exponent **0.57**, against 0.50 for a driftless random walk — so the
+error compounded on resampling to ~3.5x by the 20m timeframe.
+
+`synthetic_for` now rescales `base_vol` by `sqrt(requested / native)` whenever
+`minutes` is overridden. Four tests pin it.
+
+| timeframe | before | after | real NQ |
+|---|---|---|---|
+| 2m | 0.262% | **0.114%** | ~0.08–0.12% |
+| 10m | 0.676% | **0.297%** | ~0.18–0.25% |
+| 20m | 0.979% | **0.432%** | ~0.25–0.35% |
+
+Still ~1.3x hot at the slow end, down from ~3.5x. The residual is the trending
+regimes, and real intraday markets are mildly super-diffusive too, so it is
+defensible rather than a bug.
+
+**Re-run on the corrected tape** (6,000 x 20m bars, ~140 trades per config —
+a far better sample than the original 24):
+
+| config | n | hold | win% | per-trade |
+|---|---|---|---|---|
+| `Inputs()` defaults 15/30/45 | 126 | 0.2 bars | 59.5% | −$19 |
+| shipped preset 100/200/80 | 138 | 1.1 bars | 58.7% | **+$254** |
+| **ATR-Based** | 151 | **14.2 bars** | **86.8%** | **+$2,364** |
+
+The shipped preset is **profitable, not broken** — my original "mis-sized" call
+was wrong and stays withdrawn. But ATR-scaled sizing still beats it by ~9x on
+expectancy with a 13-bar longer hold, on a tape that is now honestly calibrated.
+`sl_pts = 80` is 0.50 ATR here and would be ~0.89 ATR on real NQ.
+
+**The actionable version:** testing `tpsl_mode = "ATR-Based"` against the shipped
+`Fixed Points` preset on real NQ data is worth doing. That is a one-input
+change, and it is the only claim from this entry that survived contact with a
+corrected tape.
+
 ### Why this matters beyond one script
 
 **Two engines, built independently, carried the same defect.**

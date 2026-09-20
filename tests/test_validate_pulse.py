@@ -41,7 +41,7 @@ def test_run_pulse_reports_a_coherent_blotter():
     if result["trades"]:
         assert 0.0 <= result["win_rate"] <= 100.0
         assert result["expectancy"] == pytest.approx(result["net"] / result["trades"])
-        assert result["mean_bars"] >= 0.0
+        assert result["mean_hold"] >= 0.0
 
 
 def test_fixed_points_sizing_collapses_hold_time_on_this_tape():
@@ -53,9 +53,9 @@ def test_fixed_points_sizing_collapses_hold_time_on_this_tape():
     fixed = run_pulse(TAPE, tf_minutes=20, tpsl_mode="Fixed Points")
     scaled = run_pulse(TAPE, tf_minutes=20, tpsl_mode="ATR-Based")
     if fixed["trades"] >= 5 and scaled["trades"] >= 5:
-        assert scaled["mean_bars"] > fixed["mean_bars"], (
-            f"ATR sizing should hold longer: {scaled['mean_bars']:.1f} "
-            f"vs {fixed['mean_bars']:.1f} bars")
+        assert scaled["mean_hold"] > fixed["mean_hold"], (
+            f"ATR sizing should hold longer: {scaled['mean_hold']:.1f} "
+            f"vs {fixed['mean_hold']:.1f} bars")
 
 
 def test_permutation_p_value_is_bounded_by_its_run_count():

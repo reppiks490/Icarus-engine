@@ -170,4 +170,4 @@ def passes(res: dict, *, min_trades: int, min_exp: float,
 def fmt(v: PulseVariant, r: dict) -> str:
     return (f"{v.timeframe:>4s} n={r['trades']:4d} tpd={r['trades_per_day']:5.2f} "
             f"win={r['win_rate']:5.1f}% exp=${r['expectancy']:+9,.0f} "
-            f"hold={r.get('mean_bars', 0):5.1f} net=${r['net']:+11,.0f}")
+            f"hold={r.get('mean_hold', 0):5.1f} net=${r['net']:+11,.0f}")

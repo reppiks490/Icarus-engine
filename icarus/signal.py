@@ -22,6 +22,7 @@ from icarus.features.liquidity import LiquidityMap, Sweep
 from icarus.features.orderflow import OrderFlowState
 from icarus.features.sentiment import SentimentOverlay
 from icarus.features.structure import MarketStructure
+from icarus.ml import MLGate
 from icarus.features.volatility import VolatilityState
 from icarus.indicators import SessionVWAP, clamp, squash
 
@@ -105,6 +106,8 @@ class ConfluenceEngine:
         sentiment: SentimentOverlay,
         rsi: float,
         session_open: bool,
+        ml: MLGate | None = None,
+        ml_features: dict[str, float] | None = None,
     ) -> Signal:
         """Score the bar. Hard gates first -- they are cheap and they are absolute."""
 
@@ -135,6 +138,9 @@ class ConfluenceEngine:
             "location": self._location_score(direction, price, vwap),
             "momentum": self._momentum_score(direction, structure, rsi),
             "sentiment": sentiment.alignment(direction, ts),
+            # The model votes like every other layer: weighted, bounded, and
+            # scored 0.5 ("no opinion") whenever nothing is attached.
+            "ml": ml.alignment(direction, ml_features or {}, ts) if ml is not None else 0.5,
         }
 
         weights = self.weights.as_dict()

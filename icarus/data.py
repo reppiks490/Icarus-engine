@@ -278,6 +278,8 @@ _SYNTHETIC_CALIBRATION = {
     "futures": {"start_price": 5200.00, "base_vol": 0.0008, "minutes": 5},
     "forex":   {"start_price": 1.08500, "base_vol": 0.00045, "minutes": 5},
     "crypto":  {"start_price": 64000.0, "base_vol": 0.0025, "minutes": 5},
+    # MNQ1! as observed on the Suite's own chart: ~29,960 index points, 10m bars.
+    "micro_futures": {"start_price": 29960.0, "base_vol": 0.0011, "minutes": 10},
 }
 
 

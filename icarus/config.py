@@ -17,6 +17,7 @@ from enum import Enum
 class AssetClass(str, Enum):
     EQUITY = "equity"
     FUTURES = "futures"
+    MICRO_FUTURES = "micro_futures"     # MNQ / MES / MGC -- retail-sized contracts
     FOREX = "forex"
     CRYPTO = "crypto"
 
@@ -62,6 +63,7 @@ class ConfluenceWeights:
     location: float = 0.70             # distance from VWAP / value, premium-discount
     momentum: float = 0.45             # higher-timeframe pressure alignment
     sentiment: float = 0.30            # external bias overlay (scales, never flips)
+    ml: float = 0.00                   # model vote (XGBoost et al). 0.0 == no model attached
 
     def as_dict(self) -> dict[str, float]:
         return {
@@ -72,6 +74,7 @@ class ConfluenceWeights:
             "location": self.location,
             "momentum": self.momentum,
             "sentiment": self.sentiment,
+            "ml": self.ml,
         }
 
 
@@ -81,6 +84,8 @@ class Profile:
 
     asset_class: AssetClass
     timezone: str = "UTC"
+    point_value: float = 1.0          # currency per 1.0 price unit per contract
+    base_timeframe_min: int = 5       # the bar size these bar-count fields assume
     sessions: tuple[SessionWindow, ...] = ()       # empty tuple == trade around the clock
     flat_before_session_end_min: int = 10          # forced flatten ahead of the close
     costs: CostModel = field(default_factory=CostModel)
@@ -119,6 +124,7 @@ class Profile:
     breakeven_at_r: float = 1.0
     trail_atr_mult: float = 1.6
     time_stop_bars: int = 36                       # idea decays if it does not work
+    exit_policy: str = "pulse"                     # pulse | suite | hybrid (see icarus/exits.py)
     max_concurrent_positions: int = 1              # one cohesive system, one sniper shot
     daily_loss_limit_r: float = 3.0
     consecutive_loss_throttle: int = 3             # halve risk after this many losses
@@ -200,6 +206,44 @@ PROFILES: dict[AssetClass, Profile] = {
         time_stop_bars=48,
     ),
 }
+
+
+# Micro E-mini Nasdaq-100 (MNQ1!), calibrated bar-for-bar from ICARUS PROTO
+# SUITE 01 running on the 10-minute chart: $2/point, 0.25 tick, 05:30-15:30 ET,
+# ATR 25, cooldown 15 bars, and the Suite's structure-anchored exit model.
+PROFILES[AssetClass.MICRO_FUTURES] = Profile(
+    asset_class=AssetClass.MICRO_FUTURES,
+    timezone="America/New_York",
+    point_value=2.0,                                # MNQ: $2 per index point
+    base_timeframe_min=10,
+    sessions=(SessionWindow(time(5, 30), time(15, 30), "suite-rth"),),
+    flat_before_session_end_min=10,
+    # MNQ books ~0.25-0.50 wide; slippage climbs hard on an index in expansion.
+    costs=CostModel(tick_size=0.25, spread_ticks=1.0, slippage_ticks=1.0,
+                    slippage_vol_scalar=2.0, commission_per_unit=0.37),
+    weights=ConfluenceWeights(order_flow=1.05, structure=0.95, sentiment=0.25),
+    atr_period=25,                                  # Suite: ATR Length 25
+    atr_regime_lookback=240,
+    min_atr_percentile=0.20,
+    max_atr_percentile=0.97,
+    min_atr_to_cost_ratio=6.0,
+    swing_strength=3,                               # Suite: Structure Pivot Length 3
+    structure_lookback=60,
+    sweep_min_penetration_atr=0.05,
+    sweep_max_penetration_atr=1.30,
+    sweep_reclaim_bars=3,
+    min_confluence=0.56,
+    risk_per_trade=0.0060,
+    exit_policy="hybrid",                           # the whole point of the rebuild
+    stop_buffer_atr=0.35,
+    first_target_r=1.5,
+    runner_target_r=3.0,
+    scale_out_fraction=0.40,
+    trail_atr_mult=1.5,
+    time_stop_bars=24,                              # 4 hours on a 10m chart
+    cooldown_bars_after_exit=15,                    # Suite: Cooldown Bars 15
+    daily_loss_limit_r=3.0,
+)
 
 
 def profile_for(asset_class: AssetClass | str) -> Profile:

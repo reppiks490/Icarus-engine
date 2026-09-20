@@ -184,3 +184,29 @@ class MarketStructure:
     @property
     def protected_high(self) -> float | None:
         return self._protected_high
+
+    def last_swing_below(self, price: float) -> float | None:
+        """Most recent confirmed swing low beneath ``price`` -- a long's floor."""
+        for swing in reversed(self.swing_lows):
+            if swing.price < price:
+                return swing.price
+        return None
+
+    def last_swing_above(self, price: float) -> float | None:
+        """Most recent confirmed swing high above ``price`` -- a short's ceiling."""
+        for swing in reversed(self.swing_highs):
+            if swing.price > price:
+                return swing.price
+        return None
+
+    def protective_level(self, direction: int, price: float) -> float | None:
+        """The swing that must break for a trade in ``direction`` to be wrong."""
+        if direction not in (-1, 1):
+            raise ValueError("direction must be -1 or +1")
+        return self.last_swing_below(price) if direction > 0 else self.last_swing_above(price)
+
+    def objective_level(self, direction: int, price: float) -> float | None:
+        """The nearest structural objective in the trade's direction."""
+        if direction not in (-1, 1):
+            raise ValueError("direction must be -1 or +1")
+        return self.last_swing_above(price) if direction > 0 else self.last_swing_below(price)

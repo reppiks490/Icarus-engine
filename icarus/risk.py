@@ -97,8 +97,14 @@ class RiskManager:
         entry_price: float,
         stop_price: float,
         bar_index: int,
+        point_value: float = 1.0,
     ) -> SizingResult:
-        """Fixed-fractional size on the actual stop distance."""
+        """Fixed-fractional size on the actual stop distance.
+
+        ``point_value`` is the currency earned per 1.0 price unit per contract,
+        so a micro contract sizes correctly without the engine knowing what a
+        micro contract is.
+        """
         stop_distance = abs(entry_price - stop_price)
         if self._halted_reason:
             return SizingResult(0.0, 0.0, 0.0, stop_distance, self._halted_reason)
@@ -109,9 +115,11 @@ class RiskManager:
         if equity <= 0.0:
             return SizingResult(0.0, 0.0, 0.0, stop_distance, "no-equity")
 
+        if point_value <= 0.0:
+            raise ValueError("point_value must be > 0")
         fraction = self.risk_fraction
         risk_amount = equity * fraction
-        size = risk_amount / stop_distance
+        size = risk_amount / (stop_distance * point_value)
         if size <= 0.0:
             return SizingResult(0.0, 0.0, fraction, stop_distance, "size-rounds-to-zero")
         return SizingResult(size=size, risk_amount=risk_amount,

@@ -157,6 +157,24 @@ class ExitPolicy(ABC):
     def _stop_breached(position: Position, bar: Bar) -> bool:
         return position.stop_hit(bar.high, bar.low)
 
+    @staticmethod
+    def _breakeven_action(position: Position, arm_r: float,
+                          offset_r: float) -> ManageAction | None:
+        """Scratch-protect a trade that has already gone far enough in our favour.
+
+        Armed off ``max_favourable`` -- the excursion the trade has ALREADY
+        made -- so it predicts nothing. It only declines to give back a move
+        that has already happened.
+        """
+        if arm_r <= 0.0 or position.breakeven_moved:
+            return None
+        if position.max_favourable < arm_r:
+            return None
+        level = position.entry_price + position.direction * offset_r * position.risk_unit
+        if position.direction * (level - position.stop) <= 0.0:
+            return None
+        return ManageAction(ActionKind.MOVE_STOP, level, "breakeven")
+
 
 # ---------------------------------------------------------------------------
 # 1. Pulse -- the engine's original geometry, preserved verbatim as the control
@@ -242,6 +260,8 @@ class SuiteParams:
     endurance_target: bool = True       # opposite side of the HTF range
     scale_out_fraction: float = 0.5
     arm_trail_after_tp1: bool = True
+    breakeven_arm_r: float = 0.0        # 0.0 == off; see HybridParams for why
+    breakeven_offset_r: float = 0.05    # park slightly in profit to clear friction
 
 
 class SuiteExit(ExitPolicy):
@@ -311,6 +331,11 @@ class SuiteExit(ExitPolicy):
         if self._stop_breached(position, bar):
             return [ManageAction(ActionKind.EXIT, position.stop, "stop")]
 
+        # Scratch protection, armed off excursion already made, before TP1.
+        early = self._breakeven_action(position, params.breakeven_arm_r, params.breakeven_offset_r)
+        if early is not None:
+            actions.append(early)
+
         if not position.scaled_out and position.target_hit(bar.high, bar.low, position.first_target):
             actions.append(ManageAction(ActionKind.SCALE_OUT, position.first_target,
                                         "tp1", params.scale_out_fraction))
@@ -374,6 +399,14 @@ class HybridParams:
     ltf_weak_threshold: float = 0.35
     tighten_multiplier: float = 0.55
     structure_stop_preferred: bool = True
+    # Breakeven armed independently of the scale-out. Measured on 239 trades:
+    # 75 of them peaked between +0.5R and +1.5R and then took a FULL -1.00R,
+    # because the stop only moved to entry when TP1 filled at 1.5R. Those
+    # trades had already proven themselves and were handed back in full.
+    # This is exit-path mechanics, not a market prediction: it does not
+    # forecast anything, it refuses to return a move the trade already made.
+    breakeven_arm_r: float = 0.0        # calibrated by the sweep in tools/
+    breakeven_offset_r: float = 0.05
 
 
 class HybridExit(ExitPolicy):
@@ -421,6 +454,11 @@ class HybridExit(ExitPolicy):
 
         if self._stop_breached(position, bar):
             return [ManageAction(ActionKind.EXIT, position.stop, "stop")]
+
+        # Scratch protection, armed off excursion already made, before TP1.
+        early = self._breakeven_action(position, params.breakeven_arm_r, params.breakeven_offset_r)
+        if early is not None:
+            actions.append(early)
 
         if not position.scaled_out and position.target_hit(bar.high, bar.low, position.first_target):
             actions.append(ManageAction(ActionKind.SCALE_OUT, position.first_target,

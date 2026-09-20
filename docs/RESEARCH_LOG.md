@@ -605,3 +605,47 @@ premise produces downstream.
 **Next thread, not a conclusion.** Continuation has now appeared twice from
 independent directions. It is a hypothesis to test properly -- with the same
 stratified controls, both spans and FDR -- not a result to act on.
+
+---
+
+## F-005 — H-LOC, the location sign, on real data (NEGATIVE; the synthetic tape was wrong)
+
+The synthetic tape said `_location_score` was signed for the wrong strategy:
+inverting it lifted 2m expectancy from +0.339R to +0.589R, with the sign
+agreeing across two seeds. Re-tested on real MNQ as a continuous coefficient
+L, where L=+1 is shipped behaviour and L=-1 is full inversion.
+
+**Transfer to pulse.py, ATR-Based, best held-out L per timeframe:**
+
+| tf | best HOLD L | HOLD net | L=+1 HOLD net | TUNE agrees? |
+|----|------------|----------|---------------|--------------|
+| 5m | **+1.00** | +$19,689 | +$19,689 | yes, +$1,704 |
+| 20m | **+1.00** | +$14,487 | +$14,487 | yes, +$27,076 |
+| 10m | -0.50 | +$23,513 | +$8,009 | **no** -- TUNE -$21,780 |
+| 30m | +0.75 | +$4,500 | -$3,689 | TUNE +$34,524 |
+
+At 5m and 20m the best held-out value IS the shipped one. The synthetic result
+does not transfer; it inverted the conclusion, exactly as the session-only tape
+did elsewhere.
+
+**The one case that looked like a win was nulled properly.** 30m, L*=+0.75,
++$8,188 better than shipped on held-out data. Against 60 surrogates:
+
+```
+ABSOLUTE   null median $-4,246   best $+61,928   p = 0.3770
+PAIRED     delta median $+2,681  best $+17,443   p = 0.1639   (floor 0.0164)
+```
+
+The paired test is the right one -- it asks whether L*=+0.75 beats L=+1 by more
+than shuffling would produce -- and it fails at p=0.16.
+
+**Verdict: H-LOC is refuted on real data.** The location term's shipped sign is
+correct at the timeframes where both spans agree. The synthetic evidence that
+launched this hypothesis (a -0.16 feature spread agreeing across two seeds) was
+a property of `synthetic_for`, not of markets.
+
+**What this cost and what it bought.** Four separate results from the synthetic
+tape have now inverted on real data: the 83.6% win rate, the location sign, the
+hold-time gradient, and the cross-asset breadth features. The tape is not a
+weak proxy for the market; it is an unrelated process that happens to look like
+one. Nothing measured on it should be carried forward without re-testing.

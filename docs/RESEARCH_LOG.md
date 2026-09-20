@@ -388,3 +388,88 @@ this project.
    `score = 0` because a hard gate vetoed before scoring. Including them made
    the confluence score look predictive when the deciles were mostly noise.
    Restrict any score study to actually-scored setups.
+
+---
+
+## F-003 — Hold-time duration bands (NEGATIVE, circular)
+
+**The observation.** Bucketing closed trades by how long they were held showed
+win rate climbing monotonically on every timeframe, flipping sign at ~32 bars
+regardless of whether that meant two hours or twenty-one:
+
+| tf | 16–32 bars | 32–64 | 64–128 | 128+ |
+|----|-----------|-------|--------|------|
+| 5m | 39.7% | 64.9% | 72.4% | 88.2% |
+| 10m | 40.4% | 55.4% | 69.2% | 80.0% |
+| 20m | 48.3% | 62.0% | 80.0% | — |
+
+Seven clean bands, no reversal, consistent across timeframes, and the top band
+was the first thing in this project to touch 80% on real data. It looked like
+the find of the search.
+
+**Why it is circular.** A trade survives to 64 bars BECAUSE it never hit its
+stop. Losers are terminated early by construction, so the long bands are
+pre-selected winners and the short bands are where the losses were sent. The
+table cannot distinguish "long holds win" from "holding longer causes winning";
+it is close to a tautology dressed as a discovery.
+
+**The falsifiable version.** `tools/time_stop.py` states the claim as rules a
+live chart could follow — `min_hold` withholds the profit target until the
+trade is old enough (stop stays live throughout), `max_hold` forces flat at N
+bars. These change behaviour rather than filtering outcomes.
+
+**The verdict, 5m ATR-Based, real MNQ:**
+
+```
+              TUNE         HOLD
+min_hold  0   +$1,704    +$19,689
+min_hold 32     +$425    +$33,574
+min_hold 64   +$5,605    +$18,947
+max_hold 32  -$13,702    +$30,653
+max_hold128     -$560    +$15,462
+```
+
+Two independent reasons this is noise:
+
+1. TUNE is flat-to-negative at **every** setting while HOLD shows large
+   positives. No setting has both spans agreeing.
+2. **Opposite rules produce the same improvement.** Forcing trades to stay in
+   longer (min_hold 32) gives +$33,574; forcing them out sooner (max_hold 32)
+   gives +$30,653. A genuine duration effect cannot be improved by both
+   lengthening and shortening holds. That is the same span-specific noise
+   reached from two directions.
+
+**What not to do next time.** Never rank a strategy by a statistic computed on
+the trade's own survival. Duration, MFE, MAE and bars-to-target are all
+outcome-conditioned: slicing by them always produces a monotone-looking
+gradient because the stop already removed the counterexamples. If a claim about
+hold time matters, express it as a rule that changes what the engine does, run
+it on both spans, and check that opposite versions of the rule do not both
+"work".
+
+**What survived.** The hold-time *metrics* are worth keeping — `overnight_rate`
+and `overnight_net_share` caught a configuration whose entire profit was
+overnight carry, which no other number in the report exposed. Measuring hold
+time was right. Ranking by it was not.
+
+---
+
+## N-002 — Cross-asset context (INCONCLUSIVE, mostly noise)
+
+Pulled QQQ, NVDA, TLT and NDX cash, aligned causally to the MNQ grid
+(`tools/cross_asset.py`). Split the overlap window into two adjacent six-week
+halves and measured each feature's tercile spread against MNQ's forward 4h
+return. **Seven of nine features reversed sign between the halves**, including
+the largest apparent effect (NVDA leading the index, −14.42 → +8.59 points).
+Only realised volatility held its sign (+8.77 → +15.43), and three months is
+far too short to call even that.
+
+Not a refutation of cross-asset data — the sample is too small — but a
+refutation of trusting any of these features on one window. `spread_test` now
+gates every candidate feature before it reaches the confluence layer.
+
+**Note on fundamentals.** Company financials are the wrong family for this
+horizon: they are constant across the life of a 25-bar trade, so they have no
+variance at the decision frequency and cannot discriminate between setups.
+Dealer gamma, opex and rebalance flow, and auction imbalance are the families
+that actually move intraday index price.

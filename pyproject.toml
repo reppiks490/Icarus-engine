@@ -23,4 +23,8 @@ include = ["icarus*", "icarus_engine*", "icarus_bridge*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests", "tests_engine"]
-addopts = "-q"
+# importlib mode lets the two suites carry same-named modules. Both have a
+# test_metrics.py, and with the default prepend mode pytest aborts COLLECTION
+# on the clash -- not one failure, zero tests run. Renaming would fix today's
+# collision and leave the next one waiting.
+addopts = "-q --import-mode=importlib"

@@ -1,0 +1,33 @@
+  GLD      done (180 cells so far)
+  IWM      done (360 cells so far)
+  NVDA     done (540 cells so far)
+  QQQ      done (720 cells so far)
+  SPY      done (900 cells so far)
+  TLT      done (1080 cells so far)
+  USO      done (1260 cells so far)
+  MNQ5m   done (1440 cells so far)
+  MNQ10m   done (1620 cells so far)
+  MNQ20m   done (1692 cells so far)
+
+1692 tests across 10 markets
+raw p<0.05: 176  (expected by chance alone: ~85)
+survive FDR control: 4
+
+--- sign consistency across the two halves, per market ---
+    market    class           cells  early+   late+   agree
+    GLD       metals             90     43%     36%     46%
+    IWM       equity index       90     58%     98%     56%
+    MNQ10m    futures            90     30%     17%     73%
+    MNQ20m    futures            36     39%     36%     58%
+    MNQ5m     futures            90     63%     29%     59%
+    NVDA      single stock       90     42%     50%     43%
+    QQQ       equity index       90     82%     53%     69%
+    SPY       equity index       90     49%     16%     56%
+    TLT       rates              90     74%     58%     54%
+    USO       energy             90     58%     27%     33%
+
+--- cells surviving FDR ---
+    SPY       late   lb=40  rc=3 pen=0.00 h=48  n=  566 effect=-1.4388 ATR  p=0.00001
+    SPY       late   lb=40  rc=3 pen=0.25 h=48  n=  308 effect=-1.8719 ATR  p=0.00005
+    QQQ       late   lb=10  rc=3 pen=0.00 h=6   n= 1256 effect=-0.2921 ATR  p=0.00006
+    SPY       late   lb=40  rc=2 pen=0.00 h=48  n=  528 effect=-1.3211 ATR  p=0.00009

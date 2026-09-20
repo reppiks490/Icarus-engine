@@ -1,0 +1,73 @@
+building tapes (110,000 2m bars x2 seeds, 8 timeframes)...
+  span 152 days, real HTF context on all tapes  (60s)
+sampled 2600 variants over 185 declared inputs
+
+stage 1 screen : 2600 -> 1983  (3607s)
+stage 2 tune   : 1983 -> 1285  (7266s)
+stage 3 holdout: 1285 -> 1283 positive out of sample  (2698s)
+
+====================================================================================================
+TOP 20 — ranked on the WORSE of tune/held-out expectancy
+====================================================================================================
+#01 TUNE  10m n= 194 tpd= 1.27 win= 80.9% exp=$     +506 hold= 16.4 net=$    +98,105
+    HOLD  10m n=  60 tpd= 0.39 win= 85.0% exp=$     +509 hold= 16.3 net=$    +30,518
+    20 inputs off anchor: {"tp2_pts": 116.0, "tpsl_mode": "ATR-Based", "struct_tp2_ext_mult": 2.5, "use_premdisc": false, "emp_min_pct": 0.09, "stagnation_bars": 75, "use_po3_gate_rejection": true, "div_min_count": 1, "zone_piv": 10, "use_adaptiv
+#02 TUNE  30m n= 177 tpd= 1.16 win= 72.3% exp=$     +978 hold= 12.2 net=$   +173,125
+    HOLD  30m n= 145 tpd= 0.95 win= 60.0% exp=$     +369 hold= 11.3 net=$    +53,568
+    10 inputs off anchor: {"tpsl_mode": "ATR-Based", "struct_sl_buffer_atr": 0.8, "trail_atr_mult": 3.0, "cooldown_bars": 19, "dv_sd_mult": 0.25, "be_offset_pts": 1.25, "arm_max_chase_atr": 1.1, "tide_qty": 3, "use_tod_tracking": true, "rej_clust
+#03 TUNE  10m n= 238 tpd= 1.56 win= 77.7% exp=$     +520 hold= 14.2 net=$   +123,685
+    HOLD  10m n= 249 tpd= 1.63 win= 79.9% exp=$     +353 hold= 14.3 net=$    +88,013
+    12 inputs off anchor: {"rate_eff_len": 77, "tpsl_mode": "ATR-Based", "use_tod_tracking": true, "hour_breach_weight": 0.3, "runner_weak_regime": 0.4, "kf_adapt_blend": 0.65, "expansion_min_atr": 0.4, "max_zones_n": 3, "pe_trc_fdi": 1.18, "po3_
+#04 TUNE  10m n= 171 tpd= 1.12 win= 63.7% exp=$     +446 hold= 14.0 net=$    +76,188
+    HOLD  10m n= 189 tpd= 1.24 win= 71.4% exp=$     +348 hold= 16.2 net=$    +65,700
+    19 inputs off anchor: {"sl_pts": 158.0, "sl_atr_mult": 5.5, "cooldown_bars": 19, "struct_piv": 10, "po3_accum_adx_max": 27.0, "sess_bias_weight": 0.2, "pullback_max_bars": 9, "smc_enhance_discount": 0.82, "kf_q_base": 0.05, "tide_confirm_bars
+#05 TUNE  30m n= 112 tpd= 0.73 win= 55.4% exp=$     +748 hold=  5.8 net=$    +83,726
+    HOLD  30m n= 121 tpd= 0.79 win= 61.2% exp=$     +347 hold=  5.5 net=$    +41,990
+    13 inputs off anchor: {"rate_atr_slow": 46, "trail_atr_mult": 2.0, "fvg_min_size_atr": 0.35, "fdi_smooth": 9, "tide_qty": 4, "smc_confirm_window": 10, "rej_cluster_window": 9, "use_emp_regime_split": false, "cycle_smooth": 19, "use_tod_tracki
+#06 TUNE  30m n= 120 tpd= 0.79 win= 80.0% exp=$     +972 hold= 10.6 net=$   +116,699
+    HOLD  30m n= 124 tpd= 0.81 win= 64.5% exp=$     +340 hold=  8.8 net=$    +42,207
+    14 inputs off anchor: {"tpsl_mode": "ATR-Based", "sweep_min_wick_atr": 0.1, "use_emp_regime_split": false, "tide_qty": 3, "pullback_atr": 0.35, "div_min_count": 2, "smc_confirm_window": 11, "po3_accum_regime_max": 0.15, "arm_bars": 1, "fdi_le
+#07 TUNE  15m n= 146 tpd= 0.96 win= 78.1% exp=$     +667 hold= 12.9 net=$    +97,358
+    HOLD  15m n= 132 tpd= 0.86 win= 74.2% exp=$     +339 hold= 13.5 net=$    +44,791
+    19 inputs off anchor: {"tp1_pts": 176.0, "tpsl_mode": "ATR-Based", "conf_min_votes": 9, "tp1_pct": 0.06, "po3_accum_regime_max": 0.35, "use_mp": true, "max_zones_n": 7, "use_po3": false, "ltf_intrabar": "first", "use_div_veto": true, "use_swe
+#08 TUNE  20m n= 165 tpd= 1.08 win= 58.2% exp=$     +436 hold=  8.5 net=$    +71,972
+    HOLD  20m n= 197 tpd= 1.29 win= 68.0% exp=$     +334 hold=  7.9 net=$    +65,770
+    13 inputs off anchor: {"sl_pts": 109.0, "rate_atr_len": 46, "conv_min_mult": 0.7, "kf_r_base": 0.24, "tide_confirm_bars": 1, "arm_max_chase_atr": 0.8, "smc_confirm_window": 4, "rej_min_wick_ratio": 0.1, "eod_flat_hhmm": 610, "use_ltf_check": 
+#09 TUNE  20m n=  79 tpd= 0.52 win= 51.9% exp=$     +410 hold=  5.8 net=$    +32,411
+    HOLD  20m n=  90 tpd= 0.59 win= 55.6% exp=$     +330 hold=  6.9 net=$    +29,730
+    21 inputs off anchor: {"tp1_pts": 307.0, "ob_max_count": 8, "trail_kf_buffer_atr": 0.2, "emp_min_pct": 0.1, "use_tod_filter": false, "use_stagnation_exit": true, "pe_thresh": 0.33, "use_pullback_entry": true, "use_tod_tracking": false, "use_p
+#10 TUNE  15m n= 131 tpd= 0.86 win= 58.0% exp=$     +499 hold=  8.8 net=$    +65,433
+    HOLD  15m n= 149 tpd= 0.98 win= 63.8% exp=$     +329 hold= 10.5 net=$    +49,043
+    20 inputs off anchor: {"rate_atr_fast": 3, "trail_atr_mult": 3.25, "pulse_conf_weight": 0.6, "use_div_veto": true, "expansion_confirm_bars": 4, "div_adaptive": false, "cc_alpha_inp": 0.14, "trail_kf_buffer_atr": 0.3, "use_pma": false, "ltf_we
+#11 TUNE  15m n= 126 tpd= 0.82 win= 49.2% exp=$     +522 hold= 11.7 net=$    +65,767
+    HOLD  15m n= 149 tpd= 0.98 win= 51.0% exp=$     +325 hold= 10.7 net=$    +48,355
+    14 inputs off anchor: {"tp2_atr_mult": 4.75, "arm_max_chase_atr": 1.05, "struct_piv": 10, "tod_min_winrate": 0.75, "sl_pct": 0.36, "use_pma": true, "use_premdisc": false, "use_pe": false, "use_tide_regime_filter": true, "ltf_weak_thresh": 0.1
+#12 TUNE  15m n= 198 tpd= 1.30 win= 78.3% exp=$     +656 hold= 13.3 net=$   +129,803
+    HOLD  15m n= 200 tpd= 1.31 win= 71.0% exp=$     +324 hold= 12.7 net=$    +64,716
+    13 inputs off anchor: {"tp1_pts": 90.0, "tpsl_mode": "ATR-Based", "tp2_atr_mult": 7.75, "trail_atr_mult": 1.0, "use_ltf_veto": false, "pulse_conf_weight": 0.55, "be_delay_bars": 22, "family_min_for_bonus": 5, "conv_floor": 0.65, "po3_accum_ad
+#13 TUNE  30m n=  68 tpd= 0.45 win= 67.6% exp=$     +405 hold=  4.5 net=$    +27,572
+    HOLD  30m n=  52 tpd= 0.34 win= 65.4% exp=$     +322 hold=  5.2 net=$    +16,764
+    20 inputs off anchor: {"rate_atr_fast": 9, "rate_atr_slow": 14, "rate_eff_len": 11, "tp1_atr_mult": 1.75, "ob_disp_mult": 2.4, "use_sweep": true, "arm_bars": 8, "kf_adapt_blend": 0.05, "use_ob": false, "zone_min_reac": 0.75, "kf_cold_start_fi
+#14 TUNE  30m n= 197 tpd= 1.29 win= 52.8% exp=$     +613 hold=  7.6 net=$   +120,687
+    HOLD  30m n= 205 tpd= 1.34 win= 52.2% exp=$     +321 hold=  8.0 net=$    +65,769
+    15 inputs off anchor: {"vol_low_mult": 0.65, "tide_confirm_mode": "Loose", "rate_min_mult": 1.5, "kf_r_fdi_gain": 0.35, "tp1_pct": 0.25, "kf_q_base": 0.08, "htf_min_bull_for_bias": 4, "trail_kf_buffer_atr": 0.4, "use_tod_filter": true, "use_c
+#15 TUNE  20m n= 159 tpd= 1.04 win= 78.0% exp=$     +641 hold= 10.9 net=$   +101,893
+    HOLD  20m n= 186 tpd= 1.22 win= 68.3% exp=$     +320 hold= 10.7 net=$    +59,611
+    14 inputs off anchor: {"tpsl_mode": "ATR-Based", "tp2_atr_mult": 6.5, "tp2_pct": 0.1, "emp_window": 116, "fdi_len": 86, "kf_q_base": 0.04, "fdi_smooth": 36, "po3_accum_regime_max": 0.25, "pe_na_poison_fix": false, "cycle_smooth": 6, "use_stag
+#16 TUNE  15m n= 173 tpd= 1.13 win= 73.4% exp=$     +559 hold= 13.2 net=$    +96,652
+    HOLD  15m n= 130 tpd= 0.85 win= 71.5% exp=$     +319 hold= 12.7 net=$    +41,468
+    10 inputs off anchor: {"tpsl_mode": "ATR-Based", "po3_accum_range_mult": 2.5, "tide_ext_mult": 0.2, "rej_min_cluster": 2, "conv_ceiling": 0.75, "ltf_weak_thresh": 0.45, "use_family_confluence": true, "fvg_max_age": 261, "use_adaptive_threshol
+#17 TUNE  30m n= 135 tpd= 0.88 win= 50.4% exp=$     +738 hold=  5.2 net=$    +99,615
+    HOLD  30m n= 144 tpd= 0.94 win= 57.6% exp=$     +317 hold=  5.7 net=$    +45,694
+    12 inputs off anchor: {"rate_atr_slow": 63, "tide_qty": 4, "pullback_max_bars": 5, "emp_min_obs": 16, "tp1_pct": 0.2, "stagnation_min_atr": 0.4, "runner_mode": "Immediate BE (v2)", "ltf_intrabar": "first", "use_adaptive_weights": true, "rej_c
+#18 TUNE  15m n= 168 tpd= 1.10 win= 46.4% exp=$     +391 hold=  9.3 net=$    +65,745
+    HOLD  15m n= 187 tpd= 1.22 win= 52.9% exp=$     +315 hold= 11.2 net=$    +58,986
+    9 inputs off anchor: {"rate_eff_len": 80, "tp2_atr_mult": 11.25, "struct_piv": 9, "sess_bias_weight": 0.7, "kf_r_fdi_gain": 0.4, "use_ltf_check": false, "use_stagnation_exit": false, "emp_min_obs": 51, "runner_weak_be": false}
+#19 TUNE  15m n= 188 tpd= 1.23 win= 56.4% exp=$     +485 hold=  9.9 net=$    +91,161
+    HOLD  15m n= 212 tpd= 1.39 win= 61.3% exp=$     +314 hold=  9.6 net=$    +66,604
+    16 inputs off anchor: {"tide_qty": 1, "po3_accum_adx_max": 23.0, "size_mode": "Fixed", "arm_max_chase_atr": 0.7, "smc_confirm_window": 6, "use_tide_regime_filter": false, "expansion_confirm_bars": 2, "mama_fast_lim": 0.5, "use_tod_filter": fa
+#20 TUNE  30m n= 136 tpd= 0.89 win= 73.5% exp=$     +807 hold= 10.1 net=$   +109,798
+    HOLD  30m n= 115 tpd= 0.75 win= 60.9% exp=$     +307 hold=  9.3 net=$    +35,319
+    19 inputs off anchor: {"rate_atr_fast": 3, "tpsl_mode": "ATR-Based", "tp2_atr_mult": 12.75, "struct_sl_buffer_atr": 0.4, "struct_piv": 5, "use_ltf_trail_tighten": true, "po3_range_lkb": 19, "tide_be_after_tp1": false, "eod_flat_hhmm": 1470, "
+
+wrote 1283 survivors to /tmp/claude-0/-home-user-Icarus-engine/134e69c0-9376-5c62-9fa5-dfe829f5f315/scratchpad/pulse_sweep.json   total 13631s

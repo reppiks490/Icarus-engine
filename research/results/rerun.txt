@@ -1,0 +1,30 @@
+DIRECTION-AWARE LABELS.  tune n=3181 base=0.1767 | hold n=2851 base=0.1954
+long share: tune 0.513 hold 0.490
+  tune: long win 0.1784 (n=1631)   short win 0.1748 (n=1550)
+  hold: long win 0.1960 (n=1398)   short win 0.1948 (n=1453)
+
+                 feature  TUNE spread  HOLD spread   agrees
+                   score      +0.1258      +0.1456      YES
+           sweep_quality      -0.0204      +0.0123        -
+            c_order_flow      +0.0849      +0.1018      YES
+             c_structure      +0.1415      +0.1614      YES
+            c_volatility      +0.0220      -0.0439        -
+              c_location      -0.1619      -0.1456      YES
+              c_momentum      +0.1651      +0.1596      YES
+                 atr_pct      -0.0220      -0.0333        -
+              choppiness      +0.0299      +0.0474        -
+         target_room_atr      -0.0676      -0.0439      YES
+   sweep_penetration_atr      +0.0299      -0.0333        -
+             pool_weight      -0.0645      -0.0807      YES
+            htf_position      +0.0110      +0.0368        -
+      sweep_reclaim_bars      +0.0157      -0.0263        -
+          kalman_dev_atr      +0.0110      +0.0105        -
+
+>>> SURVIVES BOTH TAPES (|spread|>0.03, same sign):
+      c_momentum               tune +0.1651  hold +0.1596
+      c_location               tune -0.1619  hold -0.1456
+      c_structure              tune +0.1415  hold +0.1614
+      score                    tune +0.1258  hold +0.1456
+      c_order_flow             tune +0.0849  hold +0.1018
+      pool_weight              tune -0.0645  hold -0.0807
+      target_room_atr          tune -0.0676  hold -0.0439

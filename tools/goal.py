@@ -52,6 +52,25 @@ class Goal:
     min_streak_ratio: float = 2.0       # max winning streak / max losing streak
     min_mean_run_ratio: float = 1.3     # and on the MEAN run, not just the max
 
+    # --- hold time, treated as a first-class dimension ----------------------
+    # A mean hold is not a description of a system. The same 25-bar average
+    # covers a trend rider that lets winners run, a system that hangs on to
+    # losers, and one that is not intraday at all. Real MNQ produced the third
+    # case: a configuration averaging 25.4 bars carried 28.5% of its positions
+    # through the overnight halt, and those positions supplied +$38,897 while
+    # the 71.5% that stayed intraday lost $24,410. Its "edge" was gap risk.
+    max_hold_bars: float = 30.0         # above this it is a swing trade
+    max_hold_p90: float = 48.0          # and the tail has to stay bounded too
+    max_same_bar_rate: float = 5.0      # a same-bar exit tested sizing, not signal
+    min_hold_asymmetry: float = 1.20    # winners held >=20% longer than losers
+    max_hold_drift: float = 0.35        # the hold cannot wander across the run
+    min_r_per_bar: float = 0.0          # profit per bar of exposure must be > 0
+
+    # Session integrity. Intraday means flat at the close; carrying through the
+    # halt takes gap risk that nothing in this report models.
+    max_overnight_rate: float = 5.0         # % of positions crossing an ET day
+    max_overnight_net_share: float = 25.0   # the edge must not BE the carry
+
     def clears(self, hold: dict, tune: dict | None = None) -> bool:
         if "error" in hold:
             return False
@@ -76,6 +95,27 @@ class Goal:
         if hold.get("streak_ratio", 0.0) < self.min_streak_ratio:
             return False
         if hold.get("mean_run_ratio", 0.0) < self.min_mean_run_ratio:
+            return False
+
+        # Hold time, checked as hard as everything else.
+        if hold.get("mean_hold", 0.0) > self.max_hold_bars:
+            return False
+        if hold.get("hold_p90", 0.0) > self.max_hold_p90:
+            return False
+        if hold.get("same_bar_rate", 0.0) > self.max_same_bar_rate:
+            return False
+        if hold.get("hold_asymmetry", 0.0) < self.min_hold_asymmetry:
+            return False
+        if hold.get("hold_drift", 0.0) > self.max_hold_drift:
+            return False
+        if hold.get("r_per_bar", 0.0) <= self.min_r_per_bar:
+            return False
+        if hold.get("overnight_rate", 0.0) > self.max_overnight_rate:
+            return False
+        # Sign matters: a negative share means the carry LOST and the intraday
+        # book carried the system, which is not the failure this guards against.
+        carry = hold.get("overnight_net_share", 0.0)
+        if carry > self.max_overnight_net_share:
             return False
 
         # The runner must either not exist, or must win on its own merits.
@@ -171,6 +211,36 @@ class Goal:
         for leg in ("tp1_rate", "tp2_rate"):
             if hold.get(leg, 0.0) < self.min_tp_leg_rate:
                 gaps.append(f"{leg} {hold.get(leg,0):.1f}%<{self.min_tp_leg_rate}")
+
+        # --- hold time ------------------------------------------------------
+        mean_hold = hold.get("mean_hold", 0.0)
+        if mean_hold > self.max_hold_bars:
+            gaps.append(f"hold {mean_hold:.1f}>{self.max_hold_bars} (swing, not intraday)")
+        p90 = hold.get("hold_p90", 0.0)
+        if p90 > self.max_hold_p90:
+            gaps.append(f"hold p90 {p90:.0f}>{self.max_hold_p90:.0f} (max {hold.get('hold_max',0)})")
+        same = hold.get("same_bar_rate", 0.0)
+        if same > self.max_same_bar_rate:
+            gaps.append(f"same-bar exits {same:.1f}%>{self.max_same_bar_rate}")
+        asym = hold.get("hold_asymmetry", 0.0)
+        if asym < self.min_hold_asymmetry:
+            gaps.append(f"hold asymmetry {asym:.2f}<{self.min_hold_asymmetry} "
+                        f"(win {hold.get('hold_winners',0):.1f} vs lose "
+                        f"{hold.get('hold_losers',0):.1f} bars)")
+        drift = hold.get("hold_drift", 0.0)
+        if drift > self.max_hold_drift:
+            gaps.append(f"hold drift {drift:.2f}>{self.max_hold_drift}")
+        rpb = hold.get("r_per_bar", 0.0)
+        if rpb <= self.min_r_per_bar:
+            gaps.append(f"per-bar {rpb:+.2f}<=0 (no profit per bar of exposure)")
+        overnight = hold.get("overnight_rate", 0.0)
+        if overnight > self.max_overnight_rate:
+            gaps.append(f"overnight {overnight:.1f}%>{self.max_overnight_rate} of positions")
+        carry = hold.get("overnight_net_share", 0.0)
+        if carry > self.max_overnight_net_share:
+            gaps.append(f"overnight carries {carry:.0f}% of net"
+                        f">{self.max_overnight_net_share:.0f}% "
+                        f"(intraday ${hold.get('intraday_net',0):+,.0f})")
         return gaps
 
 

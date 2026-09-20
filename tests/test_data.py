@@ -1,3 +1,4 @@
+import statistics
 from datetime import datetime, timezone
 
 import pytest
@@ -93,3 +94,58 @@ def test_load_csv_reports_missing_columns(tmp_path):
     path.write_text("time,open,high\n2026-01-01,1,2\n", encoding="utf-8")
     with pytest.raises(ValueError, match="missing column"):
         load_csv(str(path))
+
+
+# --- generator calibration ---------------------------------------------------
+# A mis-calibrated tape invalidated a published finding once (RESEARCH_LOG
+# V-001 / trap 7). These pin the fix so it cannot regress silently.
+
+def test_overriding_minutes_rescales_volatility():
+    """base_vol is per-bar at the calibration's OWN timeframe.
+
+    Overriding `minutes` without rescaling silently runs a coarse timeframe's
+    volatility on fine bars. A 2m tape from a 10m calibration ran sqrt(5) too
+    hot at the base and ~4x too hot by 20m after resampling.
+    """
+    from icarus.data import _SYNTHETIC_CALIBRATION
+
+    native = _SYNTHETIC_CALIBRATION["micro_futures"]["minutes"]
+    assert native == 10
+    fast = synthetic_for("micro_futures", 3000, seed=5, minutes=2)
+    slow = synthetic_for("micro_futures", 3000, seed=5)
+
+    def median_range(bars):
+        return statistics.median([b.high - b.low for b in bars])
+
+    # 2m bars must be materially smaller than 10m bars, near the sqrt(5) ratio.
+    ratio = median_range(slow) / median_range(fast)
+    assert 1.6 < ratio < 3.2, f"expected ~sqrt(5)=2.24 scaling, got {ratio:.2f}"
+
+
+def test_explicit_base_vol_overrides_the_rescale():
+    a = synthetic_for("micro_futures", 500, seed=5, minutes=2, base_vol=0.002)
+    b = synthetic_for("micro_futures", 500, seed=5, minutes=2)
+    assert statistics.median([x.high - x.low for x in a]) > \
+           statistics.median([x.high - x.low for x in b])
+
+
+def test_zero_minutes_is_rejected():
+    with pytest.raises(ValueError):
+        synthetic_for("micro_futures", 100, minutes=0)
+
+
+def test_micro_futures_volatility_is_in_a_realistic_band():
+    """Median ATR as a percent of price, against real NQ intraday behaviour."""
+    from icarus.indicators import ATR
+
+    bars = synthetic_for("micro_futures", 8000, seed=11, minutes=2)
+    atr = ATR(14, 200)
+    values = []
+    for bar in bars:
+        value = atr.update(bar.high, bar.low, bar.close)
+        if atr.ready:
+            values.append(value)
+    pct = statistics.median(values) / statistics.median([b.close for b in bars])
+    # Real NQ 2m ATR sits around 0.08-0.12% of price. Allow a generous band,
+    # but catch the 0.26% the generator produced before the rescale landed.
+    assert 0.0004 < pct < 0.0018, f"2m ATR is {pct:.4%} of price"

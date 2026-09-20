@@ -552,3 +552,56 @@ is sound. None can see a biased one. Only a synthetic tape where the answer is
 known by construction can, and it needs BOTH directions: tests that drift is
 removed, and a test that a planted effect still survives -- a control that
 erases everything is as useless as one that erases nothing.
+
+---
+
+## F-004 — The sweep premise does not replicate (NEGATIVE, cross-asset)
+
+The engine's founding thesis is that a liquidity sweep -- price taking out a
+prior extreme and reclaiming it -- is followed by a move in the REVERSAL
+direction. Tested directly, with no confluence layer, no ML gate, no exit
+policy and nothing to fit: 1,692 cells across 10 markets in five asset classes,
+each market split into two halves, effects estimated within time-of-day and
+volatility strata, Benjamini-Hochberg applied across the whole grid.
+
+**The estimator fix mattered more than the result.** Three versions:
+
+| control construction | FDR survivors | IWM +1.3 ATR cells |
+|---|---|---|
+| `set(directions)`, pooled | 9 | present |
+| per-bar direction mix, pooled | 11 | present |
+| **stratified** | **4** | **gone** |
+
+The IWM cells that looked like the find of the search -- +1.39 ATR, p=0.00002,
+surviving FDR across 1,692 tests -- disappeared entirely once the comparison
+was made within strata. They were drift.
+
+**What remains does not support the premise.** All four survivors are from one
+span, at the longest lookback (40) and longest horizon (48), and all four are
+NEGATIVE -- continuation, not reversal. Three are SPY in a window where SPY
+fell (its cells are 16% positive in the late half against 49% in the early
+half); a structural effect would appear in both.
+
+**Sign agreement between halves, per market:** 33, 43, 46, 54, 56, 56, 58, 59,
+69, 73 percent. Pooled 54.5% over 846 cells. The pooled z of +2.61 is NOT
+reported as significant: the cells within a market are heavily dependent
+(overlapping sweeps, nested lookbacks, overlapping horizons), so the
+independence the z-score assumes does not hold. USO at z=-3.23 -- systematic
+*anti*-agreement -- is the proof, because noise does not produce that either.
+
+**The one consistent signal points the other way.** MNQ at 10m has the most
+stable sign in the panel (73% agreement) and its effects are NEGATIVE in both
+halves (30% and 17% of cells positive). On that tape, sweeps CONTINUE rather
+than reverse. This is the second time continuation has beaten reversal here:
+the location-score work found the same thing on the synthetic tape, where a
+continuation reading of location outscored the shipped mean-reversion reading.
+
+**Verdict.** The premise is not supported. The strongest consistent effect in
+ten markets points opposite to the thesis the engine is built on. That is
+consistent with the permutation null on the finished strategy (p=0.377
+held-out): an entry signal indistinguishable from random is what a false
+premise produces downstream.
+
+**Next thread, not a conclusion.** Continuation has now appeared twice from
+independent directions. It is a hypothesis to test properly -- with the same
+stratified controls, both spans and FDR -- not a result to act on.

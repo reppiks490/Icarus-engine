@@ -118,6 +118,75 @@ longs and shorts are comparable.
 
 ---
 
+## N-001 · `location` component is inverted — STRONG CANDIDATE, under validation
+
+**Status:** cross-validated at 2m on P&L; multi-timeframe confirmation running.
+**Date:** 2026-09-20
+
+### How it surfaced
+Quintile study over ~6,000 direction-correctly-labelled setups (post F-002 fix),
+tuning tape vs held-out tape. Seven features showed cross-tape agreement. One
+was **negative**:
+
+| feature | tune spread | hold spread |
+|---|---|---|
+| c_momentum | +0.165 | +0.160 |
+| **c_location** | **−0.162** | **−0.146** |
+| c_structure | +0.142 | +0.161 |
+| score | +0.126 | +0.146 |
+| c_order_flow | +0.085 | +0.102 |
+| pool_weight | −0.065 | −0.081 |
+| target_room_atr | −0.068 | −0.044 |
+
+A negative spread means the component's **top** quintile wins **less** than its
+bottom. `c_location` carries weight 0.70 — the third-heaviest layer — so the
+engine was systematically down-weighting its own best setups.
+
+### Measured on P&L (not win rate — F-001's lesson)
+
+| location | tune expR | hold expR | tune win% | **tune DD%** | hold DD% |
+|---|---|---|---|---|---|
+| normal 0.70 (shipped) | +0.339 | +0.254 | 44.6 | **12.80** | 10.16 |
+| normal 0.35 | +0.428 | +0.283 | 46.9 | 8.34 | 10.94 |
+| normal 0.00 (off) | +0.465 | +0.332 | 48.1 | 7.99 | 13.69 |
+| inverted 0.35 | +0.570 | +0.403 | 51.3 | 9.00 | 11.93 |
+| **inverted 0.70** | **+0.589** | **+0.503** | 51.8 | **7.15** | 10.10 |
+| inverted 1.05 | +0.620 | +0.503 | 53.9 | 6.61 | 10.00 |
+
+Monotone across the entire sweep, on both tapes. Expectancy roughly doubles
+held out (+0.254 → +0.503) **and drawdown falls** (12.80% → 7.15% tuning).
+
+### Why this is not F-001
+F-001 improved one metric while drawdown rose — the signature of a risk/reward
+trade dressed as an edge. Here expectancy and drawdown improve **together**,
+monotonically, on tuning and held-out tapes. That combination is very hard to
+produce by fitting.
+
+### Mechanism
+`_location_score` rewarded **discount** — price below VWAP for a long — and
+penalised chasing. That is a **mean-reversion** premise.
+
+Icarus trades a failed liquidity sweep plus a structure break. After a low is
+raided and reclaimed, price is *supposed* to be pushing away from value. The
+filter was penalising exactly the setups where the move had already started.
+A mean-reversion location filter was bolted onto a momentum-continuation
+strategy.
+
+### Before this ships
+1. Multi-timeframe confirmation (2m/5m/10m) — running.
+2. Do **not** ship `1 - f(x)`: a pure inversion also flips the over-extension
+   rolloff, turning "too stretched to chase" into "reward the most stretched".
+   A correctly-premised function is being validated against the pure inversion.
+3. Permutation null under the new premise.
+
+### Transferable
+A component can be **worse than useless** — actively anti-predictive — while
+looking reasonable in code review. Score every confluence layer against a
+correctly-labelled outcome before trusting its weight. The sign of a layer is
+an empirical question, not a design decision.
+
+---
+
 ## Methodology traps this project has already hit
 
 1. **Upper-bound arithmetic ignores the cost side.** (F-001)
@@ -128,7 +197,10 @@ longs and shorts are comparable.
 4. **Selection over configurations.** The reference chart carried four
    instances of the same script with different parameter sets. Reporting the
    best of N without correcting for N is the most common way a backtest lies.
-5. **Score-0 rows polluting a decile study.** 80% of exported rows carry
+5. **A confluence layer can be anti-predictive.** `c_location` shipped at
+   weight 0.70 with the wrong sign for the strategy it serves. Design
+   intent is not evidence; score every layer against labelled outcomes.
+6. **Score-0 rows polluting a decile study.** 80% of exported rows carry
    `score = 0` because a hard gate vetoed before scoring. Including them made
    the confluence score look predictive when the deciles were mostly noise.
    Restrict any score study to actually-scored setups.

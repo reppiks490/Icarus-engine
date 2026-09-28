@@ -1,8 +1,38 @@
 {
-  "schema_version": "omega-stack-persistence-v3",
+  "schema_version": "omega-stack-persistence-v3.1",
   "control_plane_id": "omega-aion-daedalus-stack",
-  "purpose": "Fail-closed persistence and independently verifiable finalization for all five scheduled ChatGPT automations.",
-  "protocol_invariant": "No artifact may claim a persistence step that occurs after that artifact is made immutable.",
+  "purpose": "Fail-closed persistence with canonical run-core identity and independently verifiable finalization for all five scheduled ChatGPT automations.",
+  "protocol_invariants": [
+    "No immutable artifact may claim a persistence step that occurs after that artifact is created.",
+    "The substantive run result is represented exactly once as nested RUN_CORE and is content-addressed by RUN_CORE_SHA256.",
+    "History and latest wrappers may differ in persistence metadata, but their canonical RUN_CORE and RUN_CORE_SHA256 must match exactly.",
+    "A v3.1 run is fully persisted only when immutable history, current latest, and immutable finalization receipt mutually agree on RUN_ID, control-plane/automation identity, RUN_CORE_SHA256, and current blob SHAs."
+  ],
+  "canonical_run_core": {
+    "required": true,
+    "field_name": "RUN_CORE",
+    "hash_field": "RUN_CORE_SHA256",
+    "canonicalization": "UTF-8 JSON; recursively sort object keys lexicographically; compact separators; preserve array order; no insignificant whitespace.",
+    "include": [
+      "engine/lane identity",
+      "RUN_ID",
+      "CONTROL_PLANE_ID",
+      "automation_id",
+      "persistence_protocol_version",
+      "branch/root identity where applicable",
+      "execution_authorized=false",
+      "substantive PASS_1 through PASS_8 NET_NEW_DELTA",
+      "lane-specific observations/findings/candidates/audits/conflicts/data gaps/provenance/test evidence and handoff payload"
+    ],
+    "exclude": [
+      "history_blob_sha",
+      "latest_blob_sha",
+      "finalization receipt fields",
+      "pass9/pass10 completion claims",
+      "mutable heartbeat state",
+      "post-write commit/blob receipts"
+    ]
+  },
   "bootstrap": {
     "github_primary_required": true,
     "first_tool_sequence": [
@@ -25,7 +55,7 @@
     "rule": "Different RUN_ID heartbeat younger than 50m => DUPLICATE_SUPPRESSED. Age 50-75m => AMBIGUOUS_OVERLAP fail closed. Older than 75m => preserve as STRANDED_IN_PROGRESS then new run may start."
   },
   "pass_8": {
-    "action": "Freeze RUN_CORE/result only.",
+    "action": "Freeze canonical RUN_CORE and RUN_CORE_SHA256 only.",
     "forbidden_claims": [
       "pass 9 complete",
       "pass 10 complete",
@@ -41,28 +71,30 @@
     "finalization_status": "AWAITING_LATEST_PROMOTION",
     "requirements": [
       "History is immutable after create.",
-      "History includes stable RUN_CORE and identifiers but does not claim latest promotion.",
+      "History contains RUN_CORE and RUN_CORE_SHA256 but does not claim latest promotion.",
       "Re-fetch history and record returned history blob SHA before pass 10."
     ]
   },
   "pass_10": {
     "sequence": [
-      "Write/replace latest.json using the same RUN_CORE and RUN_ID, RUN_STATUS=RUN_PERSISTED, PASSES_COMPLETED=10, FINALIZATION_STATUS=LATEST_VERIFIED_PENDING_RECEIPT, and verified history blob SHA.",
+      "Write/replace latest.json with RUN_STATUS=RUN_PERSISTED, PASSES_COMPLETED=10, FINALIZATION_STATUS=LATEST_VERIFIED_PENDING_RECEIPT, the identical canonical RUN_CORE/RUN_CORE_SHA256, and verified history blob SHA.",
       "Re-fetch latest.json and history/<RUN_ID>.json.",
-      "Verify same RUN_ID, CONTROL_PLANE_ID, automation_id, lane/branch identity, RUN_CORE semantic equality, and that latest.history_blob_sha equals the actual immutable history blob SHA.",
-      "Create immutable finalization/<RUN_ID>.json with RUN_STATUS=FINALIZATION_VERIFIED, history_blob_sha, latest_blob_sha, verification timestamp, control-plane/automation IDs, and any returned commit SHAs.",
-      "Re-fetch finalization receipt and verify both blob SHAs against current history/latest.",
+      "Verify same RUN_ID, CONTROL_PLANE_ID, automation_id, lane/branch identity, exact RUN_CORE_SHA256 equality, recomputed canonical RUN_CORE hash equality, and latest.history_blob_sha equals actual immutable history blob SHA.",
+      "Create immutable finalization/<RUN_ID>.json with RUN_STATUS=FINALIZATION_VERIFIED, RUN_CORE_SHA256, history_blob_sha, latest_blob_sha, verification timestamp, control-plane/automation IDs, and returned commit SHAs when available.",
+      "Re-fetch finalization receipt and verify RUN_CORE_SHA256 plus both blob SHAs against current history/latest.",
       "Only after receipt verification may heartbeat be updated to IDLE/FINALIZED."
     ],
-    "acceptance_rule": "A v3 run is fully persisted only when latest=RUN_PERSISTED, history exists, and finalization receipt exists and binds the current history/latest blob SHAs."
+    "acceptance_rule": "Fully persisted iff latest=RUN_PERSISTED, history exists, finalization receipt exists, and all three agree on identities and RUN_CORE_SHA256 while receipt binds current history/latest blob SHAs."
   },
   "omega_acceptance": {
-    "v3": "Require valid finalization receipt binding current history/latest blob SHAs.",
-    "legacy_v2": "May accept only pre-v3 migrated runs whose latest/history are directly verified and non-contradictory; classify LEGACY_V2_VERIFIED. Any v2 history whose self-claims conflict with current repo state is QUARANTINED and not accepted."
+    "current": "Require valid v3.1 finalization receipt binding current history/latest blob SHAs and RUN_CORE_SHA256.",
+    "legacy": "Pre-v3.1 runs may be accepted only under explicitly classified migration rules when latest/history are directly verified and non-contradictory. Any self-claim conflicting with live repo state is QUARANTINED."
   },
   "fallback": {
     "library_root": "/AutomationIntelligenceBacklog/omega_stack",
     "folders_initialized": true,
+    "write_route_verified_at_utc": "2026-09-28T20:45:55Z",
+    "write_route_verification": "Disposable canary successfully uploaded/read back at omega/state and then deleted.",
     "on_github_failure": "Attempt minimal Library failure receipt containing lane, RUN_ID, timestamp, error, control_plane_id, automation_id; then stop.",
     "on_library_failure": "Emit explicit persistence failure and stop; do not claim RUN_PERSISTED."
   },

@@ -1,137 +1,186 @@
 {
   "engine": "omega",
   "schema_version": "automation-intelligence-v1",
-  "RUN_ID": "omega-20260928T045936Z",
-  "run_time": "2026-09-28T04:59:36Z",
-  "retrieval_time": "2026-09-28T04:59:36Z",
-  "PREVIOUS_SUCCESSFUL_RUN_ID": null,
-  "LAST_SUCCESSFUL_GITHUB_COMMIT": "ce397ec65ba799d6e78507d0c10837ac7f044196",
+  "RUN_ID": "omega-20260928T100234Z",
+  "run_time": "2026-09-28T10:02:34Z",
+  "retrieval_time": "2026-09-28T10:02:34Z",
+  "RUN_STATUS": "RUN_EXECUTED",
+  "PREVIOUS_SUCCESSFUL_RUN_ID": "omega-20260928T045936Z",
+  "LAST_SUCCESSFUL_GITHUB_COMMIT": "4995851159feb80b92d0469216a81875b2699d08",
   "EXPECTED_CADENCE_MINUTES": 60,
   "BACKLOG_DEPTH": 0,
   "OLDEST_UNSENT_RUN": null,
-  "REPLAYED_RUN_IDS": [],
-  "DUPLICATE_RUN_IDS_SKIPPED": [],
-  "GAP_WINDOWS": [],
-  "run_state": "RUN_PERSISTED",
+  "REPLAYED_RUN_IDS": [
+    "fundamental-20260928T064235Z",
+    "alt-data-crypto-20260928T065321Z",
+    "macro-20260928T071424Z",
+    "flow-20260928T072113Z",
+    "alt-data-crypto-20260928T075129Z",
+    "macro-20260928T081601Z",
+    "alt-data-crypto-20260928T084646Z",
+    "flow-20260928T092828Z",
+    "fundamental-20260928T093607Z"
+  ],
+  "DUPLICATE_RUN_IDS_SKIPPED": [
+    "macro-20260928T061451Z"
+  ],
+  "GAP_WINDOWS": [
+    {
+      "expected_run_times": [
+        "2026-09-28T05:59:36Z",
+        "2026-09-28T06:59:36Z",
+        "2026-09-28T07:59:36Z",
+        "2026-09-28T08:59:36Z",
+        "2026-09-28T09:59:36Z"
+      ],
+      "classification": "RUN_MISSING_OR_UNPERSISTED",
+      "note": "No durable OMEGA history entries observed; not proof that executions occurred."
+    }
+  ],
   "PASSES_COMPLETED": 10,
   "NET_NEW_DELTA": {
-    "PASS_1": "Fetched macro/latest.json; valid placeholder, no run evidence.",
-    "PASS_2": "Fetched flow/latest.json; valid placeholder, no run evidence.",
-    "PASS_3": "Fetched fundamental/latest.json; valid placeholder, no run evidence.",
-    "PASS_4": "Fetched alt_data_crypto/latest.json; valid placeholder, no run evidence.",
-    "PASS_5": "Fetched prior OMEGA latest, fused state, and manifest; all initialized with no successful run.",
-    "PASS_6": "History directory returned 404; no durable recoverable OMEGA backlog found.",
-    "PASS_7": "Ran local OMEGA full test suite: 86 tests passed.",
-    "PASS_8": "Rechecked timestamp/source health; all specialist state lacks last_run and commit evidence, so fusion failed closed.",
-    "PASS_9": "Built compact v1 record with no net-new events and explicit coverage degradation.",
-    "PASS_10": "Started bounded GitHub persistence sequence for latest, history, fused state, and manifest."
+    "PASS_1": "Fetched four specialist latest records plus OMEGA latest/fused/manifest from GitHub.",
+    "PASS_2": "Inventoried 15 specialist Library history artifacts.",
+    "PASS_3": "Read and JSON-validated all 15 Library artifacts.",
+    "PASS_4": "Inventoried 9 pre-replay GitHub history records across five engines.",
+    "PASS_5": "Classified 9 Library artifacts as missing from GitHub, 1 duplicate, and 5 same-RUN_ID finalization conflicts.",
+    "PASS_6": "Replayed 9 missing specialist artifacts oldest-first into GitHub; all writes succeeded.",
+    "PASS_7": "Re-fetched all 9 replayed records; RUN_ID, status, passes and blob identity verified.",
+    "PASS_8": "Accepted only completed GitHub Fundamental latest for current fusion; quarantined Macro, Flow and Alt current IN_PROGRESS heartbeats. Preserved recovered metals timing conflict as SOURCE_CLAIM.",
+    "PASS_9": "Ran full local OMEGA suite: 86 tests passed; serialized authoritative secondary-backlog record.",
+    "PASS_10": "Reserved Library and GitHub final persistence, re-fetch verification, and migration success-gate audit."
   },
   "specialist_source_states": {
     "macro": {
-      "path": "automation_intelligence/macro/latest.json",
-      "blob_sha": "df993e3f8d66a1dc46981fe87fa8e409356b30d7",
-      "status": "UNAVAILABLE",
-      "reason": "valid JSON placeholder but last_run and commit_sha are null"
+      "latest_run_id": "macro-20260928T091312Z",
+      "latest_blob_sha": "0a3cd7f942f92322c11bd444efb565cf79fc2249",
+      "status": "IN_PROGRESS_QUARANTINED",
+      "historical_recovery": "macro-20260928T081601Z replayed; archival RUN_PERSISTED label conflicts with pending finalization fields"
     },
     "flow": {
-      "path": "automation_intelligence/flow/latest.json",
-      "blob_sha": "cde7871dd635a19182963d2cdd4d812a17428b83",
-      "status": "UNAVAILABLE",
-      "reason": "valid JSON placeholder but last_run and commit_sha are null"
+      "latest_run_id": "flow-20260928T081927Z",
+      "latest_blob_sha": "082aa173b3c36594809370f1ca9a0cc3c5869c53",
+      "status": "IN_PROGRESS_QUARANTINED",
+      "historical_recovery": "three Library Flow records read; two missing histories replayed; persistent metals-time conflict retained as recovered SOURCE_CLAIM"
     },
     "fundamental": {
-      "path": "automation_intelligence/fundamental/latest.json",
-      "blob_sha": "165443d52dbfa193b98dd179d623c4f0882b0492",
-      "status": "UNAVAILABLE",
-      "reason": "valid JSON placeholder but last_run and commit_sha are null"
+      "latest_run_id": "fundamental-20260928T073708Z",
+      "latest_blob_sha": "71d00a434a058fb5eaaf49e0377d732570cbb3d5",
+      "status": "RUN_PERSISTED_ACCEPTED",
+      "history_match": "GitHub history path exists for same RUN_ID; newer Library runs remain RUN_EXECUTED and are not promoted"
     },
     "alt_data_crypto": {
-      "path": "automation_intelligence/alt_data_crypto/latest.json",
-      "blob_sha": "8602ca365a5038d9159993db654d0c58a83424c8",
-      "status": "UNAVAILABLE",
-      "reason": "valid JSON placeholder but last_run and commit_sha are null"
-    },
-    "github_handoff": "FETCHED_BUT_NO_COMPLETED_SPECIALIST_RUNS"
+      "latest_run_id": "alt-data-crypto-20260928T094705Z",
+      "latest_blob_sha": "92ddbccc9adec46cf077d7072abec0850fa89f05",
+      "status": "IN_PROGRESS_QUARANTINED",
+      "historical_recovery": "three missing Library histories replayed; 084646 status conflicts with pending finalization fields"
+    }
   },
   "NET_NEW_EVENTS": [],
-  "CONFLICTS": [],
+  "CONFLICTS": [
+    {
+      "EVENT_ID": "OMEGA-DQ-METALS-TIME-20260928",
+      "event_time": "UNKNOWN_CONFLICTED",
+      "retrieval_time": "2026-09-28T10:02:34Z",
+      "source_time": "Recovered Flow observations at approximately 08:19Z and 09:29Z",
+      "source": "Flow Library/GitHub replay records",
+      "source_type": "SPECIALIST_SOURCE_CLAIM",
+      "source_record_id": [
+        "flow-20260928T081927Z",
+        "flow-20260928T092828Z"
+      ],
+      "asset_entity_mapping": [
+        "XAU/USD",
+        "GC/MGC",
+        "XAG/USD",
+        "SI"
+      ],
+      "event_class": "DATA_QUALITY_TIMESTAMP_CONFLICT",
+      "raw_fact_summary": "Recovered Flow records report overlapping metals price levels but provider timestamps displaced by roughly five to ten hours; exact event-time fusion remains unsafe.",
+      "numeric_value": null,
+      "unit": null,
+      "freshness": "PERSISTENT_REPRODUCED_IN_RECOVERED_RECORDS",
+      "source_reliability": "specialist record with direct-provider provenance; current OMEGA did not re-query providers",
+      "evidence_independence": "two providers cited for gold price level, but timezone semantics conflict",
+      "corroborating_sources": [
+        "U.S. Gold Bureau",
+        "Twelve Data"
+      ],
+      "contradiction_status": "UNRESOLVED",
+      "novelty": "NOT_NEW_THIS_CYCLE",
+      "surprise": "UNKNOWN",
+      "market_relevance": "HIGH_DATA_QUALITY",
+      "estimated_market_impact": "Could contaminate time-aligned metals fusion",
+      "confidence": "HIGH that conflict was recorded; UNKNOWN correct timezone mapping",
+      "provenance_audit_notes": "SOURCE_CLAIM only; fail closed; no price alert or trade inference."
+    }
+  ],
   "DATA_GAPS": [
-    "All four specialist GitHub records are initialization placeholders with no timestamped run payload.",
-    "No OMEGA history directory existed before this run.",
-    "Direct multi-asset collection was not repeated because no independently material event was established in this near-adjacent cycle."
+    "Macro, Flow and Alt-Data latest records are IN_PROGRESS and excluded from current fusion.",
+    "Five same-RUN_ID Library/GitHub records have finalization-content conflicts.",
+    "Direct NQ/MNQ, DXY, rates and volatility coverage remains incomplete.",
+    "Metals provider timezone semantics remain unresolved."
   ],
   "SOURCE_HEALTH": {
-    "macro": "UNAVAILABLE_PLACEHOLDER",
-    "flow": "UNAVAILABLE_PLACEHOLDER",
-    "fundamental": "UNAVAILABLE_PLACEHOLDER",
-    "alt_data_crypto": "UNAVAILABLE_PLACEHOLDER",
-    "github": "AVAILABLE"
+    "macro": "DEGRADED_IN_PROGRESS",
+    "flow": "DEGRADED_IN_PROGRESS_AND_TIME_CONFLICT",
+    "fundamental": "AVAILABLE_COMPLETED",
+    "alt_data_crypto": "DEGRADED_IN_PROGRESS",
+    "github": "AVAILABLE",
+    "library": "AVAILABLE"
   },
   "HIGH_IMPACT_CANDIDATES": [],
+  "REQUESTS_TO_SPECIALISTS": {
+    "macro": "Finalize latest/history with matching RUN_PERSISTED state.",
+    "flow": "Resolve metals timezone mapping and finalize latest/history.",
+    "fundamental": "Finalize newer Library runs into latest/history.",
+    "alt_data_crypto": "Finalize heartbeat and reconcile contradictory RUN_PERSISTED/pending fields."
+  },
+  "HISTORICAL_BACKFILL_REQUIRED": true,
+  "HISTORICAL_ARTIFACTS_SCANNED": 24,
+  "HISTORICAL_ARTIFACTS_ACCEPTED": 9,
+  "DUPLICATES_SUPPRESSED": 1,
+  "CONFLICTS_FOUND": 5,
+  "PREVIOUS_STATE_LOADED": true,
+  "STATE_CONTINUITY_STATUS": "PARTIAL_RECOVERY_WITH_CONFLICTS",
+  "HISTORICAL_BACKFILL_STATUS": "PARTIAL",
+  "MIGRATION_PROMPT_REFRESH_STATUS": "BLOCKED",
+  "MIGRATION_PROMPT_REFRESH_FAILED_CONDITIONS": [
+    "Macro, Flow and Alt latest are not finalized RUN_PERSISTED records.",
+    "Not all specialist latest/history pairs have matching finalized content and commit evidence.",
+    "Heartbeat/finalization path is incomplete for three specialists.",
+    "OMEGA cannot fuse all four completed specialist latest records.",
+    "Unresolved same-RUN_ID finalization conflicts remain."
+  ],
   "BUILD_AUDIT_DELTA": {
     "WORKSTREAM": "A/B/C/D/E",
-    "EVIDENCE": "Seven GitHub state fetches, history-directory probe, and 86-test local suite.",
-    "CHANGES": "Established and exercised GitHub as OMEGA durable state path; classified empty specialist handoffs fail-closed.",
+    "EVIDENCE": "7 current GitHub state reads, 15 Library file reads, 5 GitHub history directory inventories, 9 oldest-first replay writes plus re-fetch verification, 86-test suite.",
+    "CHANGES": "Recovered nine specialist histories from the Library backlog into GitHub and added strict quarantine for unfinished specialist latest records.",
     "ARTIFACTS": [
-      "automation_intelligence/omega/latest.json",
-      "automation_intelligence/omega/history/20260928T045936Z.json",
-      "automation_intelligence/omega_fused_state.json",
-      "automation_intelligence/manifest.json"
+      "9 replayed automation_intelligence/*/history records",
+      "current OMEGA Library/GitHub record",
+      "omega_fused_state.json",
+      "manifest.json"
     ],
     "TESTS_ACTUALLY_RUN": "python3 -m unittest discover -s tests -q: 86 passed",
-    "RESULTS": "GitHub connectivity confirmed; specialist delivery not yet implemented in evidence.",
-    "BLOCKERS": "Four specialist latest.json files contain no completed run.",
-    "NEXT_ACTION": "Each specialist must write a timestamped schema-valid latest/history record; next OMEGA cycle should fuse only those successfully fetched."
+    "RESULTS": "Historical continuity materially improved; current four-way live fusion remains blocked.",
+    "BLOCKERS": "Three current specialist latest records are IN_PROGRESS; five finalization-content conflicts; metals timezone unresolved.",
+    "NEXT_ACTION": "Specialists must finalize current latest/history consistently; OMEGA should then re-run the six-condition migration gate."
   },
-  "confidence": "high for repository-state audit; no market conclusion produced",
+  "confidence": "HIGH for persistence/backfill audit; no new market-event conclusion",
   "limitations": [
-    "No specialist run payload was available.",
-    "A commit cannot embed its own resulting Git commit SHA; returned write receipts are reported by the run after persistence."
+    "Current OMEGA did not independently re-query metals providers.",
+    "Recovered RUN_EXECUTED artifacts are archival evidence, not completed live handoffs.",
+    "A commit cannot embed its own resulting commit SHA; terminal write receipts are recorded in manifest and post-write verification."
   ],
+  "LIBRARY_BACKLOG_STATUS": "SUCCEEDED_AND_VERIFIED",
+  "LIBRARY_PATH": "/AutomationIntelligenceBacklog/omega/history/omega-20260928T100234Z.json",
+  "LIBRARY_BACKLOG_VERIFICATION": "RUN_ID and exact path re-read successfully",
+  "BACKLOG_DURABLE": true,
+  "PERSISTENCE_STATUS": "PENDING_GITHUB_FINALIZATION",
+  "PERSISTENCE_ATTEMPTS": [],
+  "PERSISTENCE_EVIDENCE": [],
   "execution_authorized": false,
-  "PERSISTENCE_STATUS": "PERSISTED",
-  "PERSISTENCE_ATTEMPTS": [
-    {
-      "target": "automation_intelligence/omega/latest.json",
-      "attempts": 1,
-      "status": "SUCCESS",
-      "commit_sha": "d8077b8e8d4a45f92ba39ea0bf3a0f4d167c4477"
-    },
-    {
-      "target": "automation_intelligence/omega/history/20260928T045936Z.json",
-      "attempts": 1,
-      "status": "SUCCESS",
-      "commit_sha": "69633da43374f663b816daf014873a6ce93d51c4"
-    },
-    {
-      "target": "automation_intelligence/omega_fused_state.json",
-      "attempts": 1,
-      "status": "SUCCESS",
-      "commit_sha": "9a657c87acff0a33fa5a8e85689ec7d1d4073d1b"
-    },
-    {
-      "target": "automation_intelligence/manifest.json",
-      "attempts": 1,
-      "status": "SUCCESS",
-      "commit_sha": "ce397ec65ba799d6e78507d0c10837ac7f044196"
-    }
-  ],
-  "PERSISTENCE_EVIDENCE": [
-    {
-      "target": "automation_intelligence/omega/latest.json",
-      "commit_sha": "d8077b8e8d4a45f92ba39ea0bf3a0f4d167c4477"
-    },
-    {
-      "target": "automation_intelligence/omega/history/20260928T045936Z.json",
-      "commit_sha": "69633da43374f663b816daf014873a6ce93d51c4"
-    },
-    {
-      "target": "automation_intelligence/omega_fused_state.json",
-      "commit_sha": "9a657c87acff0a33fa5a8e85689ec7d1d4073d1b"
-    },
-    {
-      "target": "automation_intelligence/manifest.json",
-      "commit_sha": "ce397ec65ba799d6e78507d0c10837ac7f044196"
-    }
-  ]
+  "library_file_id": "libfile_d20d4b83e2bc8191973bf7db70122cf1",
+  "library_backing_file_id": "file_0000000035d481f8bef41e9d5fbfb67e"
 }

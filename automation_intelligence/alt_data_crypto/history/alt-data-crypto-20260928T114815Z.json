@@ -1,0 +1,89 @@
+{
+  "engine": "alt_data_crypto",
+  "schema_version": "automation-intelligence-v1",
+  "RUN_ID": "alt-data-crypto-20260928T114815Z",
+  "run_start_time": "2026-09-28T11:48:15Z",
+  "retrieval_time": "2026-09-28T11:50:00Z",
+  "RUN_STATUS": "RUN_PERSISTED",
+  "PASSES_COMPLETED": 10,
+  "NET_NEW_DELTA": {
+    "PASS_1": "Loaded GitHub latest and four Library history artifacts; prior latest was an unfinished 09:47 heartbeat.",
+    "PASS_2": "Persisted current GitHub heartbeat successfully.",
+    "PASS_3": "Loaded prior 09:47 Library artifact and retained its no-new-event baseline.",
+    "PASS_4": "Queried fresh Bybit BTCUSDT linear price, 120x5m candles, order book, and funding.",
+    "PASS_5": "Observed BTCUSDT 83042.50, -2.1624% 24h, $0.10 displayed spread, +0.0059% funding.",
+    "PASS_6": "Reviewed fresh public web/news for stablecoin, exploit, regulatory and bridge developments.",
+    "PASS_7": "Current-day Bitget follow-up was traced to the Sep-24 breach and rejected as net-new event evidence.",
+    "PASS_8": "Older Symbiosis/Liquid/Nomic bridge incidents were deduplicated as stale/recycled for this cycle.",
+    "PASS_9": "No directly verified new on-chain transfer, depeg, outage, liquidation or OI event met escalation threshold.",
+    "PASS_10": "Final authoritative state serialized for Library and GitHub finalization."
+  },
+  "PREVIOUS_SUCCESSFUL_RUN_ID": null,
+  "LAST_SUCCESSFUL_GITHUB_COMMIT": "755147007e403ed039401cf24bc7e0e0e60753b2",
+  "EXPECTED_CADENCE_MINUTES": 60,
+  "BACKLOG_DEPTH": 4,
+  "OLDEST_UNSENT_RUN": "alt-data-crypto-20260928T065321Z",
+  "REPLAYED_RUN_IDS": [],
+  "DUPLICATE_RUN_IDS_SKIPPED": [],
+  "GAP_WINDOWS": [
+    {
+      "status": "PERSISTENCE_GAP",
+      "detail": "09:47 run exists durably in Library but GitHub latest remained IN_PROGRESS at cycle start."
+    }
+  ],
+  "PERSISTENCE_ATTEMPTS": 1,
+  "HISTORICAL_BACKFILL_REQUIRED": true,
+  "HISTORICAL_ARTIFACTS_SCANNED": 5,
+  "HISTORICAL_ARTIFACTS_ACCEPTED": 4,
+  "DUPLICATES_SUPPRESSED": 3,
+  "CONFLICTS_FOUND": 1,
+  "PREVIOUS_STATE_LOADED": true,
+  "STATE_CONTINUITY_STATUS": "PARTIAL_WITH_LIBRARY_HISTORY",
+  "HISTORICAL_BACKFILL_STATUS": "PARTIAL",
+  "ONCHAIN_EVENTS": [],
+  "VENUE_STRESS": [],
+  "NARRATIVE_SHIFTS": [],
+  "CROSS_ASSET_LINKS": [],
+  "CONFLICTS": [
+    {
+      "type": "PERSISTENCE_CONTINUITY",
+      "detail": "Prior GitHub latest was IN_PROGRESS although a completed 09:47 Library artifact exists."
+    }
+  ],
+  "DATA_GAPS": [
+    "No direct liquidation/open-interest feed queried",
+    "No independently verified new large on-chain transfer",
+    "Cross-chain coverage not exhaustive"
+  ],
+  "VENUE_STATE": {
+    "venue": "Bybit",
+    "instrument": "BTCUSDT perpetual",
+    "price": 83042.5,
+    "change24h_pct": -2.1624,
+    "best_bid": 83042.4,
+    "best_ask": 83042.5,
+    "spread_usd": 0.1,
+    "funding_pct": 0.0059
+  },
+  "source_provenance_notes": [
+    "Bybit direct connector queried",
+    "Fresh public web/search queried",
+    "GitHub latest fetched and heartbeat persisted",
+    "ChatGPT Library prior history listed/read"
+  ],
+  "confidence": "HIGH for direct venue state; MEDIUM-HIGH for no-new-material-event assessment",
+  "limitations": [
+    "No wallet ownership inferred",
+    "Public narrative treated as claims unless corroborated",
+    "Coverage is not exhaustive across all chains and venues"
+  ],
+  "HEARTBEAT_STATUS": "PERSISTED",
+  "HEARTBEAT_PERSISTENCE_EVIDENCE": [
+    "755147007e403ed039401cf24bc7e0e0e60753b2"
+  ],
+  "LIBRARY_BACKLOG_STATUS": "PENDING",
+  "BACKLOG_DURABLE": false,
+  "PERSISTENCE_STATUS": "PENDING",
+  "FINALIZATION_STATUS": "PENDING",
+  "execution_authorized": false
+}

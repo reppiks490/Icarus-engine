@@ -6,6 +6,7 @@ They intentionally expose no trading or broker execution surface.
 from .apex import ApexCouncilAgent, CouncilConfig
 from .contracts import AgentVerdict, CandidateEvidence, CouncilDecision, EvidenceError
 from .specialists import AlphaSynthesisAgent, RobustnessGuardianAgent
+from .research_adapter import AdvancedAgentEvidence, evidence_from_research_job
 
 __all__ = [
     "ApexCouncilAgent",
@@ -16,4 +17,6 @@ __all__ = [
     "EvidenceError",
     "AlphaSynthesisAgent",
     "RobustnessGuardianAgent",
+    "AdvancedAgentEvidence",
+    "evidence_from_research_job",
 ]

@@ -4,7 +4,7 @@
   "RUN_ID": "omega-20260928T100234Z",
   "run_time": "2026-09-28T10:02:34Z",
   "retrieval_time": "2026-09-28T10:02:34Z",
-  "RUN_STATUS": "RUN_EXECUTED",
+  "RUN_STATUS": "RUN_PERSISTED",
   "PREVIOUS_SUCCESSFUL_RUN_ID": "omega-20260928T045936Z",
   "LAST_SUCCESSFUL_GITHUB_COMMIT": "4995851159feb80b92d0469216a81875b2699d08",
   "EXPECTED_CADENCE_MINUTES": 60,
@@ -177,9 +177,51 @@
   "LIBRARY_PATH": "/AutomationIntelligenceBacklog/omega/history/omega-20260928T100234Z.json",
   "LIBRARY_BACKLOG_VERIFICATION": "RUN_ID and exact path re-read successfully",
   "BACKLOG_DURABLE": true,
-  "PERSISTENCE_STATUS": "PENDING_GITHUB_FINALIZATION",
-  "PERSISTENCE_ATTEMPTS": [],
-  "PERSISTENCE_EVIDENCE": [],
+  "PERSISTENCE_STATUS": "PERSISTED",
+  "PERSISTENCE_ATTEMPTS": [
+    {
+      "target": "automation_intelligence/omega/latest.json",
+      "attempts": 1,
+      "status": "SUCCESS",
+      "commit_sha": "c47e9b2fe656e529f372a7d9f6d242a31afd3d52"
+    },
+    {
+      "target": "automation_intelligence/omega/history/20260928T100234Z.json",
+      "attempts": 1,
+      "status": "SUCCESS",
+      "commit_sha": "34cd0e6add52a4cd88f4ab224dd247041d9e7d55"
+    },
+    {
+      "target": "automation_intelligence/omega_fused_state.json",
+      "attempts": 1,
+      "status": "SUCCESS",
+      "commit_sha": "33568f63ec6cc05a396a8e143c8e495d796f43dd"
+    },
+    {
+      "target": "automation_intelligence/manifest.json",
+      "attempts": 1,
+      "status": "SUCCESS",
+      "commit_sha": "690de86237d132d0a6f9e9f15bf2e4506e369ef8"
+    }
+  ],
+  "PERSISTENCE_EVIDENCE": [
+    {
+      "target": "automation_intelligence/omega/latest.json",
+      "commit_sha": "c47e9b2fe656e529f372a7d9f6d242a31afd3d52"
+    },
+    {
+      "target": "automation_intelligence/omega/history/20260928T100234Z.json",
+      "commit_sha": "34cd0e6add52a4cd88f4ab224dd247041d9e7d55"
+    },
+    {
+      "target": "automation_intelligence/omega_fused_state.json",
+      "commit_sha": "33568f63ec6cc05a396a8e143c8e495d796f43dd"
+    },
+    {
+      "target": "automation_intelligence/manifest.json",
+      "commit_sha": "690de86237d132d0a6f9e9f15bf2e4506e369ef8"
+    }
+  ],
   "execution_authorized": false,
   "library_file_id": "libfile_d20d4b83e2bc8191973bf7db70122cf1",
   "library_backing_file_id": "file_0000000035d481f8bef41e9d5fbfb67e"

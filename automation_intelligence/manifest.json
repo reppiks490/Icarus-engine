@@ -8,49 +8,93 @@
     "fundamental",
     "alt_data_crypto"
   ],
-  "updated_at": "2026-09-28T04:59:36Z",
+  "updated_at": "2026-09-28T10:02:34Z",
   "latest_runs": {
     "omega": {
-      "run_id": "omega-20260928T045936Z",
-      "run_time": "2026-09-28T04:59:36Z"
+      "run_id": "omega-20260928T100234Z",
+      "run_time": "2026-09-28T10:02:34Z",
+      "status": "PENDING_GITHUB_FINALIZATION"
     },
     "macro": {
-      "run_id": null,
-      "run_time": null
+      "run_id": "macro-20260928T091312Z",
+      "run_time": "2026-09-28T09:13:12Z",
+      "status": "IN_PROGRESS"
     },
     "flow": {
-      "run_id": null,
-      "run_time": null
+      "run_id": "flow-20260928T081927Z",
+      "run_time": "2026-09-28T08:19:27Z",
+      "status": "IN_PROGRESS"
     },
     "fundamental": {
-      "run_id": null,
-      "run_time": null
+      "run_id": "fundamental-20260928T073708Z",
+      "run_time": "2026-09-28T07:37:08Z",
+      "status": "RUN_PERSISTED"
     },
     "alt_data_crypto": {
-      "run_id": null,
-      "run_time": null
+      "run_id": "alt-data-crypto-20260928T094705Z",
+      "run_time": "2026-09-28T09:47:05Z",
+      "status": "IN_PROGRESS"
     }
   },
+  "latest_blob_shas": {
+    "omega": "2b557c3cacefb72d20ad2b574a24ef7098f30d84",
+    "macro": "0a3cd7f942f92322c11bd444efb565cf79fc2249",
+    "flow": "082aa173b3c36594809370f1ca9a0cc3c5869c53",
+    "fundamental": "71d00a434a058fb5eaaf49e0377d732570cbb3d5",
+    "alt_data_crypto": "92ddbccc9adec46cf077d7072abec0850fa89f05"
+  },
   "last_commits": {
-    "omega": "52520df3e2f11dae4e8d39f450c9c2e6eae19b65",
-    "omega_history": "fa32f4eab2d47a4324464275640e2ea10558c0f3",
-    "macro": null,
-    "flow": null,
-    "fundamental": null,
-    "alt_data_crypto": null
+    "omega": "c47e9b2fe656e529f372a7d9f6d242a31afd3d52",
+    "omega_history": "34cd0e6add52a4cd88f4ab224dd247041d9e7d55",
+    "macro": "5ca10da1575fb4b2dd8e1acd83a7a91fdd2a1555",
+    "flow": "cc9e01c3fabfe9fbc963d8cd9054ed58716ad0c6",
+    "fundamental": "de515eab583cd083166cc109798792b670260022",
+    "alt_data_crypto": "c335576bc6e9b1f696cb28afa40c6c62f98594ed"
   },
-  "source_blob_shas": {
-    "macro": "df993e3f8d66a1dc46981fe87fa8e409356b30d7",
-    "flow": "cde7871dd635a19182963d2cdd4d812a17428b83",
-    "fundamental": "165443d52dbfa193b98dd179d623c4f0882b0492",
-    "alt_data_crypto": "8602ca365a5038d9159993db654d0c58a83424c8"
-  },
-  "persistence_evidence": [
-    "d8077b8e8d4a45f92ba39ea0bf3a0f4d167c4477",
-    "69633da43374f663b816daf014873a6ce93d51c4",
-    "9a657c87acff0a33fa5a8e85689ec7d1d4073d1b",
-    "ce397ec65ba799d6e78507d0c10837ac7f044196",
-    "52520df3e2f11dae4e8d39f450c9c2e6eae19b65",
-    "fa32f4eab2d47a4324464275640e2ea10558c0f3"
-  ]
+  "historical_replay_commits": [
+    {
+      "run_id": "fundamental-20260928T064235Z",
+      "commit_sha": "c21821475cc7e8213cbcfc080205aa4ce1262432"
+    },
+    {
+      "run_id": "alt-data-crypto-20260928T065321Z",
+      "commit_sha": "e68010be80f9231fa26ece32522abc369e62a4cc"
+    },
+    {
+      "run_id": "macro-20260928T071424Z",
+      "commit_sha": "fb8b47ced745ef4ee52b0d7666e6094c5b3c4b09"
+    },
+    {
+      "run_id": "flow-20260928T072113Z",
+      "commit_sha": "dda987b067615518c373dc9ef4a7d7cf701745c9"
+    },
+    {
+      "run_id": "alt-data-crypto-20260928T075129Z",
+      "commit_sha": "622c8b2cf01c7cc41c6a8a878b8be49b9e34a173"
+    },
+    {
+      "run_id": "macro-20260928T081601Z",
+      "commit_sha": "0c633d95f452a1d28b7496950b053d3b261fb048"
+    },
+    {
+      "run_id": "alt-data-crypto-20260928T084646Z",
+      "commit_sha": "9fb25c6373e93fa0064691903b547ab9b36efbc2"
+    },
+    {
+      "run_id": "flow-20260928T092828Z",
+      "commit_sha": "f813fcfdf082e2b6deaa3207c78801c246b73950"
+    },
+    {
+      "run_id": "fundamental-20260928T093607Z",
+      "commit_sha": "363c717d3acb7aecd2fdb5fe6419e3ccd1fc6ff7"
+    }
+  ],
+  "HISTORICAL_BACKFILL_STATUS": "PARTIAL",
+  "MIGRATION_PROMPT_REFRESH_STATUS": "BLOCKED",
+  "migration_prompt_refresh_failed_conditions": [
+    "Three specialist latest records are IN_PROGRESS",
+    "Not all latest/history records are finalized and matching",
+    "Five same-RUN_ID finalization-content conflicts remain"
+  ],
+  "execution_authorized": false
 }

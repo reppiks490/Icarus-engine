@@ -1,9 +1,96 @@
 {
   "engine": "flow",
   "schema_version": "automation-intelligence-v1",
-  "RUN_ID": "flow-20260928T142120Z",
-  "run_start_time": "2026-09-28T14:21:20Z",
-  "RUN_STATUS": "IN_PROGRESS",
-  "PASSES_COMPLETED": 0,
-  "PREVIOUS_SUCCESSFUL_RUN_ID": null
+  "RUN_ID": "flow-20260928T102124Z",
+  "run_start_time": "2026-09-28T10:21:24Z",
+  "retrieval_time": "2026-09-28T10:22:00Z",
+  "RUN_STATUS": "RUN_PERSISTED",
+  "PASSES_COMPLETED": 10,
+  "NET_NEW_DELTA": {
+    "PASS_1": "GitHub latest loaded; prior state was an unfinished heartbeat.",
+    "PASS_2": "Current heartbeat persisted to GitHub.",
+    "PASS_3": "Fresh Bybit BTCUSDT price/kline queried.",
+    "PASS_4": "Fresh Bybit orderbook and funding queried.",
+    "PASS_5": "Twelve Data Binance BTC/USD queried for independent price confirmation.",
+    "PASS_6": "U.S. Gold Bureau gold/silver spot queried.",
+    "PASS_7": "Twelve Data XAU/USD queried; timestamp conflict reproduced.",
+    "PASS_8": "BTC scan found no net-new event exceeding prior material anomaly.",
+    "PASS_9": "Metals event-time fusion remains fail-closed.",
+    "PASS_10": "Final state persisted."
+  },
+  "FLOW_ANOMALIES": [],
+  "LIQUIDITY_WARNINGS": [],
+  "CORRELATION_BREAKS": [],
+  "PROVIDER_CONFLICTS": [
+    "FLOW-DQ-METALS-20260928-1021Z"
+  ],
+  "DATA_GAPS": [
+    "Normalized metals provider timezone semantics",
+    "Independent XAG/USD confirmation",
+    "NQ/MNQ,DXY,rates,volatility coverage incomplete"
+  ],
+  "final_verified_observations": [
+    {
+      "EVENT_ID": "FLOW-DQ-METALS-20260928-1021Z",
+      "instruments": [
+        "XAU/USD",
+        "XAG/USD"
+      ],
+      "observation_window": "retrieval 2026-09-28T10:21Z",
+      "data_providers": [
+        "U.S. Gold Bureau",
+        "Twelve Data XAU/USD"
+      ],
+      "raw_measurements": {
+        "USGB_gold_bid": 4152.12,
+        "USGB_gold_ask": 4166.6,
+        "USGB_gold_change_pct": -3.16,
+        "USGB_silver_bid": 61.2925,
+        "USGB_silver_ask": 62.0645,
+        "USGB_silver_change_pct": -4.82,
+        "USGB_areStale": false,
+        "USGB_spotDate": "2026-09-28T05:21:33.000Z",
+        "USGB_rawTimestamp": "Monday, Sep 28 05:21:33 AM",
+        "Twelve_XAU_latest_label": "2026-09-28 20:20:00",
+        "Twelve_XAU_close": 4153.12306
+      },
+      "baseline": "Same displacement reproduced in prior cycles.",
+      "normalized_deviation": "Twelve label ~10h ahead; USGB structured timestamp ~5h behind UTC retrieval while raw clock matches Chicago local.",
+      "freshness": "CONFLICTED",
+      "confidence": "HIGH",
+      "signal_type": "PRIMARY_OBSERVABLE",
+      "independent_confirmation_exists": true
+    }
+  ],
+  "BTC_STATE": {
+    "Bybit_price": 82726.9,
+    "Bybit_change24h_pct": -2.6103,
+    "Bybit_best_bid": 82726.9,
+    "Bybit_best_ask": 82727,
+    "Bybit_spread": 0.1,
+    "Bybit_funding_pct": 0.0036,
+    "independent_price_confirmation": "Twelve Data/Binance broadly aligned"
+  },
+  "PREVIOUS_SUCCESSFUL_RUN_ID": null,
+  "LAST_SUCCESSFUL_GITHUB_COMMIT": "ac2669ee7346cb7a5df2ed8986d43bef4d4e09c3",
+  "EXPECTED_CADENCE_MINUTES": 60,
+  "BACKLOG_DEPTH": 3,
+  "OLDEST_UNSENT_RUN": "flow-20260928T072113Z",
+  "REPLAYED_RUN_IDS": [],
+  "DUPLICATE_RUN_IDS_SKIPPED": [],
+  "GAP_WINDOWS": [],
+  "PERSISTENCE_ATTEMPTS": 2,
+  "HISTORICAL_BACKFILL_STATUS": "PARTIAL",
+  "STATE_CONTINUITY_STATUS": "PARTIAL_WITH_RECOVERED_LIBRARY_HISTORY",
+  "HEARTBEAT_STATUS": "PERSISTED",
+  "HEARTBEAT_PERSISTENCE_EVIDENCE": [
+    "ac2669ee7346cb7a5df2ed8986d43bef4d4e09c3"
+  ],
+  "LIBRARY_BACKLOG_STATUS": "SUCCEEDED_AND_VERIFIED",
+  "LIBRARY_PATH": "/AutomationIntelligenceBacklog/flow/history/flow-20260928T102124Z.json",
+  "library_file_id": "libfile_17285aa08a888191b4724e2dff7469d4",
+  "BACKLOG_DURABLE": true,
+  "PERSISTENCE_STATUS": "PERSISTED",
+  "FINALIZATION_STATUS": "PERSISTED_VERIFICATION_PENDING",
+  "execution_authorized": false
 }

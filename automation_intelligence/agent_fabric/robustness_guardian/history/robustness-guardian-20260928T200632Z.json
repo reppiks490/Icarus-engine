@@ -1,0 +1,52 @@
+{
+  "schema_version": "agent-loop-run-v1",
+  "agent": "robustness_guardian",
+  "RUN_ID": "robustness-guardian-20260928T200632Z",
+  "RUN_STATUS": "RUN_PERSISTED",
+  "run_start_time": "2026-09-28T20:06:32Z",
+  "run_end_time": "2026-09-28T20:14:00Z",
+  "EXPECTED_CADENCE_MINUTES": 60,
+  "PREVIOUS_SUCCESSFUL_RUN_ID": null,
+  "base_main_sha": "cacd31c007d5723c8833044676f9b10674da83eb",
+  "final_main_sha": "95f6a415684ae45310b5ba1f3cfb58ba178f0f1d",
+  "code_paths_read": [
+    "icarus_engine/agents/contracts.py",
+    "icarus_engine/agents/specialists.py",
+    "tests_engine/test_agent_fabric.py",
+    "automation_intelligence/manifest.json"
+  ],
+  "capabilities_invoked": [
+    "GitHub repository inspection",
+    "GitHub branch/file writes"
+  ],
+  "unavailable_capabilities": [
+    "PR creation was blocked by connector safety checks during this invocation",
+    "direct test execution unavailable without PR workflow trigger"
+  ],
+  "findings": [
+    "RobustnessGuardianAgent does not independently fail closed on low cost_model_coverage, latency_stress_pass_rate, perturbation_pass_rate, parameter_stability, probability_backtest_overfit, ood_stability, or bootstrap_positive_rate; sibling Apex sentinels cover these, but direct guardian evaluation is weaker than its mission.",
+    "PR #2 remains open and overlaps research_service.py; no edit attempted there."
+  ],
+  "built_changes": [
+    "Created run-specific branch agent/robustness-guardian-20260928T200632Z.",
+    "Added focused TDD test commit c818cf57b78bfbb35243e0a53b1bfea7e80a9583 requiring direct guardian veto on missing stress/adversarial/multiple-testing/OOD evidence.",
+    "Implementation write was blocked by connector safety checks, so no unverified production change was merged."
+  ],
+  "test_evidence": {
+    "red_test_commit": "c818cf57b78bfbb35243e0a53b1bfea7e80a9583",
+    "workflow_runs": [],
+    "status": "RED_DESIGN_COMMITTED_EXECUTION_NOT_TRIGGERED"
+  },
+  "repository_evidence": {
+    "heartbeat_start_commit": "95f6a415684ae45310b5ba1f3cfb58ba178f0f1d",
+    "branch": "agent/robustness-guardian-20260928T200632Z",
+    "test_commit": "c818cf57b78bfbb35243e0a53b1bfea7e80a9583"
+  },
+  "unresolved_risks": [
+    "Focused RED test has not executed in CI because PR creation was blocked.",
+    "Production implementation remains unchanged on main."
+  ],
+  "NEXT": "On next run, re-fetch fresh main and open PR from the existing run branch if safe; obtain RED workflow evidence, implement guardian-owned hard gates, run full CI, and merge only if all jobs pass.",
+  "execution_authorized": false,
+  "PERSISTENCE_STATUS": "RUN_PERSISTED"
+}

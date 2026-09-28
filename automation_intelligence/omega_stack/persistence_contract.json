@@ -34,5 +34,19 @@
     "rule": "Each OMEGA run checks sibling isolated latest/heartbeat/history and, when automation-registry access exists, compares last_run_time against durable repo state.",
     "no_fabrication": true
   },
-  "execution_authorized": false
+  "execution_authorized": false,
+  "bootstrap_retry": {
+    "max_retries_after_initial_failure": 1,
+    "rule": "On first GitHub bootstrap write/readback failure, re-fetch control plane and heartbeat, reconcile fresh content SHA, and retry once. After the second failure, stop and use fallback."
+  },
+  "single_flight": {
+    "enabled": true,
+    "active_heartbeat_grace_minutes": 50,
+    "stranded_after_minutes": 75,
+    "rule": "If heartbeat is IN_PROGRESS for a different RUN_ID and started_at_utc is less than 50 minutes old, classify DUPLICATE_SUPPRESSED and do not overwrite it. If older than 75 minutes, classify prior heartbeat STRANDED_IN_PROGRESS, preserve prior RUN_ID in recovery metadata, then begin the new run. Ages 50-75 minutes are AMBIGUOUS_OVERLAP and fail closed without substantive work."
+  },
+  "scheduler_truth": {
+    "rule": "automation last_run_time is trigger evidence only, never persistence evidence",
+    "watchdog_owner": "OMEGA"
+  }
 }

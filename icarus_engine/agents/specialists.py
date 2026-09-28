@@ -34,6 +34,20 @@ class RobustnessGuardianAgent:
             hard.append("net expectancy lower bound is non-positive")
         if e.stressed_net_expectancy_bps <= 0:
             hard.append("edge does not survive execution-cost stress")
+        if e.cost_model_coverage < 0.95:
+            hard.append("cost-model coverage below 95%")
+        if e.latency_stress_pass_rate < 0.60:
+            hard.append("latency stress pass rate below 60%")
+        if e.perturbation_pass_rate < 0.65:
+            hard.append("perturbation pass rate below 65%")
+        if e.parameter_stability < 0.50:
+            hard.append("parameter stability below 50%")
+        if e.probability_backtest_overfit > 0.50:
+            hard.append("probability of backtest overfit above 50%")
+        if e.ood_stability < 0.50:
+            hard.append("out-of-distribution stability below 50%")
+        if e.bootstrap_positive_rate < 0.60:
+            hard.append("bootstrap positive-rate evidence below 60%")
         if hard:
             return AgentVerdict(self.name, "reject", 0.0, _confidence(e), True, tuple(hard))
 

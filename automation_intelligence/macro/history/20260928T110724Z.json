@@ -1,0 +1,97 @@
+{
+  "engine": "macro",
+  "schema_version": "automation-intelligence-v1",
+  "RUN_ID": "macro-20260928T110724Z",
+  "run_start_time": "2026-09-28T11:07:24Z",
+  "retrieval_time": "2026-09-28T11:08:30Z",
+  "RUN_STATUS": "RUN_PERSISTED",
+  "PASSES_COMPLETED": 10,
+  "NET_NEW_DELTA": {
+    "PASS_1": "Loaded prior completed state.",
+    "PASS_2": "Heartbeat write blocked by connector safety checks.",
+    "PASS_3": "Verified six durable Library history records including current.",
+    "PASS_4": "Scanned official Fed/Treasury/BLS/BEA sources.",
+    "PASS_5": "Scanned current Reuters macro/geopolitical coverage.",
+    "PASS_6": "Verified Brent up as much as 3% to $107.16 and 30Y UST yield +2bp to 5.517%.",
+    "PASS_7": "Verified gold weakness: Reuters spot $4,156.45 (-3%); USGB ask $4,166.48 (-3.17%).",
+    "PASS_8": "Twelve Data QQQ extended snapshot $737.85, -0.8932% vs Sep 25 close.",
+    "PASS_9": "Underlying US-Iran policy event predates run; deduplicated as continuation.",
+    "PASS_10": "Final provenance and persistence audit completed."
+  },
+  "HIGH_IMPACT_EVENTS": [],
+  "CROSS_ASSET_LINKS": [
+    {
+      "EVENT_ID": "MACRO-CONTEXT-IRAN-OIL-20260928-CONT",
+      "event_time": "2026-09-28",
+      "release_time": "UNKNOWN",
+      "retrieval_time": "2026-09-28T11:08:30Z",
+      "jurisdiction": "US/Iran/global",
+      "institution": "US/Iran governments; Reuters reporting",
+      "event_class": "GEOPOLITICAL_ENERGY_CONTINUATION",
+      "exact_released_fact": "No new primary policy shock verified; markets continued pricing the US-Iran/Hormuz stalemate.",
+      "consensus_reference_value": "UNKNOWN",
+      "surprise_magnitude": "UNKNOWN",
+      "revision_status": "NONE_OBSERVED",
+      "source_provenance": [
+        "Reuters",
+        "U.S. Gold Bureau",
+        "Twelve Data"
+      ],
+      "corroboration_count": 5,
+      "affected_assets": [
+        "Brent/crude",
+        "Treasuries",
+        "NQ/QQQ proxy",
+        "GC/XAU",
+        "global equities"
+      ],
+      "observed_market_reaction": "Brent +up to 3% to $107.16; 30Y UST +2bp to 5.517%; Reuters spot gold -3% to $4,156.45; USGB gold ask $4,166.48 (-3.17%); QQQ extended $737.85 (-0.8932%).",
+      "confidence": "HIGH observations; MEDIUM causal isolation",
+      "uncertainty": "Underlying policy rejection predates run; no new primary announcement verified."
+    }
+  ],
+  "CONFLICTS": [],
+  "DATA_GAPS": [
+    "No fresh primary White House/Iran policy release verified",
+    "No synchronized direct NQ/MNQ, SI, BTC, DXY reaction set"
+  ],
+  "source_provenance_notes": [
+    "Federal Reserve/Treasury/BLS/BEA official-domain web searches",
+    "Reuters",
+    "U.S. Gold Bureau",
+    "Twelve Data",
+    "GitHub",
+    "ChatGPT Library"
+  ],
+  "confidence": "HIGH no new qualifying macro shock in queried sources",
+  "limitations": [
+    "Search not exhaustive",
+    "No causal upgrade beyond evidence"
+  ],
+  "PREVIOUS_SUCCESSFUL_RUN_ID": "macro-20260928T100915Z",
+  "EXPECTED_CADENCE_MINUTES": 60,
+  "BACKLOG_DEPTH": 0,
+  "OLDEST_UNSENT_RUN": null,
+  "REPLAYED_RUN_IDS": [],
+  "DUPLICATE_RUN_IDS_SKIPPED": [],
+  "GAP_WINDOWS": [],
+  "PERSISTENCE_ATTEMPTS": 2,
+  "HISTORICAL_BACKFILL_REQUIRED": true,
+  "HISTORICAL_ARTIFACTS_SCANNED": 7,
+  "HISTORICAL_ARTIFACTS_ACCEPTED": 6,
+  "DUPLICATES_SUPPRESSED": 1,
+  "CONFLICTS_FOUND": 0,
+  "PREVIOUS_STATE_LOADED": true,
+  "STATE_CONTINUITY_STATUS": "CONTIGUOUS_LIBRARY_HISTORY",
+  "HISTORICAL_BACKFILL_STATUS": "COMPLETE",
+  "HEARTBEAT_STATUS": "FAILED",
+  "HEARTBEAT_ERROR": "GitHub heartbeat update blocked by connector safety checks",
+  "LIBRARY_BACKLOG_STATUS": "SUCCEEDED_AND_VERIFIED",
+  "LIBRARY_PATH": "/AutomationIntelligenceBacklog/macro/history/macro-20260928T110724Z.json",
+  "library_file_id": "libfile_c2c474f227e4819189b74ad33cea4f18",
+  "BACKLOG_DURABLE": true,
+  "PERSISTENCE_STATUS": "PENDING",
+  "PERSISTENCE_EVIDENCE": [],
+  "FINALIZATION_STATUS": "PENDING",
+  "execution_authorized": false
+}

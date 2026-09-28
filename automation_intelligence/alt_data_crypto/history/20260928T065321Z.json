@@ -1,0 +1,77 @@
+{
+  "engine": "alt_data_crypto",
+  "schema_version": "automation-intelligence-v1",
+  "RUN_ID": "alt-data-crypto-20260928T065321Z",
+  "run_start_time": "2026-09-28T06:53:21Z",
+  "retrieval_time": "2026-09-28T06:53:53Z",
+  "RUN_STATUS": "RUN_EXECUTED",
+  "PASSES_COMPLETED": 10,
+  "NET_NEW_DELTA": {
+    "PASS_1": "Loaded GitHub latest; prior run is stranded IN_PROGRESS.",
+    "PASS_2": "History directory probe returned 404; no GitHub historical artifact recovered.",
+    "PASS_3": "Library history path scanned; empty.",
+    "PASS_4": "Manifest loaded; alt_data_crypto has no completed run recorded.",
+    "PASS_5": "Fresh Bybit BTCUSDT price/kline/funding queried.",
+    "PASS_6": "BTC continuation reviewed; no new independently corroborated venue-stress event established.",
+    "PASS_7": "Fresh web search reviewed crypto security/stablecoin/regulatory developments.",
+    "PASS_8": "Recent Bitget-hack follow-ups found but event predates this run and primary-source corroboration was insufficient for a net-new escalation.",
+    "PASS_9": "Provenance/dedup/staleness checks completed; no qualifying new on-chain event.",
+    "PASS_10": "Final state serialized; GitHub heartbeat write remained blocked by connector safety checks."
+  },
+  "PREVIOUS_SUCCESSFUL_RUN_ID": null,
+  "LAST_SUCCESSFUL_GITHUB_COMMIT": null,
+  "EXPECTED_CADENCE_MINUTES": 60,
+  "BACKLOG_DEPTH": 1,
+  "OLDEST_UNSENT_RUN": "alt-data-crypto-20260928T054713Z",
+  "REPLAYED_RUN_IDS": [],
+  "DUPLICATE_RUN_IDS_SKIPPED": [],
+  "GAP_WINDOWS": [
+    {
+      "status": "UNRECOVERABLE_REFERENCE",
+      "detail": "Prior latest.json is IN_PROGRESS with no accessible history artifact; execution/finalization cannot be reconstructed."
+    }
+  ],
+  "PERSISTENCE_ATTEMPTS": 1,
+  "HISTORICAL_BACKFILL_REQUIRED": true,
+  "HISTORICAL_ARTIFACTS_SCANNED": 3,
+  "HISTORICAL_ARTIFACTS_ACCEPTED": 0,
+  "DUPLICATES_SUPPRESSED": 0,
+  "CONFLICTS_FOUND": 1,
+  "PREVIOUS_STATE_LOADED": true,
+  "STATE_CONTINUITY_STATUS": "DEGRADED",
+  "HISTORICAL_BACKFILL_STATUS": "NO_RECOVERABLE_HISTORY",
+  "ONCHAIN_EVENTS": [],
+  "VENUE_STRESS": [],
+  "NARRATIVE_SHIFTS": [],
+  "CROSS_ASSET_LINKS": [],
+  "CONFLICTS": [
+    {
+      "type": "PERSISTENCE",
+      "detail": "GitHub latest.json remains prior IN_PROGRESS run; heartbeat update for current run was blocked."
+    }
+  ],
+  "DATA_GAPS": [
+    "No independently corroborated new on-chain event",
+    "No recoverable prior alt-data history",
+    "No direct Bitget primary-source record queried in this run"
+  ],
+  "source_provenance_notes": [
+    "Bybit BTCUSDT price/kline/funding queried directly",
+    "Web search queried for recent crypto security/stablecoin/regulatory developments",
+    "GitHub latest and manifest fetched",
+    "ChatGPT Library history path listed"
+  ],
+  "confidence": "HIGH for persistence/backfill state; MEDIUM for no-new-event assessment",
+  "limitations": [
+    "Coverage is not exhaustive across every chain/venue",
+    "No wallet attribution inferred",
+    "No private/restricted data used"
+  ],
+  "HEARTBEAT_STATUS": "FAILED",
+  "PERSISTENCE_STATUS": "FAILED",
+  "PERSISTENCE_ERROR": "GitHub update_file blocked by OpenAI safety checks",
+  "LIBRARY_BACKLOG_STATUS": "PENDING",
+  "BACKLOG_DURABLE": false,
+  "FINALIZATION_STATUS": "PENDING_GITHUB_REPLAY",
+  "execution_authorized": false
+}

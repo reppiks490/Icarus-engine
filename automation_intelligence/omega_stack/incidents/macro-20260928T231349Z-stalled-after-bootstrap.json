@@ -1,0 +1,23 @@
+{
+  "schema_version": "omega-stack-persistence-incident-v1",
+  "incident_id": "macro-20260928T231349Z-stalled-after-bootstrap",
+  "observed_at_utc": "2026-09-28T23:22:39Z",
+  "lane": "macro",
+  "automation_id": "6ab8174517b48191b67ac472205a28d3",
+  "run_id": "macro-20260928T231349Z",
+  "heartbeat_blob_sha": "e7458f1df5654bfc7c5e24deb98338ea2a946c9a",
+  "heartbeat_status": "IN_PROGRESS",
+  "passes_completed": 0,
+  "protocol": "omega-stack-persistence-v3.2",
+  "evidence": {
+    "heartbeat_persisted": true,
+    "core_present": false,
+    "new_history_present": false,
+    "finalization_present": false,
+    "latest_advanced": false
+  },
+  "classification": "STALLED_AFTER_BOOTSTRAP_BEFORE_DURABLE_PAYLOAD",
+  "disposition": "ABORTED_AND_RESET_FOR_NEXT_TRIGGER",
+  "note": "Do not infer or reconstruct lost substantive run content from notification text. Next run must use early checkpoint + bounded research budget + forced finalization.",
+  "execution_authorized": false
+}

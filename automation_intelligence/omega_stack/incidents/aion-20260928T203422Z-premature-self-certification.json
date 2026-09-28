@@ -1,0 +1,26 @@
+{
+  "schema_version": "omega-stack-persistence-incident-v1",
+  "incident_id": "aion-20260928T203422Z-premature-self-certification",
+  "observed_at_utc": "2026-09-28T20:38:29Z",
+  "lane": "aion",
+  "automation_id": "6ab817679a248191928d7bd6fa8e4a3c",
+  "branch": "feature/aion-daedalus-prime-v2",
+  "run_id": "aion-20260928T203422Z",
+  "evidence": {
+    "history_blob_sha": "ed9e868695ebc41f177e2da414260cbedb21b594",
+    "history_claimed_run_status": "RUN_PERSISTED",
+    "history_claimed_passes_completed": 10,
+    "history_claimed_finalization_status": "PERSISTED",
+    "live_latest_run_id": null,
+    "live_latest_status": "INITIALIZED",
+    "live_latest_blob_sha": "dc7a5f589e008e56ac3e55986119d098ab69e529",
+    "live_heartbeat_run_id": "aion-20260928T203422Z",
+    "live_heartbeat_status": "IN_PROGRESS",
+    "live_heartbeat_blob_sha": "be998f6de95cb16a86598245db57bf4d187cd204"
+  },
+  "classification": "PREMATURE_SELF_CERTIFICATION_V2",
+  "disposition": "QUARANTINED_NOT_ACCEPTED_AS_FULLY_PERSISTED",
+  "remediation": "Persistence v3 introduced history->latest->independent finalization receipt. Future OMEGA acceptance requires receipt-bound blob SHAs.",
+  "immutable_history_modified": false,
+  "execution_authorized": false
+}

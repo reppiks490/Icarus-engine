@@ -1,0 +1,18 @@
+{
+  "schema_version": "automation-scheduler-rebind-v1",
+  "lane": "flow",
+  "scheduler_title": "Microstructure Sensor Grid",
+  "status": "LEGACY_RUNTIME_RETIRED_REPLACEMENT_ACTIVE",
+  "observed_problem": "Legacy scheduler repeatedly advanced last_run_time without creating/re-reading the owned automation_intelligence/flow heartbeat.",
+  "github_permission_check": "FULL_ACTIONS_ALLOWED",
+  "remediation": [
+    "Disabled and explicitly retired the legacy scheduler object.",
+    "Created a fresh scheduler object from the current GitHub-connected runtime.",
+    "Preserved hourly cadence at minute 35.",
+    "Made GitHub heartbeat write+readback the first substantive gate.",
+    "Kept automation_intelligence/flow as the only owned namespace and explicitly forbade omega_stack/flow."
+  ],
+  "next_expected_slot_utc": "2026-09-28T23:35:00Z",
+  "acceptance": "A new flow RUN_ID must appear first in owned heartbeat, then immutable history, latest, manifest flow entry, and finalized heartbeat.",
+  "execution_authorized": false
+}

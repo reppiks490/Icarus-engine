@@ -1,0 +1,105 @@
+{
+  "engine": "flow",
+  "schema_version": "automation-intelligence-v1",
+  "RUN_ID": "flow-20260928T092828Z",
+  "run_start_time": "2026-09-28T09:28:28Z",
+  "retrieval_time": "2026-09-28T09:30:00Z",
+  "RUN_STATUS": "RUN_EXECUTED",
+  "PASSES_COMPLETED": 10,
+  "NET_NEW_DELTA": {
+    "PASS_1": "Loaded GitHub latest plus two durable Library history artifacts.",
+    "PASS_2": "Current heartbeat write attempted and blocked by connector safety checks.",
+    "PASS_3": "Recovered prior 07:21 BTC anomaly and 08:19 metals timestamp-conflict records from Library.",
+    "PASS_4": "Queried Bybit BTCUSDT price, 120x5m candles, order book and funding.",
+    "PASS_5": "Queried U.S. Gold Bureau gold/silver spot state.",
+    "PASS_6": "Queried Twelve Data Binance BTC/USD and XAU/USD 5m series.",
+    "PASS_7": "Cross-provider BTC price path agrees; no new BTC anomaly above prior 05:35 event.",
+    "PASS_8": "Metals timestamp contamination reproduced: Twelve XAU labels remain ~10h ahead while USGB structured timestamp remains ~5h behind UTC retrieval but raw clock matches Chicago local.",
+    "PASS_9": "Fail-closed metals event-time fusion retained; no causal attribution made.",
+    "PASS_10": "Final authoritative record serialized for Library/GitHub finalization."
+  },
+  "final_verified_observations": [
+    {
+      "EVENT_ID": "FLOW-DQ-METALS-20260928-0929Z",
+      "instruments": [
+        "XAU/USD",
+        "XAG/USD"
+      ],
+      "observation_window": "retrieval ~2026-09-28T09:29Z",
+      "providers": [
+        "U.S. Gold Bureau",
+        "Twelve Data XAU/USD"
+      ],
+      "raw_measurements": {
+        "USGB_gold_bid": 4144.88,
+        "USGB_gold_ask": 4159.21,
+        "USGB_gold_change_pct": -3.34,
+        "USGB_silver_bid": 61.1165,
+        "USGB_silver_ask": 61.8875,
+        "USGB_silver_change_pct": -5.09,
+        "USGB_areStale": false,
+        "USGB_spotDate": "2026-09-28T04:29:05.000Z",
+        "USGB_rawTimestamp": "Monday, Sep 28 04:29:05 AM",
+        "Twelve_XAU_latest_label": "2026-09-28 19:25:00",
+        "Twelve_XAU_close": 4146.21872
+      },
+      "baseline": "Prior run showed same ~10h Twelve XAU label displacement and USGB structured/raw timezone mismatch.",
+      "normalized_deviation": "Persistent provider timestamp displacement; price levels broadly overlap.",
+      "freshness": "CONFLICTED",
+      "confidence": "HIGH",
+      "data_quality_caveats": [
+        "Exact XAU event-time alignment unsafe",
+        "No independent XAG confirmation this pass"
+      ],
+      "signal_type": "PRIMARY_OBSERVABLE data-quality conflict",
+      "independent_confirmation": true
+    }
+  ],
+  "FLOW_ANOMALIES": [],
+  "LIQUIDITY_WARNINGS": [],
+  "CORRELATION_BREAKS": [],
+  "PROVIDER_CONFLICTS": [
+    "FLOW-DQ-METALS-20260928-0929Z"
+  ],
+  "DATA_GAPS": [
+    "Reliable normalized event_time for metals feeds",
+    "Independent XAG/USD confirmation",
+    "NQ/MNQ, DXY, rates and volatility coverage incomplete"
+  ],
+  "source_provenance_notes": [
+    "Bybit direct connector",
+    "Twelve Data licensed connector",
+    "U.S. Gold Bureau direct connector",
+    "ChatGPT Library prior Flow artifacts"
+  ],
+  "confidence": "HIGH for persistent metals timestamp contamination; HIGH that no new BTC anomaly exceeded prior event in sampled window",
+  "limitations": [
+    "No institutional attribution",
+    "No synthetic order-flow inference",
+    "Cross-asset coverage incomplete"
+  ],
+  "PREVIOUS_SUCCESSFUL_RUN_ID": null,
+  "LAST_SUCCESSFUL_GITHUB_COMMIT": "cc9e01c3fabfe9fbc963d8cd9054ed58716ad0c6",
+  "EXPECTED_CADENCE_MINUTES": 60,
+  "BACKLOG_DEPTH": 2,
+  "OLDEST_UNSENT_RUN": "flow-20260928T072113Z",
+  "REPLAYED_RUN_IDS": [],
+  "DUPLICATE_RUN_IDS_SKIPPED": [],
+  "GAP_WINDOWS": [],
+  "PERSISTENCE_ATTEMPTS": 1,
+  "HISTORICAL_BACKFILL_REQUIRED": true,
+  "HISTORICAL_ARTIFACTS_SCANNED": 3,
+  "HISTORICAL_ARTIFACTS_ACCEPTED": 2,
+  "DUPLICATES_SUPPRESSED": 0,
+  "CONFLICTS_FOUND": 1,
+  "PREVIOUS_STATE_LOADED": true,
+  "STATE_CONTINUITY_STATUS": "PARTIAL",
+  "HISTORICAL_BACKFILL_STATUS": "PARTIAL",
+  "HEARTBEAT_STATUS": "FAILED",
+  "HEARTBEAT_ERROR": "GitHub update_file blocked by OpenAI safety checks",
+  "LIBRARY_BACKLOG_STATUS": "PENDING",
+  "BACKLOG_DURABLE": false,
+  "PERSISTENCE_STATUS": "PENDING",
+  "FINALIZATION_STATUS": "PENDING",
+  "execution_authorized": false
+}

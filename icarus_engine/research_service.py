@@ -308,6 +308,31 @@ class ResearchWorkspace:
         candidate["validation"] = {**candidate["validation"], "analysis": bundle}
         return self.ledger.propose(candidate)
 
+    def agent_shadow_evaluate(self, job_id, advanced_evidence):
+        """Run the Apex advisory council against one exact qualified research job.
+
+        This is intentionally shadow-only. It cannot register or activate inputs,
+        and the returned execution_authorized field is always false.
+        """
+        from .agents import ApexCouncilAgent, evidence_from_research_job
+
+        job = self._qualified_job(job_id)
+        evidence = evidence_from_research_job(job, advanced_evidence)
+        decision = ApexCouncilAgent().evaluate(evidence)
+        return {
+            "candidate_id": evidence.candidate_id,
+            "decision": decision.decision,
+            "score": decision.score,
+            "confidence": decision.confidence,
+            "quorum_met": decision.quorum_met,
+            "shadow_eligible": decision.shadow_eligible,
+            "execution_authorized": False,
+            "veto_agents": list(decision.veto_agents),
+            "dissent_agents": list(decision.dissent_agents),
+            "child_agents": [item.agent for item in decision.child_verdicts],
+            "trace_hash": decision.trace_hash,
+        }
+
     def activate(self, body):
         if type(body) is not dict or set(body) != {"proposal_id", "operation_id"}:
             raise ValueError("activation requires proposal_id and operation_id only")

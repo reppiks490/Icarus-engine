@@ -53,7 +53,7 @@
   },
   "namespace_policy": "Only this five-loop stack may write under automation_intelligence/omega_stack/. Other schedulers must use separate namespaces.",
   "global_manifest_policy": "Read-only contextual input. Do not use automation_intelligence/manifest.json as this stack's scheduler source of truth and do not overwrite unrelated scheduler topology fields.",
-  "persistence_policy": "heartbeat.json is the only mutable IN_PROGRESS marker; immutable history/<RUN_ID>.json first; latest.json only after history verification; never overwrite newer state with older state.",
+  "persistence_policy": "heartbeat.json is the only mutable IN_PROGRESS marker; pass 9 writes immutable history proof; pass 10 promotes latest then writes an immutable finalization receipt binding history/latest blob SHAs; only receipt-verified runs are accepted as fully persisted.",
   "execution_authorized": false,
   "migration": {
     "seeded_from_legacy_persisted_runs": {
@@ -69,24 +69,23 @@
     "v2_reason": "Old agent branch diverged substantially from main; v2 starts from current main and carries only approved design/operational scaffolding."
   },
   "agent_development_branch": "feature/aion-daedalus-prime-v2",
-  "persistence_protocol_version": "omega-stack-persistence-v2",
+  "persistence_protocol_version": "omega-stack-persistence-v3",
   "library_fallback_root": "/AutomationIntelligenceBacklog/omega_stack",
   "persistence_bootstrap": {
     "rule": "No substantive work before verified heartbeat persistence.",
     "github_first_actions": [
-      "fetch control_plane.json",
+      "fetch control_plane.json and persistence_contract.json",
+      "require control_plane.persistence_protocol_version == persistence_contract.schema_version",
       "validate exact lane identity",
       "fetch own heartbeat.json",
       "update heartbeat.json with current RUN_ID and IN_PROGRESS",
       "re-fetch heartbeat.json and verify RUN_ID/control_plane_id/automation_id"
     ],
-    "on_github_bootstrap_failure": "Stop substantive work immediately; attempt Library failure receipt; if Library write is unavailable, emit explicit persistence failure and stop.",
+    "on_github_bootstrap_failure": "Stop substantive work immediately; one fresh-SHA reconcile/retry; then attempt Library failure receipt and stop.",
     "closure": [
-      "freeze result",
-      "write immutable history/<RUN_ID>.json",
-      "re-fetch and verify",
-      "replace latest.json with exact same payload",
-      "re-fetch latest and history and verify identity"
+      "Pass 8 freezes run core/result; it must not claim pass 9/10 completion.",
+      "Pass 9 creates immutable history/<RUN_ID>.json with RUN_STATUS=HISTORY_VERIFIED and FINALIZATION_STATUS=AWAITING_LATEST_PROMOTION, then re-fetches and records its blob SHA.",
+      "Pass 10 writes latest.json with RUN_STATUS=RUN_PERSISTED and exact same RUN_CORE plus the verified history blob SHA; re-fetches latest and history; verifies identifiers and RUN_CORE equivalence; then writes immutable finalization/<RUN_ID>.json containing the verified history/latest blob SHAs; only after receipt readback may heartbeat become IDLE/FINALIZED."
     ]
   }
 }

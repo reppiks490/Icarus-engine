@@ -1,0 +1,64 @@
+{
+  "schema_version": "agent-loop-run-v1",
+  "agent": "alpha_synthesis",
+  "RUN_ID": "alpha-synthesis-20260928T202500Z",
+  "RUN_STATUS": "RUN_PERSISTED",
+  "run_start_time": "2026-09-28T20:25:00Z",
+  "retrieval_time": "2026-09-28T20:25:00Z",
+  "EXPECTED_CADENCE_MINUTES": 60,
+  "PREVIOUS_SUCCESSFUL_RUN_ID": null,
+  "base_main_sha": "06111f7dc94af9eb1d1f973b6863f80fb310fc15",
+  "final_main_sha": "06111f7dc94af9eb1d1f973b6863f80fb310fc15",
+  "code_paths_read": [
+    "icarus_engine/agents/contracts.py",
+    "icarus_engine/agents/specialists.py",
+    "icarus_engine/agents/research_adapter.py",
+    "tests_engine/test_agent_fabric.py",
+    "automation_intelligence/manifest.json",
+    "automation_intelligence/agent_fabric/README.md"
+  ],
+  "datasets_evidence_identity": [],
+  "capabilities_invoked": [
+    "GitHub repository inspection and durable Git object writes"
+  ],
+  "unavailable_capabilities": [
+    "Codex Coordinator",
+    "Baton Pass",
+    "Superpowers",
+    "Astral Orchestrator",
+    "Adaptive Codex Orchestrator",
+    "Capability Orchestrator"
+  ],
+  "findings": [
+    "AlphaSynthesisAgent already gates non-positive net expectancy lower bound and non-positive stressed expectancy.",
+    "Current scoring includes return, lower-bound expectancy, stressed-edge retention, deflated/probabilistic Sharpe, drawdown efficiency, expected shortfall, diversification, capacity, parameter stability and bootstrap sign stability.",
+    "Research adapter v2 binds advanced evidence to exact study/dataset/baseline hashes and uses measured provenance/point-in-time/cost coverage.",
+    "No qualified candidate dataset was supplied in this run; no profitability claim or parameter optimization was performed.",
+    "PR #2 remains an open collision on icarus_engine/research_service.py and was not touched."
+  ],
+  "built_changes": [],
+  "tests": {
+    "status": "NOT_RUN_NO_CODE_CHANGE",
+    "reason": "No behavioral code change was made; current main was inspected only."
+  },
+  "pull_requests": {
+    "open_collision_prs": [
+      2
+    ],
+    "created": []
+  },
+  "persistence": {
+    "PERSISTENCE_ATTEMPTS": 1,
+    "PERSISTENCE_STATUS": "GITHUB_BRANCH_VERIFIED",
+    "HEARTBEAT_STATUS": "RUN_PERSISTED",
+    "BACKLOG_DURABLE": false,
+    "library_status": "UNAVAILABLE_IN_THIS_RUN"
+  },
+  "unresolved_risks": [
+    "Alpha lane has no qualified real candidate evidence in this run, so economic scoring remains unexercised on new data.",
+    "Turnover is carried in evidence but is not currently an explicit Alpha score term; add only with a defensible scale and test-first change.",
+    "Capacity is represented as utilization rather than an impact curve; richer capacity economics require validated size/impact evidence."
+  ],
+  "NEXT": "Design a test-first profitability-economics extension that penalizes excessive turnover only when turnover units/scale are explicit, and add capacity-impact evidence without tuning on protected holdouts.",
+  "execution_authorized": false
+}

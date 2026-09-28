@@ -8,7 +8,7 @@
     "aion",
     "daedalus"
   ],
-  "updated_at": "2026-09-28T19:51:30Z",
+  "updated_at": "2026-09-28T21:04:27Z",
   "latest_runs": {
     "omega": {
       "run_id": "omega-20260928T100234Z",
@@ -218,19 +218,19 @@
         "path": "automation_intelligence/agent_fabric/robustness_guardian",
         "code": "icarus_engine/agents/specialists.py::RobustnessGuardianAgent",
         "schedule_title": "Robustness Guardian Evolution",
-        "status": "INITIALIZED"
+        "status": "RUN_PERSISTED_LEGACY_RECONCILED_CODE_HARDENED"
       },
       "alpha_synthesis": {
         "path": "automation_intelligence/agent_fabric/alpha_synthesis",
         "code": "icarus_engine/agents/specialists.py::AlphaSynthesisAgent",
         "schedule_title": "Alpha Synthesis Evolution",
-        "status": "INITIALIZED"
+        "status": "STARTUP_HEARTBEAT_SEEDED_FIRST_VERIFIED_RUN_PENDING"
       },
       "apex_council": {
         "path": "automation_intelligence/agent_fabric/apex_council",
         "code": "icarus_engine/agents/apex.py::ApexCouncilAgent",
         "schedule_title": "Apex Council Evolution",
-        "status": "INITIALIZED"
+        "status": "FIRST_RUN_IN_PROGRESS"
       }
     },
     "research_adapter": {
@@ -278,12 +278,39 @@
       ]
     },
     "binding_hardening_merge_sha": "93c7812a6f311334e0f0e4b9b28ba8e089849e89",
-    "latest_verified_code_sha": "93c7812a6f311334e0f0e4b9b28ba8e089849e89"
+    "latest_verified_code_sha": "b53d4fc37e4f0905b62c58c514158a48022688c9",
+    "robustness_hardening": {
+      "status": "MERGED_VERIFIED",
+      "pull_request": 9,
+      "merge_sha": "be0b679a75abaf3d4fc7a64b371c3bd3a09473f1",
+      "workflow_run": 36482606680,
+      "direct_vetoes": [
+        "cost_model_coverage",
+        "latency_stress_pass_rate",
+        "perturbation_pass_rate",
+        "parameter_stability",
+        "probability_backtest_overfit",
+        "ood_stability",
+        "bootstrap_positive_rate"
+      ]
+    },
+    "persistence_contract": {
+      "status": "MERGED_VERIFIED",
+      "protocol": "agent-fabric-persistence-v3",
+      "pull_request": 10,
+      "merge_sha": "b53d4fc37e4f0905b62c58c514158a48022688c9",
+      "workflow_run": 36483356446,
+      "verifier": "icarus_engine/agents/persistence.py::validate_finalized_run",
+      "startup_heartbeat_readback_required": true,
+      "finalization_receipt_required": true,
+      "secondary_library_backup_requires_exact_readback": true,
+      "execution_authorized": false
+    }
   },
   "SCHEDULER_TOPOLOGY_STATUS": "FIVE_ACTIVE_HOURLY_LOOPS_VERIFIED",
   "scheduler_topology": {
     "schema_version": "icarus-scheduler-topology-v1",
-    "verified_at": "2026-09-28T19:40:40Z",
+    "verified_at": "2026-09-28T21:04:27Z",
     "authority": "live ChatGPT automation registry",
     "active_count": 5,
     "cadence": "hourly",
@@ -331,7 +358,8 @@
       "Onchain Event Intelligence Grid"
     ],
     "execution_authorized": false,
-    "note": "This field is the authoritative repository mirror of scheduled automation state. Legacy active_engines/engine_locations describe older runtime namespaces and are not scheduler truth."
+    "note": "This field is the authoritative repository mirror of scheduled automation state. Legacy active_engines/engine_locations describe older runtime namespaces and are not scheduler truth.",
+    "persistence_hardening": "STARTUP_HEARTBEAT_FAIL_CLOSED_ON_ALL_FIVE_ACTIVE_LOOPS"
   },
   "scheduler_topology_supersedes_legacy_active_engines_for_automation_state": true
 }

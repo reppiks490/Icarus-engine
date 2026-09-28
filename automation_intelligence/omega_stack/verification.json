@@ -1,0 +1,119 @@
+{
+  "schema_version": "omega-stack-verification-v1",
+  "verified_at_utc": "2026-09-28T19:54:30Z",
+  "repository": "reppiks490/Icarus-engine",
+  "control_plane": "automation_intelligence/omega_stack/control_plane.json",
+  "control_plane_blob_sha": "b6af2083c66d053bc6ee81390a364c513623a345",
+  "scheduler": {
+    "status": "CONFIGURED_VERIFIED",
+    "enabled_count": 5,
+    "paused_count": 15,
+    "timing_mode": "exact_schedule",
+    "default_timezone": "America/Chicago",
+    "lanes": [
+      {
+        "title": "OMEGA Fusion Core",
+        "id": "6ab817357a2c8191ac3a407f14d6a8c1",
+        "minute": 0
+      },
+      {
+        "title": "Macro Shock Sentinel",
+        "id": "6ab8174517b48191b67ac472205a28d3",
+        "minute": 12
+      },
+      {
+        "title": "Flow Velocity Engine",
+        "id": "6ab817544e68819197b5db21eb2cbe2b",
+        "minute": 24
+      },
+      {
+        "title": "AION PRIME Quant Scientist",
+        "id": "6ab817679a248191928d7bd6fa8e4a3c",
+        "minute": 36
+      },
+      {
+        "title": "DAEDALUS PRIME Systems Auditor",
+        "id": "6ab8177918b48191a97e56c44b57d2c5",
+        "minute": 48
+      }
+    ],
+    "work_mode_delegation": "FORBIDDEN_BY_PROMPT",
+    "ten_pass_contract": "ENABLED_ALL_FIVE",
+    "persistence_first": "ENABLED_ALL_FIVE",
+    "shared_manifest_write": "FORBIDDEN_ALL_FIVE"
+  },
+  "namespace_isolation": {
+    "status": "CONFIGURED_VERIFIED",
+    "root": "automation_intelligence/omega_stack",
+    "legacy_omega_macro_flow": "READ_ONLY_MIGRATION_INPUT",
+    "shared_global_manifest": "READ_ONLY_CONTEXT",
+    "collision_reason": "Repository is written by multiple automation portfolios; isolated namespace prevents cross-account scheduler/state overwrite."
+  },
+  "branches": {
+    "main_role": "OMEGA_MACRO_FLOW_AND_CONTROL_PLANE",
+    "agent_development_branch": "feature/aion-daedalus-prime-v2",
+    "agent_branch_exists": true,
+    "previous_agent_branch": "feature/agent-fabric-apex-v1",
+    "previous_agent_branch_status": "READ_ONLY_HISTORY",
+    "current_compare": {
+      "status": "DIVERGED",
+      "ahead_by": 8,
+      "behind_by": 3,
+      "operational_assessment": "EXPECTED_AND_FAIL_CLOSED",
+      "reason": "v2 intentionally carries only AION/DAEDALUS operational/design scaffolding; newer main code must not be overwritten from stale branch state."
+    },
+    "branch_safety_contract": "AION/DAEDALUS compare against main before code edits; if target code diverged, use a fresh run-specific branch when safely supported or persist an implementation-ready work product without editing code."
+  },
+  "lanes": {
+    "omega": {
+      "repo_root": "main:automation_intelligence/omega_stack/omega",
+      "state": "MIGRATED_SEED_PRESENT",
+      "latest_run_id": "omega-20260928T100234Z",
+      "first_post_isolation_run": "PENDING"
+    },
+    "macro": {
+      "repo_root": "main:automation_intelligence/omega_stack/macro",
+      "state": "MIGRATED_SEED_PRESENT",
+      "latest_run_id": "macro-20260928T181445Z",
+      "first_post_isolation_run": "PENDING"
+    },
+    "flow": {
+      "repo_root": "main:automation_intelligence/omega_stack/flow",
+      "state": "MIGRATED_SEED_PRESENT",
+      "latest_run_id": "flow-20260928T102124Z",
+      "first_post_isolation_run": "PENDING"
+    },
+    "aion": {
+      "repo_root": "feature/aion-daedalus-prime-v2:automation_intelligence/omega_stack/aion",
+      "state": "INITIALIZED",
+      "latest_run_id": null,
+      "first_post_isolation_run": "PENDING"
+    },
+    "daedalus": {
+      "repo_root": "feature/aion-daedalus-prime-v2:automation_intelligence/omega_stack/daedalus",
+      "state": "INITIALIZED",
+      "latest_run_id": null,
+      "first_post_isolation_run": "PENDING"
+    }
+  },
+  "invariants": {
+    "heartbeat_only_mutable_in_progress": true,
+    "immutable_history_first": true,
+    "latest_only_after_history_verification": true,
+    "older_run_cannot_overwrite_newer": true,
+    "stale_sha_requires_refetch_reconcile": true,
+    "initialized_not_equal_persisted": true,
+    "scheduler_trigger_not_equal_run_persisted": true,
+    "execution_authorized": false
+  },
+  "live_acceptance_gates": [
+    "OMEGA completes one post-isolation run with immutable history and latest identity verified.",
+    "Macro completes one post-isolation run with isolated heartbeat/history/latest verified.",
+    "Flow completes one post-isolation run without writing the legacy flow namespace.",
+    "AION completes one v2 run with immutable history and latest identity verified.",
+    "DAEDALUS completes one v2 run with immutable history and latest identity verified.",
+    "OMEGA subsequently ingests finalized AION and DAEDALUS v2 states without consulting the shared global manifest as scheduler truth."
+  ],
+  "overall_status": "CONFIGURED_HARDENED_LIVE_VERIFICATION_PENDING",
+  "execution_authorized": false
+}

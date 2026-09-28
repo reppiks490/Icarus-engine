@@ -1,36 +1,48 @@
 # Automation Intelligence
 
-Durable output sink for the active automation-intelligence engines and preserved legacy sensor histories.
+This repository contains durable state for **multiple automation portfolios**. No single scheduler record in the shared global manifest should be assumed to describe every ChatGPT account or automation controller.
 
-## Active five-loop topology
+## Scheduler isolation
 
-The active scheduled engines are:
+Each active automation portfolio must own a unique writable namespace and a namespaced control-plane record.
 
-1. `omega` — fusion/control plane on `main`
-2. `macro` — macro/policy sensor on `main`
-3. `flow` — microstructure/flow sensor on `main`
-4. `aion` — quantitative-science/strategy-intelligence agent on `feature/agent-fabric-apex-v1` while under development
-5. `daedalus` — systems assurance/adversarial verification agent on `feature/agent-fabric-apex-v1` while under development
+### OMEGA / AION / DAEDALUS five-loop stack
 
-The historical namespaces `fundamental` and `alt_data_crypto` are preserved as legacy sensor/adaptor knowledge. They are not active top-level scheduled loops and must not be mistaken for current specialist runs.
+Authoritative scheduler mirror for this stack:
+
+`automation_intelligence/omega_stack/control_plane.json`
+
+Writable roots:
+
+- `automation_intelligence/omega_stack/omega/`
+- `automation_intelligence/omega_stack/macro/`
+- `automation_intelligence/omega_stack/flow/`
+- `automation_intelligence/omega_stack/aion/`
+- `automation_intelligence/omega_stack/daedalus/`
+
+The legacy `automation_intelligence/omega/`, `macro/`, and `flow/` paths remain historical inputs only for this stack. Other automation portfolios may still use separate legacy or agent-fabric namespaces; they must not write under `omega_stack/`.
+
+The shared `automation_intelligence/manifest.json` is **multi-writer contextual metadata**, not universal scheduler truth. Scheduler-specific loops must not overwrite unrelated topology fields there. Prefer namespaced control-plane files.
 
 ## Clean 1:1 persistence invariant
 
 For every logical engine run:
 
-1. `heartbeat.json` is the only mutable in-progress marker. It may contain `IN_PROGRESS`, recovery, or stranded-run state.
-2. `latest.json` always represents the most recent fully persisted run and MUST NOT be used as an in-progress heartbeat.
-3. `history/<RUN_ID>.json` is immutable. A completed run has exactly one authoritative history record.
-4. Finalization order is: write+verify immutable history -> replace `latest.json` with the exact finalized history payload -> safely update owned state/manifest pointers -> re-fetch and verify.
-5. A run may claim `RUN_PERSISTED` only when returned GitHub commit/blob evidence exists and post-write reads prove the same RUN_ID/status. Where applicable, `latest.json` and its matching history record must have identical content/blob identity.
-6. A stale heartbeat older than the expected cadence is `STRANDED_IN_PROGRESS`, not a completed run. Preserve it for recovery; never fabricate missing history.
-7. Stale-SHA writes must re-fetch/reconcile and retry at most once. An older run must never overwrite a newer completed run.
-8. Initialization placeholders such as AION/DAEDALUS `INITIALIZED` state are not completed runs and must never be fused as `RUN_PERSISTED`.
+1. `heartbeat.json` is the only mutable in-progress marker.
+2. `latest.json` always represents the newest fully persisted completed run and must never be an IN_PROGRESS heartbeat.
+3. `history/<RUN_ID>.json` is immutable authoritative completed state.
+4. Finalize in order: write heartbeat -> produce final payload -> write immutable history -> re-fetch/verify -> replace latest with the exact same payload -> re-fetch/verify -> mark heartbeat finalized/idle.
+5. `RUN_PERSISTED` requires actual write/readback evidence.
+6. Stale heartbeats are stranded/recovery evidence, not completed runs.
+7. Stale-SHA conflicts require re-fetch/reconcile; an older run must never overwrite newer completed state.
+8. Initialization placeholders are not completed runs.
+9. No scheduler may silently rewrite another scheduler's namespace or use a shared manifest field as cross-account authority.
+10. `execution_authorized=false` remains the default safety invariant for research/automation state.
 
-OMEGA additionally maintains `omega_fused_state.json` and the global `manifest.json`. Specialist updates to the global manifest must preserve unrelated entries and use fresh-SHA conflict checks.
+## Branch ownership for the OMEGA stack
 
-## Branch ownership
+- OMEGA, Macro, Flow operational state: `main`
+- AION + DAEDALUS operational/development state: `feature/aion-daedalus-prime-v2`
+- Previous agent branch `feature/agent-fabric-apex-v1`: retained as read-only historical development evidence; do not continue new agent work there.
 
-`main` is authoritative for OMEGA, Macro, Flow, and legacy sensor history. AION/DAEDALUS development state is isolated on `feature/agent-fabric-apex-v1` until explicitly promoted. OMEGA records the branch and commit identity of any AION/DAEDALUS evidence it consumes.
-
-Do not create competing aliases for these namespaces. Do not automatically merge the development branch to `main`.
+AION/DAEDALUS must compare their development branch to current `main` before code changes. If a target file is stale/diverged, they must use a fresh branch from current main when safely supported or emit an implementation-ready work product instead of overwriting current code.

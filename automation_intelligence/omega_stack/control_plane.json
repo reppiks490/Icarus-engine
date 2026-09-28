@@ -53,7 +53,7 @@
   },
   "namespace_policy": "Only this five-loop stack may write under automation_intelligence/omega_stack/. Other schedulers must use separate namespaces.",
   "global_manifest_policy": "Read-only contextual input. Do not use automation_intelligence/manifest.json as this stack's scheduler source of truth and do not overwrite unrelated scheduler topology fields.",
-  "persistence_policy": "heartbeat.json is the only mutable IN_PROGRESS marker; pass 8 freezes RUN_CORE; pass 9 writes immutable core/<RUN_ID>.json and history/<RUN_ID>.json using GitHub-returned blob SHAs as content identity; pass 10 promotes latest.json and creates immutable finalization/<RUN_ID>.json binding current core/history/latest blob SHAs; only receipt-verified runs are fully persisted.",
+  "persistence_policy": "heartbeat.json is the only mutable IN_PROGRESS marker; checkpoint.json is mandatory immediately after bootstrap and after material deltas; substantive work stops by 35m; stale prior-cycle heartbeat >=45m is recovered instead of suppressing the next hourly run; pass 8 freezes RUN_CORE into checkpoint; pass 9 writes immutable core/history using GitHub blob SHAs; pass 10 promotes latest and creates immutable finalization receipt; only receipt-verified runs are fully persisted.",
   "execution_authorized": false,
   "migration": {
     "seeded_from_legacy_persisted_runs": {
@@ -72,20 +72,34 @@
   "persistence_protocol_version": "omega-stack-persistence-v3.2",
   "library_fallback_root": "/AutomationIntelligenceBacklog/omega_stack",
   "persistence_bootstrap": {
-    "rule": "No substantive work before verified heartbeat persistence.",
+    "rule": "No substantive work before verified heartbeat AND verified BOOTSTRAPPED checkpoint. Every run must enter closure by 35m; stale prior-cycle state >=45m is preserved as incident/checkpoint evidence then reset for the new trigger.",
     "github_first_actions": [
       "fetch control_plane.json and persistence_contract.json",
       "require control_plane.persistence_protocol_version == persistence_contract.schema_version",
       "validate exact lane identity",
+      "recover stale prior-cycle heartbeat/checkpoint when age >=45m and no valid finalization exists",
       "fetch own heartbeat.json immediately before write",
-      "update heartbeat.json with current RUN_ID and IN_PROGRESS using that fresh content SHA",
-      "re-fetch heartbeat.json and verify RUN_ID/control_plane_id/automation_id"
+      "update heartbeat.json with current RUN_ID and IN_PROGRESS using fresh content SHA",
+      "re-fetch heartbeat.json and verify RUN_ID/control_plane_id/automation_id",
+      "write and re-fetch checkpoint.json with BOOTSTRAPPED"
     ],
     "on_github_bootstrap_failure": "Re-fetch heartbeat, reconcile, retry exactly once with fresh content SHA. If still unsuccessful, stop substantive work and attempt a Library failure receipt.",
     "closure": [
-      "Pass 8 freezes RUN_CORE only; do not compute or claim a model-generated cryptographic hash.",
-      "Pass 9 creates immutable core/<RUN_ID>.json containing exactly RUN_CORE; re-fetch and record GitHub run_core_blob_sha; then create immutable history/<RUN_ID>.json with HISTORY_VERIFIED, PASSES_COMPLETED=9, FINALIZATION_STATUS=AWAITING_LATEST_PROMOTION, core_path and run_core_blob_sha; re-fetch and record history_blob_sha.",
-      "Pass 10 writes latest.json with RUN_PERSISTED, PASSES_COMPLETED=10, core_path, run_core_blob_sha and history_blob_sha; re-fetch latest; create immutable finalization/<RUN_ID>.json binding the actual core/history/latest blob SHAs; re-fetch receipt; only then set heartbeat IDLE/FINALIZED."
+      "By 35m stop new substantive/external work and enter closure.",
+      "Pass 8 freezes RUN_CORE into checkpoint.json with FROZEN_FOR_FINALIZATION; re-fetch and verify.",
+      "Pass 9 creates immutable core/<RUN_ID>.json and history/<RUN_ID>.json and records GitHub blob SHAs.",
+      "Pass 10 promotes latest.json, creates immutable finalization/<RUN_ID>.json binding current blob SHAs, re-fetch verifies receipt, then marks checkpoint FINALIZED and heartbeat IDLE/FINALIZED."
     ]
+  },
+  "runtime_budget": {
+    "substantive_deadline_minutes": 35,
+    "stale_recovery_minutes": 45,
+    "non_github_call_caps": {
+      "omega": 8,
+      "macro": 6,
+      "flow": 6,
+      "aion": 10,
+      "daedalus": 10
+    }
   }
 }

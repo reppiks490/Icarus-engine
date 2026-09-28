@@ -33,14 +33,14 @@
       "title": "AION PRIME Quant Scientist",
       "automation_id": "6ab817679a248191928d7bd6fa8e4a3c",
       "minute": 36,
-      "branch": "feature/agent-fabric-apex-v1",
+      "branch": "feature/aion-daedalus-prime-v2",
       "root": "automation_intelligence/omega_stack/aion"
     },
     {
       "title": "DAEDALUS PRIME Systems Auditor",
       "automation_id": "6ab8177918b48191a97e56c44b57d2c5",
       "minute": 48,
-      "branch": "feature/agent-fabric-apex-v1",
+      "branch": "feature/aion-daedalus-prime-v2",
       "root": "automation_intelligence/omega_stack/daedalus"
     }
   ],
@@ -62,6 +62,11 @@
       "flow": "flow-20260928T102124Z"
     },
     "aion": "INITIALIZED",
-    "daedalus": "INITIALIZED"
-  }
+    "daedalus": "INITIALIZED",
+    "previous_agent_branch": "feature/agent-fabric-apex-v1",
+    "previous_agent_branch_status": "RETAINED_READ_ONLY_HISTORY",
+    "v2_branch_created_from": "main",
+    "v2_reason": "Old agent branch diverged substantially from main; v2 starts from current main and carries only approved design/operational scaffolding."
+  },
+  "agent_development_branch": "feature/aion-daedalus-prime-v2"
 }

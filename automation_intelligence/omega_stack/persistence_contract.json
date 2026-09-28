@@ -1,52 +1,76 @@
 {
-  "schema_version": "omega-stack-persistence-v2",
+  "schema_version": "omega-stack-persistence-v3",
   "control_plane_id": "omega-aion-daedalus-stack",
-  "purpose": "Fail-closed persistence bootstrap for all five scheduled ChatGPT automations.",
-  "github_primary": {
-    "required": true,
+  "purpose": "Fail-closed persistence and independently verifiable finalization for all five scheduled ChatGPT automations.",
+  "protocol_invariant": "No artifact may claim a persistence step that occurs after that artifact is made immutable.",
+  "bootstrap": {
+    "github_primary_required": true,
     "first_tool_sequence": [
       "fetch control_plane.json",
-      "validate lane mapping",
+      "fetch persistence_contract.json",
+      "require control_plane.persistence_protocol_version == persistence_contract.schema_version",
+      "validate exact lane mapping",
       "fetch lane heartbeat.json",
-      "update heartbeat.json to IN_PROGRESS",
-      "re-fetch and verify"
+      "update heartbeat.json to IN_PROGRESS using fresh content SHA",
+      "re-fetch heartbeat.json and verify exact RUN_ID/control_plane_id/automation_id"
     ],
-    "prohibition": "No research, web search, market scan, code audit, or experimentation before heartbeat readback succeeds."
-  },
-  "finalization": {
-    "reserve_passes": [
-      8,
-      9,
-      10
-    ],
-    "pass_8": "freeze/serialize final payload",
-    "pass_9": "create immutable history/<RUN_ID>.json and verify",
-    "pass_10": "replace latest.json with exact same verified payload and verify identity"
-  },
-  "fallback": {
-    "library_root": "/AutomationIntelligenceBacklog/omega_stack",
-    "folders_initialized": true,
-    "on_github_failure": "Attempt a minimal Library failure receipt containing lane, RUN_ID, timestamp, error, control_plane_id, automation_id; then stop.",
-    "on_library_failure": "Emit explicit persistence failure; do not continue substantive work and do not claim RUN_PERSISTED."
-  },
-  "watchdog": {
-    "owner": "OMEGA",
-    "rule": "Each OMEGA run checks sibling isolated latest/heartbeat/history and, when automation-registry access exists, compares last_run_time against durable repo state.",
-    "no_fabrication": true
-  },
-  "execution_authorized": false,
-  "bootstrap_retry": {
+    "no_substantive_work_before_verified_heartbeat": true,
     "max_retries_after_initial_failure": 1,
-    "rule": "On first GitHub bootstrap write/readback failure, re-fetch control plane and heartbeat, reconcile fresh content SHA, and retry once. After the second failure, stop and use fallback."
+    "on_failure": "Stop substantive work; attempt minimal Library failure receipt if a writable Library route exists; never claim RUN_PERSISTED."
   },
   "single_flight": {
     "enabled": true,
     "active_heartbeat_grace_minutes": 50,
     "stranded_after_minutes": 75,
-    "rule": "If heartbeat is IN_PROGRESS for a different RUN_ID and started_at_utc is less than 50 minutes old, classify DUPLICATE_SUPPRESSED and do not overwrite it. If older than 75 minutes, classify prior heartbeat STRANDED_IN_PROGRESS, preserve prior RUN_ID in recovery metadata, then begin the new run. Ages 50-75 minutes are AMBIGUOUS_OVERLAP and fail closed without substantive work."
+    "rule": "Different RUN_ID heartbeat younger than 50m => DUPLICATE_SUPPRESSED. Age 50-75m => AMBIGUOUS_OVERLAP fail closed. Older than 75m => preserve as STRANDED_IN_PROGRESS then new run may start."
   },
-  "scheduler_truth": {
-    "rule": "automation last_run_time is trigger evidence only, never persistence evidence",
-    "watchdog_owner": "OMEGA"
-  }
+  "pass_8": {
+    "action": "Freeze RUN_CORE/result only.",
+    "forbidden_claims": [
+      "pass 9 complete",
+      "pass 10 complete",
+      "latest verified",
+      "finalization receipt verified",
+      "RUN_PERSISTED"
+    ]
+  },
+  "pass_9": {
+    "history_path": "<lane>/history/<RUN_ID>.json",
+    "required_status": "HISTORY_VERIFIED",
+    "passes_completed": 9,
+    "finalization_status": "AWAITING_LATEST_PROMOTION",
+    "requirements": [
+      "History is immutable after create.",
+      "History includes stable RUN_CORE and identifiers but does not claim latest promotion.",
+      "Re-fetch history and record returned history blob SHA before pass 10."
+    ]
+  },
+  "pass_10": {
+    "sequence": [
+      "Write/replace latest.json using the same RUN_CORE and RUN_ID, RUN_STATUS=RUN_PERSISTED, PASSES_COMPLETED=10, FINALIZATION_STATUS=LATEST_VERIFIED_PENDING_RECEIPT, and verified history blob SHA.",
+      "Re-fetch latest.json and history/<RUN_ID>.json.",
+      "Verify same RUN_ID, CONTROL_PLANE_ID, automation_id, lane/branch identity, RUN_CORE semantic equality, and that latest.history_blob_sha equals the actual immutable history blob SHA.",
+      "Create immutable finalization/<RUN_ID>.json with RUN_STATUS=FINALIZATION_VERIFIED, history_blob_sha, latest_blob_sha, verification timestamp, control-plane/automation IDs, and any returned commit SHAs.",
+      "Re-fetch finalization receipt and verify both blob SHAs against current history/latest.",
+      "Only after receipt verification may heartbeat be updated to IDLE/FINALIZED."
+    ],
+    "acceptance_rule": "A v3 run is fully persisted only when latest=RUN_PERSISTED, history exists, and finalization receipt exists and binds the current history/latest blob SHAs."
+  },
+  "omega_acceptance": {
+    "v3": "Require valid finalization receipt binding current history/latest blob SHAs.",
+    "legacy_v2": "May accept only pre-v3 migrated runs whose latest/history are directly verified and non-contradictory; classify LEGACY_V2_VERIFIED. Any v2 history whose self-claims conflict with current repo state is QUARANTINED and not accepted."
+  },
+  "fallback": {
+    "library_root": "/AutomationIntelligenceBacklog/omega_stack",
+    "folders_initialized": true,
+    "on_github_failure": "Attempt minimal Library failure receipt containing lane, RUN_ID, timestamp, error, control_plane_id, automation_id; then stop.",
+    "on_library_failure": "Emit explicit persistence failure and stop; do not claim RUN_PERSISTED."
+  },
+  "watchdog": {
+    "owner": "OMEGA",
+    "rule": "OMEGA checks latest/history/finalization/heartbeat for all lanes and, when automation registry access exists, compares trigger times to durable repo evidence.",
+    "no_fabrication": true
+  },
+  "scheduler_truth": "automation last_run_time is trigger evidence only, never persistence evidence",
+  "execution_authorized": false
 }

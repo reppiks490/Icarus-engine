@@ -1,0 +1,89 @@
+{
+  "engine": "alt_data_crypto",
+  "schema_version": "automation-intelligence-v1",
+  "RUN_ID": "alt-data-crypto-20260928T075129Z",
+  "run_start_time": "2026-09-28T07:51:29Z",
+  "retrieval_time": "2026-09-28T07:52:00Z",
+  "RUN_STATUS": "RUN_EXECUTED",
+  "PASSES_COMPLETED": 10,
+  "NET_NEW_DELTA": {
+    "PASS_1": "Fetched GitHub latest and manifest; prior GitHub latest remains stranded IN_PROGRESS.",
+    "PASS_2": "Scanned ChatGPT Library backlog and recovered alt-data-crypto-20260928T065321Z.",
+    "PASS_3": "Read recovered prior artifact and classified it RECOVERED_VALID.",
+    "PASS_4": "Attempted oldest-first GitHub replay; connector safety layer blocked create_file.",
+    "PASS_5": "Attempted current heartbeat update; connector safety layer blocked update_file.",
+    "PASS_6": "Queried fresh Bybit BTCUSDT perpetual price, 5m candles and funding.",
+    "PASS_7": "Fresh web search checked crypto security, stablecoin and regulatory developments.",
+    "PASS_8": "Bitget withdrawal restoration remains scheduled for 08:00 UTC; not yet an observed completed restoration at retrieval time.",
+    "PASS_9": "Dedup/provenance review found no genuinely new, sufficiently corroborated on-chain/venue/narrative event requiring escalation.",
+    "PASS_10": "Serialized authoritative state and reserved secondary durable persistence."
+  },
+  "PREVIOUS_SUCCESSFUL_RUN_ID": null,
+  "LAST_SUCCESSFUL_GITHUB_COMMIT": null,
+  "EXPECTED_CADENCE_MINUTES": 60,
+  "BACKLOG_DEPTH": 2,
+  "OLDEST_UNSENT_RUN": "alt-data-crypto-20260928T065321Z",
+  "REPLAYED_RUN_IDS": [],
+  "DUPLICATE_RUN_IDS_SKIPPED": [],
+  "GAP_WINDOWS": [
+    {
+      "status": "UNRECOVERABLE_REFERENCE",
+      "run_id": "alt-data-crypto-20260928T054713Z",
+      "detail": "GitHub latest is IN_PROGRESS and no corresponding immutable history artifact was recovered."
+    }
+  ],
+  "PERSISTENCE_ATTEMPTS": 2,
+  "HISTORICAL_BACKFILL_REQUIRED": true,
+  "HISTORICAL_ARTIFACTS_SCANNED": 3,
+  "HISTORICAL_ARTIFACTS_ACCEPTED": 1,
+  "DUPLICATES_SUPPRESSED": 0,
+  "CONFLICTS_FOUND": 1,
+  "PREVIOUS_STATE_LOADED": true,
+  "STATE_CONTINUITY_STATUS": "PARTIAL_RECOVERY",
+  "HISTORICAL_BACKFILL_STATUS": "PARTIAL",
+  "ONCHAIN_EVENTS": [],
+  "VENUE_STRESS": [],
+  "NARRATIVE_SHIFTS": [],
+  "CROSS_ASSET_LINKS": [],
+  "CONFLICTS": [
+    {
+      "type": "PERSISTENCE",
+      "detail": "GitHub latest remains prior IN_PROGRESS; current heartbeat and backlog replay writes were blocked by connector safety checks."
+    }
+  ],
+  "DATA_GAPS": [
+    "No direct primary Bitget operational confirmation at retrieval time",
+    "No new independently corroborated on-chain event",
+    "Prior 05:47 run remains unrecoverable"
+  ],
+  "source_provenance_notes": [
+    "GitHub alt_data_crypto/latest.json and manifest fetched directly",
+    "ChatGPT Library prior run recovered and read",
+    "Bybit BTCUSDT perpetual price/kline/funding queried directly",
+    "Fresh public web search queried"
+  ],
+  "current_venue_observation": {
+    "type": "VENUE_MARKET_DATA",
+    "venue": "Bybit",
+    "asset": "BTCUSDT perpetual",
+    "event_time": "2026-09-28T07:50:00Z",
+    "price": 82971.6,
+    "change_24h_pct": -1.9921,
+    "five_minute_volume_btc": 100.612,
+    "funding_rate_pct": -0.002,
+    "assessment": "No new qualifying venue-stress event established."
+  },
+  "confidence": "HIGH for persistence state and direct Bybit measurements; MEDIUM for no-new-event assessment",
+  "limitations": [
+    "Coverage is not exhaustive across all chains/venues",
+    "Bitget reopening had not reached its scheduled 08:00 UTC time at retrieval",
+    "No wallet ownership inferred"
+  ],
+  "HEARTBEAT_STATUS": "FAILED",
+  "PERSISTENCE_STATUS": "FAILED",
+  "PERSISTENCE_ERROR": "GitHub update_file/create_file blocked by OpenAI safety checks",
+  "LIBRARY_BACKLOG_STATUS": "PENDING",
+  "BACKLOG_DURABLE": false,
+  "FINALIZATION_STATUS": "PENDING_GITHUB_REPLAY",
+  "execution_authorized": false
+}

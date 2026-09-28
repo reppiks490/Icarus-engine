@@ -1,0 +1,99 @@
+{
+  "engine": "macro",
+  "schema_version": "automation-intelligence-v1",
+  "RUN_ID": "macro-20260928T081601Z",
+  "run_start_time": "2026-09-28T08:16:01Z",
+  "retrieval_time": "2026-09-28T08:16:40Z",
+  "RUN_STATUS": "RUN_PERSISTED",
+  "PASSES_COMPLETED": 10,
+  "NET_NEW_DELTA": {
+    "PASS_1": "Fetched GitHub macro latest and manifest; latest was initialization placeholder.",
+    "PASS_2": "Persisted and verified GitHub IN_PROGRESS heartbeat.",
+    "PASS_3": "Scanned Library macro history/state; recovered two prior completed run artifacts.",
+    "PASS_4": "Loaded prior macro state; historical backfill remains complete.",
+    "PASS_5": "Queried fresh Reuters macro/geopolitical/energy coverage; US-Iran diplomacy deadlock continued to lift oil.",
+    "PASS_6": "Verified current-day Brent reaction: Reuters reported >3% rebound after US rejection of Iranian proposal.",
+    "PASS_7": "Verified Middle East crude exports rebounded to 12.8m bpd in September, highest since war began; supply offset is material context.",
+    "PASS_8": "Cross-asset check: Reuters reported bond yields rising and equities softer; gold down 2.7% at 06:27 GMT amid rate-hike expectations.",
+    "PASS_9": "Primary-source search did not locate a new Sep 28 White House/Fed/Treasury policy release sufficient to upgrade the diplomacy story to a new primary-source shock.",
+    "PASS_10": "Deduped against prior run: underlying US rejection is stale (Sep 26); current price response is continuation, not a new qualifying macro event."
+  },
+  "HIGH_IMPACT_EVENTS": [],
+  "CROSS_ASSET_LINKS": [
+    {
+      "EVENT_ID": "MACRO-CONTEXT-IRAN-OIL-20260928",
+      "event_time": "2026-09-26",
+      "release_time": "UNKNOWN",
+      "retrieval_time": "2026-09-28T08:16:40Z",
+      "jurisdiction": "US/Iran/global",
+      "institution": "US and Iranian governments; market reporting via Reuters",
+      "event_class": "GEOPOLITICAL_ENERGY_CONTINUATION",
+      "exact_released_fact": "Reuters reports the US rejected an Iranian peace proposal; on Sep 28 Brent rebounded >3%. Separately, key Middle East crude exports rebounded to 12.8m bpd in September.",
+      "consensus_reference_value": "UNKNOWN",
+      "surprise_magnitude": "UNKNOWN",
+      "revision_status": "NONE_OBSERVED",
+      "source_provenance": [
+        "Reuters Sep 28 oil report",
+        "Reuters Sep 28 global-markets report",
+        "Reuters Sep 28 Middle East exports report"
+      ],
+      "corroboration_count": 2,
+      "affected_assets": [
+        "Brent/crude",
+        "global equities",
+        "Treasuries/rates",
+        "GC",
+        "USD-sensitive risk assets"
+      ],
+      "observed_market_reaction": "Brent around $107 and >3% higher; Reuters reported bond yields rising and Asian equities softer; spot gold -2.7% at 06:27 GMT.",
+      "confidence": "HIGH for reported market reaction; MEDIUM for causal isolation",
+      "uncertainty": "Underlying rejection predates this run; no new primary-source policy announcement located."
+    }
+  ],
+  "CONFLICTS": [],
+  "DATA_GAPS": [
+    "No new Sep 28 primary White House/Iran release found for the rejection story",
+    "No independently synchronized NQ/MNQ, BTC, DXY, SI reaction collected",
+    "Exact consensus/surprise not applicable to unscheduled geopolitical continuation"
+  ],
+  "source_provenance_notes": [
+    "Reuters current-day oil/global markets/gold/export reporting queried",
+    "Official-domain searches for White House/Fed/Treasury queried",
+    "GitHub macro latest/manifest fetched",
+    "ChatGPT Library macro history/state scanned"
+  ],
+  "confidence": "HIGH that no new qualifying macro shock was verified within queried sources",
+  "limitations": [
+    "Search not exhaustive",
+    "Market-reaction causality not treated as established fact"
+  ],
+  "PREVIOUS_SUCCESSFUL_RUN_ID": "macro-20260928T071424Z",
+  "LAST_SUCCESSFUL_GITHUB_COMMIT": "3c5bb2f2ed364d18da8e3290ea5606a2936a3481",
+  "EXPECTED_CADENCE_MINUTES": 60,
+  "BACKLOG_DEPTH": 0,
+  "OLDEST_UNSENT_RUN": null,
+  "REPLAYED_RUN_IDS": [],
+  "DUPLICATE_RUN_IDS_SKIPPED": [],
+  "GAP_WINDOWS": [],
+  "PERSISTENCE_ATTEMPTS": 1,
+  "HISTORICAL_BACKFILL_REQUIRED": true,
+  "HISTORICAL_ARTIFACTS_SCANNED": 5,
+  "HISTORICAL_ARTIFACTS_ACCEPTED": 2,
+  "DUPLICATES_SUPPRESSED": 1,
+  "CONFLICTS_FOUND": 0,
+  "PREVIOUS_STATE_LOADED": true,
+  "STATE_CONTINUITY_STATUS": "RECOVERED_FROM_LIBRARY",
+  "HISTORICAL_BACKFILL_STATUS": "COMPLETE",
+  "HEARTBEAT_STATUS": "PERSISTED_VERIFIED",
+  "HEARTBEAT_PERSISTENCE_EVIDENCE": [
+    "c4d8a0c34d5bd1af6b3e84c6a45867be81df532e"
+  ],
+  "LIBRARY_BACKLOG_STATUS": "PENDING",
+  "BACKLOG_DURABLE": false,
+  "PERSISTENCE_STATUS": "PENDING",
+  "PERSISTENCE_EVIDENCE": [
+    "c4d8a0c34d5bd1af6b3e84c6a45867be81df532e"
+  ],
+  "FINALIZATION_STATUS": "PENDING",
+  "execution_authorized": false
+}

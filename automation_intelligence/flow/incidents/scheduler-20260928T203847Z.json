@@ -1,0 +1,10 @@
+{
+  "schema_version": "automation-scheduler-incident-v1",
+  "lane": "flow",
+  "scheduler_title": "Microstructure Sensor Grid",
+  "observed_trigger_time_utc": "2026-09-28T20:38:47.493566Z",
+  "status": "TRIGGER_WITHOUT_NEW_DURABLE_START",
+  "evidence": "Live scheduler last_run_time advanced, but legacy flow namespace retained prior latest and preexisting stranded heartbeat; no matching new history was present during audit.",
+  "remediation": "Preserved prior stranded heartbeat as immutable incident; reset mutable heartbeat to IDLE_READY with secondary-backup truth gate.",
+  "execution_authorized": false
+}

@@ -1,9 +1,9 @@
 {
   "schema_version": "omega-stack-verification-v1",
-  "verified_at_utc": "2026-09-28T20:38:29Z",
+  "verified_at_utc": "2026-09-28T20:46:30Z",
   "repository": "reppiks490/Icarus-engine",
   "control_plane": "automation_intelligence/omega_stack/control_plane.json",
-  "control_plane_blob_sha": "b6af2083c66d053bc6ee81390a364c513623a345",
+  "control_plane_blob_sha": "be113f9ffd5c4ab3fd0b7717b77bb529ba303bea",
   "scheduler": {
     "status": "CONFIGURED_VERIFIED",
     "enabled_count": 5,
@@ -58,11 +58,11 @@
     "previous_agent_branch_status": "READ_ONLY_HISTORY",
     "branch_safety_contract": "AION/DAEDALUS compare against main before code edits; if target code diverged, use a fresh run-specific branch when safely supported or persist an implementation-ready work product without editing code.",
     "last_observed_compare": {
-      "observed_at_utc": "2026-09-28T20:02:00Z",
+      "observed_at_utc": "2026-09-28T20:46:30Z",
       "status": "diverged",
-      "ahead_by": 8,
-      "behind_by": 4,
-      "note": "Snapshot only. Counts are expected to change whenever main or the agent branch receives a commit; they are not a durable invariant."
+      "ahead_by": 11,
+      "behind_by": 18,
+      "note": "Snapshot only; operational safety still requires per-run comparison before code mutation."
     },
     "operational_invariant": "Branch divergence counts are informational only. Safety is determined per-run by comparing target files/commits against current main before mutation."
   },
@@ -115,17 +115,27 @@
     "execution_authorized": false,
     "control_plane_identity_gate": true,
     "independent_finalization_receipt_required_for_v3": true,
-    "history_may_not_claim_future_finalization": true
+    "history_may_not_claim_future_finalization": true,
+    "canonical_run_core_required": true,
+    "run_core_sha256_required": true,
+    "finalization_receipt_binds_run_core_sha256": true
   },
   "live_acceptance_gates": [
-    "OMEGA completes one v3 post-isolation run with history, latest, and finalization receipt all verified.",
-    "Macro completes one v3 post-isolation run with history, latest, and finalization receipt all verified.",
-    "Flow completes its current/next cycle without writing the legacy flow namespace; v3 acceptance requires finalization receipt.",
-    "AION completes a new v3 run; aion-20260928T203422Z is not accepted as fully persisted because its v2 history self-claim conflicts with live repo state.",
-    "DAEDALUS completes one v3 run with history, latest, and finalization receipt verified.",
-    "OMEGA subsequently ingests only receipt-verified v3 AION/DAEDALUS state and does not use the shared global manifest as scheduler truth."
+    "OMEGA completes one v3.1 post-isolation run with history, latest, and finalization receipt all verified.",
+    "Macro completes one v3.1 post-isolation run with history, latest, and finalization receipt all verified.",
+    "Flow completes its current/next cycle without writing the legacy flow namespace; v3.1 acceptance requires finalization receipt.",
+    "AION completes a new v3.1 run; aion-20260928T203422Z is not accepted as fully persisted because its v2 history self-claim conflicts with live repo state.",
+    "DAEDALUS completes one v3.1 run with history, latest, and finalization receipt verified.",
+    "OMEGA subsequently ingests only receipt-verified v3.1 AION/DAEDALUS state and does not use the shared global manifest as scheduler truth."
   ],
-  "overall_status": "PERSISTENCE_V3_HARDENED_LIVE_ACCEPTANCE_PENDING",
+  "overall_status": "PERSISTENCE_V3_1_HARDENED_LIVE_ACCEPTANCE_PENDING",
   "execution_authorized": false,
-  "persistence_protocol_version": "omega-stack-persistence-v3"
+  "persistence_protocol_version": "omega-stack-persistence-v3.1",
+  "persistence_contract_blob_sha": "047a33eb171c42701efceb047b5fa3e4b2445e71",
+  "library_fallback": {
+    "status": "WRITE_READBACK_DELETE_VERIFIED",
+    "verified_at_utc": "2026-09-28T20:45:55Z",
+    "root": "/AutomationIntelligenceBacklog/omega_stack",
+    "note": "Disposable canary successfully uploaded/read back under omega/state and removed."
+  }
 }

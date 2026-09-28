@@ -8,7 +8,7 @@
     "aion",
     "daedalus"
   ],
-  "updated_at": "2026-09-28T19:16:30Z",
+  "updated_at": "2026-09-28T19:40:40Z",
   "latest_runs": {
     "omega": {
       "run_id": "omega-20260928T100234Z",
@@ -204,7 +204,7 @@
       "note": "Started before clean 1:1 contract migration; no matching history found as of reconciliation."
     }
   },
-  "ACTIVE_TOPOLOGY_STATUS": "CONFIGURED_FIRST_AGENT_RUNS_PENDING",
+  "ACTIVE_TOPOLOGY_STATUS": "SCHEDULER_RECONCILED_AGENT_FIRST_RUNS_PENDING",
   "agent_fabric_lanes": {
     "schema_version": "agent-fabric-lanes-v1",
     "canonical_code_branch": "main",
@@ -261,5 +261,59 @@
         }
       ]
     }
-  }
+  },
+  "SCHEDULER_TOPOLOGY_STATUS": "FIVE_ACTIVE_HOURLY_LOOPS_VERIFIED",
+  "scheduler_topology": {
+    "schema_version": "icarus-scheduler-topology-v1",
+    "verified_at": "2026-09-28T19:40:40Z",
+    "authority": "live ChatGPT automation registry",
+    "active_count": 5,
+    "cadence": "hourly",
+    "timing_mode": "exact_schedule",
+    "active": [
+      {
+        "title": "Robustness Guardian Evolution",
+        "minute": 5,
+        "type": "agent",
+        "repository": "reppiks490/Icarus-engine",
+        "root": "automation_intelligence/agent_fabric/robustness_guardian"
+      },
+      {
+        "title": "Advanced CSV Data Collector",
+        "minute": 15,
+        "type": "data",
+        "repository": "reppiks490/icarus-csv-evidence-lab",
+        "root": "automation_intelligence/advanced_csv"
+      },
+      {
+        "title": "Alpha Synthesis Evolution",
+        "minute": 25,
+        "type": "agent",
+        "repository": "reppiks490/Icarus-engine",
+        "root": "automation_intelligence/agent_fabric/alpha_synthesis"
+      },
+      {
+        "title": "Microstructure Sensor Grid",
+        "minute": 35,
+        "type": "data",
+        "repository": "reppiks490/Icarus-engine",
+        "root": "automation_intelligence/flow"
+      },
+      {
+        "title": "Apex Council Evolution",
+        "minute": 45,
+        "type": "agent",
+        "repository": "reppiks490/Icarus-engine",
+        "root": "automation_intelligence/agent_fabric/apex_council"
+      }
+    ],
+    "paused_data_collectors": [
+      "Macro Regime Data Grid",
+      "AEGIS Corpus Collector",
+      "Onchain Event Intelligence Grid"
+    ],
+    "execution_authorized": false,
+    "note": "This field is the authoritative repository mirror of scheduled automation state. Legacy active_engines/engine_locations describe older runtime namespaces and are not scheduler truth."
+  },
+  "scheduler_topology_supersedes_legacy_active_engines_for_automation_state": true
 }

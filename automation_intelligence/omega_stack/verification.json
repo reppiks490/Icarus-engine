@@ -1,6 +1,6 @@
 {
   "schema_version": "omega-stack-verification-v1",
-  "verified_at_utc": "2026-09-28T19:54:30Z",
+  "verified_at_utc": "2026-09-28T20:02:00Z",
   "repository": "reppiks490/Icarus-engine",
   "control_plane": "automation_intelligence/omega_stack/control_plane.json",
   "control_plane_blob_sha": "b6af2083c66d053bc6ee81390a364c513623a345",
@@ -40,7 +40,8 @@
     "work_mode_delegation": "FORBIDDEN_BY_PROMPT",
     "ten_pass_contract": "ENABLED_ALL_FIVE",
     "persistence_first": "ENABLED_ALL_FIVE",
-    "shared_manifest_write": "FORBIDDEN_ALL_FIVE"
+    "shared_manifest_write": "FORBIDDEN_ALL_FIVE",
+    "control_plane_identity_gate": "ENABLED_ALL_FIVE"
   },
   "namespace_isolation": {
     "status": "CONFIGURED_VERIFIED",
@@ -55,14 +56,15 @@
     "agent_branch_exists": true,
     "previous_agent_branch": "feature/agent-fabric-apex-v1",
     "previous_agent_branch_status": "READ_ONLY_HISTORY",
-    "current_compare": {
-      "status": "DIVERGED",
+    "branch_safety_contract": "AION/DAEDALUS compare against main before code edits; if target code diverged, use a fresh run-specific branch when safely supported or persist an implementation-ready work product without editing code.",
+    "last_observed_compare": {
+      "observed_at_utc": "2026-09-28T20:02:00Z",
+      "status": "diverged",
       "ahead_by": 8,
-      "behind_by": 3,
-      "operational_assessment": "EXPECTED_AND_FAIL_CLOSED",
-      "reason": "v2 intentionally carries only AION/DAEDALUS operational/design scaffolding; newer main code must not be overwritten from stale branch state."
+      "behind_by": 4,
+      "note": "Snapshot only. Counts are expected to change whenever main or the agent branch receives a commit; they are not a durable invariant."
     },
-    "branch_safety_contract": "AION/DAEDALUS compare against main before code edits; if target code diverged, use a fresh run-specific branch when safely supported or persist an implementation-ready work product without editing code."
+    "operational_invariant": "Branch divergence counts are informational only. Safety is determined per-run by comparing target files/commits against current main before mutation."
   },
   "lanes": {
     "omega": {
@@ -104,7 +106,8 @@
     "stale_sha_requires_refetch_reconcile": true,
     "initialized_not_equal_persisted": true,
     "scheduler_trigger_not_equal_run_persisted": true,
-    "execution_authorized": false
+    "execution_authorized": false,
+    "control_plane_identity_gate": true
   },
   "live_acceptance_gates": [
     "OMEGA completes one post-isolation run with immutable history and latest identity verified.",

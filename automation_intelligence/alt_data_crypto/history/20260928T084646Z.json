@@ -1,0 +1,109 @@
+{
+  "engine": "alt_data_crypto",
+  "schema_version": "automation-intelligence-v1",
+  "RUN_ID": "alt-data-crypto-20260928T084646Z",
+  "run_start_time": "2026-09-28T08:46:46Z",
+  "retrieval_time": "2026-09-28T08:48:30Z",
+  "RUN_STATUS": "RUN_PERSISTED",
+  "PASSES_COMPLETED": 10,
+  "NET_NEW_DELTA": {
+    "PASS_1": "Fetched GitHub latest/manifest; prior GitHub latest was stranded IN_PROGRESS from 05:47Z.",
+    "PASS_2": "Scanned Library history; recovered 06:53Z and 07:51Z run artifacts.",
+    "PASS_3": "Read both Library artifacts; classified both RECOVERED_VALID, with 06:53 superseded by 07:51 for continuity state.",
+    "PASS_4": "Persisted and re-fetched current GitHub heartbeat successfully.",
+    "PASS_5": "Attempted oldest-first replay of both Library runs to GitHub; both create_file calls blocked by connector safety checks.",
+    "PASS_6": "Queried Bybit BTCUSDT linear price, 120x5m candles, order book and funding.",
+    "PASS_7": "Reviewed fresh public crypto security/stablecoin/ETF/regulatory search results.",
+    "PASS_8": "Checked Bitget official post-incident material after scheduled 08:00Z BTC withdrawal phase; source still describes restoration as scheduled/progressive, not independently observed completed.",
+    "PASS_9": "Dedup/provenance review: no genuinely new, sufficiently corroborated on-chain/venue/narrative event crossed notification threshold.",
+    "PASS_10": "Serialized authoritative run, prepared Library backlog and GitHub finalization."
+  },
+  "PREVIOUS_SUCCESSFUL_RUN_ID": null,
+  "LAST_SUCCESSFUL_GITHUB_COMMIT": null,
+  "EXPECTED_CADENCE_MINUTES": 60,
+  "BACKLOG_DEPTH": 2,
+  "OLDEST_UNSENT_RUN": "alt-data-crypto-20260928T065321Z",
+  "REPLAYED_RUN_IDS": [],
+  "DUPLICATE_RUN_IDS_SKIPPED": [],
+  "GAP_WINDOWS": [
+    {
+      "status": "UNRECOVERABLE_REFERENCE",
+      "run_id": "alt-data-crypto-20260928T054713Z",
+      "detail": "Prior GitHub latest was IN_PROGRESS and no immutable history artifact was recovered."
+    }
+  ],
+  "PERSISTENCE_ATTEMPTS": 3,
+  "HISTORICAL_BACKFILL_REQUIRED": true,
+  "HISTORICAL_ARTIFACTS_SCANNED": 4,
+  "HISTORICAL_ARTIFACTS_ACCEPTED": 2,
+  "DUPLICATES_SUPPRESSED": 0,
+  "CONFLICTS_FOUND": 1,
+  "PREVIOUS_STATE_LOADED": true,
+  "STATE_CONTINUITY_STATUS": "PARTIAL_RECOVERY",
+  "HISTORICAL_BACKFILL_STATUS": "PARTIAL",
+  "ONCHAIN_EVENTS": [],
+  "VENUE_STRESS": [],
+  "NARRATIVE_SHIFTS": [],
+  "CROSS_ASSET_LINKS": [],
+  "CONFLICTS": [
+    {
+      "type": "PERSISTENCE",
+      "detail": "Two recovered Library runs remain pending GitHub replay because create_file was blocked by connector safety checks."
+    }
+  ],
+  "DATA_GAPS": [
+    "No direct observed proof that Bitget BTC withdrawals completed after the scheduled 08:00 UTC phase start",
+    "No new independently corroborated on-chain event",
+    "05:47Z run remains unrecoverable"
+  ],
+  "source_provenance_notes": [
+    "GitHub alt_data_crypto/latest.json and manifest fetched directly",
+    "ChatGPT Library 06:53Z and 07:51Z run artifacts recovered/read",
+    "Bybit BTCUSDT perpetual price/kline/orderbook/funding queried directly",
+    "Bitget official security-incident/support material and fresh public web search queried"
+  ],
+  "current_venue_observation": {
+    "type": "VENUE_MARKET_DATA",
+    "venue": "Bybit",
+    "asset": "BTCUSDT perpetual",
+    "event_time": "2026-09-28T08:45:00Z",
+    "price": 82921.6,
+    "change_24h_pct": -2.0712,
+    "five_minute_volume_btc": 30.134,
+    "best_bid": 82921.9,
+    "best_ask": 82922.0,
+    "spread_usd": 0.1,
+    "funding_rate_pct": -0.003,
+    "assessment": "No new qualifying venue-stress event established."
+  },
+  "public_security_update": {
+    "type": "PUBLIC_STATEMENT",
+    "source": "Bitget official",
+    "event_time": "2026-09-28T08:00:00Z",
+    "raw_public_fact": "Official incident material schedules progressive BTC withdrawal restoration from 08:00 UTC; retrieved material did not independently prove completed restoration.",
+    "affected_amount_usd": 387500000,
+    "status": "ONGOING_RECOVERY",
+    "novelty": "LOW; schedule was known in prior run",
+    "confidence": "HIGH for schedule, UNKNOWN for completed restoration"
+  },
+  "confidence": "HIGH for persistence/direct Bybit measurements; MEDIUM for no-new-event assessment",
+  "limitations": [
+    "Coverage not exhaustive across all chains/venues",
+    "No wallet ownership inferred",
+    "No private/restricted data used"
+  ],
+  "HEARTBEAT_STATUS": "PERSISTED_VERIFIED",
+  "HEARTBEAT_PERSISTENCE_EVIDENCE": [
+    "283130fa861145d32afd34eaee2e861403a7808d"
+  ],
+  "LIBRARY_BACKLOG_STATUS": "PENDING",
+  "BACKLOG_DURABLE": false,
+  "PERSISTENCE_STATUS": "PENDING",
+  "PERSISTENCE_EVIDENCE": [
+    "283130fa861145d32afd34eaee2e861403a7808d"
+  ],
+  "FINALIZATION_STATUS": "PENDING",
+  "FINAL_LATEST_BLOB_SHA": null,
+  "FINAL_HISTORY_BLOB_SHA": null,
+  "execution_authorized": false
+}

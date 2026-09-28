@@ -8,7 +8,7 @@
     "aion",
     "daedalus"
   ],
-  "updated_at": "2026-09-28T18:58:17.746Z",
+  "updated_at": "2026-09-28T19:15:00Z",
   "latest_runs": {
     "omega": {
       "run_id": "omega-20260928T100234Z",
@@ -204,5 +204,34 @@
       "note": "Started before clean 1:1 contract migration; no matching history found as of reconciliation."
     }
   },
-  "ACTIVE_TOPOLOGY_STATUS": "CONFIGURED_FIRST_AGENT_RUNS_PENDING"
+  "ACTIVE_TOPOLOGY_STATUS": "CONFIGURED_FIRST_AGENT_RUNS_PENDING",
+  "agent_fabric_lanes": {
+    "schema_version": "agent-fabric-lanes-v1",
+    "canonical_code_branch": "main",
+    "canonical_code_merge_sha": "76dad61163843d38fe244f98afc9dfdd4917e914",
+    "current_main_at_binding": "307de2f1e18b6371ade31fd5800ce717ef799249",
+    "research_adapter_status": "NOT_YET_BOUND",
+    "runtime_authority": "shadow_research_only",
+    "execution_authorized": false,
+    "lanes": {
+      "robustness_guardian": {
+        "path": "automation_intelligence/agent_fabric/robustness_guardian",
+        "code": "icarus_engine/agents/specialists.py::RobustnessGuardianAgent",
+        "schedule_title": "Robustness Guardian Evolution",
+        "status": "INITIALIZED"
+      },
+      "alpha_synthesis": {
+        "path": "automation_intelligence/agent_fabric/alpha_synthesis",
+        "code": "icarus_engine/agents/specialists.py::AlphaSynthesisAgent",
+        "schedule_title": "Alpha Synthesis Evolution",
+        "status": "INITIALIZED"
+      },
+      "apex_council": {
+        "path": "automation_intelligence/agent_fabric/apex_council",
+        "code": "icarus_engine/agents/apex.py::ApexCouncilAgent",
+        "schedule_title": "Apex Council Evolution",
+        "status": "INITIALIZED"
+      }
+    }
+  }
 }

@@ -3,7 +3,97 @@
   "schema_version": "automation-intelligence-v1",
   "RUN_ID": "macro-20260928T100915Z",
   "run_start_time": "2026-09-28T10:09:15Z",
-  "RUN_STATUS": "IN_PROGRESS",
-  "PASSES_COMPLETED": 0,
-  "PREVIOUS_SUCCESSFUL_RUN_ID": "macro-20260928T081601Z"
+  "retrieval_time": "2026-09-28T10:12:00Z",
+  "RUN_STATUS": "RUN_PERSISTED",
+  "PASSES_COMPLETED": 10,
+  "NET_NEW_DELTA": {
+    "PASS_1": "Loaded GitHub latest/manifest and Library history.",
+    "PASS_2": "Persisted and verified current GitHub heartbeat.",
+    "PASS_3": "Recovered prior completed Macro artifacts from Library; historical backfill remains complete.",
+    "PASS_4": "Queried official Federal Reserve, Treasury, BLS and BEA domains for fresh releases.",
+    "PASS_5": "Queried fresh Reuters geopolitical/energy coverage.",
+    "PASS_6": "Verified underlying US rejection of Iran Hormuz proposal occurred Sep 26 and is stale for a new-event alert.",
+    "PASS_7": "Verified Sep 28 market continuation: Brent up as much as 3% to $107.16, 30Y Treasury yield +2 bp to 5.517%, global equities softer.",
+    "PASS_8": "Verified spot gold down about 3% to $4,156.45 as oil-driven inflation/rate concerns persisted.",
+    "PASS_9": "Deduplicated against prior Macro context event; no new primary macro/policy shock verified.",
+    "PASS_10": "Completed provenance, staleness, cross-asset and persistence audit."
+  },
+  "HIGH_IMPACT_EVENTS": [],
+  "CROSS_ASSET_LINKS": [
+    {
+      "EVENT_ID": "MACRO-CONTEXT-IRAN-OIL-20260928",
+      "event_time": "2026-09-26",
+      "release_time": "UNKNOWN",
+      "retrieval_time": "2026-09-28T10:12:00Z",
+      "jurisdiction": "US/Iran/global",
+      "institution": "US/Iran governments; Reuters reporting",
+      "event_class": "GEOPOLITICAL_ENERGY_CONTINUATION",
+      "exact_released_fact": "US rejection of the Iranian Hormuz/peace proposal is a Sep 26 event; Sep 28 markets continued to price the stalemate.",
+      "consensus_reference_value": "UNKNOWN",
+      "surprise_magnitude": "UNKNOWN",
+      "revision_status": "NONE_OBSERVED",
+      "source_provenance": [
+        "Reuters Sep 28 global markets",
+        "Reuters Sep 28 oil",
+        "Reuters Sep 28 gold"
+      ],
+      "corroboration_count": 3,
+      "affected_assets": [
+        "Brent/crude",
+        "Treasuries",
+        "global equities",
+        "GC",
+        "USD-sensitive risk assets"
+      ],
+      "observed_market_reaction": "Reuters reported Brent up as much as 3% to $107.16; 30-year Treasury yield +2 bp to 5.517%; spot gold down 3% to $4,156.45; global stocks softer.",
+      "confidence": "HIGH for market observations; MEDIUM for causal isolation",
+      "uncertainty": "No new primary policy announcement verified this run; underlying rejection predates the run."
+    }
+  ],
+  "CONFLICTS": [],
+  "DATA_GAPS": [
+    "No fresh primary White House/Iran policy release verified for Sep 28",
+    "No synchronized direct NQ/MNQ, SI, BTC and DXY reaction collected",
+    "Treasury bill auction results not independently verified in this run"
+  ],
+  "source_provenance_notes": [
+    "Official-domain web search: Federal Reserve, Treasury, BLS, BEA",
+    "Reuters current-day oil/global-markets/gold coverage",
+    "GitHub macro latest/manifest fetched",
+    "ChatGPT Library macro history read"
+  ],
+  "confidence": "HIGH that no genuinely new qualifying macro shock was verified in queried sources",
+  "limitations": [
+    "Search not exhaustive",
+    "Causal attribution not upgraded beyond source framing"
+  ],
+  "PREVIOUS_SUCCESSFUL_RUN_ID": "macro-20260928T081601Z",
+  "LAST_SUCCESSFUL_GITHUB_COMMIT": "1f22b481c67539c85e6400a7d5e9c9d599455e21",
+  "EXPECTED_CADENCE_MINUTES": 60,
+  "BACKLOG_DEPTH": 0,
+  "OLDEST_UNSENT_RUN": null,
+  "REPLAYED_RUN_IDS": [],
+  "DUPLICATE_RUN_IDS_SKIPPED": [],
+  "GAP_WINDOWS": [],
+  "PERSISTENCE_ATTEMPTS": 1,
+  "HISTORICAL_BACKFILL_REQUIRED": true,
+  "HISTORICAL_ARTIFACTS_SCANNED": 6,
+  "HISTORICAL_ARTIFACTS_ACCEPTED": 4,
+  "DUPLICATES_SUPPRESSED": 1,
+  "CONFLICTS_FOUND": 1,
+  "PREVIOUS_STATE_LOADED": true,
+  "STATE_CONTINUITY_STATUS": "RECOVERED_FROM_LIBRARY",
+  "HISTORICAL_BACKFILL_STATUS": "COMPLETE",
+  "HEARTBEAT_STATUS": "PERSISTED_VERIFIED",
+  "HEARTBEAT_PERSISTENCE_EVIDENCE": [
+    "1f22b481c67539c85e6400a7d5e9c9d599455e21"
+  ],
+  "LIBRARY_BACKLOG_STATUS": "PENDING",
+  "BACKLOG_DURABLE": false,
+  "PERSISTENCE_STATUS": "PENDING",
+  "PERSISTENCE_EVIDENCE": [
+    "1f22b481c67539c85e6400a7d5e9c9d599455e21"
+  ],
+  "FINALIZATION_STATUS": "PENDING",
+  "execution_authorized": false
 }

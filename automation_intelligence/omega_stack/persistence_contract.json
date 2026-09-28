@@ -1,0 +1,38 @@
+{
+  "schema_version": "omega-stack-persistence-v2",
+  "control_plane_id": "omega-aion-daedalus-stack",
+  "purpose": "Fail-closed persistence bootstrap for all five scheduled ChatGPT automations.",
+  "github_primary": {
+    "required": true,
+    "first_tool_sequence": [
+      "fetch control_plane.json",
+      "validate lane mapping",
+      "fetch lane heartbeat.json",
+      "update heartbeat.json to IN_PROGRESS",
+      "re-fetch and verify"
+    ],
+    "prohibition": "No research, web search, market scan, code audit, or experimentation before heartbeat readback succeeds."
+  },
+  "finalization": {
+    "reserve_passes": [
+      8,
+      9,
+      10
+    ],
+    "pass_8": "freeze/serialize final payload",
+    "pass_9": "create immutable history/<RUN_ID>.json and verify",
+    "pass_10": "replace latest.json with exact same verified payload and verify identity"
+  },
+  "fallback": {
+    "library_root": "/AutomationIntelligenceBacklog/omega_stack",
+    "folders_initialized": true,
+    "on_github_failure": "Attempt a minimal Library failure receipt containing lane, RUN_ID, timestamp, error, control_plane_id, automation_id; then stop.",
+    "on_library_failure": "Emit explicit persistence failure; do not continue substantive work and do not claim RUN_PERSISTED."
+  },
+  "watchdog": {
+    "owner": "OMEGA",
+    "rule": "Each OMEGA run checks sibling isolated latest/heartbeat/history and, when automation-registry access exists, compares last_run_time against durable repo state.",
+    "no_fabrication": true
+  },
+  "execution_authorized": false
+}

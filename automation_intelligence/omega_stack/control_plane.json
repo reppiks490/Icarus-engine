@@ -68,5 +68,25 @@
     "v2_branch_created_from": "main",
     "v2_reason": "Old agent branch diverged substantially from main; v2 starts from current main and carries only approved design/operational scaffolding."
   },
-  "agent_development_branch": "feature/aion-daedalus-prime-v2"
+  "agent_development_branch": "feature/aion-daedalus-prime-v2",
+  "persistence_protocol_version": "omega-stack-persistence-v2",
+  "library_fallback_root": "/AutomationIntelligenceBacklog/omega_stack",
+  "persistence_bootstrap": {
+    "rule": "No substantive work before verified heartbeat persistence.",
+    "github_first_actions": [
+      "fetch control_plane.json",
+      "validate exact lane identity",
+      "fetch own heartbeat.json",
+      "update heartbeat.json with current RUN_ID and IN_PROGRESS",
+      "re-fetch heartbeat.json and verify RUN_ID/control_plane_id/automation_id"
+    ],
+    "on_github_bootstrap_failure": "Stop substantive work immediately; attempt Library failure receipt; if Library write is unavailable, emit explicit persistence failure and stop.",
+    "closure": [
+      "freeze result",
+      "write immutable history/<RUN_ID>.json",
+      "re-fetch and verify",
+      "replace latest.json with exact same payload",
+      "re-fetch latest and history and verify identity"
+    ]
+  }
 }

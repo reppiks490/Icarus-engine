@@ -173,3 +173,19 @@ def test_ood_sentinel_blocks_brittle_distribution_shift_behavior():
     result = ApexCouncilAgent().evaluate(strong(ood_stability=0.35, bootstrap_positive_rate=0.52))
     assert result.decision == "reject"
     assert "ood-sentinel" in result.veto_agents
+
+
+def test_robustness_guardian_rejects_missing_stress_evidence():
+    cases = (
+        strong(cost_model_coverage=0.50),
+        strong(latency_stress_pass_rate=0.40),
+        strong(perturbation_pass_rate=0.40),
+        strong(parameter_stability=0.40),
+        strong(probability_backtest_overfit=0.72),
+        strong(ood_stability=0.35),
+        strong(bootstrap_positive_rate=0.52),
+    )
+    for evidence in cases:
+        verdict = RobustnessGuardianAgent().evaluate(evidence)
+        assert verdict.decision == "reject"
+        assert verdict.veto is True

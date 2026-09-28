@@ -1,30 +1,50 @@
 {
   "schema_version": "automation-intelligence-v1",
-  "status": "DEGRADED_NO_SPECIALIST_RUNS",
-  "updated_at": "2026-09-28T04:59:36Z",
-  "run_id": "omega-20260928T045936Z",
-  "source_commits": {
-    "macro": {
-      "blob_sha": "df993e3f8d66a1dc46981fe87fa8e409356b30d7",
-      "run_commit": null
-    },
-    "flow": {
-      "blob_sha": "cde7871dd635a19182963d2cdd4d812a17428b83",
-      "run_commit": null
-    },
+  "status": "DEGRADED_PARTIAL_SPECIALIST_FUSION",
+  "updated_at": "2026-09-28T10:02:34Z",
+  "run_id": "omega-20260928T100234Z",
+  "accepted_specialists": {
     "fundamental": {
-      "blob_sha": "165443d52dbfa193b98dd179d623c4f0882b0492",
-      "run_commit": null
-    },
-    "alt_data_crypto": {
-      "blob_sha": "8602ca365a5038d9159993db654d0c58a83424c8",
-      "run_commit": null
+      "run_id": "fundamental-20260928T073708Z",
+      "latest_blob_sha": "71d00a434a058fb5eaaf49e0377d732570cbb3d5",
+      "status": "RUN_PERSISTED"
     }
   },
+  "quarantined_specialists": {
+    "macro": {
+      "run_id": "macro-20260928T091312Z",
+      "status": "IN_PROGRESS"
+    },
+    "flow": {
+      "run_id": "flow-20260928T081927Z",
+      "status": "IN_PROGRESS"
+    },
+    "alt_data_crypto": {
+      "run_id": "alt-data-crypto-20260928T094705Z",
+      "status": "IN_PROGRESS"
+    }
+  },
+  "recovered_history": {
+    "replayed_run_ids": [
+      "fundamental-20260928T064235Z",
+      "alt-data-crypto-20260928T065321Z",
+      "macro-20260928T071424Z",
+      "flow-20260928T072113Z",
+      "alt-data-crypto-20260928T075129Z",
+      "macro-20260928T081601Z",
+      "alt-data-crypto-20260928T084646Z",
+      "flow-20260928T092828Z",
+      "fundamental-20260928T093607Z"
+    ]
+  },
   "NET_NEW_EVENTS": [],
-  "CONFLICTS": [],
+  "CONFLICTS": [
+    "OMEGA-DQ-METALS-TIME-20260928"
+  ],
   "DATA_GAPS": [
-    "No timestamped specialist records available"
+    "Three specialist latest records unfinished",
+    "Metals provider timezone semantics unresolved",
+    "NQ/MNQ, DXY, rates and volatility coverage incomplete"
   ],
   "HIGH_IMPACT_CANDIDATES": [],
   "execution_authorized": false

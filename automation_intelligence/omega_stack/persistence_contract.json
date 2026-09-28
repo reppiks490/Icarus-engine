@@ -16,9 +16,11 @@
       "fetch persistence_contract.json",
       "require control_plane.persistence_protocol_version == persistence_contract.schema_version",
       "validate exact lane mapping",
+      "inspect prior heartbeat and checkpoint; recover STALE_PRIOR_CYCLE state per single_flight before starting a new run",
       "fetch lane heartbeat.json immediately before write",
       "update heartbeat.json to IN_PROGRESS using that fresh content SHA",
-      "re-fetch heartbeat.json and verify exact RUN_ID/control_plane_id/automation_id"
+      "re-fetch heartbeat.json and verify exact RUN_ID/control_plane_id/automation_id",
+      "write/re-fetch checkpoint.json with BOOTSTRAPPED before substantive work"
     ],
     "no_substantive_work_before_verified_heartbeat": true,
     "max_retries_after_initial_failure": 1,
@@ -27,9 +29,10 @@
   },
   "single_flight": {
     "enabled": true,
-    "active_heartbeat_grace_minutes": 50,
-    "stranded_after_minutes": 75,
-    "rule": "Different RUN_ID heartbeat younger than 50m => DUPLICATE_SUPPRESSED. Age 50-75m => AMBIGUOUS_OVERLAP fail closed. Older than 75m => preserve prior run as STRANDED_IN_PROGRESS or QUARANTINED as evidence warrants, reset heartbeat safely, then a new run may start."
+    "active_heartbeat_grace_minutes": 40,
+    "stranded_after_minutes": 45,
+    "rule": "A different RUN_ID heartbeat younger than 40m is ACTIVE and suppresses overlap. Age 40-45m is FINALIZATION_ONLY: do not start new substantive work; prior run must close from its checkpoint. Age >=45m is STALE_PRIOR_CYCLE: preserve heartbeat/checkpoint evidence, record an incident, reset heartbeat safely, and allow the new scheduled run to start. A run must not remain substantively active beyond 35m.",
+    "scheduler_rule": "Scheduler last_run_time is trigger evidence only. Durable repo state remains authoritative for completion."
   },
   "pass_8": {
     "action": "Freeze substantive RUN_CORE only.",
@@ -76,8 +79,32 @@
   },
   "watchdog": {
     "owner": "OMEGA",
-    "rule": "OMEGA checks core/history/latest/finalization/heartbeat for all lanes and, when automation registry access exists, compares trigger times with durable repo evidence.",
+    "rule": "OMEGA checks heartbeat/checkpoint/core/history/latest/finalization for all lanes. A trigger without a new heartbeat is not a successful run. A stale heartbeat >=45m without a valid finalization receipt is an incident and must be recovered at the lane's next trigger. OMEGA never fabricates missing run content.",
     "no_fabrication": true
   },
-  "execution_authorized": false
+  "execution_authorized": false,
+  "checkpointing": {
+    "required": true,
+    "path": "<lane>/checkpoint.json",
+    "sequence": [
+      "Immediately after verified IN_PROGRESS heartbeat, write checkpoint.json with current RUN_ID, identity, BOOTSTRAPPED, PASSES_COMPLETED=1 and empty/loaded lane payload; re-fetch and verify.",
+      "After every material finding, defect, candidate, anomaly, contradiction, or state change, update checkpoint.json before additional non-GitHub retrieval.",
+      "At Pass 8 write the complete frozen RUN_CORE to checkpoint.json with CHECKPOINT_STATUS=FROZEN_FOR_FINALIZATION and re-fetch before Pass 9.",
+      "After finalization receipt verification set CHECKPOINT_STATUS=FINALIZED with receipt evidence, then set heartbeat IDLE/FINALIZED."
+    ],
+    "recovery": "If a stale prior run has a verified checkpoint but no valid finalization receipt, preserve it as ABORTED_WITH_CHECKPOINT. Never invent missing findings. A fresh run may consume the checkpoint only as historical evidence after freshness/provenance review."
+  },
+  "runtime_budget": {
+    "substantive_deadline_minutes": 35,
+    "recovery_threshold_minutes": 45,
+    "rule": "At or before 35 minutes from started_at_utc, stop all new substantive/external work and enter persistence closure. GitHub persistence/readback calls required for closure are exempt. No lane may intentionally research/code/audit until the next hourly trigger.",
+    "default_non_github_external_call_caps": {
+      "omega": 8,
+      "macro": 6,
+      "flow": 6,
+      "aion": 10,
+      "daedalus": 10
+    },
+    "exhaustion_behavior": "When a cap is reached, record NO_ADDITIONAL_DELTA_DUE_BUDGET for remaining analytical passes and proceed to Pass 8. Never sacrifice closure for completeness."
+  }
 }

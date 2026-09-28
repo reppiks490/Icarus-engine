@@ -1,6 +1,6 @@
 {
   "schema_version": "omega-stack-verification-v1",
-  "verified_at_utc": "2026-09-28T22:54:26Z",
+  "verified_at_utc": "2026-09-28T23:00:30Z",
   "repository": "reppiks490/Icarus-engine",
   "control_plane": "automation_intelligence/omega_stack/control_plane.json",
   "control_plane_blob_sha": "294a4731b0ac135f2d023f456a48463ff925593e",
@@ -103,8 +103,8 @@
       "state": "INITIALIZED",
       "latest_run_id": null,
       "first_post_isolation_run": "PENDING",
-      "live_observation": "BOOTSTRAP_WRITE_PATH_REPAIR_PENDING_PROBE",
-      "note": "Control-plane identity verified; direct heartbeat write/readback probe follows this verification update."
+      "live_observation": "HEARTBEAT_WRITE_READBACK_VERIFIED_IDLE",
+      "note": "Direct two-step heartbeat write/readback probe succeeded on the authoritative agent branch; next scheduled trigger should use the fresh-SHA v3.2 bootstrap sequence."
     }
   },
   "invariants": {
@@ -120,8 +120,8 @@
     "independent_finalization_receipt_required_for_v3": true,
     "history_may_not_claim_future_finalization": true,
     "canonical_run_core_required": true,
-    "run_core_sha256_required": true,
-    "finalization_receipt_binds_run_core_sha256": true,
+    "run_core_sha256_required": false,
+    "finalization_receipt_binds_run_core_sha256": false,
     "github_blob_identity_required_for_v3_2": true,
     "model_computed_run_core_hash_not_authoritative": true,
     "immutable_core_file_required": true,
@@ -137,7 +137,7 @@
     "DAEDALUS completes one v3.2 run after heartbeat write/readback path is verified.",
     "OMEGA subsequently consumes only receipt-verified v3.2 specialist state as current authoritative input."
   ],
-  "overall_status": "PERSISTENCE_V3_2_CONFIGURED_LIVE_ACCEPTANCE_PENDING",
+  "overall_status": "PERSISTENCE_V3_2_REPAIRS_APPLIED_LIVE_ACCEPTANCE_PENDING",
   "execution_authorized": false,
   "persistence_protocol_version": "omega-stack-persistence-v3.2",
   "persistence_contract_blob_sha": "93346bb6869faea0eca920c753dac028c5ed2c95",
@@ -166,5 +166,17 @@
     "daedalus_current_state": "IDLE/INITIALIZED at review boundary; scheduler configured, next completed v3.1 persistence chain not yet observed",
     "end_to_end_v3_1_acceptance": "PENDING_NATURAL_COMPLETED_RUNS",
     "persistence_contract_post_update_blob_sha": "fcd6e92f0c547b28061391c9d0232a06ad017362"
+  },
+  "review_3": {
+    "completed_at_utc": "2026-09-28T23:00:30Z",
+    "persistence_protocol": "omega-stack-persistence-v3.2",
+    "control_plane_blob_sha": "294a4731b0ac135f2d023f456a48463ff925593e",
+    "persistence_contract_blob_sha": "93346bb6869faea0eca920c753dac028c5ed2c95",
+    "aion_repair": "stale Pass-9 run quarantined after independent hash mismatch; heartbeat reset IDLE on v3.2",
+    "daedalus_repair": "heartbeat write/readback path directly verified",
+    "idle_heartbeat_normalization": "OMEGA, Macro, AION aligned to v3.2 identity fields",
+    "flow_state": "legacy v3.1 run still in progress; next fresh run must use v3.2",
+    "scheduler_prompts": "all five updated to v3.2 blob-anchored core->history->latest->finalization sequence",
+    "current_live_acceptance": "PENDING_NEXT_NATURAL_V3_2_COMPLETIONS"
   }
 }

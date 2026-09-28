@@ -1,0 +1,27 @@
+{
+  "schema_version": "agent-loop-state-v1",
+  "agent": "robustness_guardian",
+  "title": "Robustness Guardian Agent",
+  "status": "INITIALIZED",
+  "canonical_repository": "reppiks490/Icarus-engine",
+  "canonical_branch": "main",
+  "canonical_code_paths": [
+    "icarus_engine/agents/contracts.py",
+    "icarus_engine/agents/specialists.py",
+    "tests_engine/test_agent_fabric.py"
+  ],
+  "persistence_root": "automation_intelligence/agent_fabric/robustness_guardian",
+  "last_verified_main_sha": "307de2f1e18b6371ade31fd5800ce717ef799249",
+  "last_successful_run_id": null,
+  "execution_authorized": false,
+  "ownership": [
+    "anti-overfit",
+    "lookahead/leakage",
+    "holdout integrity",
+    "point-in-time/provenance",
+    "deterministic replay",
+    "stress survival",
+    "parameter/perturbation robustness"
+  ],
+  "production_write_policy": "feature_branch_plus_verified_pr_only"
+}

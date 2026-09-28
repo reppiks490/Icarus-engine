@@ -5,10 +5,10 @@
     "omega",
     "macro",
     "flow",
-    "fundamental",
-    "alt_data_crypto"
+    "aion",
+    "daedalus"
   ],
-  "updated_at": "2026-09-28T16:56:16Z",
+  "updated_at": "2026-09-28T18:58:17.746Z",
   "latest_runs": {
     "omega": {
       "run_id": "omega-20260928T100234Z",
@@ -16,8 +16,8 @@
       "status": "RUN_PERSISTED"
     },
     "macro": {
-      "run_id": "macro-20260928T161329Z",
-      "run_time": "2026-09-28T16:13:29Z",
+      "run_id": "macro-20260928T181445Z",
+      "run_time": "2026-09-28T18:14:45Z",
       "status": "RUN_PERSISTED"
     },
     "flow": {
@@ -28,25 +28,45 @@
     "fundamental": {
       "run_id": "fundamental-20260928T164052Z",
       "run_time": "2026-09-28T16:40:52Z",
-      "status": "IN_PROGRESS"
+      "status": "IN_PROGRESS",
+      "active_top_level": false,
+      "role": "legacy_sensor_history"
     },
     "alt_data_crypto": {
       "run_id": "alt-data-crypto-20260928T165044Z",
       "run_time": "2026-09-28T16:50:44Z",
-      "status": "IN_PROGRESS"
+      "status": "IN_PROGRESS",
+      "active_top_level": false,
+      "role": "legacy_sensor_history"
+    },
+    "aion": {
+      "run_id": null,
+      "run_time": null,
+      "status": "INITIALIZED",
+      "branch": "feature/agent-fabric-apex-v1",
+      "note": "First finalized scheduled AION run pending."
+    },
+    "daedalus": {
+      "run_id": null,
+      "run_time": null,
+      "status": "INITIALIZED",
+      "branch": "feature/agent-fabric-apex-v1",
+      "note": "First finalized scheduled DAEDALUS run pending."
     }
   },
   "latest_blob_shas": {
     "omega": "bc5ed91af3176829e4e59bbcedf16ec7aa22ace3",
-    "macro": "2798d74bb3aa02960d2870a4a2b0c06c0ef2f7c6",
+    "macro": "b7d5df750ac4e525fc827456740ef23146a8b98c",
     "flow": "d289c15ebc67e05e3afc0ae015ccbe43e7b3aa10",
     "fundamental": "723cd2663dfab473e6abdea99a7e1cf13f367d2f",
-    "alt_data_crypto": "b5af6f8d284d78657d5957f681941c957ffc8b06"
+    "alt_data_crypto": "b5af6f8d284d78657d5957f681941c957ffc8b06",
+    "aion": "5524697b193eda85ca8035ee95ee52f5fa882d88",
+    "daedalus": "7b82a244f3b8d1adc97792bdef966d11f09ed816"
   },
   "last_commits": {
     "omega": "36a10b60ab2166c413b8cfe0a40be64203ddabed",
     "omega_history": "0ec5fae0bf0052ff2782f6b676417d2cec9f26f3",
-    "macro": "61448645de889b7f2bb42a62a83c91f82ec44246",
+    "macro": "60bc7db153e915468f0c1a72f24b1f1f80010723",
     "flow": "9e3df2707270b308ec6a34a86188b903e24c6780",
     "fundamental": "81b00d970c177545ba6753bcd08080dcfd73e1d3",
     "alt_data_crypto": "50debd12f860a11b7c92a6bbb22a377f96396454"
@@ -92,9 +112,9 @@
   "HISTORICAL_BACKFILL_STATUS": "PARTIAL",
   "MIGRATION_PROMPT_REFRESH_STATUS": "BLOCKED",
   "migration_prompt_refresh_failed_conditions": [
-    "Fundamental and alt_data_crypto still have legacy-format IN_PROGRESS latest records with no matching immutable history at reconciliation time.",
-    "The four hardened active ChatGPT schedulers have not yet completed a full post-update cycle under the separate-heartbeat contract.",
-    "OMEGA has not yet completed a post-reconciliation aggregation cycle."
+    "AION and DAEDALUS have initialized namespaces but no first RUN_PERSISTED scheduled artifacts yet.",
+    "Macro and Flow scheduler prompts require live post-correction verification of separate heartbeat.json behavior.",
+    "OMEGA has not yet completed a post-topology fusion cycle consuming finalized AION and DAEDALUS state."
   ],
   "execution_authorized": false,
   "active_heartbeats": {
@@ -103,7 +123,76 @@
       "status": "STRANDED_IN_PROGRESS",
       "path": "automation_intelligence/flow/heartbeat.json",
       "note": "Preserved; no matching immutable history was found."
+    }
+  },
+  "CLEAN_1_TO_1_STATUS": "CONFIGURED_LIVE_VERIFICATION_PENDING",
+  "CLEAN_1_TO_1_DESIGN": "separate-heartbeat-v2",
+  "CLEAN_1_TO_1_RECONCILIATION": {
+    "flow_latest_restored_to_last_verified_history": true,
+    "flow_stranded_heartbeat_preserved": true,
+    "macro_latest_history_aligned": true,
+    "aion_namespace_initialized": true,
+    "daedalus_namespace_initialized": true,
+    "hardened_active_chatgpt_schedulers": 5,
+    "post_hardening_cycles_verified": 0
+  },
+  "active_engines": [
+    "omega",
+    "macro",
+    "flow",
+    "aion",
+    "daedalus"
+  ],
+  "legacy_sensor_namespaces": [
+    "fundamental",
+    "alt_data_crypto"
+  ],
+  "agent_development_branch": "feature/agent-fabric-apex-v1",
+  "engine_locations": {
+    "omega": {
+      "branch": "main",
+      "path": "automation_intelligence/omega",
+      "role": "fusion_control_plane",
+      "active": true
     },
+    "macro": {
+      "branch": "main",
+      "path": "automation_intelligence/macro",
+      "role": "macro_sensor",
+      "active": true
+    },
+    "flow": {
+      "branch": "main",
+      "path": "automation_intelligence/flow",
+      "role": "flow_sensor",
+      "active": true
+    },
+    "aion": {
+      "branch": "feature/agent-fabric-apex-v1",
+      "path": "automation_intelligence/aion",
+      "role": "quant_scientist",
+      "active": true
+    },
+    "daedalus": {
+      "branch": "feature/agent-fabric-apex-v1",
+      "path": "automation_intelligence/daedalus",
+      "role": "systems_auditor",
+      "active": true
+    },
+    "fundamental": {
+      "branch": "main",
+      "path": "automation_intelligence/fundamental",
+      "role": "legacy_sensor_history",
+      "active": false
+    },
+    "alt_data_crypto": {
+      "branch": "main",
+      "path": "automation_intelligence/alt_data_crypto",
+      "role": "legacy_sensor_history",
+      "active": false
+    }
+  },
+  "legacy_heartbeats": {
     "fundamental": {
       "run_id": "fundamental-20260928T164052Z",
       "status": "IN_PROGRESS_LEGACY_LATEST",
@@ -115,13 +204,5 @@
       "note": "Started before clean 1:1 contract migration; no matching history found as of reconciliation."
     }
   },
-  "CLEAN_1_TO_1_STATUS": "CONFIGURED_LIVE_VERIFICATION_PENDING",
-  "CLEAN_1_TO_1_DESIGN": "separate-heartbeat-v2",
-  "CLEAN_1_TO_1_RECONCILIATION": {
-    "flow_latest_restored_to_last_verified_history": true,
-    "flow_stranded_heartbeat_preserved": true,
-    "macro_latest_history_aligned": true,
-    "hardened_active_chatgpt_schedulers": 4,
-    "post_hardening_cycles_verified": 0
-  }
+  "ACTIVE_TOPOLOGY_STATUS": "CONFIGURED_FIRST_AGENT_RUNS_PENDING"
 }

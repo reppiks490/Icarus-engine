@@ -247,6 +247,19 @@
     },
     "binding_merge_sha": "eebe0a259d07d8c507f3c378ee56944d505a7502",
     "binding_status": "MERGED_VERIFIED",
-    "binding_verified_pr": 4
+    "binding_verified_pr": 4,
+    "repository_guards": {
+      "main_branch_protected": false,
+      "direct_main_code_writes_allowed": false,
+      "production_change_policy": "run-specific feature branch + full CI + verified PR merge",
+      "known_open_pr_conflicts": [
+        {
+          "pr_number": 2,
+          "path": "icarus_engine/research_service.py",
+          "status": "OPEN_OVERLAP_REQUIRES_RECONCILIATION",
+          "rule": "Do not merge or overwrite through this path without diffing PR #2 against current main and preserving ResearchWorkspace.agent_shadow_evaluate."
+        }
+      ]
+    }
   }
 }

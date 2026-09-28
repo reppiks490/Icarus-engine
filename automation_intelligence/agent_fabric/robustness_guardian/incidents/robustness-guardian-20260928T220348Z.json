@@ -1,0 +1,18 @@
+{
+  "lane": "robustness_guardian",
+  "RUN_ID": "robustness-guardian-20260928T220348Z",
+  "classification": "STRANDED_IN_PROGRESS",
+  "source_heartbeat_blob_sha": "c83cd12a84450b20416d3f430bcf57701d945d62",
+  "observed_heartbeat": {
+    "RUN_ID": "robustness-guardian-20260928T220348Z",
+    "RUN_STATUS": "IN_PROGRESS",
+    "run_start_time": "2026-09-28T22:03:48Z",
+    "EXPECTED_CADENCE_MINUTES": 60,
+    "execution_authorized": false,
+    "note": "Startup persistence hard gate for this invocation."
+  },
+  "reason": "Startup heartbeat persisted, but no matching immutable history appeared; a later scheduler trigger also advanced without a new durable startup heartbeat.",
+  "history_claimed": false,
+  "execution_authorized": false,
+  "repair_action": "Preserve incident, reset heartbeat to IDLE_READY, replace unstable scheduler runtime."
+}

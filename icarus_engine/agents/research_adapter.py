@@ -48,6 +48,12 @@ class AdvancedAgentEvidence:
     separately validated point-in-time evaluation process.
     """
 
+    study_hash: str
+    dataset_hash: str
+    baseline_hash: str
+    provenance_coverage: float
+    point_in_time_coverage: float
+    cost_model_coverage: float
     annualized_return: float
     gross_expectancy_bps: float
     net_expectancy_lcb_bps: float
@@ -73,6 +79,10 @@ class AdvancedAgentEvidence:
     protected_holdout_touched: bool = False
 
     def __post_init__(self):
+        for name in ("study_hash", "dataset_hash", "baseline_hash"):
+            _sha256(getattr(self, name), name)
+        for name in ("provenance_coverage", "point_in_time_coverage", "cost_model_coverage"):
+            _unit(getattr(self, name), name)
         for name in (
             "annualized_return", "gross_expectancy_bps", "net_expectancy_lcb_bps",
             "sharpe", "deflated_sharpe", "turnover",
@@ -153,6 +163,12 @@ def evidence_from_research_job(job: Mapping, advanced: AdvancedAgentEvidence) ->
     if not isinstance(advanced, AdvancedAgentEvidence):
         raise TypeError("advanced evidence must be AdvancedAgentEvidence")
     result, holdout, stress = _qualified_result(job)
+    if (
+        advanced.study_hash != result["study_hash"]
+        or advanced.dataset_hash != job["dataset_hash"]
+        or advanced.baseline_hash != job["baseline_hash"]
+    ):
+        raise ValueError("advanced evidence is not bound to this exact study/dataset/baseline")
     _verify_replay_evidence(result.get("holdout_evidence"), "holdout")
     _verify_replay_evidence(stress.get("holdout_evidence"), "stress.holdout")
     if holdout.get("historical_scale_asof_valid") is not True or stress["holdout"].get("historical_scale_asof_valid") is not True:
@@ -171,6 +187,13 @@ def evidence_from_research_job(job: Mapping, advanced: AdvancedAgentEvidence) ->
     if not 0.0 <= max_drawdown <= 1.0:
         raise ValueError("derived max drawdown is outside [0,1]")
 
+    normal_expectancy_bps = _expectancy_bps(holdout, "holdout")
+    stressed_expectancy_bps = _expectancy_bps(stress["holdout"], "stress.holdout")
+    if advanced.net_expectancy_lcb_bps > normal_expectancy_bps:
+        raise ValueError("lower-bound expectancy cannot exceed normal net expectancy")
+    if stressed_expectancy_bps > normal_expectancy_bps:
+        raise ValueError("stressed expectancy cannot exceed normal net expectancy")
+
     asset = job.get("asset")
     if not isinstance(asset, str) or not asset:
         raise ValueError("research asset is missing")
@@ -183,9 +206,9 @@ def evidence_from_research_job(job: Mapping, advanced: AdvancedAgentEvidence) ->
         regime_count=len(advanced.regime_returns),
         annualized_return=advanced.annualized_return,
         gross_expectancy_bps=advanced.gross_expectancy_bps,
-        net_expectancy_bps=_expectancy_bps(holdout, "holdout"),
+        net_expectancy_bps=normal_expectancy_bps,
         net_expectancy_lcb_bps=advanced.net_expectancy_lcb_bps,
-        stressed_net_expectancy_bps=_expectancy_bps(stress["holdout"], "stress.holdout"),
+        stressed_net_expectancy_bps=stressed_expectancy_bps,
         sharpe=advanced.sharpe,
         deflated_sharpe=advanced.deflated_sharpe,
         probabilistic_sharpe=advanced.probabilistic_sharpe,
@@ -197,14 +220,14 @@ def evidence_from_research_job(job: Mapping, advanced: AdvancedAgentEvidence) ->
         walkforward_returns=advanced.walkforward_returns,
         perturbation_pass_rate=advanced.perturbation_pass_rate,
         parameter_stability=advanced.parameter_stability,
-        provenance_coverage=1.0,
-        point_in_time_coverage=1.0,
+        provenance_coverage=advanced.provenance_coverage,
+        point_in_time_coverage=advanced.point_in_time_coverage,
         calibration_error=advanced.calibration_error,
         max_strategy_correlation=advanced.max_strategy_correlation,
         probability_backtest_overfit=advanced.probability_backtest_overfit,
         bootstrap_positive_rate=advanced.bootstrap_positive_rate,
         ood_stability=advanced.ood_stability,
-        cost_model_coverage=1.0,
+        cost_model_coverage=advanced.cost_model_coverage,
         latency_stress_pass_rate=advanced.latency_stress_pass_rate,
         replay_determinism=advanced.replay_determinism,
         lookahead_flags=advanced.lookahead_flags,

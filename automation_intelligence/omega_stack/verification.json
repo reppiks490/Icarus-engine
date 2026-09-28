@@ -1,6 +1,6 @@
 {
   "schema_version": "omega-stack-verification-v1",
-  "verified_at_utc": "2026-09-28T20:02:00Z",
+  "verified_at_utc": "2026-09-28T20:38:29Z",
   "repository": "reppiks490/Icarus-engine",
   "control_plane": "automation_intelligence/omega_stack/control_plane.json",
   "control_plane_blob_sha": "b6af2083c66d053bc6ee81390a364c513623a345",
@@ -83,13 +83,19 @@
       "repo_root": "main:automation_intelligence/omega_stack/flow",
       "state": "MIGRATED_SEED_PRESENT",
       "latest_run_id": "flow-20260928T102124Z",
-      "first_post_isolation_run": "PENDING"
+      "first_post_isolation_run": "PENDING",
+      "live_observation": "BOOTSTRAP_VERIFIED_IN_PROGRESS",
+      "current_run_id": "flow-20260928T201930Z",
+      "note": "Heartbeat write/readback succeeded under isolated namespace; no new immutable history observed at last review."
     },
     "aion": {
       "repo_root": "feature/aion-daedalus-prime-v2:automation_intelligence/omega_stack/aion",
       "state": "INITIALIZED",
       "latest_run_id": null,
-      "first_post_isolation_run": "PENDING"
+      "first_post_isolation_run": "PENDING",
+      "live_observation": "V2_HISTORY_PRESENT_BUT_FINALIZATION_CONTRADICTED",
+      "current_run_id": "aion-20260928T203422Z",
+      "note": "Immutable history exists, but live latest remained INITIALIZED and heartbeat remained IN_PROGRESS while history claimed pass10 success; quarantined under v3 rules."
     },
     "daedalus": {
       "repo_root": "feature/aion-daedalus-prime-v2:automation_intelligence/omega_stack/daedalus",
@@ -107,16 +113,19 @@
     "initialized_not_equal_persisted": true,
     "scheduler_trigger_not_equal_run_persisted": true,
     "execution_authorized": false,
-    "control_plane_identity_gate": true
+    "control_plane_identity_gate": true,
+    "independent_finalization_receipt_required_for_v3": true,
+    "history_may_not_claim_future_finalization": true
   },
   "live_acceptance_gates": [
-    "OMEGA completes one post-isolation run with immutable history and latest identity verified.",
-    "Macro completes one post-isolation run with isolated heartbeat/history/latest verified.",
-    "Flow completes one post-isolation run without writing the legacy flow namespace.",
-    "AION completes one v2 run with immutable history and latest identity verified.",
-    "DAEDALUS completes one v2 run with immutable history and latest identity verified.",
-    "OMEGA subsequently ingests finalized AION and DAEDALUS v2 states without consulting the shared global manifest as scheduler truth."
+    "OMEGA completes one v3 post-isolation run with history, latest, and finalization receipt all verified.",
+    "Macro completes one v3 post-isolation run with history, latest, and finalization receipt all verified.",
+    "Flow completes its current/next cycle without writing the legacy flow namespace; v3 acceptance requires finalization receipt.",
+    "AION completes a new v3 run; aion-20260928T203422Z is not accepted as fully persisted because its v2 history self-claim conflicts with live repo state.",
+    "DAEDALUS completes one v3 run with history, latest, and finalization receipt verified.",
+    "OMEGA subsequently ingests only receipt-verified v3 AION/DAEDALUS state and does not use the shared global manifest as scheduler truth."
   ],
-  "overall_status": "CONFIGURED_HARDENED_LIVE_VERIFICATION_PENDING",
-  "execution_authorized": false
+  "overall_status": "PERSISTENCE_V3_HARDENED_LIVE_ACCEPTANCE_PENDING",
+  "execution_authorized": false,
+  "persistence_protocol_version": "omega-stack-persistence-v3"
 }

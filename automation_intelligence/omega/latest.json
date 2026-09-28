@@ -5,14 +5,14 @@
   "run_time": "2026-09-28T04:59:36Z",
   "retrieval_time": "2026-09-28T04:59:36Z",
   "PREVIOUS_SUCCESSFUL_RUN_ID": null,
-  "LAST_SUCCESSFUL_GITHUB_COMMIT": null,
+  "LAST_SUCCESSFUL_GITHUB_COMMIT": "ce397ec65ba799d6e78507d0c10837ac7f044196",
   "EXPECTED_CADENCE_MINUTES": 60,
   "BACKLOG_DEPTH": 0,
   "OLDEST_UNSENT_RUN": null,
   "REPLAYED_RUN_IDS": [],
   "DUPLICATE_RUN_IDS_SKIPPED": [],
   "GAP_WINDOWS": [],
-  "run_state": "RUN_EXECUTED",
+  "run_state": "RUN_PERSISTED",
   "PASSES_COMPLETED": 10,
   "NET_NEW_DELTA": {
     "PASS_1": "Fetched macro/latest.json; valid placeholder, no run evidence.",
@@ -50,7 +50,8 @@
       "blob_sha": "8602ca365a5038d9159993db654d0c58a83424c8",
       "status": "UNAVAILABLE",
       "reason": "valid JSON placeholder but last_run and commit_sha are null"
-    }
+    },
+    "github_handoff": "FETCHED_BUT_NO_COMPLETED_SPECIALIST_RUNS"
   },
   "NET_NEW_EVENTS": [],
   "CONFLICTS": [],
@@ -88,7 +89,49 @@
     "A commit cannot embed its own resulting Git commit SHA; returned write receipts are reported by the run after persistence."
   ],
   "execution_authorized": false,
-  "PERSISTENCE_STATUS": "PENDING",
-  "PERSISTENCE_ATTEMPTS": [],
-  "PERSISTENCE_EVIDENCE": []
+  "PERSISTENCE_STATUS": "PERSISTED",
+  "PERSISTENCE_ATTEMPTS": [
+    {
+      "target": "automation_intelligence/omega/latest.json",
+      "attempts": 1,
+      "status": "SUCCESS",
+      "commit_sha": "d8077b8e8d4a45f92ba39ea0bf3a0f4d167c4477"
+    },
+    {
+      "target": "automation_intelligence/omega/history/20260928T045936Z.json",
+      "attempts": 1,
+      "status": "SUCCESS",
+      "commit_sha": "69633da43374f663b816daf014873a6ce93d51c4"
+    },
+    {
+      "target": "automation_intelligence/omega_fused_state.json",
+      "attempts": 1,
+      "status": "SUCCESS",
+      "commit_sha": "9a657c87acff0a33fa5a8e85689ec7d1d4073d1b"
+    },
+    {
+      "target": "automation_intelligence/manifest.json",
+      "attempts": 1,
+      "status": "SUCCESS",
+      "commit_sha": "ce397ec65ba799d6e78507d0c10837ac7f044196"
+    }
+  ],
+  "PERSISTENCE_EVIDENCE": [
+    {
+      "target": "automation_intelligence/omega/latest.json",
+      "commit_sha": "d8077b8e8d4a45f92ba39ea0bf3a0f4d167c4477"
+    },
+    {
+      "target": "automation_intelligence/omega/history/20260928T045936Z.json",
+      "commit_sha": "69633da43374f663b816daf014873a6ce93d51c4"
+    },
+    {
+      "target": "automation_intelligence/omega_fused_state.json",
+      "commit_sha": "9a657c87acff0a33fa5a8e85689ec7d1d4073d1b"
+    },
+    {
+      "target": "automation_intelligence/manifest.json",
+      "commit_sha": "ce397ec65ba799d6e78507d0c10837ac7f044196"
+    }
+  ]
 }

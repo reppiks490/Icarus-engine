@@ -1,3 +1,4 @@
+import copy
 import dataclasses
 
 import pytest
@@ -7,8 +8,14 @@ from icarus_engine.research_service import ResearchWorkspace
 from tests_engine.test_research_service import portfolio, qualified
 
 
-def advanced(**overrides):
+def advanced(job=None, **overrides):
     values = dict(
+        study_hash=job["result"]["study_hash"] if job else "0" * 64,
+        dataset_hash=job["dataset_hash"] if job else "1" * 64,
+        baseline_hash=job["baseline_hash"] if job else "2" * 64,
+        provenance_coverage=1.0,
+        point_in_time_coverage=1.0,
+        cost_model_coverage=1.0,
         annualized_return=0.24,
         gross_expectancy_bps=9.0,
         net_expectancy_lcb_bps=3.0,
@@ -40,7 +47,7 @@ def advanced(**overrides):
 def test_qualified_research_job_binds_to_candidate_evidence_without_execution_authority(portfolio):
     ws = ResearchWorkspace(portfolio)
     job = qualified(ws)
-    evidence = evidence_from_research_job(job, advanced())
+    evidence = evidence_from_research_job(job, advanced(job))
 
     assert evidence.candidate_id == f"NQ:{job['result']['study_hash']}"
     assert evidence.trade_count == job["result"]["holdout"]["entries"]
@@ -61,7 +68,7 @@ def test_adapter_rejects_unqualified_or_execution_authorized_research_job(portfo
 
     bad = {**job, "result": {**job["result"], "research_qualified": False}}
     with pytest.raises(ValueError, match="qualified"):
-        evidence_from_research_job(bad, advanced())
+        evidence_from_research_job(bad, advanced(job))
 
     bad = {**job, "result": {**job["result"], "execution_authorized": True}}
     with pytest.raises(ValueError, match="execution"):
@@ -78,7 +85,7 @@ def test_adapter_requires_real_advanced_evidence_instead_of_fabricating_it(portf
 def test_workspace_agent_shadow_evaluate_is_bound_to_qualified_job_and_never_executes(portfolio):
     ws = ResearchWorkspace(portfolio)
     job = qualified(ws)
-    result = ws.agent_shadow_evaluate(job["id"], advanced())
+    result = ws.agent_shadow_evaluate(job["id"], advanced(job))
 
     assert result["candidate_id"] == f"NQ:{job['result']['study_hash']}"
     assert result["decision"] in {"promote", "hold", "reject"}
@@ -103,3 +110,50 @@ def test_advanced_evidence_rejects_nonfinite_or_out_of_domain_values():
         advanced(probability_backtest_overfit=1.1)
     with pytest.raises(ValueError):
         advanced(annualized_return=float("nan"))
+
+
+def test_adapter_preserves_measured_coverage_instead_of_assuming_perfection(portfolio):
+    ws = ResearchWorkspace(portfolio)
+    job = qualified(ws)
+    evidence = evidence_from_research_job(
+        job,
+        advanced(
+            job,
+            provenance_coverage=0.91,
+            point_in_time_coverage=0.92,
+            cost_model_coverage=0.93,
+        ),
+    )
+
+    assert evidence.provenance_coverage == pytest.approx(0.91)
+    assert evidence.point_in_time_coverage == pytest.approx(0.92)
+    assert evidence.cost_model_coverage == pytest.approx(0.93)
+
+
+def test_adapter_rejects_advanced_metrics_bound_to_a_different_study(portfolio):
+    ws = ResearchWorkspace(portfolio)
+    job = qualified(ws)
+
+    with pytest.raises(ValueError, match="bound"):
+        evidence_from_research_job(job, advanced(job, study_hash="f" * 64))
+
+    with pytest.raises(ValueError, match="bound"):
+        evidence_from_research_job(job, advanced(job, dataset_hash="e" * 64))
+
+    with pytest.raises(ValueError, match="bound"):
+        evidence_from_research_job(job, advanced(job, baseline_hash="d" * 64))
+
+
+def test_adapter_rejects_incoherent_expectancy_evidence(portfolio):
+    ws = ResearchWorkspace(portfolio)
+    job = qualified(ws)
+
+    with pytest.raises(ValueError, match="lower-bound expectancy"):
+        evidence_from_research_job(job, advanced(job, net_expectancy_lcb_bps=1_000_000.0))
+
+    corrupted = copy.deepcopy(job)
+    corrupted["result"]["stress"]["holdout"]["expectancy_after_costs"] = (
+        corrupted["result"]["holdout"]["expectancy_after_costs"] + 1_000_000.0
+    )
+    with pytest.raises(ValueError, match="stressed expectancy"):
+        evidence_from_research_job(corrupted, advanced(job))

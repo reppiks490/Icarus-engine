@@ -8,7 +8,7 @@
     "aion",
     "daedalus"
   ],
-  "updated_at": "2026-09-28T19:40:40Z",
+  "updated_at": "2026-09-28T19:49:30Z",
   "latest_runs": {
     "omega": {
       "run_id": "omega-20260928T100234Z",
@@ -210,7 +210,7 @@
     "canonical_code_branch": "main",
     "canonical_code_merge_sha": "76dad61163843d38fe244f98afc9dfdd4917e914",
     "current_main_at_binding": "307de2f1e18b6371ade31fd5800ce717ef799249",
-    "research_adapter_status": "BOUND_MERGED_VERIFIED",
+    "research_adapter_status": "BOUND_HARDENED_VERIFIED_ON_PR",
     "runtime_authority": "shadow_research_only",
     "execution_authorized": false,
     "lanes": {
@@ -236,14 +236,28 @@
     "research_adapter": {
       "adapter_path": "icarus_engine/agents/research_adapter.py",
       "workspace_binding": "icarus_engine/research_service.py::ResearchWorkspace.agent_shadow_evaluate",
-      "contract": "AdvancedAgentEvidence -> CandidateEvidence -> ApexCouncilAgent",
+      "contract": "AdvancedAgentEvidence[v2 exact study/dataset/baseline identity + measured coverage] -> CandidateEvidence -> ApexCouncilAgent",
       "execution_authorized": false,
       "verification": {
-        "pull_request": 4,
-        "workflow_run": 36470762613,
+        "pull_request": 7,
+        "superseded_pull_request": 6,
+        "red_workflow_run": 36474178221,
+        "initial_green_workflow_run": 36474344911,
+        "rebased_green_workflow_run": 36474704308,
         "jobs_passed": 5,
         "tests_file": "tests_engine/test_agent_research_adapter.py"
-      }
+      },
+      "contract_version": "2",
+      "identity_binding": [
+        "study_hash",
+        "dataset_hash",
+        "baseline_hash"
+      ],
+      "coverage_policy": "MEASURED_NOT_ASSUMED",
+      "expectancy_coherence": [
+        "net_expectancy_lcb_bps <= normal_net_expectancy_bps",
+        "stressed_net_expectancy_bps <= normal_net_expectancy_bps"
+      ]
     },
     "binding_merge_sha": "eebe0a259d07d8c507f3c378ee56944d505a7502",
     "binding_status": "MERGED_VERIFIED",

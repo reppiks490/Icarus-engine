@@ -8,7 +8,7 @@
     "aion",
     "daedalus"
   ],
-  "updated_at": "2026-09-28T19:15:00Z",
+  "updated_at": "2026-09-28T19:16:30Z",
   "latest_runs": {
     "omega": {
       "run_id": "omega-20260928T100234Z",
@@ -210,7 +210,7 @@
     "canonical_code_branch": "main",
     "canonical_code_merge_sha": "76dad61163843d38fe244f98afc9dfdd4917e914",
     "current_main_at_binding": "307de2f1e18b6371ade31fd5800ce717ef799249",
-    "research_adapter_status": "NOT_YET_BOUND",
+    "research_adapter_status": "BOUND_VERIFIED_ON_PR",
     "runtime_authority": "shadow_research_only",
     "execution_authorized": false,
     "lanes": {
@@ -231,6 +231,18 @@
         "code": "icarus_engine/agents/apex.py::ApexCouncilAgent",
         "schedule_title": "Apex Council Evolution",
         "status": "INITIALIZED"
+      }
+    },
+    "research_adapter": {
+      "adapter_path": "icarus_engine/agents/research_adapter.py",
+      "workspace_binding": "icarus_engine/research_service.py::ResearchWorkspace.agent_shadow_evaluate",
+      "contract": "AdvancedAgentEvidence -> CandidateEvidence -> ApexCouncilAgent",
+      "execution_authorized": false,
+      "verification": {
+        "pull_request": 4,
+        "workflow_run": 36470762613,
+        "jobs_passed": 5,
+        "tests_file": "tests_engine/test_agent_research_adapter.py"
       }
     }
   }

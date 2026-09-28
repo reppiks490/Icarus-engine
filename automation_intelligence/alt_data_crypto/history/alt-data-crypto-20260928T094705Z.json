@@ -1,0 +1,78 @@
+{
+  "engine": "alt_data_crypto",
+  "schema_version": "automation-intelligence-v1",
+  "RUN_ID": "alt-data-crypto-20260928T094705Z",
+  "run_start_time": "2026-09-28T09:47:05Z",
+  "retrieval_time": "2026-09-28T09:49:00Z",
+  "RUN_STATUS": "RUN_EXECUTED",
+  "PASSES_COMPLETED": 10,
+  "NET_NEW_DELTA": {
+    "PASS_1": "Loaded prior GitHub latest; prior run was stranded IN_PROGRESS.",
+    "PASS_2": "Persisted current GitHub heartbeat successfully.",
+    "PASS_3": "Fresh Bybit BTCUSDT price/kline/funding/orderbook queried.",
+    "PASS_4": "BTC near 82652.9, -2.6204% 24h; displayed spread 0.10; funding +0.0039%.",
+    "PASS_5": "Reviewed fresh public web/news for crypto security, stablecoin, regulatory and narrative developments.",
+    "PASS_6": "Recent Bitget breach reporting remains a prior event, not net-new this cycle.",
+    "PASS_7": "No directly verified new on-chain transfer/bridge/stablecoin depeg event established.",
+    "PASS_8": "Narrative reports of broader deleveraging/liquidations not promoted because direct venue liquidation evidence was not queried.",
+    "PASS_9": "Provenance/dedup/causal-attribution checks completed; no qualifying new event.",
+    "PASS_10": "Final authoritative record serialized for Library and GitHub finalization."
+  },
+  "PREVIOUS_SUCCESSFUL_RUN_ID": null,
+  "LAST_SUCCESSFUL_GITHUB_COMMIT": null,
+  "EXPECTED_CADENCE_MINUTES": 60,
+  "BACKLOG_DEPTH": 1,
+  "OLDEST_UNSENT_RUN": "alt-data-crypto-20260928T065321Z",
+  "REPLAYED_RUN_IDS": [],
+  "DUPLICATE_RUN_IDS_SKIPPED": [],
+  "GAP_WINDOWS": [
+    {
+      "status": "UNRECOVERABLE_REFERENCE",
+      "detail": "Earlier GitHub latest was IN_PROGRESS without verified completed history in this run."
+    }
+  ],
+  "PERSISTENCE_ATTEMPTS": 1,
+  "HISTORICAL_BACKFILL_REQUIRED": true,
+  "HISTORICAL_ARTIFACTS_SCANNED": 2,
+  "HISTORICAL_ARTIFACTS_ACCEPTED": 0,
+  "DUPLICATES_SUPPRESSED": 0,
+  "CONFLICTS_FOUND": 1,
+  "PREVIOUS_STATE_LOADED": true,
+  "STATE_CONTINUITY_STATUS": "DEGRADED",
+  "HISTORICAL_BACKFILL_STATUS": "PARTIAL",
+  "ONCHAIN_EVENTS": [],
+  "VENUE_STRESS": [],
+  "NARRATIVE_SHIFTS": [],
+  "CROSS_ASSET_LINKS": [],
+  "CONFLICTS": [
+    {
+      "type": "PERSISTENCE_CONTINUITY",
+      "detail": "Prior latest state was IN_PROGRESS; no completed prior history verified this run."
+    }
+  ],
+  "DATA_GAPS": [
+    "No direct liquidation feed queried",
+    "No verified large on-chain transfer event",
+    "Historical backfill incomplete"
+  ],
+  "source_provenance_notes": [
+    "Bybit direct connector queried",
+    "Fresh web/search queried",
+    "GitHub latest fetched and heartbeat persisted"
+  ],
+  "confidence": "HIGH for direct Bybit state; MEDIUM for no-new-event assessment",
+  "limitations": [
+    "Coverage is not exhaustive across all chains/venues",
+    "No wallet ownership inferred",
+    "Web liquidation claims not treated as direct observation"
+  ],
+  "HEARTBEAT_STATUS": "PERSISTED",
+  "HEARTBEAT_PERSISTENCE_EVIDENCE": [
+    "c335576bc6e9b1f696cb28afa40c6c62f98594ed"
+  ],
+  "LIBRARY_BACKLOG_STATUS": "PENDING",
+  "BACKLOG_DURABLE": false,
+  "PERSISTENCE_STATUS": "PENDING",
+  "FINALIZATION_STATUS": "PENDING",
+  "execution_authorized": false
+}

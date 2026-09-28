@@ -8,7 +8,7 @@
     "aion",
     "daedalus"
   ],
-  "updated_at": "2026-09-28T19:49:30Z",
+  "updated_at": "2026-09-28T19:51:30Z",
   "latest_runs": {
     "omega": {
       "run_id": "omega-20260928T100234Z",
@@ -210,7 +210,7 @@
     "canonical_code_branch": "main",
     "canonical_code_merge_sha": "76dad61163843d38fe244f98afc9dfdd4917e914",
     "current_main_at_binding": "307de2f1e18b6371ade31fd5800ce717ef799249",
-    "research_adapter_status": "BOUND_HARDENED_VERIFIED_ON_PR",
+    "research_adapter_status": "BOUND_HARDENED_MERGED_VERIFIED",
     "runtime_authority": "shadow_research_only",
     "execution_authorized": false,
     "lanes": {
@@ -245,7 +245,9 @@
         "initial_green_workflow_run": 36474344911,
         "rebased_green_workflow_run": 36474704308,
         "jobs_passed": 5,
-        "tests_file": "tests_engine/test_agent_research_adapter.py"
+        "tests_file": "tests_engine/test_agent_research_adapter.py",
+        "final_green_workflow_run": 36474871020,
+        "code_merge_sha": "93c7812a6f311334e0f0e4b9b28ba8e089849e89"
       },
       "contract_version": "2",
       "identity_binding": [
@@ -274,7 +276,9 @@
           "rule": "Do not merge or overwrite through this path without diffing PR #2 against current main and preserving ResearchWorkspace.agent_shadow_evaluate."
         }
       ]
-    }
+    },
+    "binding_hardening_merge_sha": "93c7812a6f311334e0f0e4b9b28ba8e089849e89",
+    "latest_verified_code_sha": "93c7812a6f311334e0f0e4b9b28ba8e089849e89"
   },
   "SCHEDULER_TOPOLOGY_STATUS": "FIVE_ACTIVE_HOURLY_LOOPS_VERIFIED",
   "scheduler_topology": {

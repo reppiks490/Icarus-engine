@@ -1,6 +1,6 @@
 # AION PRIME + DAEDALUS PRIME — Agent Fabric Apex Design
 
-Status: active development contract on feature/agent-fabric-apex-v1.
+Status: active development contract on feature/aion-daedalus-prime-v2. The prior feature/agent-fabric-apex-v1 branch is retained as read-only historical development evidence.
 
 ## AION PRIME
 Autonomous quantitative-science and strategy-intelligence agent. Core responsibilities: hypothesis generation, probabilistic regime intelligence, experiment design, immutable trial accounting, multiple-testing control, alpha lineage, redundancy analysis, causal/confounder checks, falsification, execution-cost/impact modeling, cross-period/cross-market transfer, model tournaments, uncertainty calibration, protected-holdout governance, and durable failure memory.
@@ -36,4 +36,4 @@ OMEGA Fusion Core + Macro Shock Sentinel + Flow Velocity Engine + AION PRIME + D
 Legacy Fundamental Catalyst and Alt-Data Crypto histories remain preserved as sensor/adaptor knowledge, not deleted.
 
 ## Branch policy
-Development occurs on feature/agent-fabric-apex-v1 until explicitly promoted. Do not merge to main automatically.
+Development occurs on the agent branch declared by main:automation_intelligence/omega_stack/control_plane.json; currently feature/aion-daedalus-prime-v2. The prior feature/agent-fabric-apex-v1 branch is historical/read-only. Do not merge to main automatically.

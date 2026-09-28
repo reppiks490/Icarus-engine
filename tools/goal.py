@@ -1,0 +1,304 @@
+"""The acceptance bar. A variant either clears it on HELD-OUT data or it does not.
+
+Stated as code so no result can be talked into qualifying. Every threshold here
+was set by the operator, not inferred from a run that happened to produce it.
+"""
+
+from __future__ import annotations
+
+import math
+
+from dataclasses import dataclass
+
+from tools.duration import HOLD
+
+
+@dataclass(frozen=True, slots=True)
+class Goal:
+    min_win_rate: float = 82.0      # percent, on held-out data
+    min_trades: float = 120.0       # "large quantity" -- enough to mean something
+    min_trades_per_day: float = 0.5
+    max_trades_per_day: float = 4.0
+    min_hold_bars: float = 4.0      # "nice hold time" -- not a same-bar scalp
+    min_expectancy: float = 0.0     # must actually make money
+    require_tune_too: bool = True   # must clear win rate on BOTH tapes, not just one
+
+    # --- TP consistency: the primary criterion -------------------------------
+    # The two take-profit legs must fill at comparable rates. A configuration
+    # where TP1 fills 42% and TP2 22% is a TP1-only system carrying TP2's risk
+    # for nothing -- the runner almost never pays. "Can vary slightly" is read
+    # as a few percentage points, not a factor of two.
+    max_tp_gap_pp: float = 6.0      # |TP1% - TP2%| on held-out data
+    min_tp_leg_rate: float = 8.0    # neither leg may be vestigial
+    max_tp_gap_drift_pp: float = 5.0  # and the gap must hold across BOTH tapes
+
+    # --- the runner has to earn its place -----------------------------------
+    # Either the system trades ONE contract to ONE target -- every trade a clean
+    # binary, nothing partial can inflate the win rate -- or, if a second leg
+    # exists, that leg must win 90% of the time on its own. A runner that
+    # scratches at breakeven is unpaid risk sitting behind an already-booked
+    # win. Breakeven counts as a failure.
+    min_runner_win_rate: float = 90.0
+    min_runner_legs: int = 30         # below this the runner rate means nothing
+
+    # --- consistency: an edge that is the same edge every month --------------
+    # A result carried by a handful of trades is not a system, it is a lottery
+    # ticket that already paid. These catch that before it reaches capital.
+    min_consistency: float = 0.30       # 1 - coefficient of variation across 25-trade blocks
+    min_positive_block_rate: float = 60.0   # % of blocks that made money
+    max_top_decile_share: float = 65.0  # % of net profit from the best 10% of trades
+    max_streak_vs_random: float = 2.0   # losing streak vs binomial expectation
+
+    # Winning streaks must dominate losing streaks. A system whose longest win
+    # run barely exceeds its longest loss run is a coin flip with commission;
+    # the equity curve grinds rather than steps, and every drawdown feels
+    # terminal because there is no run of wins to pull it back.
+    min_streak_ratio: float = 2.0       # max winning streak / max losing streak
+    min_mean_run_ratio: float = 1.3     # and on the MEAN run, not just the max
+
+    # --- hold time, treated as a first-class dimension ----------------------
+    # A mean hold is not a description of a system. The same 25-bar average
+    # covers a trend rider that lets winners run, a system that hangs on to
+    # losers, and one that is not intraday at all. Real MNQ produced the third
+    # case: a configuration averaging 25.4 bars carried 28.5% of its positions
+    # through the overnight halt, and those positions supplied +$38,897 while
+    # the 71.5% that stayed intraday lost $24,410. Its "edge" was gap risk.
+    # Hold time is specified in MINUTES and converted per timeframe. A flat
+    # bar count is not a duration: 30 bars is 2.5 hours on a 5m chart and ten
+    # hours on a 20m chart, and the earlier flat version let a 25.4-bar mean at
+    # 20m -- eight and a half hours -- pass as an intraday hold. The envelope
+    # lives in tools/duration.py; the operator's spec is a 4h ceiling with
+    # around 2h typical on the fast charts.
+    hold_spec = HOLD
+    p90_slack: float = 1.5              # the tail may exceed the target, not the ceiling by half
+    max_same_bar_rate: float = 5.0      # a same-bar exit tested sizing, not signal
+    min_hold_asymmetry: float = 1.20    # winners held >=20% longer than losers
+    max_hold_drift: float = 0.35        # the hold cannot wander across the run
+    min_r_per_bar: float = 0.0          # profit per bar of exposure must be > 0
+
+    # Session integrity. Intraday means flat at the close; carrying through the
+    # halt takes gap risk that nothing in this report models.
+    max_overnight_rate: float = 5.0         # % of positions crossing an ET day
+    max_overnight_net_share: float = 25.0   # the edge must not BE the carry
+
+    def clears(self, hold: dict, tune: dict | None = None,
+               *, tf_minutes: float | None = None) -> bool:
+        if "error" in hold:
+            return False
+        ok = (hold.get("win_rate", 0) >= self.min_win_rate
+              and hold.get("trades", 0) >= self.min_trades
+              and self.min_trades_per_day <= hold.get("trades_per_day", 0) <= self.max_trades_per_day
+              and hold.get("mean_hold", 0) >= self.min_hold_bars
+              and hold.get("expectancy", 0) > self.min_expectancy)
+        if not ok:
+            return False
+
+        # Consistency. Checked on held-out data, where it actually counts.
+        if (hold.get("consistency", 0.0) < self.min_consistency
+                or hold.get("positive_block_rate", 0.0) < self.min_positive_block_rate):
+            return False
+        share = hold.get("top_decile_share", 0.0)
+        if share and share > self.max_top_decile_share:
+            return False
+        streak = hold.get("streak_vs_random", 0.0)
+        if streak and streak > self.max_streak_vs_random:
+            return False
+        if hold.get("streak_ratio", 0.0) < self.min_streak_ratio:
+            return False
+        if hold.get("mean_run_ratio", 0.0) < self.min_mean_run_ratio:
+            return False
+
+        # Hold time, checked as hard as everything else, and in DURATION
+        # rather than bars -- the limits depend on which chart produced them.
+        tf = tf_minutes if tf_minutes is not None else hold.get("tf_minutes")
+        if not tf:
+            # Fail closed. A bar count means nothing without the timeframe that
+            # produced it, so an unlabelled result cannot be shown to meet the
+            # duration envelope and must not pass by omission.
+            return False
+        if True:
+            floor_b, target_b, ceiling_b = self.hold_spec.bars(float(tf))
+            if hold.get("mean_hold", 0.0) > ceiling_b:
+                return False
+            if hold.get("mean_hold", 0.0) < floor_b:
+                return False
+            if hold.get("hold_p90", 0.0) > ceiling_b * self.p90_slack:
+                return False
+        if hold.get("same_bar_rate", 0.0) > self.max_same_bar_rate:
+            return False
+        if hold.get("hold_asymmetry", 0.0) < self.min_hold_asymmetry:
+            return False
+        if hold.get("hold_drift", 0.0) > self.max_hold_drift:
+            return False
+        if hold.get("r_per_bar", 0.0) <= self.min_r_per_bar:
+            return False
+        if hold.get("overnight_rate", 0.0) > self.max_overnight_rate:
+            return False
+        # Sign matters: a negative share means the carry LOST and the intraday
+        # book carried the system, which is not the failure this guards against.
+        carry = hold.get("overnight_net_share", 0.0)
+        if carry > self.max_overnight_net_share:
+            return False
+
+        # The runner must either not exist, or must win on its own merits.
+        legs = hold.get("runner_legs", 0)
+        if legs == 0:
+            pass                              # single-contract, single-target
+        else:
+            rate = hold.get("runner_win_rate")
+            if rate is None or legs < self.min_runner_legs:
+                return False
+            if rate < self.min_runner_win_rate:
+                return False
+            # A surviving runner must still be balanced against TP1.
+            if (hold.get("tp_gap_pp", 99.0) > self.max_tp_gap_pp
+                    or hold.get("tp1_rate", 0.0) < self.min_tp_leg_rate
+                    or hold.get("tp2_rate", 0.0) < self.min_tp_leg_rate):
+                return False
+
+        if self.require_tune_too and tune is not None:
+            if (tune.get("win_rate", 0) < self.min_win_rate
+                    or tune.get("expectancy", 0) <= self.min_expectancy):
+                return False
+            # The balance must be a property of the system, not of one tape.
+            if hold.get("runner_legs", 0):
+                if tune.get("tp_gap_pp", 99.0) > self.max_tp_gap_pp:
+                    return False
+                drift = abs(hold.get("tp_gap_pp", 0.0) - tune.get("tp_gap_pp", 0.0))
+                if drift > self.max_tp_gap_drift_pp:
+                    return False
+                if (tune.get("runner_win_rate") or 0.0) < self.min_runner_win_rate:
+                    return False
+        return True
+
+    def score(self, hold: dict) -> float:
+        """Rank among qualifiers. STRICTLY MONOTONE -- nothing is truncated.
+
+        The previous version capped expectancy at $5,000, trades at 1,000 and
+        the streak ratio at 8.0. Anything past those scored identically to
+        something that merely reached them, so a variant twice as good as the
+        cap ranked EQUAL to one at it, and the search lost its gradient exactly
+        where the best results live. A ceiling on the ranking is a ceiling on
+        what the search can find.
+
+        Magnitudes are log-compressed instead. log1p is strictly increasing, so
+        more is always worth more and two results are never tied by fiat, while
+        the compression keeps one enormous dimension from swamping the others.
+        The weights set priority; the transform never sets a limit.
+        """
+        if "error" in hold or not hold.get("trades"):
+            return -1e9
+
+        def grow(x: float, scale: float) -> float:
+            """Strictly increasing, unbounded above, diminishing returns."""
+            return math.log1p(max(x, 0.0) / scale)
+
+        # Priority order, highest first: a runner that pays for itself, then
+        # streak dominance, then consistency, then TP balance, then win rate,
+        # then the size of the edge and the sample behind it.
+        runner = (hold.get("runner_win_rate") or 100.0) * 100_000.0
+        streaks = grow(hold.get("streak_ratio", 0.0), 2.0) * 3_000_000.0
+        steady = hold.get("consistency", 0.0) * 2_000_000.0
+        balance = max(0.0, 30.0 - hold.get("tp_gap_pp", 30.0)) * 100_000.0
+        win = hold.get("win_rate", 0.0) * 20_000.0
+        edge = grow(hold.get("expectancy", 0.0), 100.0) * 400_000.0
+        sample = grow(hold.get("trades", 0), 200.0) * 50_000.0
+        # Per-bar return matters because two systems with the same expectancy
+        # are not equal if one ties up the account four times as long.
+        velocity = grow(hold.get("r_per_bar", 0.0), 1.0) * 200_000.0
+
+        return runner + streaks + steady + balance + win + edge + sample + velocity
+
+    def shortfall(self, hold: dict, *, tf_minutes: float | None = None) -> list[str]:
+        """Exactly which criteria a near-miss failed. Used to steer the search."""
+        gaps = []
+        if hold.get("win_rate", 0) < self.min_win_rate:
+            gaps.append(f"win {hold.get('win_rate',0):.1f}<{self.min_win_rate}")
+        if hold.get("trades", 0) < self.min_trades:
+            gaps.append(f"n {hold.get('trades',0)}<{self.min_trades:.0f}")
+        if hold.get("mean_hold", 0) < self.min_hold_bars:
+            gaps.append(f"hold {hold.get('mean_hold',0):.1f}<{self.min_hold_bars}")
+        tpd = hold.get("trades_per_day", 0)
+        if not (self.min_trades_per_day <= tpd <= self.max_trades_per_day):
+            gaps.append(f"tpd {tpd:.2f}")
+        if hold.get("expectancy", 0) <= self.min_expectancy:
+            gaps.append(f"exp {hold.get('expectancy',0):+.0f}")
+        legs = hold.get("runner_legs", 0)
+        if legs:
+            rate = hold.get("runner_win_rate")
+            if rate is None or rate < self.min_runner_win_rate:
+                gaps.append(f"runner win {rate if rate is None else round(rate,1)}"
+                            f"<{self.min_runner_win_rate} over {legs} legs "
+                            f"(BE {hold.get('runner_breakeven_rate', 0):.0f}%)")
+            if legs < self.min_runner_legs:
+                gaps.append(f"runner legs {legs}<{self.min_runner_legs}")
+        ratio = hold.get("streak_ratio", 0.0)
+        if ratio < self.min_streak_ratio:
+            gaps.append(f"streak ratio {ratio:.2f}<{self.min_streak_ratio} "
+                        f"(win {hold.get('max_winning_streak',0)} vs "
+                        f"lose {hold.get('max_losing_streak',0)})")
+        mrr = hold.get("mean_run_ratio", 0.0)
+        if mrr < self.min_mean_run_ratio:
+            gaps.append(f"mean run ratio {mrr:.2f}<{self.min_mean_run_ratio}")
+        if hold.get("consistency", 0.0) < self.min_consistency:
+            gaps.append(f"consistency {hold.get('consistency',0):.2f}<{self.min_consistency}")
+        if hold.get("positive_block_rate", 0.0) < self.min_positive_block_rate:
+            gaps.append(f"positive blocks {hold.get('positive_block_rate',0):.0f}%")
+        share = hold.get("top_decile_share", 0.0)
+        if share and share > self.max_top_decile_share:
+            gaps.append(f"top-decile share {share:.0f}%>{self.max_top_decile_share:.0f}%")
+        gap = hold.get("tp_gap_pp")
+        if legs and gap is not None and gap > self.max_tp_gap_pp:
+            gaps.append(f"TPgap {gap:.1f}pp>{self.max_tp_gap_pp} "
+                        f"(TP1 {hold.get('tp1_rate',0):.1f}% vs TP2 {hold.get('tp2_rate',0):.1f}%)")
+        for leg in ("tp1_rate", "tp2_rate"):
+            if hold.get(leg, 0.0) < self.min_tp_leg_rate:
+                gaps.append(f"{leg} {hold.get(leg,0):.1f}%<{self.min_tp_leg_rate}")
+
+        # --- hold time, reported in hours because bars are not comparable ---
+        mean_hold = hold.get("mean_hold", 0.0)
+        tf = tf_minutes if tf_minutes is not None else hold.get("tf_minutes")
+        if not tf:
+            gaps.append("no tf_minutes recorded -- hold time cannot be judged")
+        else:
+            tf = float(tf)
+            floor_b, target_b, ceiling_b = self.hold_spec.bars(tf)
+            hrs = lambda b: b * tf / 60.0
+            if mean_hold > ceiling_b:
+                gaps.append(f"hold {mean_hold:.1f}b/{hrs(mean_hold):.1f}h > "
+                            f"{ceiling_b}b/{hrs(ceiling_b):.1f}h ceiling")
+            if mean_hold < floor_b:
+                gaps.append(f"hold {mean_hold:.1f}b/{hrs(mean_hold):.1f}h < "
+                            f"{floor_b}b/{hrs(floor_b):.1f}h floor (scalp)")
+            p90 = hold.get("hold_p90", 0.0)
+            if p90 > ceiling_b * self.p90_slack:
+                gaps.append(f"hold p90 {p90:.0f}b/{hrs(p90):.1f}h > "
+                            f"{ceiling_b * self.p90_slack:.0f}b tail limit "
+                            f"(max {hold.get('hold_max',0)}b/{hrs(hold.get('hold_max',0)):.1f}h)")
+        same = hold.get("same_bar_rate", 0.0)
+        if same > self.max_same_bar_rate:
+            gaps.append(f"same-bar exits {same:.1f}%>{self.max_same_bar_rate}")
+        asym = hold.get("hold_asymmetry", 0.0)
+        if asym < self.min_hold_asymmetry:
+            gaps.append(f"hold asymmetry {asym:.2f}<{self.min_hold_asymmetry} "
+                        f"(win {hold.get('hold_winners',0):.1f} vs lose "
+                        f"{hold.get('hold_losers',0):.1f} bars)")
+        drift = hold.get("hold_drift", 0.0)
+        if drift > self.max_hold_drift:
+            gaps.append(f"hold drift {drift:.2f}>{self.max_hold_drift}")
+        rpb = hold.get("r_per_bar", 0.0)
+        if rpb <= self.min_r_per_bar:
+            gaps.append(f"per-bar {rpb:+.2f}<=0 (no profit per bar of exposure)")
+        overnight = hold.get("overnight_rate", 0.0)
+        if overnight > self.max_overnight_rate:
+            gaps.append(f"overnight {overnight:.1f}%>{self.max_overnight_rate} of positions")
+        carry = hold.get("overnight_net_share", 0.0)
+        if carry > self.max_overnight_net_share:
+            gaps.append(f"overnight carries {carry:.0f}% of net"
+                        f">{self.max_overnight_net_share:.0f}% "
+                        f"(intraday ${hold.get('intraday_net',0):+,.0f})")
+        return gaps
+
+
+GOAL = Goal()
+TARGET_COUNT = 5        # "more than 5" -- the search does not stop at the first

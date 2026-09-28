@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "icarus-engine"
+version = "1.0.0"
+description = "One adaptive intraday liquidity-sweep system for equities, futures, forex and crypto"
+requires-python = ">=3.11"
+dependencies = []                      # the core runs on the standard library alone
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+# icarus_bridge/ and icarus_engine/server.py only. The engines and the
+# entire 584-test suite run on the standard library plus pytest.
+bridge = ["fastapi", "httpx", "mcp", "uvicorn"]
+
+[project.scripts]
+icarus = "icarus.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["icarus*", "icarus_engine*", "icarus_bridge*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "tests_engine"]
+# importlib mode lets the two suites carry same-named modules. Both have a
+# test_metrics.py, and with the default prepend mode pytest aborts COLLECTION
+# on the clash -- not one failure, zero tests run. Renaming would fix today's
+# collision and leave the next one waiting.
+addopts = "-q --import-mode=importlib"

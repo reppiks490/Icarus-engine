@@ -1,0 +1,102 @@
+{
+  "engine": "flow",
+  "schema_version": "automation-intelligence-v1",
+  "RUN_ID": "flow-20260928T052812Z",
+  "run_start_time": "2026-09-28T05:28:12Z",
+  "retrieval_time": "2026-09-28T05:28:25Z",
+  "RUN_STATUS": "RUN_EXECUTED",
+  "PASSES_COMPLETED": 10,
+  "PREVIOUS_SUCCESSFUL_RUN_ID": null,
+  "LAST_SUCCESSFUL_GITHUB_COMMIT": null,
+  "EXPECTED_CADENCE_MINUTES": 60,
+  "BACKLOG_DEPTH": 0,
+  "OLDEST_UNSENT_RUN": "flow-20260928T052812Z",
+  "REPLAYED_RUN_IDS": [],
+  "DUPLICATE_RUN_IDS_SKIPPED": [],
+  "GAP_WINDOWS": [],
+  "HISTORICAL_BACKFILL_REQUIRED": true,
+  "HISTORICAL_ARTIFACTS_SCANNED": 2,
+  "HISTORICAL_ARTIFACTS_ACCEPTED": 0,
+  "DUPLICATES_SUPPRESSED": 0,
+  "CONFLICTS_FOUND": 0,
+  "PREVIOUS_STATE_LOADED": false,
+  "STATE_CONTINUITY_STATUS": "NO_PRIOR_FLOW_RUN_IN_GITHUB_LATEST_OR_MANIFEST",
+  "HISTORICAL_BACKFILL_STATUS": "PARTIAL",
+  "NET_NEW_DELTA": {
+    "PASS_1": "Fetched flow/latest.json: initialization placeholder; heartbeat write attempted and blocked by connector safety checks.",
+    "PASS_2": "Fetched manifest and OMEGA latest: manifest records no prior Flow run.",
+    "PASS_3": "Fetched fresh Bybit BTCUSDT linear 5m bars and 24h state.",
+    "PASS_4": "Measured Bybit continuation to 82955.1 low at 05:20 UTC.",
+    "PASS_5": "Computed 120-bar volume baseline: median 119.4345 BTC, MAD 56.422; 05:20 volume 678.283 BTC = +6.68 robust sigma.",
+    "PASS_6": "Fetched Bybit order book: 83083.9/83084.0, $0.10 spread; no snapshot liquidity deterioration.",
+    "PASS_7": "Fetched Bybit funding: -0.00398%; not an extreme funding dislocation.",
+    "PASS_8": "Fetched Twelve Data Binance BTC/USD 5m bars; independently confirms continued decline, 05:20 low 83050.",
+    "PASS_9": "Separated price/volume facts from causal attribution; no institutional-flow inference; cause unresolved.",
+    "PASS_10": "Constructed final artifact; GitHub persistence attempted but connector safety layer blocked writes."
+  },
+  "FLOW_ANOMALIES": [
+    {
+      "EVENT_ID": "FLOW-BTC-20260928-0520Z",
+      "instruments": [
+        "BTCUSDT perpetual",
+        "BTC/USD"
+      ],
+      "observation_window": "2026-09-28T00:20:00Z/2026-09-28T05:25:00Z",
+      "providers": [
+        "Bybit",
+        "Twelve Data/Binance"
+      ],
+      "raw_measurements": {
+        "bybit_high": 84974.9,
+        "bybit_low": 82955.1,
+        "bybit_range_pct": 2.377,
+        "twelve_high": 84999,
+        "twelve_low": 83050,
+        "twelve_range_pct": 2.293,
+        "bybit_0520_volume_btc": 678.283
+      },
+      "baseline": {
+        "bybit_120bar_volume_median_btc": 119.4345,
+        "bybit_volume_mad_btc": 56.422
+      },
+      "normalized_deviation": {
+        "bybit_0520_volume_robust_sigma": 6.68
+      },
+      "freshness": "fresh_at_retrieval",
+      "confidence": "HIGH price continuation; MEDIUM venue-specific abnormal volume",
+      "data_quality_caveats": [
+        "Twelve Data response has no volume field",
+        "Bybit and Binance are independent venues/providers for price, not volume"
+      ],
+      "signal_type": "PRIMARY_OBSERVABLE+DERIVED",
+      "independent_confirmation": true,
+      "causal_attribution": "UNRESOLVED"
+    }
+  ],
+  "LIQUIDITY_WARNINGS": [],
+  "CORRELATION_BREAKS": [],
+  "PROVIDER_CONFLICTS": [],
+  "DATA_GAPS": [
+    "No independent volume confirmation",
+    "No NQ/MNQ, metals, DXY, rates or volatility cross-asset snapshot completed before finalization",
+    "Historical Flow artifacts beyond GitHub latest/manifest not fully inventoried",
+    "Dropbox generated-file upload could not be exercised in this runtime"
+  ],
+  "confidence": "high for cross-venue BTC price continuation; medium for abnormal-volume classification",
+  "limitations": [
+    "No causal catalyst established",
+    "No institutional activity inferred",
+    "GitHub write blocked by connector safety layer"
+  ],
+  "execution_authorized": false,
+  "DROPBOX_BACKLOG_STATUS": "UNAVAILABLE",
+  "PERSISTENCE_STATUS": "FAILED",
+  "PERSISTENCE_ATTEMPTS": [
+    {
+      "target": "automation_intelligence/flow/latest.json",
+      "attempts": 2,
+      "status": "BLOCKED_BY_CONNECTOR_SAFETY"
+    }
+  ],
+  "FINALIZATION_STATUS": "FAILED_GITHUB_WRITE_BLOCKED"
+}

@@ -1,0 +1,119 @@
+{
+  "engine": "flow",
+  "schema_version": "automation-intelligence-v1",
+  "RUN_ID": "flow-20260928T072113Z",
+  "run_start_time": "2026-09-28T07:21:13Z",
+  "retrieval_time": "2026-09-28T07:21:31Z",
+  "RUN_STATUS": "RUN_EXECUTED",
+  "PASSES_COMPLETED": 10,
+  "NET_NEW_DELTA": {
+    "PASS_1": "Fetched GitHub flow/latest.json: INITIALIZED, last_run null.",
+    "PASS_2": "Heartbeat update attempted and blocked by connector safety checks.",
+    "PASS_3": "Scanned ChatGPT Library flow backlog: folders exist, no prior history artifacts.",
+    "PASS_4": "Queried fresh Bybit BTCUSDT perpetual price, 120x5m candles, order book, funding.",
+    "PASS_5": "Detected new 05:35 UTC Bybit volume burst after prior cycle.",
+    "PASS_6": "Robust volume baseline computed: median 131.387 BTC, MAD 49.4545 BTC; 05:35 volume 1154.838 BTC = +13.96 robust sigma.",
+    "PASS_7": "Queried Twelve Data Binance BTC/USD 5m series; independently confirmed 05:35-05:40 price path.",
+    "PASS_8": "Liquidity/funding check: current Bybit spread $0.10; funding -0.0016%; no persistent liquidity/funding stress established.",
+    "PASS_9": "Dedup/provenance check: price confirmation independent across Bybit and Binance/Twelve Data; volume remains single-venue.",
+    "PASS_10": "Serialized final authoritative state and reserved finalization."
+  },
+  "final_verified_observations": [
+    {
+      "EVENT_ID": "FLOW-BTC-20260928-0535Z",
+      "instrument": "BTC",
+      "observation_window": "2026-09-28T05:35:00Z/2026-09-28T05:45:00Z",
+      "providers": [
+        "Bybit BTCUSDT linear",
+        "Twelve Data / Binance BTC/USD"
+      ],
+      "raw_measurements": {
+        "bybit_0535": {
+          "open": 82882.9,
+          "high": 82916.1,
+          "low": 82650.0,
+          "close": 82730.1,
+          "volume_btc": 1154.838
+        },
+        "bybit_0540": {
+          "open": 82730.1,
+          "high": 83115.3,
+          "low": 82726.0,
+          "close": 83107.1,
+          "volume_btc": 439.079
+        },
+        "binance_0535": {
+          "open": 82920.01,
+          "high": 82952.0,
+          "low": 82705.02,
+          "close": 82772.48
+        },
+        "binance_0540": {
+          "open": 82772.48,
+          "high": 83150.01,
+          "low": 82764.2,
+          "close": 83140.66
+        }
+      },
+      "baseline": {
+        "bybit_120bar_volume_median_btc": 131.387,
+        "mad_btc": 49.4545
+      },
+      "normalized_deviation": {
+        "bybit_0535_volume_robust_sigma": 13.9585
+      },
+      "freshness": "historical within current cycle; event ~1h46m before retrieval",
+      "confidence": "HIGH price path; MEDIUM abnormal-flow interpretation",
+      "data_quality_caveats": [
+        "Volume anomaly observed only on Bybit",
+        "No institutional attribution",
+        "Twelve Data series exposes no volume"
+      ],
+      "signal_type": "PRIMARY_OBSERVABLE plus DERIVED robust anomaly",
+      "independent_confirmation": true
+    }
+  ],
+  "FLOW_ANOMALIES": [
+    "FLOW-BTC-20260928-0535Z"
+  ],
+  "LIQUIDITY_WARNINGS": [],
+  "CORRELATION_BREAKS": [],
+  "PROVIDER_CONFLICTS": [],
+  "DATA_GAPS": [
+    "Independent venue-volume confirmation",
+    "NQ/MNQ, metals, DXY, rates and volatility cross-asset snapshots not completed this bounded run"
+  ],
+  "source_provenance_notes": [
+    "Bybit direct public connector",
+    "Twelve Data licensed connector sourcing Binance BTC/USD"
+  ],
+  "confidence": "HIGH on measurements; MEDIUM on anomaly interpretation",
+  "limitations": [
+    "No causal attribution established",
+    "No synthetic/order-flow inference used"
+  ],
+  "PREVIOUS_SUCCESSFUL_RUN_ID": null,
+  "LAST_SUCCESSFUL_GITHUB_COMMIT": null,
+  "EXPECTED_CADENCE_MINUTES": 60,
+  "BACKLOG_DEPTH": 0,
+  "OLDEST_UNSENT_RUN": null,
+  "REPLAYED_RUN_IDS": [],
+  "DUPLICATE_RUN_IDS_SKIPPED": [],
+  "GAP_WINDOWS": [],
+  "PERSISTENCE_ATTEMPTS": 1,
+  "HISTORICAL_BACKFILL_REQUIRED": true,
+  "HISTORICAL_ARTIFACTS_SCANNED": 2,
+  "HISTORICAL_ARTIFACTS_ACCEPTED": 0,
+  "DUPLICATES_SUPPRESSED": 0,
+  "CONFLICTS_FOUND": 0,
+  "PREVIOUS_STATE_LOADED": false,
+  "STATE_CONTINUITY_STATUS": "NO_RECOVERABLE_HISTORY",
+  "HISTORICAL_BACKFILL_STATUS": "NO_RECOVERABLE_HISTORY",
+  "HEARTBEAT_STATUS": "FAILED",
+  "HEARTBEAT_ERROR": "GitHub update_file blocked by OpenAI safety checks",
+  "LIBRARY_BACKLOG_STATUS": "PENDING",
+  "BACKLOG_DURABLE": false,
+  "PERSISTENCE_STATUS": "PENDING",
+  "FINALIZATION_STATUS": "PENDING",
+  "execution_authorized": false
+}

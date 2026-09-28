@@ -8,7 +8,7 @@
     "fundamental",
     "alt_data_crypto"
   ],
-  "updated_at": "2026-09-28T10:02:34Z",
+  "updated_at": "2026-09-28T16:56:16Z",
   "latest_runs": {
     "omega": {
       "run_id": "omega-20260928T100234Z",
@@ -16,40 +16,40 @@
       "status": "RUN_PERSISTED"
     },
     "macro": {
-      "run_id": "macro-20260928T091312Z",
-      "run_time": "2026-09-28T09:13:12Z",
-      "status": "IN_PROGRESS"
-    },
-    "flow": {
-      "run_id": "flow-20260928T081927Z",
-      "run_time": "2026-09-28T08:19:27Z",
-      "status": "IN_PROGRESS"
-    },
-    "fundamental": {
-      "run_id": "fundamental-20260928T073708Z",
-      "run_time": "2026-09-28T07:37:08Z",
+      "run_id": "macro-20260928T161329Z",
+      "run_time": "2026-09-28T16:13:29Z",
       "status": "RUN_PERSISTED"
     },
+    "flow": {
+      "run_id": "flow-20260928T102124Z",
+      "run_time": "2026-09-28T10:21:24Z",
+      "status": "RUN_PERSISTED"
+    },
+    "fundamental": {
+      "run_id": "fundamental-20260928T164052Z",
+      "run_time": "2026-09-28T16:40:52Z",
+      "status": "IN_PROGRESS"
+    },
     "alt_data_crypto": {
-      "run_id": "alt-data-crypto-20260928T094705Z",
-      "run_time": "2026-09-28T09:47:05Z",
+      "run_id": "alt-data-crypto-20260928T165044Z",
+      "run_time": "2026-09-28T16:50:44Z",
       "status": "IN_PROGRESS"
     }
   },
   "latest_blob_shas": {
     "omega": "bc5ed91af3176829e4e59bbcedf16ec7aa22ace3",
-    "macro": "0a3cd7f942f92322c11bd444efb565cf79fc2249",
-    "flow": "082aa173b3c36594809370f1ca9a0cc3c5869c53",
-    "fundamental": "71d00a434a058fb5eaaf49e0377d732570cbb3d5",
-    "alt_data_crypto": "92ddbccc9adec46cf077d7072abec0850fa89f05"
+    "macro": "2798d74bb3aa02960d2870a4a2b0c06c0ef2f7c6",
+    "flow": "d289c15ebc67e05e3afc0ae015ccbe43e7b3aa10",
+    "fundamental": "723cd2663dfab473e6abdea99a7e1cf13f367d2f",
+    "alt_data_crypto": "b5af6f8d284d78657d5957f681941c957ffc8b06"
   },
   "last_commits": {
     "omega": "36a10b60ab2166c413b8cfe0a40be64203ddabed",
     "omega_history": "0ec5fae0bf0052ff2782f6b676417d2cec9f26f3",
-    "macro": "5ca10da1575fb4b2dd8e1acd83a7a91fdd2a1555",
-    "flow": "cc9e01c3fabfe9fbc963d8cd9054ed58716ad0c6",
-    "fundamental": "de515eab583cd083166cc109798792b670260022",
-    "alt_data_crypto": "c335576bc6e9b1f696cb28afa40c6c62f98594ed"
+    "macro": "61448645de889b7f2bb42a62a83c91f82ec44246",
+    "flow": "9e3df2707270b308ec6a34a86188b903e24c6780",
+    "fundamental": "81b00d970c177545ba6753bcd08080dcfd73e1d3",
+    "alt_data_crypto": "50debd12f860a11b7c92a6bbb22a377f96396454"
   },
   "historical_replay_commits": [
     {
@@ -92,9 +92,36 @@
   "HISTORICAL_BACKFILL_STATUS": "PARTIAL",
   "MIGRATION_PROMPT_REFRESH_STATUS": "BLOCKED",
   "migration_prompt_refresh_failed_conditions": [
-    "Three specialist latest records are IN_PROGRESS",
-    "Not all latest/history records are finalized and matching",
-    "Five same-RUN_ID finalization-content conflicts remain"
+    "Fundamental and alt_data_crypto still have legacy-format IN_PROGRESS latest records with no matching immutable history at reconciliation time.",
+    "The four hardened active ChatGPT schedulers have not yet completed a full post-update cycle under the separate-heartbeat contract.",
+    "OMEGA has not yet completed a post-reconciliation aggregation cycle."
   ],
-  "execution_authorized": false
+  "execution_authorized": false,
+  "active_heartbeats": {
+    "flow": {
+      "run_id": "flow-20260928T142120Z",
+      "status": "STRANDED_IN_PROGRESS",
+      "path": "automation_intelligence/flow/heartbeat.json",
+      "note": "Preserved; no matching immutable history was found."
+    },
+    "fundamental": {
+      "run_id": "fundamental-20260928T164052Z",
+      "status": "IN_PROGRESS_LEGACY_LATEST",
+      "note": "Started before clean 1:1 contract migration; no matching history found as of reconciliation."
+    },
+    "alt_data_crypto": {
+      "run_id": "alt-data-crypto-20260928T165044Z",
+      "status": "IN_PROGRESS_LEGACY_LATEST",
+      "note": "Started before clean 1:1 contract migration; no matching history found as of reconciliation."
+    }
+  },
+  "CLEAN_1_TO_1_STATUS": "CONFIGURED_LIVE_VERIFICATION_PENDING",
+  "CLEAN_1_TO_1_DESIGN": "separate-heartbeat-v2",
+  "CLEAN_1_TO_1_RECONCILIATION": {
+    "flow_latest_restored_to_last_verified_history": true,
+    "flow_stranded_heartbeat_preserved": true,
+    "macro_latest_history_aligned": true,
+    "hardened_active_chatgpt_schedulers": 4,
+    "post_hardening_cycles_verified": 0
+  }
 }

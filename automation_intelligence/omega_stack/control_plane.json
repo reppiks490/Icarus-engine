@@ -53,7 +53,7 @@
   },
   "namespace_policy": "Only this five-loop stack may write under automation_intelligence/omega_stack/. Other schedulers must use separate namespaces.",
   "global_manifest_policy": "Read-only contextual input. Do not use automation_intelligence/manifest.json as this stack's scheduler source of truth and do not overwrite unrelated scheduler topology fields.",
-  "persistence_policy": "heartbeat.json is the only mutable IN_PROGRESS marker; pass 9 writes immutable history proof; pass 10 promotes latest then writes an immutable finalization receipt binding history/latest blob SHAs; only receipt-verified runs are accepted as fully persisted.",
+  "persistence_policy": "heartbeat.json is the only mutable IN_PROGRESS marker; pass 8 freezes a canonical nested RUN_CORE; pass 9 writes immutable history proof; pass 10 promotes latest and creates an immutable finalization receipt binding history/latest blob SHAs and RUN_CORE_SHA256; only receipt-verified runs are accepted as fully persisted.",
   "execution_authorized": false,
   "migration": {
     "seeded_from_legacy_persisted_runs": {
@@ -69,7 +69,7 @@
     "v2_reason": "Old agent branch diverged substantially from main; v2 starts from current main and carries only approved design/operational scaffolding."
   },
   "agent_development_branch": "feature/aion-daedalus-prime-v2",
-  "persistence_protocol_version": "omega-stack-persistence-v3",
+  "persistence_protocol_version": "omega-stack-persistence-v3.1",
   "library_fallback_root": "/AutomationIntelligenceBacklog/omega_stack",
   "persistence_bootstrap": {
     "rule": "No substantive work before verified heartbeat persistence.",
@@ -83,9 +83,9 @@
     ],
     "on_github_bootstrap_failure": "Stop substantive work immediately; one fresh-SHA reconcile/retry; then attempt Library failure receipt and stop.",
     "closure": [
-      "Pass 8 freezes run core/result; it must not claim pass 9/10 completion.",
-      "Pass 9 creates immutable history/<RUN_ID>.json with RUN_STATUS=HISTORY_VERIFIED and FINALIZATION_STATUS=AWAITING_LATEST_PROMOTION, then re-fetches and records its blob SHA.",
-      "Pass 10 writes latest.json with RUN_STATUS=RUN_PERSISTED and exact same RUN_CORE plus the verified history blob SHA; re-fetches latest and history; verifies identifiers and RUN_CORE equivalence; then writes immutable finalization/<RUN_ID>.json containing the verified history/latest blob SHAs; only after receipt readback may heartbeat become IDLE/FINALIZED."
+      "Pass 8 freezes a nested RUN_CORE object and computes RUN_CORE_SHA256 over canonical UTF-8 JSON with recursively sorted object keys, compact separators, array order preserved, and no insignificant whitespace. RUN_CORE contains substantive run identity/results only and must not contain pass9/pass10 claims.",
+      "Pass 9 creates immutable history/<RUN_ID>.json with RUN_STATUS=HISTORY_VERIFIED, PASSES_COMPLETED=9, FINALIZATION_STATUS=AWAITING_LATEST_PROMOTION, RUN_CORE, and RUN_CORE_SHA256; re-fetch and record actual history blob SHA.",
+      "Pass 10 writes latest.json with RUN_STATUS=RUN_PERSISTED, PASSES_COMPLETED=10, same byte-equivalent canonical RUN_CORE and RUN_CORE_SHA256, plus verified history blob SHA; re-fetch latest/history and verify RUN_CORE_SHA256 and identities; create immutable finalization/<RUN_ID>.json binding actual history/latest blob SHAs and RUN_CORE_SHA256; only after receipt readback may heartbeat become IDLE/FINALIZED."
     ]
   }
 }

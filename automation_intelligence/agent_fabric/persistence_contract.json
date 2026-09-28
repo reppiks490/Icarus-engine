@@ -1,0 +1,47 @@
+{
+  "schema_version": "agent-fabric-persistence-v3",
+  "scope": "automation_intelligence/agent_fabric",
+  "purpose": "Fail-closed persistence protocol for Robustness Guardian, Alpha Synthesis, and Apex Council without transferring OMEGA or Infrastructure ownership.",
+  "startup": {
+    "heartbeat_readback_required": true,
+    "rule": "Before substantive work, write IN_PROGRESS heartbeat with exact RUN_ID using fresh SHA and re-fetch it. Failure stops the run."
+  },
+  "run_core": {
+    "field": "RUN_CORE",
+    "hash_field": "RUN_CORE_SHA256",
+    "canonicalization": "UTF-8 JSON; recursively sorted object keys; compact separators; preserve array order; no NaN/Infinity.",
+    "immutable_substantive_payload": true
+  },
+  "history": {
+    "immutable": true,
+    "required_status": "HISTORY_VERIFIED",
+    "path_pattern": "<lane>/history/<RUN_ID>.json",
+    "may_claim_future_finalization": false
+  },
+  "latest": {
+    "required_status": "RUN_PERSISTED",
+    "same_run_core_as_history": true,
+    "must_bind_actual_history_blob": true
+  },
+  "finalization": {
+    "receipt_required": true,
+    "path_pattern": "<lane>/finalization/<RUN_ID>.json",
+    "required_status": "FINALIZATION_VERIFIED",
+    "binds": [
+      "RUN_ID",
+      "RUN_CORE_SHA256",
+      "history_blob_sha",
+      "latest_blob_sha"
+    ],
+    "state_pointer_required": true,
+    "heartbeat_finalization_required": true
+  },
+  "legacy": {
+    "pre_v3_runs": "May be preserved/reconciled as legacy evidence but are not v3 FINALIZATION_VERIFIED without a valid receipt."
+  },
+  "secondary_backup": {
+    "library_is_independent_from_github_finalization": true,
+    "verification_rule": "Library backup is VERIFIED only after exact RUN_ID artifact read-back and identity verification; failed/unavailable read-back must be UNVERIFIED or BLOCKED."
+  },
+  "execution_authorized": false
+}

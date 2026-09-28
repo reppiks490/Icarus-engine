@@ -1,0 +1,21 @@
+{
+  "schema_version": "omega-stack-persistence-incident-v1",
+  "incident_id": "macro-trigger-20260928T201044Z-no-isolated-persistence",
+  "observed_at_utc": "2026-09-28T20:17:54Z",
+  "lane": "macro",
+  "automation_id": "6ab8174517b48191b67ac472205a28d3",
+  "scheduler_last_run_time_utc": "2026-09-28T20:10:44.019474Z",
+  "expected_root": "automation_intelligence/omega_stack/macro",
+  "evidence": {
+    "heartbeat_status": "IDLE",
+    "heartbeat_run_id": null,
+    "latest_run_id": "macro-20260928T181445Z",
+    "newest_history_run_id": "macro-20260928T181445Z",
+    "new_macro_commit_after_trigger": false,
+    "library_fallback_path_initialized_after_incident": true
+  },
+  "classification": "SCHEDULER_TRIGGERED_PERSISTENCE_NOT_OBSERVED",
+  "action": "Harden all five loops with persistence-v2 bootstrap/fallback and OMEGA watchdog.",
+  "does_not_claim_run_content": true,
+  "execution_authorized": false
+}

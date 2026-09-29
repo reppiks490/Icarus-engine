@@ -1,0 +1,21 @@
+{
+  "schema_version": "omega-stack-persistence-incident-v1",
+  "incident_id": "aion-20260929T023855Z-history-duplicates-core",
+  "observed_at_utc": "2026-09-29T02:43:30Z",
+  "lane": "aion",
+  "automation_id": "6abb1618be1c8191943f5d4e2d88978d",
+  "run_id": "aion-20260929T023855Z",
+  "classification": "INVALID_HISTORY_DUPLICATES_CORE",
+  "evidence": {
+    "core_path": "automation_intelligence/omega_stack_native_v2/aion/core/aion-20260929T023855Z.json",
+    "core_blob_sha": "dcdd6efc9d59abb666d6a5201b3d10956232622a",
+    "history_path": "automation_intelligence/omega_stack_native_v2/aion/history/aion-20260929T023855Z.json",
+    "history_blob_sha": "dcdd6efc9d59abb666d6a5201b3d10956232622a",
+    "blobs_equal": true,
+    "latest_promoted": false,
+    "finalization_present": false
+  },
+  "disposition": "QUARANTINED_NO_PROMOTION",
+  "rule": "History must be a distinct metadata envelope and must not equal RUN_CORE content/blob identity.",
+  "execution_authorized": false
+}

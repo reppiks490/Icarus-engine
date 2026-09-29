@@ -1,0 +1,23 @@
+{
+  "schema_version": "omega-stack-scheduler-identity-conflict-v1",
+  "observed_at_utc": "2026-09-29T01:28:00Z",
+  "control_plane_id": "omega-aion-daedalus-stack",
+  "classification": "REPO_CONTROL_PLANE_CONTRADICTS_CURRENT_NATIVE_REGISTRY",
+  "native_registry_source": "current ChatGPT account automation registry",
+  "native_registry_enabled_count": 5,
+  "native_registry_ids": {
+    "omega": "6abb1012ff408191a6da245488f87dc2",
+    "macro": "6abb101aecf8819180edb577bb098364",
+    "flow": "6abb1022ac1881918a86ee30d74fa9dd",
+    "aion": "6abb102bde94819189bbf57062edcb32",
+    "daedalus": "6abb103472608191b72f9eaa522b772b"
+  },
+  "conflicting_repo_rewrite": {
+    "commit": "a0601724083e02d734c0669eec7878f52a8a1e44",
+    "affected_lane": "aion",
+    "effect": "rewrote mutable AION state to predecessor automation ID after a valid replacement-ID finalization receipt existed"
+  },
+  "resolution_rule": "The current live native registry for this ChatGPT account is scheduler authority. Active tasks are hard-pinned to their own native IDs. Repository control state may not rebind a live task to a different ID.",
+  "immutable_receipts_preserved": true,
+  "execution_authorized": false
+}

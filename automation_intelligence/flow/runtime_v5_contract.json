@@ -1,0 +1,33 @@
+{
+  "schema_version": "restored-flow-runtime-v5",
+  "scope": "this account's Microstructure Sensor Grid only",
+  "scheduler_source_of_truth": "live ChatGPT automation registry for this account",
+  "scheduler": {
+    "title": "Microstructure Sensor Grid",
+    "automation_id": "6abaef8effb48191aa5c959455451681",
+    "minute": 35,
+    "timezone": "America/Chicago"
+  },
+  "root": "automation_intelligence/flow",
+  "authoritative_runtime": {
+    "startup": "heartbeat first",
+    "history_file": "automation_intelligence/flow/staging.json",
+    "finalization_file": "automation_intelligence/flow/finalization_state.json",
+    "history_identity": "Git update commit SHA + staging blob SHA",
+    "closure": "heartbeat RUN_PERSISTED binds staging commit/blob and finalization_state blob",
+    "compatibility_mirrors": [
+      "latest.json",
+      "history_ledger.jsonl",
+      "automation_intelligence/manifest.json",
+      "history/<RUN_ID>.json"
+    ],
+    "compatibility_mirrors_block_success": false,
+    "new_per_run_file_creation_required": false
+  },
+  "foreign_or_separate_paths": [
+    "automation_intelligence/omega_stack/flow",
+    "automation_intelligence/omega_stack_native_v2/flow",
+    "automation_intelligence/omega_stack_live_6abb/flow"
+  ],
+  "execution_authorized": false
+}

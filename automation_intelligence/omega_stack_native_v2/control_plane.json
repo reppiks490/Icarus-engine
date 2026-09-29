@@ -52,21 +52,23 @@
   ],
   "namespace_policy": "Only the five automation IDs listed in active[] are authorized to write under omega_stack_native_v2. Any other writer is foreign and must be ignored/quarantined.",
   "previous_namespace_policy": "automation_intelligence/omega_stack is READ-ONLY historical/conflict evidence for this stack.",
-  "persistence_protocol_version": "omega-stack-persistence-v4.0-atomic-latest",
+  "persistence_protocol_version": "omega-stack-persistence-v4.1-fast-cas",
   "operational_state_branch": "automation/omega-native-v2",
   "agent_development_branch": "feature/aion-daedalus-prime-v2",
   "runtime_budget": {
-    "scheduled_execution_target_seconds": 20,
+    "scheduled_execution_target_seconds": 15,
+    "max_github_reads_before_authoritative_write": 1,
+    "max_optional_work_calls_before_authoritative_write": 1,
     "max_github_mutations_per_run": 1,
-    "max_github_readbacks_after_mutation": 1,
-    "max_optional_external_calls_per_run": 1,
-    "rule": "Durability has priority over research depth. Every scheduled run must fit the observed short execution envelope."
+    "mandatory_post_write_readbacks": 0,
+    "write_acknowledgement": "successful GitHub contents API CAS update response",
+    "rule": "The authoritative write must be attempted before the scheduler execution envelope can expire. Skip optional work rather than miss persistence."
   },
   "execution_authorized": false,
   "created_at_utc": "2026-09-29T01:31:00Z",
   "reason": "Isolated namespace created after verified concurrent foreign writes repeatedly overwrote the prior omega_stack scheduler identities and AION state.",
-  "control_revision": "2026-09-29-native-v2-r5",
-  "live_connection_status": "OMEGA_REBOUND_PENDING_NATURAL_V4_ACCEPTANCE",
+  "control_revision": "2026-09-29-native-v2-r6",
+  "live_connection_status": "V4_1_FAST_CAS_INSTALLED_PENDING_NATURAL_ACCEPTANCE",
   "scheduler_health_policy": {
     "required_enabled_count": 5,
     "exact_minutes": [
@@ -133,11 +135,22 @@
     "self_mutation_forbidden": true
   },
   "persistence_acceptance": {
-    "protocol": "omega-stack-persistence-v4.0-atomic-latest",
+    "protocol": "omega-stack-persistence-v4.1-fast-cas",
     "authoritative_run_record": "<lane>/latest.json",
     "immutable_history_source": "Git commit/blob history of latest.json",
-    "success_rule": "A natural scheduled run is accepted only when latest.json is updated once, then re-fetched with matching RUN_ID, automation_id, control_plane_id and protocol plus FINALIZATION_STATUS=VERIFIED.",
-    "legacy_v3_state": "heartbeat.json, checkpoint.json, core/, history/, finalization/ are historical/read-only after migration and must not gate v4 runs.",
-    "target": "Two consecutive naturally scheduled accepted receipts per lane before declaring sustained 5/5 reliability."
+    "success_rule": "A natural scheduled run is accepted when its optimistic-concurrency update of latest.json succeeds and the resulting persisted receipt has matching RUN_ID, automation_id, CONTROL_PLANE_ID, protocol, RUN_STATUS=RUN_PERSISTED and FINALIZATION_STATUS=VERIFIED. Out-of-band audits verify the stored blob; scheduled executions do not spend runtime on mandatory post-write readback.",
+    "legacy_v4_state": "v4.0 receipts remain valid historical evidence but do not count toward the v4.1 two-consecutive-run acceptance target.",
+    "target": "Two consecutive naturally scheduled accepted v4.1 receipts per lane before declaring sustained 5/5 reliability."
+  },
+  "scheduler_jitter_policy": {
+    "nominal_minutes": [
+      0,
+      12,
+      24,
+      36,
+      48
+    ],
+    "tolerated_start_jitter_seconds": 360,
+    "rule": "Scheduler start jitter is transport timing, not run identity. scheduled_for remains the nominal slot; actual trigger time may vary. Never fail a run solely for tolerated jitter."
   }
 }

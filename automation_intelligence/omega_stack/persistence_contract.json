@@ -9,7 +9,8 @@
     "A v3.2 run is fully persisted only when immutable core, immutable history, current latest, and immutable finalization receipt mutually agree on RUN_ID/control-plane/automation identity and the receipt binds the current core/history/latest blob SHAs.",
     "Scheduler last_run_time is trigger evidence only, never persistence evidence.",
     "All five lanes persist scheduler authority on main; development branches are never persistence authority.",
-    "Scheduler identity migration must never rewrite automation_id on an active or bootstrap-incomplete RUN_ID; preserve prior-run incident evidence and apply replacement identity only after clean finalization or contract-valid stale recovery."
+    "Scheduler identity migration must never rewrite automation_id on an active or bootstrap-incomplete RUN_ID; preserve prior-run incident evidence and apply replacement identity only after clean finalization or contract-valid stale recovery.",
+    "A live scheduler task's hard-pinned native automation ID cannot be changed by repository control state or a concurrent repo writer."
   ],
   "bootstrap": {
     "github_primary_required": true,
@@ -175,8 +176,9 @@
     "legacy_automations_must_remain_disabled": true,
     "omega_repair_rule": "When scheduler registry mutation is available, OMEGA may repair only enabled-state or schedule drift for the five required lanes. Otherwise record an incident.",
     "identity_migration": {
-      "reconciled_at_utc": "2026-09-29T01:28:32Z",
-      "rule": "The currently enabled native registry objects are the 6abb replacement IDs. The 6ab817 predecessor IDs are mutation-denied historical evidence only and must never be restored as active scheduler authority."
+      "reconciled_at_utc": "2026-09-29T01:28:49Z",
+      "rule": "Current native registry IDs are hard-pinned in each active task. Repository state may validate but may never rebind a live task to a different scheduler ID.",
+      "conflict_incident": "automation_intelligence/omega_stack/incidents/scheduler-identity-conflict-live-registry-20260929T012800Z.json"
     }
   },
   "fail_soft_after_bootstrap": {

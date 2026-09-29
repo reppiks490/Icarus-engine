@@ -1,0 +1,62 @@
+{
+  "schema_version": "agent-fabric-scheduler-bindings-v1",
+  "repository": "reppiks490/Icarus-engine",
+  "branch": "main",
+  "scope": "automation_intelligence/agent_fabric",
+  "purpose": "Authoritative scheduler-to-persistence bindings for this account's original three agent-fabric loops only.",
+  "scheduler_source_of_truth": "live ChatGPT automation registry for this account",
+  "persistence_contract": "automation_intelligence/agent_fabric/persistence_contract.json",
+  "lanes": {
+    "robustness_guardian": {
+      "title": "Robustness Guardian Evolution",
+      "automation_id": "6abaf924e0248191b8a11bd1d32bf0b7",
+      "minute": 5,
+      "root": "automation_intelligence/agent_fabric/robustness_guardian",
+      "code": "icarus_engine/agents/specialists.py::RobustnessGuardianAgent",
+      "heartbeat_status": "IDLE_READY"
+    },
+    "alpha_synthesis": {
+      "title": "Alpha Synthesis Evolution",
+      "automation_id": "6abaf8d75cf48191bc7ce06bc0006f1c",
+      "minute": 25,
+      "root": "automation_intelligence/agent_fabric/alpha_synthesis",
+      "code": "icarus_engine/agents/specialists.py::AlphaSynthesisAgent",
+      "heartbeat_status": "IDLE_READY"
+    },
+    "apex_council": {
+      "title": "Apex Council Evolution",
+      "automation_id": "6ababd570fac81918777c8f809cf67c9",
+      "minute": 45,
+      "root": "automation_intelligence/agent_fabric/apex_council",
+      "code": "icarus_engine/agents/apex.py::ApexCouncilAgent",
+      "heartbeat_status": "IDLE_READY"
+    }
+  },
+  "foreign_or_separate_namespaces": [
+    "automation_intelligence/omega_stack",
+    "automation_intelligence/omega_stack_native_v2",
+    "automation_intelligence/omega_stack_live_6abb",
+    "automation_intelligence/aion",
+    "automation_intelligence/daedalus",
+    "automation_intelligence/omega",
+    "automation_intelligence/macro"
+  ],
+  "isolation_policy": "The three agent-fabric schedulers must never adopt automation IDs, scheduler authority, control-plane identity, mutable state, or ownership from foreign/separate namespaces. Those paths may be inspected only as explicitly required read-only context.",
+  "sibling_data_loops": {
+    "advanced_csv": {
+      "title": "Advanced CSV Data Collector",
+      "automation_id": "6abaef9d5c28819190d98a5af7f308b8",
+      "minute": 15,
+      "repository": "reppiks490/icarus-csv-evidence-lab",
+      "root": "automation_intelligence/advanced_csv"
+    },
+    "microstructure": {
+      "title": "Microstructure Sensor Grid",
+      "automation_id": "6abaef8effb48191aa5c959455451681",
+      "minute": 35,
+      "repository": "reppiks490/Icarus-engine",
+      "root": "automation_intelligence/flow"
+    }
+  },
+  "execution_authorized": false
+}

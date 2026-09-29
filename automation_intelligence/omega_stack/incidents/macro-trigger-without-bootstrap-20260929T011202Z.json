@@ -1,0 +1,25 @@
+{
+  "schema_version": "omega-stack-incident-v1",
+  "incident_type": "TRIGGER_WITHOUT_DURABLE_BOOTSTRAP_AND_SCHEDULER_AUTO_DISABLE",
+  "observed_at_utc": "2026-09-29T01:13:06Z",
+  "lane": "macro",
+  "scheduler_title": "Macro Shock Sentinel",
+  "scheduled_trigger_time_utc": "2026-09-29T01:12:02.334578Z",
+  "evidence": {
+    "scheduler_last_run_advanced": true,
+    "task_observed_disabled_after_trigger": true,
+    "durable_heartbeat_remained_idle": true,
+    "durable_checkpoint_remained_idle": true,
+    "core_created": false,
+    "history_created": false,
+    "finalization_created": false
+  },
+  "repair": {
+    "task_reenabled": true,
+    "scheduler_self_preservation_added": true,
+    "durable_persistence_repair_verification_run": "macro-20260929T011800Z",
+    "repair_verification_finalization_blob_sha": "d6a94b4609afb3ae8dd2b2371c858eae1bfac43f"
+  },
+  "conclusion": "Scheduler trigger alone was not accepted as success. The failed trigger is preserved as an incident and the lane remains required to produce fresh scheduled durable evidence.",
+  "execution_authorized": false
+}

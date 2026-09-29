@@ -1,9 +1,9 @@
 {
   "engine": "aion",
   "schema_version": "automation-intelligence-checkpoint-v1",
-  "RUN_ID": "aion-20260929T023855Z",
-  "CHECKPOINT_STATUS": "FROZEN_FOR_FINALIZATION",
-  "PASSES_COMPLETED": 8,
+  "RUN_ID": null,
+  "CHECKPOINT_STATUS": "IDLE",
+  "PASSES_COMPLETED": 0,
   "CONTROL_PLANE_ID": "omega-aion-daedalus-native-v2",
   "automation_id": "6abb1618be1c8191943f5d4e2d88978d",
   "persistence_protocol_version": "omega-stack-persistence-v3.2",
@@ -13,32 +13,8 @@
   "persistence_branch": "automation/omega-native-v2",
   "persistence_root": "automation_intelligence/omega_stack_native_v2/aion",
   "scheduler_identity_status": "BOUND_TO_LIVE_NATIVE_TASK",
-  "last_updated_utc": "2026-09-29T02:42:30Z",
-  "RUN_CORE": {
-    "RUN_ID": "aion-20260929T023855Z",
-    "engine": "aion",
-    "execution_authorized": false,
-    "hypothesis_id": "AION-PULSE-EDGE-ROBUSTNESS-001",
-    "claim": "Pulse ATR-Based MNQ performance remains distinguishable from the repository surrogate null on the extended real sample.",
-    "result_status": "NOT_SUPPORTED",
-    "evidence": [
-      "2400-bar 20m: p=0.0164",
-      "real 20m HOLD: p=0.3770",
-      "real 20m ALL: p=0.1803",
-      "30m paired parameter delta: p=0.1639"
-    ],
-    "conclusion": "The early significant result does not survive sample extension; current evidence does not justify edge promotion.",
-    "multiple_testing_status": "PARTIAL_UNCONTROLLED",
-    "protected_holdout_used": false,
-    "friction_capacity_tail_revalidated": false,
-    "daedalus_challenge": "Independently reconstruct the extended-sample null and audit surrogate validity, timestamps, sessions, rolls and costs.",
-    "data_gaps": [
-      "no fresh independent dataset",
-      "no new friction/capacity/tail run"
-    ],
-    "conflicts": [
-      "small-sample significance conflicts with extended-sample null failure"
-    ],
-    "source_branch": "feature/aion-daedalus-prime-v2"
-  }
+  "last_updated_utc": "2026-09-29T02:43:30Z",
+  "PREVIOUS_QUARANTINED_RUN_ID": "aion-20260929T023855Z",
+  "quarantine_reason": "INVALID_HISTORY_DUPLICATES_CORE",
+  "quarantine_incident_path": "automation_intelligence/omega_stack_native_v2/incidents/aion-20260929T023855Z-history-duplicates-core.json"
 }

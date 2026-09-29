@@ -1,0 +1,49 @@
+{
+  "schema_version": "agent-fabric-ledger-fallback-v1",
+  "scope": "automation_intelligence/agent_fabric",
+  "primary_contract": "automation_intelligence/agent_fabric/persistence_contract.json",
+  "applies_to": [
+    "robustness_guardian",
+    "alpha_synthesis",
+    "apex_council"
+  ],
+  "lane_ledger_pattern": "automation_intelligence/agent_fabric/<lane>/history_ledger.jsonl",
+  "activate_only_when": "new immutable history or finalization file creation cannot be completed",
+  "history_fallback": {
+    "record_type": "HISTORY_VERIFIED",
+    "requirements": [
+      "fetch current ledger bytes and blob SHA",
+      "preserve prior bytes exactly",
+      "append exactly one compact JSON line",
+      "bind previous_ledger_blob_sha to fetched ledger SHA",
+      "include exact RUN_CORE and RUN_CORE_SHA256",
+      "fresh-SHA update and exact readback",
+      "RUN_ID occurs exactly once in appended record"
+    ],
+    "authoritative_history_identity": "ledger blob SHA immediately after verified HISTORY_VERIFIED append"
+  },
+  "finalization_fallback": {
+    "record_type": "FINALIZATION_VERIFIED",
+    "requirements": [
+      "latest and state must already be re-fetched and verified",
+      "fetch current ledger bytes and blob SHA",
+      "append one compact JSON line preserving exact prior prefix",
+      "bind RUN_ID and RUN_CORE_SHA256",
+      "bind authoritative history identity",
+      "bind actual latest blob SHA",
+      "bind previous_ledger_blob_sha to fetched ledger SHA",
+      "fresh-SHA update and exact readback"
+    ],
+    "authoritative_finalization_identity": "ledger blob SHA immediately after verified FINALIZATION_VERIFIED append"
+  },
+  "pointer_rules": {
+    "latest_and_state_may_advance_after_verified_primary_history_or_verified_history_ledger_fallback": true,
+    "heartbeat_may_finalize_only_after_verified_primary_receipt_or_verified_finalization_ledger_fallback": true
+  },
+  "recovery": {
+    "previous_partial_run_never_blocks_next_hourly_invocation": true,
+    "partial_or_stale_run_may_return_to_IDLE_READY_only_after_failure_evidence_is_durably_preserved": true
+  },
+  "primary_validator_note": "Primary immutable-file runs remain governed by persistence_contract.json and the existing validator. Ledger fallback is a separate verified recovery path and must be labeled as such.",
+  "execution_authorized": false
+}

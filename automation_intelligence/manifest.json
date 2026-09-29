@@ -8,7 +8,7 @@
     "flow_microstructure",
     "apex_council"
   ],
-  "updated_at": "2026-09-29T06:10:00Z",
+  "updated_at": "2026-09-29T14:55:00Z",
   "latest_runs": {
     "omega": {
       "run_id": "omega-20260928T100234Z",
@@ -25,13 +25,16 @@
       "role": "historical_disabled_only"
     },
     "flow": {
-      "run_id": "flow-20260929T053500Z",
-      "run_time": "2026-09-29T05:31:59Z",
+      "run_id": "flow-20260929T063500Z",
+      "run_time": "2026-09-29T06:35:00Z",
       "status": "RUN_PERSISTED",
+      "previous_partial_run_id": "flow-20260929T113500Z",
       "scheduler_title": "Microstructure Sensor Grid",
       "scheduler_id": "6abaef8effb48191aa5c959455451681",
       "active": true,
-      "canonical_active_engine": "flow_microstructure"
+      "canonical_active_engine": "flow_microstructure",
+      "history_mode": "ledger_fallback",
+      "history_blob_sha": "f50f6bf110fccb93ea6ec6ee631fbc2523446b6c"
     },
     "fundamental": {
       "run_id": "fundamental-20260928T164052Z",
@@ -72,24 +75,24 @@
       "scheduler_id": "6abaf924e0248191b8a11bd1d32bf0b7"
     },
     "advanced_csv": {
-      "run_id": null,
-      "status": "IDLE_READY_AFTER_PARTIAL",
-      "previous_partial_run_id": "advanced-csv-20260929T051500Z",
+      "run_id": "advanced-csv-20260929T081500Z",
+      "status": "RUN_PERSISTED",
       "active": true,
       "scheduler_id": "6abaef9d5c28819190d98a5af7f308b8",
-      "repository": "reppiks490/icarus-csv-evidence-lab"
+      "repository": "reppiks490/icarus-csv-evidence-lab",
+      "history_mode": "ledger_fallback",
+      "ledger_blob_sha": "7ee0685be714cd5b625ab03030a7ba4681d7c25d"
     },
     "alpha_synthesis": {
-      "run_id": "alpha-synthesis-20260928T212646Z",
-      "status": "IDLE_READY_AFTER_PRESERVED_HASH_MISMATCH",
-      "previous_partial_run_id": "alpha-synthesis-20260929T032129Z",
+      "run_id": "alpha-synthesis-20260929T062500Z",
+      "status": "FINALIZATION_VERIFIED_LEDGER_FALLBACK",
+      "previous_partial_run_id": "alpha-synthesis-20260929T072500Z",
       "active": true,
       "scheduler_id": "6abaf8d75cf48191bc7ce06bc0006f1c"
     },
     "apex_council": {
-      "run_id": "apex-council-20260928T214335Z",
-      "status": "IDLE_READY_AFTER_PRESERVED_BOOTSTRAP_PARTIAL",
-      "previous_partial_run_id": "apex-council-20260929T054500Z",
+      "run_id": "apex-council-20260929T144500Z",
+      "status": "FINALIZATION_VERIFIED_LEDGER_FALLBACK",
       "active": true,
       "scheduler_id": "6ababd570fac81918777c8f809cf67c9"
     }
@@ -97,12 +100,14 @@
   "latest_blob_shas": {
     "omega": "bc5ed91af3176829e4e59bbcedf16ec7aa22ace3",
     "macro": "b7d5df750ac4e525fc827456740ef23146a8b98c",
-    "flow": "578e6d16cfba4fb6e28270d8ce41b7593e1980bb",
+    "flow": "5a8f738f75a847edd763eaf5207d4ff17b1fdff7",
     "fundamental": "723cd2663dfab473e6abdea99a7e1cf13f367d2f",
     "alt_data_crypto": "b5af6f8d284d78657d5957f681941c957ffc8b06",
     "aion": "5524697b193eda85ca8035ee95ee52f5fa882d88",
     "daedalus": "7b82a244f3b8d1adc97792bdef966d11f09ed816",
-    "robustness_guardian": "b29017808e1ccead51d0892e7a4622f4cae83e9c"
+    "robustness_guardian": "b29017808e1ccead51d0892e7a4622f4cae83e9c",
+    "alpha_synthesis": "333b8dfd9ac676b8c404772b10e1dd8dc48871ee",
+    "apex_council": "d3258c843763dd96171293172cef6057ed311934"
   },
   "last_commits": {
     "omega": "36a10b60ab2166c413b8cfe0a40be64203ddabed",
@@ -162,21 +167,25 @@
     "apex_council": "automation_intelligence/agent_fabric/apex_council/heartbeat.json",
     "advanced_csv": "reppiks490/icarus-csv-evidence-lab:automation_intelligence/advanced_csv/heartbeat.json"
   },
-  "CLEAN_1_TO_1_STATUS": "TWO_OF_FIVE_POST_HARDENING_CYCLES_VERIFIED_REMAINING_LANES_READY",
-  "CLEAN_1_TO_1_DESIGN": "primary-immutable-history-plus-fresh-sha-ledger-fallback",
+  "CLEAN_1_TO_1_STATUS": "FIVE_ACTIVE_LANES_RECONCILED_CURRENT_POINTERS_VERIFIED; HISTORICAL_PARTIALS_PRESERVED",
+  "CLEAN_1_TO_1_DESIGN": "primary-immutable-history-plus-structurally-verified-fresh-sha-ledger-fallback-v2",
   "CLEAN_1_TO_1_RECONCILIATION": {
     "restored_scheduler_count": 5,
     "agent_primary_contract": "automation_intelligence/agent_fabric/persistence_contract.json",
     "agent_fallback_contract": "automation_intelligence/agent_fabric/persistence_fallback_contract.json",
     "flow_contract": "automation_intelligence/flow/persistence_contract.json",
     "csv_contract": "reppiks490/icarus-csv-evidence-lab:automation_intelligence/advanced_csv/persistence_contract.json",
+    "raw_substring_run_id_validation_removed": true,
+    "parsed_jsonl_top_level_identity_required": true,
     "partial_runs_preserved": true,
     "stale_partial_heartbeats_recovered_to_ready_when_safe": true,
     "disabled_foreign_stack_remains_non_authoritative": true,
-    "post_hardening_full_cycles_verified": 2,
-    "verified_full_cycles": [
+    "reconciled_lanes": [
       "robustness-guardian-20260929T060500Z",
-      "flow-20260929T053500Z"
+      "advanced-csv-20260929T081500Z",
+      "alpha-synthesis-20260929T062500Z",
+      "flow-20260929T063500Z",
+      "apex-council-20260929T144500Z"
     ]
   },
   "active_engines": [
@@ -249,7 +258,7 @@
       "note": "Started before clean 1:1 contract migration; no matching history found as of reconciliation."
     }
   },
-  "ACTIVE_TOPOLOGY_STATUS": "RESTORED_FIVE_LOOP_TOPOLOGY_PERSISTENCE_HARDENED",
+  "ACTIVE_TOPOLOGY_STATUS": "RESTORED_FIVE_LOOP_TOPOLOGY_PERSISTENCE_RECONCILED",
   "agent_fabric_lanes": {
     "schema_version": "agent-fabric-lanes-v1",
     "canonical_code_branch": "main",
@@ -354,10 +363,10 @@
       "fallback_mode": "append_only_fresh_sha_lane_ledger"
     }
   },
-  "SCHEDULER_TOPOLOGY_STATUS": "FIVE_RESTORED_HOURLY_LOOPS_LIVE_VERIFIED",
+  "SCHEDULER_TOPOLOGY_STATUS": "FIVE_RESTORED_HOURLY_LOOPS_LIVE_VERIFIED_AFTER_AUDIT_REPAIR",
   "scheduler_topology": {
     "schema_version": "icarus-scheduler-topology-v2",
-    "verified_at": "2026-09-29T06:05:30Z",
+    "verified_at": "2026-09-29T14:55:00Z",
     "authority": "live ChatGPT automation registry for this account",
     "active_count": 5,
     "cadence": "hourly",
@@ -463,32 +472,42 @@
       "finalization_blob_sha": "c99b171676ca69c200c8b8aa131d24213ab3ef52"
     },
     "advanced_csv": {
-      "status": "IDLE_READY",
-      "previous_partial_run_id": "advanced-csv-20260929T051500Z",
-      "fallback_ready": true,
-      "history_ledger_blob_sha": "72c18266c2dc924862be180b58c7df7f218473b4"
+      "status": "RUN_PERSISTED_POINTERS_RECONCILED",
+      "current_run_id": "advanced-csv-20260929T081500Z",
+      "history_mode": "ledger_fallback",
+      "history_ledger_blob_sha": "7ee0685be714cd5b625ab03030a7ba4681d7c25d",
+      "latest_blob_sha": "ab3e829aa3b69510395b245031e23f5f1fb0f362",
+      "state_blob_sha": "603e2ba201411a1886017be05f20edd63ca78898",
+      "heartbeat_blob_sha": "5954ac35542664e77faa281d65c5921d9f37082d"
     },
     "alpha_synthesis": {
-      "status": "IDLE_READY",
-      "previous_partial_run_id": "alpha-synthesis-20260929T032129Z",
-      "fallback_ready": true,
-      "hash_mismatch_preserved": true,
-      "history_ledger_blob_sha": "7f24141a0bc1d3496809bdebe1f9ad89ff914e00"
+      "status": "IDLE_READY_AFTER_FINALIZED_062500Z_AND_PRESERVED_072500Z_PARTIAL",
+      "current_run_id": "alpha-synthesis-20260929T062500Z",
+      "history_mode": "ledger_fallback",
+      "history_identity": "a77286e0493388fe33cbebe3684770c9dc054454",
+      "latest_blob_sha": "333b8dfd9ac676b8c404772b10e1dd8dc48871ee",
+      "state_blob_sha": "481ffaf7b802e87207e54ffd9173472340a5dc28",
+      "finalization_identity": "3013809381e12738fe644d818f22bd94c636d718",
+      "heartbeat_blob_sha": "a5be3d6ac02f7a616f32f0ce75346d865ed0a6cf",
+      "previous_partial_run_id": "alpha-synthesis-20260929T072500Z"
     },
     "flow_microstructure": {
-      "status": "RUN_PERSISTED",
-      "current_run_id": "flow-20260929T053500Z",
-      "history_blob_sha": "578e6d16cfba4fb6e28270d8ce41b7593e1980bb",
-      "latest_blob_sha": "578e6d16cfba4fb6e28270d8ce41b7593e1980bb",
-      "heartbeat_blob_sha": "97588de75b03454bb32f47bcf771df7bc61d4000",
-      "recovered_from_pointer_failure": true,
-      "fallback_ready": true
+      "status": "IDLE_READY_AFTER_PERSISTED_063500Z_AND_PRESERVED_113500Z_PARTIAL",
+      "current_run_id": "flow-20260929T063500Z",
+      "history_mode": "ledger_fallback",
+      "history_identity": "f50f6bf110fccb93ea6ec6ee631fbc2523446b6c",
+      "latest_blob_sha": "5a8f738f75a847edd763eaf5207d4ff17b1fdff7",
+      "heartbeat_blob_sha": "8adad945a11648abef9e90f1f7397c582514f269",
+      "previous_partial_run_id": "flow-20260929T113500Z"
     },
     "apex_council": {
-      "status": "IDLE_READY",
-      "previous_partial_run_id": "apex-council-20260929T054500Z",
-      "fallback_ready": true,
-      "history_ledger_blob_sha": "9e925b3bd1ec0c62d747fe0cc70210ec24f51252"
+      "status": "FINALIZATION_VERIFIED_LEDGER_FALLBACK",
+      "current_run_id": "apex-council-20260929T144500Z",
+      "history_identity": "c9e544bd5d75dd4e2b994453fc1590e35c8acc5a",
+      "latest_blob_sha": "d3258c843763dd96171293172cef6057ed311934",
+      "state_blob_sha": "3e95a36431a4f71142637884c4168e3557691b0f",
+      "finalization_blob_sha": "363bba3a184668090ac0e52cef1dab3c0b58334c",
+      "heartbeat_blob_sha": "19b72d464bb7dbb977d739e24bc309539db78335"
     }
   },
   "restored_loop_locations": {

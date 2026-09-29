@@ -1,96 +1,69 @@
 {
-  "schema_version": "omega-stack-persistence-v3.2",
+  "schema_version": "omega-stack-persistence-v4.0-atomic-latest",
   "control_plane_id": "omega-aion-daedalus-native-v2",
-  "namespace_root": "automation_intelligence/omega_stack_native_v2",
-  "purpose": "Fail-closed isolated persistence anchored to GitHub-returned blob identity.",
-  "bootstrap": {
-    "first_tool_sequence": [
-      "fetch isolated control_plane.json",
-      "fetch isolated persistence_contract.json",
-      "require exact control-plane/protocol/lane identity",
-      "inspect heartbeat and checkpoint",
-      "fetch heartbeat immediately before write",
-      "update heartbeat IN_PROGRESS using fresh SHA",
-      "re-fetch heartbeat and verify current RUN_ID and automation_id",
-      "write/re-fetch checkpoint BOOTSTRAPPED before substantive work"
-    ],
-    "max_retries_after_initial_failure": 1,
-    "no_substantive_work_before_verified_bootstrap": true
-  },
-  "single_flight": {
-    "active_heartbeat_grace_minutes": 40,
-    "stranded_after_minutes": 45
-  },
-  "checkpointing": {
-    "required": true,
-    "path": "<lane>/checkpoint.json"
-  },
-  "runtime_budget": {
-    "substantive_deadline_minutes": 35,
-    "recovery_threshold_minutes": 45,
-    "default_non_github_external_call_caps": {
-      "omega": 8,
-      "macro": 6,
-      "flow": 6,
-      "aion": 10,
-      "daedalus": 10
-    }
-  },
-  "closure": {
-    "pass_8": "freeze complete RUN_CORE into checkpoint FROZEN_FOR_FINALIZATION and re-fetch",
-    "pass_9_core": {
-      "rule": "Create immutable core/<RUN_ID>.json containing exactly RUN_CORE; re-fetch and record GitHub core blob SHA."
-    },
-    "pass_9_history": {
-      "rule": "Create immutable history/<RUN_ID>.json as a DISTINCT METADATA ENVELOPE, never as RUN_CORE content.",
-      "required_fields": [
-        "RUN_ID",
-        "RUN_STATUS",
-        "PASSES_COMPLETED",
-        "FINALIZATION_STATUS",
-        "CONTROL_PLANE_ID",
-        "automation_id",
-        "persistence_protocol_version",
-        "core_path",
-        "run_core_blob_sha",
-        "execution_authorized"
-      ],
-      "required_values": {
-        "RUN_STATUS": "HISTORY_VERIFIED",
-        "PASSES_COMPLETED": 9,
-        "FINALIZATION_STATUS": "AWAITING_LATEST_PROMOTION",
-        "execution_authorized": false
-      },
-      "invariant": "history_blob_sha MUST differ from run_core_blob_sha. Equality means INVALID_HISTORY_DUPLICATES_CORE and the run MUST be quarantined with no latest/finalization promotion."
-    },
-    "pass_10": {
-      "rule": "Write/re-fetch latest.json referencing current core/history blob SHAs. Only when core/history are both valid and history_blob_sha != run_core_blob_sha may finalization/<RUN_ID>.json be created. Finalization must bind current core/history/latest blob SHAs. Then checkpoint FINALIZED and heartbeat IDLE/FINALIZED."
-    },
-    "no_fabrication": true
-  },
-  "contents_api_concurrency": {
-    "same_path_serialized": true,
-    "fresh_sha_before_every_update": true,
-    "retry_once_after_refetch": true
-  },
-  "foreign_writer_rule": "Any write outside automation/omega-native-v2:automation_intelligence/omega_stack_native_v2/ or by an automation_id not listed in isolated control_plane.active[] is non-authoritative for native-v2.",
-  "execution_authorized": false,
-  "created_at_utc": "2026-09-29T01:31:00Z",
-  "contract_revision": "2026-09-29-native-v2-r3",
   "authoritative_branch": "automation/omega-native-v2",
   "authoritative_root": "automation_intelligence/omega_stack_native_v2",
+  "purpose": "Reliable scheduled persistence within the observed short automation execution envelope using one optimistic-concurrency file update plus one readback.",
+  "execution_authorized": false,
   "scheduler_mutation_forbidden": true,
-  "scheduler_identity_rule": "Each lane's live scheduler ID must exactly match control_plane.active[].automation_id. Scheduled lanes may never mutate scheduler topology.",
-  "operational_state_branch": "automation/omega-native-v2",
-  "idle_identity_rebind": {
-    "allowed": true,
-    "rule": "If heartbeat/checkpoint/latest has RUN_ID null and status IDLE or INITIALIZED, an automation_id mismatch is stale metadata, not an active-run conflict. The current live task may overwrite that mutable file with the control-plane automation_id during bootstrap before assigning a new RUN_ID. Immutable core/history/finalization artifacts are never rewritten.",
-    "forbidden_when_active": true
+  "identity_rule": "The executing task automation_id must exactly equal its lane automation_id in control_plane.active[].",
+  "run_id_rule": "RUN_ID=<lane>-<UTC_YYYYMMDDTHHMMSSZ>.",
+  "authoritative_state": {
+    "path": "<lane>/latest.json",
+    "history": "Every successful update creates an immutable Git commit/blob. Git history is the authoritative historical ledger; separate per-run core/history/finalization file creation is not required.",
+    "legacy_v3_artifacts": "heartbeat.json, checkpoint.json, core/, history/, finalization/ are read-only historical evidence after v4 migration."
   },
-  "validation_invariants": {
-    "history_distinct_from_core": true,
-    "finalization_requires_distinct_valid_history": true,
-    "latest_promotion_requires_verified_core_history": true,
-    "immutable_artifacts_never_rewritten": true
-  }
+  "transaction": [
+    "Fetch isolated control_plane.json and this contract; validate exact protocol/control-plane/lane identity.",
+    "Fetch <lane>/latest.json immediately before mutation and retain its current blob SHA as PREVIOUS_BLOB_SHA.",
+    "Perform at most one optional bounded research/audit retrieval. If unavailable, record DEGRADED/NO_FRESH_DATA; do not abort.",
+    "Build one self-contained RUN_RECEIPT containing all material output and failure/degradation fields.",
+    "Update <lane>/latest.json exactly once using PREVIOUS_BLOB_SHA.",
+    "Re-fetch <lane>/latest.json exactly once and verify RUN_ID, automation_id, CONTROL_PLANE_ID, persistence_protocol_version, FINALIZATION_STATUS=VERIFIED and execution_authorized=false.",
+    "Only the successful readback makes the run authoritative."
+  ],
+  "required_receipt_fields": [
+    "engine",
+    "RUN_ID",
+    "RUN_STATUS",
+    "FINALIZATION_STATUS",
+    "CONTROL_PLANE_ID",
+    "automation_id",
+    "persistence_protocol_version",
+    "scheduled_for",
+    "started_at_utc",
+    "completed_at_utc",
+    "PREVIOUS_BLOB_SHA",
+    "NET_NEW_DELTA",
+    "DATA_GAPS",
+    "CONFLICTS",
+    "execution_authorized"
+  ],
+  "required_values": {
+    "RUN_STATUS": "RUN_PERSISTED",
+    "FINALIZATION_STATUS": "VERIFIED",
+    "CONTROL_PLANE_ID": "omega-aion-daedalus-native-v2",
+    "persistence_protocol_version": "omega-stack-persistence-v4.0-atomic-latest",
+    "execution_authorized": false
+  },
+  "optimistic_concurrency": {
+    "fresh_sha_required": true,
+    "max_mutation_attempts": 1,
+    "rule": "Do not loop on mutation failures inside a scheduled execution. A failed CAS write is a failed run; next natural invocation retries from fresh state."
+  },
+  "runtime_budget": {
+    "target_seconds": 20,
+    "max_repo_mutations": 1,
+    "post_mutation_readbacks": 1,
+    "max_optional_external_calls": 1,
+    "rule": "Prepare persistence before optional depth. If time/tool budget is uncertain, skip optional research and persist a truthful degraded receipt."
+  },
+  "acceptance": {
+    "single_run": "One updated latest.json blob read back successfully with all required fields/values.",
+    "sustained_lane": "Two consecutive natural scheduled receipts with distinct RUN_IDs and distinct latest.json blob SHAs.",
+    "stack_5_of_5": "All five lanes satisfy sustained_lane with exact scheduler IDs/minutes."
+  },
+  "no_fabrication": true,
+  "contract_revision": "2026-09-29-native-v2-r4",
+  "migrated_from": "omega-stack-persistence-v3.2"
 }

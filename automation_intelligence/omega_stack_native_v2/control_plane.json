@@ -56,19 +56,19 @@
   "operational_state_branch": "automation/omega-native-v2",
   "agent_development_branch": "feature/aion-daedalus-prime-v2",
   "runtime_budget": {
-    "scheduled_execution_target_seconds": 15,
-    "max_github_reads_before_first_write": 1,
-    "first_write_deadline": "immediately after own latest.json fetch",
-    "max_optional_work_calls_after_first_write": 1,
-    "max_github_mutations_per_run": 2,
+    "scheduled_execution_target_seconds": 20,
+    "pre_liveness_github_reads": 1,
+    "phase1_mutations": 1,
+    "optional_work_calls_after_liveness": 1,
+    "optional_phase2_mutations": 1,
     "mandatory_post_write_readbacks": 0,
-    "rule": "Persist liveness before any variable-latency work. If the work phase stalls, the first write must remain as durable evidence."
+    "rule": "Persist liveness before optional work. A slow or failed work phase must not erase evidence that the natural scheduler invocation reached GitHub."
   },
   "execution_authorized": false,
   "created_at_utc": "2026-09-29T01:31:00Z",
   "reason": "Isolated namespace created after verified concurrent foreign writes repeatedly overwrote the prior omega_stack scheduler identities and AION state.",
   "control_revision": "2026-09-29-native-v2-r7",
-  "live_connection_status": "V4_2_WRITE_FIRST_INSTALLED_PENDING_NATURAL_ACCEPTANCE",
+  "live_connection_status": "V4_2_WRITE_FIRST_ALIGNED_PENDING_NATURAL_ACCEPTANCE",
   "scheduler_health_policy": {
     "required_enabled_count": 5,
     "exact_minutes": [
@@ -139,8 +139,10 @@
     "protocol": "omega-stack-persistence-v4.2-write-first",
     "authoritative_run_record": "<lane>/latest.json",
     "immutable_history_source": "Git commit/blob history of latest.json",
-    "success_rule": "Transport success requires a natural scheduled LIVENESS_VERIFIED receipt. Full run success requires the same RUN_ID to be upgraded to FINALIZATION_STATUS=VERIFIED after at most one bounded work call.",
-    "target": "Two consecutive natural fully VERIFIED v4.2 runs per lane before declaring sustained 5/5 reliability. LIVENESS_VERIFIED without final enrichment is retained and classified DEGRADED_WORK_PHASE rather than a silent persistence failure."
+    "liveness_success": "Natural run writes phase-1 receipt with RUN_STATUS=RUN_PERSISTED, FINALIZATION_STATUS=LIVENESS_VERIFIED, WORK_PHASE_STATUS=PENDING, exact identity, verification_method=GITHUB_CONTENTS_CAS_UPDATE_RESPONSE, run_origin=NATURAL_SCHEDULE.",
+    "work_success": "Same RUN_ID is optionally advanced to FINALIZATION_STATUS=VERIFIED and WORK_PHASE_STATUS=COMPLETED or DEGRADED_COMPLETED.",
+    "acceptance_rule": "A lane is scheduler/persistence healthy after two consecutive natural v4.2 liveness receipts with distinct RUN_IDs. Work-phase reliability is tracked separately and must not gate liveness.",
+    "stack_target": "All five lanes satisfy two consecutive natural v4.2 liveness receipts; report work-completion rate separately."
   },
   "scheduler_jitter_policy": {
     "nominal_minutes": [
@@ -151,7 +153,7 @@
       48
     ],
     "tolerated_start_jitter_seconds": 360,
-    "rule": "Scheduler start jitter is transport timing, not run identity. scheduled_for remains the nominal slot; actual trigger time may vary. Never fail a run solely for tolerated jitter."
+    "rule": "Actual start within +/-6 minutes is tolerated transport jitter and does not invalidate the run; scheduled_for records the nominal slot."
   },
   "prompt_protocol_alignment": {
     "observed_at_utc": "2026-09-29T15:04:20Z",

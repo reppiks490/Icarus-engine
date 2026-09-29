@@ -1,0 +1,24 @@
+{
+  "schema_version": "omega-stack-persistence-incident-v1",
+  "incident_id": "aion-20260929T004205Z-bootstrap-incomplete",
+  "observed_at_utc": "2026-09-29T01:25:16Z",
+  "lane": "aion",
+  "scheduler_automation_id": "6ab817679a248191928d7bd6fa8e4a3c",
+  "persisted_automation_id": "6abb102bde94819189bbf57062edcb32",
+  "run_id": null,
+  "heartbeat_blob_sha": "b5e10d990d91e0a33197bf3c556ce2f0883cf70d",
+  "checkpoint_blob_sha": "db33ff11918ae26318ec3c792c87485957f7b3d0",
+  "heartbeat_status": "IDLE",
+  "checkpoint_status": "FINALIZED",
+  "checkpoint_run_id": "aion-20260929T012200Z",
+  "classification": "BOOTSTRAP_INCOMPLETE_IDENTITY_DRIFT",
+  "evidence": {
+    "heartbeat_advanced": true,
+    "matching_checkpoint": false,
+    "substantive_work_authorized_before_checkpoint": false,
+    "finalization_present_for_run": false
+  },
+  "root_cause": "Repo control plane had replacement scheduler IDs while the live native scheduler used the original automation IDs; AION heartbeat was written under the replacement identity and never completed the mandatory matching checkpoint bootstrap.",
+  "disposition": "ABORTED_SAFELY_AND_RESET_FOR_NATIVE_ID_REPAIR_VERIFICATION",
+  "execution_authorized": false
+}

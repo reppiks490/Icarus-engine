@@ -1,5 +1,5 @@
 {
-  "schema_version": "agent-loop-state-v1",
+  "schema_version": "agent-loop-state-v2",
   "agent": "alpha_synthesis",
   "title": "Alpha Synthesis Agent",
   "status": "RUN_PERSISTED",
@@ -11,8 +11,8 @@
     "tests_engine/test_agent_fabric.py"
   ],
   "persistence_root": "automation_intelligence/agent_fabric/alpha_synthesis",
-  "last_verified_main_sha": "eebe0a259d07d8c507f3c378ee56944d505a7502",
-  "last_successful_run_id": "alpha-synthesis-20260928T212646Z",
+  "last_verified_main_sha": "493ff2384f9380246c036ed67588340fb51db58d",
+  "last_successful_run_id": "alpha-synthesis-20260929T062500Z",
   "execution_authorized": false,
   "ownership": [
     "net expectancy",
@@ -27,21 +27,13 @@
   "production_write_policy": "feature_branch_plus_verified_pr_only",
   "binding_merge_sha": "eebe0a259d07d8c507f3c378ee56944d505a7502",
   "binding_status": "MERGED_VERIFIED",
-  "scheduler_incidents": [
-    {
-      "observed_run_time_utc": "2026-09-28T19:27:48.756456Z",
-      "observed_disable_time_utc": "2026-09-28T19:28:53.164759Z",
-      "status": "RUN_NOT_PERSISTED_NO_HEARTBEAT_OR_HISTORY_FOUND",
-      "action": "AUTOMATION_REENABLED_AND_SELF_PRESERVATION_GUARD_ADDED",
-      "history_claimed": false
-    },
-    {
-      "observed_run_time_utc": "2026-09-28T20:32:51.578543Z",
-      "status": "RUN_NOT_PERSISTED_NO_HEARTBEAT_OR_HISTORY_FOUND",
-      "evidence_checked_at_utc": "2026-09-28T20:47:00Z",
-      "action": "STARTUP_PERSISTENCE_HARD_GATE_ADDED_AND_SCHEDULE_REGISTRATION_REFRESHED",
-      "history_claimed": false
-    }
+  "persistence_protocol_version": "agent-fabric-persistence-v3",
+  "last_run_persistence_status": "LEDGER_FALLBACK_HISTORY_VERIFIED_POINTERS_RECONCILED",
+  "last_run_history_blob_sha": "a77286e0493388fe33cbebe3684770c9dc054454",
+  "last_run_latest_blob_sha": "333b8dfd9ac676b8c404772b10e1dd8dc48871ee",
+  "prior_incidents_preserved": [
+    "alpha-synthesis-20260929T032129Z immutable-history hash mismatch",
+    "alpha-synthesis-20260929T072500Z partial RUN_CORE hash-stage failure"
   ],
-  "persistence_protocol_version": "agent-fabric-persistence-v3"
+  "reconciliation_note": "062500Z ledger HISTORY_VERIFIED record was valid; old raw-substring RUN_ID uniqueness rule falsely rejected it. Reconciled under structural fallback v2."
 }

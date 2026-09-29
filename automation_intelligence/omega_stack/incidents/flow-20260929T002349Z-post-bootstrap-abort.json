@@ -1,0 +1,25 @@
+{
+  "schema_version": "omega-stack-persistence-incident-v1",
+  "incident_id": "flow-20260929T002349Z-post-bootstrap-abort",
+  "observed_at_utc": "2026-09-29T00:30:00Z",
+  "lane": "flow",
+  "automation_id": "6ab817544e68819197b5db21eb2cbe2b",
+  "run_id": "flow-20260929T002349Z",
+  "classification": "POST_BOOTSTRAP_ABORT_BEFORE_CLOSURE",
+  "disposition": "ABORTED_WITH_CHECKPOINT_RESET_FOR_NEXT_CYCLE",
+  "evidence": {
+    "scheduler_last_run_time": "2026-09-29T00:25:00.205215Z",
+    "scheduler_became_disabled_after_run": true,
+    "heartbeat_blob_sha": "6e10f3801dc3f7c86e22ff8d894c39dacd6fb58f",
+    "heartbeat_status": "IN_PROGRESS",
+    "heartbeat_run_id": "flow-20260929T002349Z",
+    "checkpoint_blob_sha": "7d51c53e3b841a870245b5079131ffa32ce58609",
+    "checkpoint_status": "BOOTSTRAPPED",
+    "checkpoint_passes_completed": 1,
+    "valid_v3_2_core_present": false,
+    "valid_v3_2_finalization_present": false,
+    "latest_advanced": false
+  },
+  "note": "Bootstrap succeeded and was durable, but the scheduled run terminated before persistence closure. Substantive findings must not be reconstructed. Prompt hardened so post-bootstrap non-GitHub failures degrade data quality and force closure rather than abort.",
+  "execution_authorized": false
+}

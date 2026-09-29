@@ -8,7 +8,7 @@
     "flow_microstructure",
     "apex_council"
   ],
-  "updated_at": "2026-09-29T15:01:10Z",
+  "updated_at": "2026-09-29T15:14:00Z",
   "latest_runs": {
     "omega": {
       "run_id": "omega-20260928T100234Z",
@@ -70,9 +70,10 @@
     },
     "robustness_guardian": {
       "run_id": "robustness-guardian-20260929T060500Z",
-      "status": "FINALIZATION_VERIFIED",
+      "status": "FINALIZATION_VERIFIED_WITH_NEWER_STARTUP_PARTIAL_PRESERVED",
       "active": true,
-      "scheduler_id": "6abaf924e0248191b8a11bd1d32bf0b7"
+      "scheduler_id": "6abaf924e0248191b8a11bd1d32bf0b7",
+      "previous_partial_run_id": "robustness-guardian-20260929T150500Z"
     },
     "advanced_csv": {
       "run_id": "advanced-csv-20260929T081500Z",
@@ -167,7 +168,7 @@
     "apex_council": "automation_intelligence/agent_fabric/apex_council/heartbeat.json",
     "advanced_csv": "reppiks490/icarus-csv-evidence-lab:automation_intelligence/advanced_csv/heartbeat.json"
   },
-  "CLEAN_1_TO_1_STATUS": "FIVE_ACTIVE_LANES_READY_FOR_NEXT_CYCLE; CURRENT_POINTERS_VERIFIED; HISTORICAL_PARTIALS_PRESERVED",
+  "CLEAN_1_TO_1_STATUS": "FIVE_ACTIVE_LANES_READY; ROBUSTNESS_150500Z_STARTUP_MISS_PRESERVED; CURRENT_POINTERS_VERIFIED",
   "CLEAN_1_TO_1_DESIGN": "primary-immutable-history-plus-structurally-verified-fresh-sha-ledger-fallback-v2",
   "CLEAN_1_TO_1_RECONCILIATION": {
     "restored_scheduler_count": 5,
@@ -465,11 +466,13 @@
   },
   "runtime_validation": {
     "robustness_guardian": {
-      "status": "FINALIZATION_VERIFIED",
+      "status": "IDLE_READY_AFTER_FINALIZED_060500Z_AND_PRESERVED_150500Z_STARTUP_PARTIAL",
       "current_run_id": "robustness-guardian-20260929T060500Z",
       "history_blob_sha": "f0379ac13f0ad717c22f1dece93b4adfe22e7fbd",
       "latest_blob_sha": "b29017808e1ccead51d0892e7a4622f4cae83e9c",
-      "finalization_blob_sha": "c99b171676ca69c200c8b8aa131d24213ab3ef52"
+      "finalization_blob_sha": "c99b171676ca69c200c8b8aa131d24213ab3ef52",
+      "previous_partial_run_id": "robustness-guardian-20260929T150500Z",
+      "heartbeat_blob_sha": "9ae6200631bd092f20c5ff2f699d0deeaf5c883b"
     },
     "advanced_csv": {
       "status": "RUN_PERSISTED_POINTERS_RECONCILED",

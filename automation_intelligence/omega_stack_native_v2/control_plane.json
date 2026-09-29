@@ -67,8 +67,8 @@
   "execution_authorized": false,
   "created_at_utc": "2026-09-29T01:31:00Z",
   "reason": "Isolated namespace created after verified concurrent foreign writes repeatedly overwrote the prior omega_stack scheduler identities and AION state.",
-  "control_revision": "2026-09-29-native-v2-r7",
-  "live_connection_status": "V4_2_WRITE_FIRST_ALIGNED_PENDING_NATURAL_ACCEPTANCE",
+  "control_revision": "2026-09-29-native-v2-r8",
+  "live_connection_status": "V4_2_PROMPT_ORDER_HARDENED_PENDING_NEXT_NATURAL_ACCEPTANCE",
   "scheduler_health_policy": {
     "required_enabled_count": 5,
     "exact_minutes": [
@@ -95,8 +95,8 @@
     "authority": "live automation registry + isolated control plane"
   },
   "scheduler_alignment_snapshot": {
-    "observed_at_utc": "2026-09-29T15:04:20Z",
-    "status": "ALIGNED_5_OF_5_V4_2_WRITE_FIRST_PENDING_NATURAL_ACCEPTANCE",
+    "observed_at_utc": "2026-09-29T16:27:26Z",
+    "status": "ALIGNED_5_OF_5_PROMPT_ORDER_HARDENED_AFTER_PARTIAL_PERSISTENCE_FAILURE",
     "enabled_required_lanes": 5,
     "cadence": [
       {
@@ -156,11 +156,19 @@
     "rule": "Actual start within +/-6 minutes is tolerated transport jitter and does not invalidate the run; scheduled_for records the nominal slot."
   },
   "prompt_protocol_alignment": {
-    "observed_at_utc": "2026-09-29T15:04:20Z",
-    "status": "ALIGNED_5_OF_5",
+    "observed_at_utc": "2026-09-29T16:27:26Z",
+    "status": "HARDENED_5_OF_5_FIRST_TWO_TOOL_CALLS_PINNED_TO_FETCH_THEN_CAS_WRITE",
     "protocol": "omega-stack-persistence-v4.2-write-first",
     "persistence_before_depth": true,
     "first_write_before_optional_work": true,
-    "mandatory_post_write_readback": false
+    "mandatory_post_write_readback": false,
+    "pre_write_forbidden": "analysis/search/plugin discovery/control-plane reads/history reads"
+  },
+  "last_manual_reconciliation": {
+    "observed_at_utc": "2026-09-29T16:27:26Z",
+    "evidence_path": "automation_intelligence/omega_stack_native_v2/reconciliation/manual_20260929T162726Z.json",
+    "assessment": "OMEGA phase1 persisted but phase2 stranded; Macro/AION/DAEDALUS had newer scheduler triggers without new authoritative receipts; Flow newest trigger had not produced a newer authoritative receipt at verification time.",
+    "corrective_action": "Hardened all five automation prompts so exact target fetch_file is first tool call and phase1 update_file is second tool call.",
+    "natural_acceptance_pending": true
   }
 }

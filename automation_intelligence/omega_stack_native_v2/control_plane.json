@@ -70,8 +70,8 @@
   "execution_authorized": false,
   "created_at_utc": "2026-09-29T01:31:00Z",
   "reason": "Isolated namespace created after verified concurrent foreign writes repeatedly overwrote the prior omega_stack scheduler identities and AION state.",
-  "control_revision": "2026-09-29-native-v2-r11",
-  "live_connection_status": "DUAL_PLANE_WATCHDOG_VERIFIED_SLOT_ATTRIBUTION_FIX_DEPLOYED",
+  "control_revision": "2026-09-29-native-v2-r11.1",
+  "live_connection_status": "DUAL_PLANE_WATCHDOG_VERIFIED_5_OF_5_ENABLED_RECOVERY_DEPLOYED",
   "scheduler_health_policy": {
     "required_enabled_count": 5,
     "exact_minutes": [
@@ -98,8 +98,8 @@
     "authority": "live automation registry + isolated control plane"
   },
   "scheduler_alignment_snapshot": {
-    "observed_at_utc": "2026-09-29T18:04:46Z",
-    "status": "ENABLED_5_OF_5_BUT_V4_3_NATURAL_PERSISTENCE_1_OF_5_IN_LAST_FULL_CYCLE",
+    "observed_at_utc": "2026-09-29T20:44:36Z",
+    "status": "ENABLED_5_OF_5_DUAL_PLANE_WATCHDOG_VERIFIED_NATURAL_ACCEPTANCE_PENDING",
     "enabled_required_lanes": 5,
     "cadence": [
       {
@@ -131,13 +131,17 @@
     "timezone": "America/Chicago",
     "timing_mode": "exact_schedule",
     "protocol": "omega-stack-persistence-v4.3-append-first",
-    "natural_liveness_last_cycle": {
-      "omega": false,
-      "macro": false,
-      "flow": false,
-      "aion": true,
-      "daedalus": false
+    "watchdog_schema": "omega-watchdog-reconciliation-v1",
+    "watchdog_verified": true,
+    "verified_actions_run_id": 36628003730,
+    "strict_known_natural_evidence": {
+      "aion_20260929T173600Z": "VALID",
+      "flow_20260929T192400Z": "INVALID_JITTER_424S",
+      "omega_20260929T200000Z": "INVALID_SCHEDULED_FOR_MISMATCH",
+      "macro_latest": "MISSING",
+      "daedalus_latest": "MISSING"
     },
+    "natural_acceptance_pending": true,
     "retired_scheduler_ids": [
       "6ab817679a248191928d7bd6fa8e4a3c",
       "6abb1db46b308191ba1a27f13a42e745",
@@ -166,21 +170,30 @@
     "rule": "Actual start within +/-6 minutes is tolerated transport jitter and does not invalidate the run; scheduled_for records the nominal slot."
   },
   "prompt_protocol_alignment": {
-    "observed_at_utc": "2026-09-29T18:04:46Z",
-    "status": "HARDENING_5_OF_5_TO_COMPACT_FIRST_ACTION",
+    "observed_at_utc": "2026-09-29T20:44:36Z",
+    "status": "ALIGNED_5_OF_5_R11_1_LIVENESS_SLOT_ATTRIBUTION_AND_BACKFILL",
     "protocol": "omega-stack-persistence-v4.3-append-first",
     "persistence_before_depth": true,
-    "exact_connector_action": "GitHub create_file",
-    "first_tool_call": "GitHub create_file immutable liveness receipt",
-    "pre_liveness_reads": 0,
-    "pre_liveness_analysis": false,
+    "first_external_action": "GitHub create_file immutable natural liveness receipt",
+    "local_prewrite_computation_allowed": [
+      "capture started_at_utc",
+      "derive nearest lane-specific America/Chicago scheduled_for boundary"
+    ],
+    "pre_liveness_external_reads": 0,
     "plugin_discovery_before_liveness": false,
-    "mandatory_post_write_readback": false
+    "mandatory_post_write_readback": false,
+    "post_liveness_recovery": {
+      "priority": "BACKLOG_BEFORE_NORMAL_WORK",
+      "max_items_per_run": 1,
+      "required_origin": "BACKFILL_RECOVERY",
+      "no_natural_receipt_fabrication": true,
+      "leave_unresolved_if_eligibility_or_point_in_time_evidence_cannot_be_verified": true
+    }
   },
   "last_manual_reconciliation": {
-    "observed_at_utc": "2026-09-29T20:40:41Z",
-    "assessment": "Dual-plane GitHub watchdog completed successfully and pushed reconciliation state to the authoritative branch. The watchdog commit touched 140 files, all under reconciliation/, and touched no runs/ or work/ paths. Macro and Flow had also been observed disabled unexpectedly and were explicitly restored; all five authoritative schedules remained unchanged.",
-    "corrective_action": "Promote dual-plane durability to r11; retain v4.3 natural receipt semantics; use nearest-boundary natural slot attribution; add bounded backlog recovery only after natural liveness.",
+    "observed_at_utc": "2026-09-29T20:44:36Z",
+    "assessment": "GitHub dual-plane watchdog is verified end-to-end; its first live reconciliation commit changed 140 reconciliation-only files and no runs/work paths. The known valid AION 17:36Z slot was not falsely incidented; Flow 19:24Z was correctly rejected for 424s jitter and OMEGA 20:00Z was correctly rejected for scheduled_for mismatch. Live registry is five authoritative tasks enabled with unchanged 00/12/24/36/48 cadence; retired tasks remain disabled.",
+    "corrective_action": "Keep watchdog active; retain strict 360s natural jitter validation; use nearest-boundary slot attribution; process at most one eligible backlog item only after current natural liveness is durable.",
     "verified_actions_run_id": 36628003730,
     "verified_reconciliation_commit": "f42ea0c1753632056f3b3e2c4efd3017734bc058",
     "natural_acceptance_pending": true

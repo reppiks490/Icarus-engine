@@ -1,0 +1,66 @@
+{
+  "schema_version": "agent-loop-run-v1",
+  "agent": "robustness_guardian",
+  "RUN_ID": "robustness-guardian-20260929T050500Z",
+  "RUN_STATUS": "RUN_PERSISTED",
+  "run_start_time": "2026-09-29T05:05:00Z",
+  "run_end_time": "2026-09-29T05:13:00Z",
+  "EXPECTED_CADENCE_MINUTES": 60,
+  "PREVIOUS_SUCCESSFUL_RUN_ID": "robustness-guardian-20260928T200632Z",
+  "base_main_sha": "26b0c4f2483f95a2a912e30ba676ed745ec0e92c",
+  "final_main_sha": "26b0c4f2483f95a2a912e30ba676ed745ec0e92c",
+  "code_paths_read": [
+    "icarus_engine/agents/contracts.py",
+    "icarus_engine/agents/specialists.py",
+    "tests_engine/test_agent_fabric.py",
+    "automation_intelligence/agent_fabric/manifest.json",
+    "automation_intelligence/agent_fabric/README.md",
+    "automation_intelligence/agent_fabric/robustness_guardian/state.json",
+    "automation_intelligence/agent_fabric/robustness_guardian/latest.json",
+    "automation_intelligence/agent_fabric/robustness_guardian/history/robustness-guardian-20260929T040500Z.json"
+  ],
+  "tests_workflows": {
+    "status": "NO_NEW_CODE_CHANGE",
+    "evidence": "No behavioral delta was made. Current main contains the direct Guardian fail-closed stress/overfit/OOD gates and their focused test; no new workflow was triggered."
+  },
+  "pr_evidence": {
+    "open_prs": [
+      {
+        "number": 2,
+        "head_sha": "f04ae692a54eff04f9098961bcd8e578cd25d9ca",
+        "state": "open",
+        "mergeable": false,
+        "changed_files": 233,
+        "collision": "icarus_engine/research_service.py only among explicitly guarded paths; no edit attempted"
+      }
+    ],
+    "run_specific_branch": null,
+    "merge": null
+  },
+  "capabilities_invoked": [
+    "GitHub heartbeat fresh-SHA write/readback",
+    "GitHub main/state/latest/history inspection",
+    "GitHub recent-commit inspection",
+    "GitHub open-PR metadata and changed-file inspection",
+    "GitHub code/test inspection"
+  ],
+  "unavailable_capabilities": [],
+  "findings": [
+    "Direct RobustnessGuardian fail-closed gates for cost coverage, latency stress, perturbation survival, parameter stability, probability of backtest overfit, OOD stability and bootstrap positive rate remain present on main.",
+    "The focused test test_robustness_guardian_rejects_missing_stress_evidence remains present on main.",
+    "PR #2 is still open, non-mergeable, and changes 233 files. Among explicitly guarded shared paths it overlaps research_service.py; this run did not edit that path.",
+    "CandidateEvidence still represents provenance and holdout integrity primarily through scalar coverage, flags and holdout_touched rather than immutable dataset/split/cutoff identities.",
+    "The prior 04:05 run has verified immutable history but its latest/state promotion failed; latest correctly remains the last fully finalized run until a clean finalization succeeds."
+  ],
+  "built_changes": [
+    "No production-code change this cycle. A shared CandidateEvidence lineage extension was intentionally deferred rather than racing shared contracts while PR #2 remains broad and non-mergeable."
+  ],
+  "unresolved_risks": [
+    "Evidence lineage lacks immutable dataset identity, split identity, evaluation cutoff identity and protected-final-holdout identity.",
+    "No fresh CI proof exists for this no-code cycle.",
+    "PR #2 remains a broad unresolved integration collision around research_service.py."
+  ],
+  "NEXT": "On a later safe code cycle, introduce a backward-compatible, test-first evidence-lineage contract on a run-specific branch: immutable dataset/split identifiers, evaluation cutoff, protected-final-holdout identity and mismatch vetoes. Avoid research_service.py until PR #2 is reconciled.",
+  "execution_authorized": false,
+  "PERSISTENCE_STATUS": "RUN_PERSISTED"
+}

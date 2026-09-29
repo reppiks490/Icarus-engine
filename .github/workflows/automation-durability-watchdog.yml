@@ -1,6 +1,11 @@
 name: automation-durability-watchdog
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/automation-durability-watchdog.yml"
+      - "tools/automation_durability_watchdog.py"
   schedule:
     - cron: "*/5 * * * *"
   workflow_dispatch:

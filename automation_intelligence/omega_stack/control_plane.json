@@ -74,6 +74,7 @@
   "persistence_bootstrap": {
     "rule": "No substantive work before verified heartbeat AND verified BOOTSTRAPPED checkpoint. Every run must enter closure by 35m; stale prior-cycle state >=45m is preserved as incident/checkpoint evidence then reset for the new trigger.",
     "github_first_actions": [
+      "acquire connected GitHub app/tool; fail closed if unavailable",
       "fetch control_plane.json and persistence_contract.json",
       "require control_plane.persistence_protocol_version == persistence_contract.schema_version",
       "validate exact lane identity",
@@ -101,5 +102,36 @@
       "aion": 10,
       "daedalus": 10
     }
+  },
+  "control_revision": "2026-09-29-r1",
+  "connector_policy": {
+    "primary_repo_connector": "GitHub",
+    "acquire_before_any_repo_read": true,
+    "acquire_before_substantive_work": true,
+    "fail_closed_if_unavailable": true,
+    "web_search_not_repo_state": true,
+    "authenticated_repo_access_verified": true,
+    "verified_repository": "reppiks490/Icarus-engine"
+  },
+  "scheduler_health_policy": {
+    "required_enabled_count": 5,
+    "exact_minutes": [
+      0,
+      12,
+      24,
+      36,
+      48
+    ],
+    "timezone": "America/Chicago",
+    "timing_mode": "exact_schedule",
+    "omega_is_topology_watchdog": true,
+    "repair_scope": "enabled-state and schedule only for the five active lane IDs",
+    "legacy_lanes": "must remain disabled",
+    "scheduler_trigger_not_completion": true
+  },
+  "baton_pass_policy": {
+    "role": "ADVISORY_CONTINUITY_ONLY",
+    "source_of_truth": "automation_intelligence/omega_stack durable GitHub state plus live scheduler registry",
+    "note": "Baton Pass semantics may be used for handoff/continuity, but Baton files are not scheduler or persistence authority and must not supersede omega_stack state."
   }
 }

@@ -1,19 +1,25 @@
 {
   "engine": "daedalus",
-  "RUN_ID": null,
-  "RUN_STATUS": "MIGRATED_IDLE",
-  "FINALIZATION_STATUS": "MIGRATED_READY",
+  "RUN_ID": "daedalus-20260929T054950Z",
+  "RUN_STATUS": "RUN_PERSISTED",
+  "FINALIZATION_STATUS": "VERIFIED",
   "CONTROL_PLANE_ID": "omega-aion-daedalus-native-v2",
   "automation_id": "6ab8177918b48191a97e56c44b57d2c5",
   "persistence_protocol_version": "omega-stack-persistence-v4.0-atomic-latest",
-  "scheduled_for": null,
-  "started_at_utc": null,
-  "completed_at_utc": null,
-  "PREVIOUS_BLOB_SHA": "b6ce46cd07ace8680c2cbbe8641a12870a4d6420",
-  "NET_NEW_DELTA": "Protocol migration only; awaiting next natural scheduled run.",
-  "DATA_GAPS": [],
+  "scheduled_for": "2026-09-29T05:48:00Z",
+  "started_at_utc": "2026-09-29T05:49:50Z",
+  "completed_at_utc": "2026-09-29T05:50:00Z",
+  "PREVIOUS_BLOB_SHA": "9b2460732c6264b830e6f9921044ce23bbe62d06",
+  "NET_NEW_DELTA": "AUDIT_DEGRADED_TOOL_FAILURE/NO_NEW_AUDIT_EVIDENCE. One bounded GitHub code-search assurance step returned total_count=0 with incomplete_results=true for lookahead/future/shift(-1)/lookahead_on indicators. This cannot establish absence of leakage or satisfy mandatory assurance families. Prior material unresolved assurance defects remain BLOCKING; no release-gate improvement established.",
+  "DATA_GAPS": [
+    "GitHub code search explicitly returned incomplete_results=true; bounded step cannot establish repository-wide absence of future leakage or cover bar-close/next-bar, DST/session, futures rolls, executable ancestry, outcome-conditioned features, revision leakage, stale providers, symbol/unit, holdout, friction/fill/latency/capacity families.",
+    "No independent oracle, executable property/mutation/metamorphic tests, or AION candidate reconstruction completed within the one-step v4 audit budget."
+  ],
   "CONFLICTS": [],
   "execution_authorized": false,
-  "legacy_v3_state": "READ_ONLY_HISTORICAL",
-  "acceptance_status": "AWAITING_NATURAL_V4_RECEIPT"
+  "audit_delta": {
+    "severity": "BLOCKING",
+    "release_gate": "BLOCKED",
+    "evidence": "No new affirmative defect proven; no evidence sufficient to clear existing blockers."
+  }
 }

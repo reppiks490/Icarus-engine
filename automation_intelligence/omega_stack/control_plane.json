@@ -151,7 +151,7 @@
     "note": "Baton Pass semantics may be used for handoff/continuity, but Baton files are not scheduler or persistence authority and must not supersede omega_stack state."
   },
   "active_count_semantics": "REQUIRED_TOPOLOGY_COUNT_NOT_LIVE_REGISTRY_PROOF",
-  "live_scheduler_registry_status": "READABLE_EXACTLY_FIVE_REPLACEMENT_STACK_TASKS_ENABLED",
+  "live_scheduler_registry_status": "READABLE_EXACTLY_FIVE_STACK_REPLACEMENTS_ENABLED",
   "observed_nonstack_scheduler_activity": {
     "status": "HISTORICAL_CONFLICT_PRESERVED_VISIBLE_NONSTACK_NOW_DISABLED",
     "observed": [
@@ -170,13 +170,16 @@
         "path": "automation_intelligence/agent_fabric/alpha_synthesis/heartbeat.json"
       }
     ],
-    "interpretation": "Durable starts prove non-stack scheduler activity after topology declaration. Current enabled count remains unknown until live scheduler registry is read.",
-    "remediation": "When registry mutation is available, keep only the five IDs in active[] enabled at exact configured minutes and disable legacy/non-stack scheduler objects. Preserve repo history.",
+    "interpretation": "Historical non-stack starts are preserved as incident evidence. Current visible registry has legacy/non-stack tasks disabled and exactly five replacement stack tasks enabled.",
+    "remediation": "Maintain exactly the five current stack replacements enabled at :00/:12/:24/:36/:48 America/Chicago. Preserve predecessor scheduler IDs as immutable migration evidence.",
     "repair_evidence": {
       "incident_path": "automation_intelligence/omega_stack/incidents/scheduler-repair-20260929T010327Z.json",
+      "identity_migration_incident_path": "automation_intelligence/omega_stack/incidents/scheduler-identity-migration-20260929T011116Z.json",
+      "macro_trigger_incident_path": "automation_intelligence/omega_stack/incidents/macro-trigger-without-bootstrap-20260929T011202Z.json",
       "visible_nonstack_tasks_disabled": true,
-      "required_target_tasks_enabled": false,
-      "blocker": "Native Automations returned 'You cannot modify this task.' for each required target ID."
+      "visible_stack_replacement_tasks_enabled": true,
+      "enabled_count": 5,
+      "predecessor_ids_mutation_blocker": "Native Automations returned mutation-denied for each predecessor ID; controlled replacement migration is now authoritative."
     }
   },
   "state_branch_policy": {
@@ -185,13 +188,17 @@
   },
   "operational_state_branch": "main",
   "scheduler_health_snapshot": {
-    "observed_at_utc": "2026-09-29T01:11:16Z",
-    "status": "RECOVERED_TO_FIVE_VISIBLE_STACK_TASKS_V3_2_ACCEPTANCE_PENDING",
+    "observed_at_utc": "2026-09-29T01:16:00Z",
+    "status": "EXACTLY_FIVE_VISIBLE_STACK_TASKS_ENABLED",
     "native_registry_readable": true,
-    "visible_registry_enabled_count_after_repair": 5,
-    "visible_nonstack_disable_status": "VERIFIED",
-    "original_required_ids_mutation_status": "DENIED_ALL_FIVE_BY_NATIVE_AUTOMATIONS_CONTROL",
-    "controlled_replacement_status": "CREATED_FIVE_EXACT_TITLE_CADENCE_REPLACEMENTS",
+    "enabled_count": 5,
+    "enabled_titles": [
+      "OMEGA Fusion Core",
+      "Macro Shock Sentinel",
+      "Flow Velocity Engine",
+      "AION PRIME Quant Scientist",
+      "DAEDALUS PRIME Systems Auditor"
+    ],
     "exact_minutes": [
       0,
       12,
@@ -200,8 +207,11 @@
       48
     ],
     "timezone": "America/Chicago",
-    "completion_claim_allowed": false,
-    "next_required_action": "Require fresh omega-stack-persistence-v3.2 core/history/latest/finalization receipt evidence for every replacement lane before declaring end-to-end healthy."
+    "timing_mode": "exact_schedule",
+    "legacy_nonstack_enabled_count": 0,
+    "macro_first_replacement_trigger_incident": "automation_intelligence/omega_stack/incidents/macro-trigger-without-bootstrap-20260929T011202Z.json",
+    "scheduler_trigger_not_completion": true,
+    "completion_claim_allowed": false
   },
   "scheduler_identity_migration": {
     "migrated_at_utc": "2026-09-29T01:11:16Z",

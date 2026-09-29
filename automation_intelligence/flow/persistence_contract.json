@@ -1,0 +1,33 @@
+{
+  "schema_version": "flow-persistence-v3",
+  "repository": "reppiks490/Icarus-engine",
+  "branch": "main",
+  "root": "automation_intelligence/flow",
+  "scheduler_id": "6abaef8effb48191aa5c959455451681",
+  "scheduler_title": "Microstructure Sensor Grid",
+  "primary_history": {
+    "mode": "immutable_per_run_file",
+    "path_pattern": "automation_intelligence/flow/history/<RUN_ID>.json",
+    "create_then_readback_required": true
+  },
+  "fallback_history": {
+    "enabled": true,
+    "trigger": "new immutable history file creation blocked by connector safety/write guard",
+    "mode": "append_only_fresh_sha_ledger",
+    "path": "automation_intelligence/flow/history_ledger.jsonl",
+    "append_rule": "Fetch ledger and blob SHA; preserve exact prior bytes; append one compact JSON line with previous_ledger_blob_sha equal to fetched SHA and the complete finalized payload; update_file with fresh SHA; re-fetch and verify exact-prefix preservation and unique RUN_ID in appended suffix.",
+    "completed_run_rule": "Verified ledger fallback containing the complete finalized payload is valid GitHub history identity; latest and manifest may advance only after ledger readback verification.",
+    "partial_run_rule": "If complete finalized payload is unavailable, append only truthful PARTIAL_PERSISTENCE receipt and do not advance latest/manifest."
+  },
+  "library_backup": {
+    "role": "secondary_independent",
+    "failure_is_non_blocking_for_github_finalization": true,
+    "verified_only_after_exact_readback": true
+  },
+  "pointer_rules": {
+    "latest_manifest_advance_only_after_verified_primary_or_fallback_history": true,
+    "heartbeat_finalized_only_after_required_github_readback": true
+  },
+  "prior_partial_runs_do_not_block_new_hourly_runs": true,
+  "execution_authorized": false
+}

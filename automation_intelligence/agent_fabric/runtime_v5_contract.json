@@ -1,0 +1,49 @@
+{
+  "schema_version": "restored-agent-fabric-runtime-v5",
+  "scope": "this account's restored agent-fabric schedulers only",
+  "scheduler_source_of_truth": "live ChatGPT automation registry for this account",
+  "lanes": {
+    "robustness_guardian": {
+      "automation_id": "6abaf924e0248191b8a11bd1d32bf0b7",
+      "minute": 5,
+      "root": "automation_intelligence/agent_fabric/robustness_guardian"
+    },
+    "alpha_synthesis": {
+      "automation_id": "6abaf8d75cf48191bc7ce06bc0006f1c",
+      "minute": 25,
+      "root": "automation_intelligence/agent_fabric/alpha_synthesis"
+    },
+    "apex_council": {
+      "automation_id": "6ababd570fac81918777c8f809cf67c9",
+      "minute": 45,
+      "root": "automation_intelligence/agent_fabric/apex_council"
+    }
+  },
+  "authoritative_runtime": {
+    "startup": "fetch heartbeat fresh SHA -> write CURRENT_RUN_ID IN_PROGRESS -> exact readback before other work",
+    "history": "update pre-existing staging.json with complete final payload; Git update commit SHA + readback blob SHA are immutable history identity",
+    "finalization": "update pre-existing finalization_state.json binding CURRENT_RUN_ID + staging commit/blob; exact readback",
+    "closure": "update heartbeat RUN_PERSISTED binding staging commit/blob + finalization_state blob; exact readback",
+    "required_writes_after_startup": 3,
+    "compatibility_mirrors": [
+      "latest.json",
+      "state.json",
+      "history_ledger.jsonl",
+      "history/<RUN_ID>.json",
+      "finalization/<RUN_ID>.json"
+    ],
+    "compatibility_mirrors_block_success": false,
+    "new_per_run_file_creation_required": false
+  },
+  "foreign_or_separate_namespaces": [
+    "automation_intelligence/omega_stack",
+    "automation_intelligence/omega_stack_native_v2",
+    "automation_intelligence/omega_stack_live_6abb",
+    "automation_intelligence/aion",
+    "automation_intelligence/daedalus",
+    "automation_intelligence/omega",
+    "automation_intelligence/macro"
+  ],
+  "foreign_repo_commits_do_not_rebind_scheduler_authority": true,
+  "execution_authorized": false
+}

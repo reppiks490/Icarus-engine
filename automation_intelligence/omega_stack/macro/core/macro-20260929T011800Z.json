@@ -1,0 +1,26 @@
+{
+  "engine": "macro",
+  "schema_version": "omega-stack-run-core-v3.2",
+  "RUN_ID": "macro-20260929T011800Z",
+  "CONTROL_PLANE_ID": "omega-aion-daedalus-stack",
+  "automation_id": "6abb101aecf8819180edb577bb098364",
+  "persistence_protocol_version": "omega-stack-persistence-v3.2",
+  "trigger_source": "interactive_repair_verification",
+  "purpose": "fresh persistence finalization verification after scheduler repair",
+  "started_at_utc": "2026-09-29T01:18:00Z",
+  "PASSES_COMPLETED": 8,
+  "substantive_work_performed": false,
+  "HIGH_IMPACT_EVENTS": [],
+  "CROSS_ASSET_LINKS": [],
+  "CONFLICTS": [
+    {
+      "type": "SCHEDULER_TRIGGER_WITHOUT_DURABLE_BOOTSTRAP",
+      "observed_trigger_time_utc": "2026-09-29T01:12:02.334578Z",
+      "detail": "First replacement scheduled trigger advanced scheduler last_run_time but durable heartbeat/checkpoint remained IDLE; task was observed disabled afterward and was re-enabled with absolute scheduler self-preservation."
+    }
+  ],
+  "DATA_GAPS": [
+    "No macro research performed during this repair-verification run."
+  ],
+  "execution_authorized": false
+}

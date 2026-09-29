@@ -109,9 +109,9 @@
       "aion": 10,
       "daedalus": 10
     },
-    "exhaustion_behavior": "When a cap is reached, record NO_ADDITIONAL_DELTA_DUE_BUDGET for remaining analytical passes and proceed to Pass 8. Never sacrifice closure for completeness."
+    "exhaustion_behavior": "When a cap is reached or any recoverable non-GitHub failure threatens completion, record NO_ADDITIONAL_DELTA_DUE_BUDGET or an explicit degraded status and proceed immediately to Pass 8. Never sacrifice closure for completeness."
   },
-  "contract_revision": "2026-09-29-r1",
+  "contract_revision": "2026-09-29-r2",
   "connector_requirements": {
     "primary_repo_connector": "GitHub",
     "required_before_repo_state_read": true,
@@ -167,5 +167,34 @@
     "timing_mode": "exact_schedule",
     "legacy_automations_must_remain_disabled": true,
     "omega_repair_rule": "When scheduler registry mutation is available, OMEGA may repair only enabled-state or schedule drift for the five required lanes. Otherwise record an incident."
+  },
+  "fail_soft_after_bootstrap": {
+    "required": true,
+    "invariant": "After verified heartbeat+checkpoint bootstrap, non-GitHub failures must degrade data/research quality, never bypass durable closure.",
+    "recoverable_failure_classes": [
+      "optional connector/provider outage",
+      "entitlement failure",
+      "rate limit",
+      "optional tool/test failure",
+      "missing dependency/source",
+      "parse error",
+      "branch-comparison limitation",
+      "insufficient fresh evidence"
+    ],
+    "behavior": [
+      "record failure with source/tool and timestamp in lane-appropriate DATA_GAPS/CONFLICTS/health fields",
+      "stop further optional work when continuing would endanger closure",
+      "freeze a degraded but truthful RUN_CORE at Pass 8",
+      "continue Pass 9 and Pass 10 persistence",
+      "never claim unavailable research/test work ran",
+      "never convert degraded evidence into stronger authority"
+    ],
+    "hard_failure_classes": [
+      "GitHub unavailable before verified heartbeat+checkpoint",
+      "GitHub closure write/readback failure after one fresh-SHA retry",
+      "identity/control-plane/protocol mismatch",
+      "corrupt or contradictory mandatory persistence state that cannot be safely reconciled"
+    ],
+    "principle": "Substantive depth is optional; truthful durable state is mandatory."
   }
 }

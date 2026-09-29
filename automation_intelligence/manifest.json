@@ -8,7 +8,7 @@
     "flow_microstructure",
     "apex_council"
   ],
-  "updated_at": "2026-09-29T17:18:30Z",
+  "updated_at": "2026-09-29T18:12:00Z",
   "latest_runs": {
     "omega": {
       "run_id": "omega-20260928T100234Z",
@@ -25,16 +25,16 @@
       "role": "historical_disabled_only"
     },
     "flow": {
-      "run_id": "flow-20260929T063500Z",
-      "run_time": "2026-09-29T06:35:00Z",
+      "run_id": "flow-20260929T173500Z",
+      "run_time": "2026-09-29T17:35:00Z",
       "status": "RUN_PERSISTED",
-      "previous_partial_run_id": "flow-20260929T113500Z",
       "scheduler_title": "Microstructure Sensor Grid",
       "scheduler_id": "6abaef8effb48191aa5c959455451681",
       "active": true,
       "canonical_active_engine": "flow_microstructure",
-      "history_mode": "ledger_fallback",
-      "history_blob_sha": "f50f6bf110fccb93ea6ec6ee631fbc2523446b6c"
+      "history_mode": "primary_immutable",
+      "history_blob_sha": "b199dd3212a9dd342582481ad09354479bd17a00",
+      "latest_blob_sha": "f8a3dd8111e7893db774cb9880e37d16391358d8"
     },
     "fundamental": {
       "run_id": "fundamental-20260928T164052Z",
@@ -493,10 +493,11 @@
       "current_ledger_blob_sha": "fe333e6b042f645821456907cf73baacce1aab59"
     },
     "flow_microstructure": {
-      "latest_successful_run_id": "flow-20260929T063500Z",
-      "status": "IDLE_READY_AFTER_TRIGGER_GAP_PRESERVATION",
-      "latest_trigger_without_startup_expected_run_id": "flow-20260929T163500Z",
-      "current_ledger_blob_sha": "17407f0aa8901b1d93614761063d7c441c29dcae"
+      "latest_successful_run_id": "flow-20260929T173500Z",
+      "status": "RUN_PERSISTED",
+      "history_blob_sha": "b199dd3212a9dd342582481ad09354479bd17a00",
+      "latest_blob_sha": "f8a3dd8111e7893db774cb9880e37d16391358d8",
+      "prior_trigger_gap": "flow-20260929T163500Z"
     },
     "apex_council": {
       "latest_successful_run_id": "apex-council-20260929T144500Z",

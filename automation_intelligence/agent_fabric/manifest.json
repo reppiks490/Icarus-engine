@@ -13,7 +13,8 @@
       "minute": 5,
       "root": "automation_intelligence/agent_fabric/robustness_guardian",
       "code": "icarus_engine/agents/specialists.py::RobustnessGuardianAgent",
-      "heartbeat_status": "IDLE_READY"
+      "heartbeat_status": "SEE_LANE_HEARTBEAT",
+      "runtime_status_source": "automation_intelligence/agent_fabric/robustness_guardian/heartbeat.json"
     },
     "alpha_synthesis": {
       "title": "Alpha Synthesis Evolution",
@@ -21,7 +22,8 @@
       "minute": 25,
       "root": "automation_intelligence/agent_fabric/alpha_synthesis",
       "code": "icarus_engine/agents/specialists.py::AlphaSynthesisAgent",
-      "heartbeat_status": "IDLE_READY"
+      "heartbeat_status": "SEE_LANE_HEARTBEAT",
+      "runtime_status_source": "automation_intelligence/agent_fabric/alpha_synthesis/heartbeat.json"
     },
     "apex_council": {
       "title": "Apex Council Evolution",
@@ -29,7 +31,8 @@
       "minute": 45,
       "root": "automation_intelligence/agent_fabric/apex_council",
       "code": "icarus_engine/agents/apex.py::ApexCouncilAgent",
-      "heartbeat_status": "IDLE_READY"
+      "heartbeat_status": "SEE_LANE_HEARTBEAT",
+      "runtime_status_source": "automation_intelligence/agent_fabric/apex_council/heartbeat.json"
     }
   },
   "foreign_or_separate_namespaces": [
@@ -58,5 +61,6 @@
       "root": "automation_intelligence/flow"
     }
   },
-  "execution_authorized": false
+  "execution_authorized": false,
+  "runtime_status_policy": "Lane heartbeat/latest/state/finalization artifacts are runtime truth; this manifest is scheduler binding authority only."
 }

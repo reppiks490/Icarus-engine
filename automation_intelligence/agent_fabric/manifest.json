@@ -16,7 +16,10 @@
       "heartbeat_status": "SEE_LANE_HEARTBEAT",
       "runtime_status_source": "automation_intelligence/agent_fabric/robustness_guardian/heartbeat.json",
       "history_ledger": "automation_intelligence/agent_fabric/robustness_guardian/history_ledger.jsonl",
-      "persistence_fallback": "agent-fabric-ledger-fallback-v1"
+      "persistence_fallback": "agent-fabric-ledger-fallback-v1",
+      "staging": "automation_intelligence/agent_fabric/robustness_guardian/staging.json",
+      "finalization_state": "automation_intelligence/agent_fabric/robustness_guardian/finalization_state.json",
+      "runtime_protocol": "git_commit_staging_v5"
     },
     "alpha_synthesis": {
       "title": "Alpha Synthesis Evolution",
@@ -27,7 +30,10 @@
       "heartbeat_status": "SEE_LANE_HEARTBEAT",
       "runtime_status_source": "automation_intelligence/agent_fabric/alpha_synthesis/heartbeat.json",
       "history_ledger": "automation_intelligence/agent_fabric/alpha_synthesis/history_ledger.jsonl",
-      "persistence_fallback": "agent-fabric-ledger-fallback-v1"
+      "persistence_fallback": "agent-fabric-ledger-fallback-v1",
+      "staging": "automation_intelligence/agent_fabric/alpha_synthesis/staging.json",
+      "finalization_state": "automation_intelligence/agent_fabric/alpha_synthesis/finalization_state.json",
+      "runtime_protocol": "git_commit_staging_v5"
     },
     "apex_council": {
       "title": "Apex Council Evolution",
@@ -38,7 +44,10 @@
       "heartbeat_status": "SEE_LANE_HEARTBEAT",
       "runtime_status_source": "automation_intelligence/agent_fabric/apex_council/heartbeat.json",
       "history_ledger": "automation_intelligence/agent_fabric/apex_council/history_ledger.jsonl",
-      "persistence_fallback": "agent-fabric-ledger-fallback-v1"
+      "persistence_fallback": "agent-fabric-ledger-fallback-v1",
+      "staging": "automation_intelligence/agent_fabric/apex_council/staging.json",
+      "finalization_state": "automation_intelligence/agent_fabric/apex_council/finalization_state.json",
+      "runtime_protocol": "git_commit_staging_v5"
     }
   },
   "foreign_or_separate_namespaces": [
@@ -68,12 +77,14 @@
     }
   },
   "execution_authorized": false,
-  "runtime_status_policy": "Lane heartbeat/latest/state plus primary immutable artifacts or verified lane ledger fallback are runtime truth; this manifest is scheduler binding authority only.",
+  "runtime_status_policy": "For runtime-v5 runs, heartbeat + finalization_state + staging Git commit/blob are authoritative. Legacy latest/state/history/ledger are compatibility evidence and cannot rebind scheduler identity.",
   "persistence_fallback_contract": "automation_intelligence/agent_fabric/persistence_fallback_contract.json",
   "current_slot_continuation_policy": {
     "required": true,
     "rule": "Prior-run recovery is STEP 0 only. Every scheduler invocation must start and persist its own current scheduled RUN_ID after recovery unless that current slot's startup persistence fails after one safe retry.",
     "run_id_source": "scheduler scheduled-for occurrence; if unavailable, nearest configured minute occurrence to invocation start",
     "old_run_id_reuse_forbidden": true
-  }
+  },
+  "runtime_contract": "automation_intelligence/agent_fabric/runtime_v5_contract.json",
+  "runtime_protocol": "git_commit_staging_v5"
 }

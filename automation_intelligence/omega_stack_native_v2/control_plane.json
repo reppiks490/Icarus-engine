@@ -52,23 +52,23 @@
   ],
   "namespace_policy": "Only the five automation IDs listed in active[] are authorized to write under omega_stack_native_v2. Any other writer is foreign and must be ignored/quarantined.",
   "previous_namespace_policy": "automation_intelligence/omega_stack is READ-ONLY historical/conflict evidence for this stack.",
-  "persistence_protocol_version": "omega-stack-persistence-v4.1-fast-cas",
+  "persistence_protocol_version": "omega-stack-persistence-v4.2-write-first",
   "operational_state_branch": "automation/omega-native-v2",
   "agent_development_branch": "feature/aion-daedalus-prime-v2",
   "runtime_budget": {
     "scheduled_execution_target_seconds": 15,
-    "max_github_reads_before_authoritative_write": 1,
-    "max_optional_work_calls_before_authoritative_write": 1,
-    "max_github_mutations_per_run": 1,
+    "max_github_reads_before_first_write": 1,
+    "first_write_deadline": "immediately after own latest.json fetch",
+    "max_optional_work_calls_after_first_write": 1,
+    "max_github_mutations_per_run": 2,
     "mandatory_post_write_readbacks": 0,
-    "write_acknowledgement": "successful GitHub contents API CAS update response",
-    "rule": "The authoritative write must be attempted before the scheduler execution envelope can expire. Skip optional work rather than miss persistence."
+    "rule": "Persist liveness before any variable-latency work. If the work phase stalls, the first write must remain as durable evidence."
   },
   "execution_authorized": false,
   "created_at_utc": "2026-09-29T01:31:00Z",
   "reason": "Isolated namespace created after verified concurrent foreign writes repeatedly overwrote the prior omega_stack scheduler identities and AION state.",
-  "control_revision": "2026-09-29-native-v2-r6",
-  "live_connection_status": "V4_1_FAST_CAS_INSTALLED_PENDING_NATURAL_ACCEPTANCE",
+  "control_revision": "2026-09-29-native-v2-r7",
+  "live_connection_status": "V4_2_WRITE_FIRST_INSTALLED_PENDING_NATURAL_ACCEPTANCE",
   "scheduler_health_policy": {
     "required_enabled_count": 5,
     "exact_minutes": [
@@ -136,12 +136,11 @@
     "self_mutation_forbidden": true
   },
   "persistence_acceptance": {
-    "protocol": "omega-stack-persistence-v4.1-fast-cas",
+    "protocol": "omega-stack-persistence-v4.2-write-first",
     "authoritative_run_record": "<lane>/latest.json",
     "immutable_history_source": "Git commit/blob history of latest.json",
-    "success_rule": "A natural scheduled run is accepted when its optimistic-concurrency update of latest.json succeeds and the resulting persisted receipt has matching RUN_ID, automation_id, CONTROL_PLANE_ID, protocol, RUN_STATUS=RUN_PERSISTED and FINALIZATION_STATUS=VERIFIED. Out-of-band audits verify the stored blob; scheduled executions do not spend runtime on mandatory post-write readback.",
-    "legacy_v4_state": "v4.0 receipts remain valid historical evidence but do not count toward the v4.1 two-consecutive-run acceptance target.",
-    "target": "Two consecutive naturally scheduled accepted v4.1 receipts per lane before declaring sustained 5/5 reliability."
+    "success_rule": "Transport success requires a natural scheduled LIVENESS_VERIFIED receipt. Full run success requires the same RUN_ID to be upgraded to FINALIZATION_STATUS=VERIFIED after at most one bounded work call.",
+    "target": "Two consecutive natural fully VERIFIED v4.2 runs per lane before declaring sustained 5/5 reliability. LIVENESS_VERIFIED without final enrichment is retained and classified DEGRADED_WORK_PHASE rather than a silent persistence failure."
   },
   "scheduler_jitter_policy": {
     "nominal_minutes": [
@@ -155,12 +154,11 @@
     "rule": "Scheduler start jitter is transport timing, not run identity. scheduled_for remains the nominal slot; actual trigger time may vary. Never fail a run solely for tolerated jitter."
   },
   "prompt_protocol_alignment": {
-    "observed_at_utc": "2026-09-29T14:58:19Z",
-    "status": "ALIGNED_5_OF_5",
-    "protocol": "omega-stack-persistence-v4.1-fast-cas",
+    "observed_at_utc": "2026-09-29T15:00:00Z",
+    "status": "MIGRATING_5_OF_5_TO_V4_2_WRITE_FIRST",
+    "protocol": "omega-stack-persistence-v4.2-write-first",
     "persistence_before_depth": true,
-    "runtime_control_plane_fetch_required": false,
-    "runtime_contract_fetch_required": false,
+    "first_write_before_optional_work": true,
     "mandatory_post_write_readback": false
   }
 }

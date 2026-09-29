@@ -3,6 +3,8 @@ name: tests
 on:
   push:
     branches: ["**"]
+    paths-ignore:
+      - "automation_intelligence/**"
   pull_request:
   workflow_dispatch:
 

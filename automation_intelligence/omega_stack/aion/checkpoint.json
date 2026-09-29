@@ -2,8 +2,8 @@
   "engine": "aion",
   "schema_version": "automation-intelligence-checkpoint-v1",
   "RUN_ID": "aion-20260929T012200Z",
-  "CHECKPOINT_STATUS": "BOOTSTRAPPED",
-  "PASSES_COMPLETED": 1,
+  "CHECKPOINT_STATUS": "FROZEN_FOR_FINALIZATION",
+  "PASSES_COMPLETED": 8,
   "CONTROL_PLANE_ID": "omega-aion-daedalus-stack",
   "automation_id": "6abb102bde94819189bbf57062edcb32",
   "persistence_protocol_version": "omega-stack-persistence-v3.2",
@@ -21,5 +21,25 @@
   "recovery_status": "STALE_BOOTSTRAP_INCOMPLETE_PRESERVED",
   "started_at_utc": "2026-09-29T01:22:00Z",
   "trigger_source": "interactive_repair_verification",
-  "previous_latest_run_id": null
+  "previous_latest_run_id": null,
+  "RUN_CORE": {
+    "engine": "aion",
+    "schema_version": "omega-stack-run-core-v3.2",
+    "RUN_ID": "aion-20260929T012200Z",
+    "CONTROL_PLANE_ID": "omega-aion-daedalus-stack",
+    "automation_id": "6abb102bde94819189bbf57062edcb32",
+    "persistence_protocol_version": "omega-stack-persistence-v3.2",
+    "trigger_source": "interactive_repair_verification",
+    "purpose": "fresh persistence finalization verification after stale-cycle recovery and scheduler identity migration",
+    "started_at_utc": "2026-09-29T01:22:00Z",
+    "PASSES_COMPLETED": 8,
+    "substantive_work_performed": false,
+    "CANDIDATES": [],
+    "VALIDATION_RESULTS": [],
+    "CONFLICTS": [],
+    "DATA_GAPS": [
+      "No quantitative research was performed during this repair-verification run."
+    ],
+    "execution_authorized": false
+  }
 }

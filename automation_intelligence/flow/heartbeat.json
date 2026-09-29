@@ -2,8 +2,15 @@
   "engine": "flow",
   "schema_version": "automation-intelligence-heartbeat-v2",
   "RUN_ID": "flow-20260929T033500Z",
-  "RUN_STATUS": "IN_PROGRESS",
+  "RUN_STATUS": "PARTIAL_PERSISTENCE",
   "EXPECTED_CADENCE_MINUTES": 60,
   "scheduler_title": "Microstructure Sensor Grid",
-  "execution_authorized": false
+  "execution_authorized": false,
+  "PASSES_COMPLETED": 10,
+  "failure_stage": "LIBRARY_HISTORY_AND_STATE_EXACT_PERSISTENCE",
+  "failure_reason": "Library upload route returned container_session_unavailable for both history and compact state; CLEAN_1_TO_1 contract forbids GitHub history/latest/manifest promotion after Library step failure.",
+  "BACKLOG_DURABLE": false,
+  "github_history_created": false,
+  "latest_promoted": false,
+  "manifest_flow_updated": false
 }

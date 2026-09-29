@@ -12,7 +12,7 @@
   "active": [
     {
       "title": "OMEGA Fusion Core",
-      "automation_id": "6ab817357a2c8191ac3a407f14d6a8c1",
+      "automation_id": "6abb57443c0c81919676c71d87493353",
       "minute": 0,
       "branch": "automation/omega-native-v2",
       "root": "automation_intelligence/omega_stack_native_v2/omega"
@@ -65,8 +65,8 @@
   "execution_authorized": false,
   "created_at_utc": "2026-09-29T01:31:00Z",
   "reason": "Isolated namespace created after verified concurrent foreign writes repeatedly overwrote the prior omega_stack scheduler identities and AION state.",
-  "control_revision": "2026-09-29-native-v2-r4",
-  "live_connection_status": "MIGRATING_TO_SINGLE_COMMIT_ATOMIC_RECEIPTS",
+  "control_revision": "2026-09-29-native-v2-r5",
+  "live_connection_status": "OMEGA_REBOUND_PENDING_NATURAL_V4_ACCEPTANCE",
   "scheduler_health_policy": {
     "required_enabled_count": 5,
     "exact_minutes": [
@@ -82,9 +82,9 @@
     "rule": "Scheduled lanes may not create, delete, enable, disable, reschedule, or rewrite sibling automations. Scheduler topology is externally managed; lanes only persist/read their own isolated repo state."
   },
   "identity_binding": {
-    "bound_at_utc": "2026-09-29T01:40:00Z",
+    "bound_at_utc": "2026-09-29T06:14:28Z",
     "authoritative_ids": {
-      "omega": "6ab817357a2c8191ac3a407f14d6a8c1",
+      "omega": "6abb57443c0c81919676c71d87493353",
       "macro": "6ab8174517b48191b67ac472205a28d3",
       "flow": "6ab817544e68819197b5db21eb2cbe2b",
       "aion": "6abb1618be1c8191943f5d4e2d88978d",
@@ -93,13 +93,13 @@
     "authority": "live automation registry + isolated control plane"
   },
   "scheduler_alignment_snapshot": {
-    "observed_at_utc": "2026-09-29T02:52:58Z",
-    "status": "ALIGNED_5_OF_5",
+    "observed_at_utc": "2026-09-29T06:14:28Z",
+    "status": "ALIGNED_5_OF_5_OMEGA_REBOUND_PENDING_ACCEPTANCE",
     "enabled_required_lanes": 5,
     "cadence": [
       {
         "title": "OMEGA Fusion Core",
-        "automation_id": "6ab817357a2c8191ac3a407f14d6a8c1",
+        "automation_id": "6abb57443c0c81919676c71d87493353",
         "minute": 0
       },
       {
@@ -127,7 +127,8 @@
     "timing_mode": "exact_schedule",
     "retired_scheduler_ids": [
       "6ab817679a248191928d7bd6fa8e4a3c",
-      "6abb1db46b308191ba1a27f13a42e745"
+      "6abb1db46b308191ba1a27f13a42e745",
+      "6ab817357a2c8191ac3a407f14d6a8c1"
     ],
     "self_mutation_forbidden": true
   },

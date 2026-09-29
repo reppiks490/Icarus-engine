@@ -18,5 +18,7 @@
   "execution_authorized": false,
   "persistence_contract": "automation_intelligence/flow/persistence_contract.json",
   "history_ledger": "automation_intelligence/flow/history_ledger.jsonl",
-  "persistence_protocol": "flow-persistence-v3"
+  "persistence_protocol": "flow-persistence-v3",
+  "current_slot_continuation_required": true,
+  "current_slot_rule": "Recovery of prior partial/stranded runs is STEP 0 only; every invocation must proceed into its own current scheduled RUN_ID unless current-slot startup persistence itself fails after one safe retry."
 }

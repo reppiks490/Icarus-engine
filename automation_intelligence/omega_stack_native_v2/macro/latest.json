@@ -1,19 +1,32 @@
 {
   "engine": "macro",
-  "RUN_ID": null,
-  "RUN_STATUS": "MIGRATED_IDLE",
-  "FINALIZATION_STATUS": "MIGRATED_READY",
+  "RUN_ID": "macro-20260929T081215Z",
+  "RUN_STATUS": "RUN_PERSISTED",
+  "FINALIZATION_STATUS": "VERIFIED",
   "CONTROL_PLANE_ID": "omega-aion-daedalus-native-v2",
   "automation_id": "6ab8174517b48191b67ac472205a28d3",
   "persistence_protocol_version": "omega-stack-persistence-v4.0-atomic-latest",
-  "scheduled_for": null,
-  "started_at_utc": null,
-  "completed_at_utc": null,
-  "PREVIOUS_BLOB_SHA": "d291e6f0ea2e57fd98f2dc637a31b02eb34f8b90",
-  "NET_NEW_DELTA": "Protocol migration only; awaiting next natural scheduled run.",
-  "DATA_GAPS": [],
+  "scheduled_for": "2026-09-29T03:12:00-05:00",
+  "started_at_utc": "2026-09-29T08:12:15Z",
+  "completed_at_utc": "2026-09-29T08:12:20Z",
+  "PREVIOUS_BLOB_SHA": "3f53fdb6af4f11075c47868724fb5fbf35c737f1",
+  "NET_NEW_DELTA": {
+    "status": "FRESH_MACRO_SHOCK_CONFIRMED",
+    "FACT": [
+      "Reuters reported Brent crude near $107/bbl on 2026-09-29 amid Middle East supply concerns.",
+      "Reuters reported the U.S. 10-year Treasury yield above 5.27%, a 19-year high, with the 2-year yield approaching 5%."
+    ],
+    "SOURCE_CLAIM": [
+      "Reuters attributes the sovereign-bond selloff to elevated energy costs, persistent inflation pressure, and expectations that rates remain higher for longer."
+    ],
+    "MODEL_INFERENCE": [
+      "The joint oil-and-yield configuration is a material inflation/rates shock and remains adverse for duration-sensitive and broad risk assets; this is an inference, not a directly observed causal fact."
+    ]
+  },
+  "DATA_GAPS": [
+    "One bounded external retrieval only; no independent second-source confirmation.",
+    "No full cross-asset quantitative shock decomposition in this run."
+  ],
   "CONFLICTS": [],
-  "execution_authorized": false,
-  "legacy_v3_state": "READ_ONLY_HISTORICAL",
-  "acceptance_status": "AWAITING_NATURAL_V4_RECEIPT"
+  "execution_authorized": false
 }

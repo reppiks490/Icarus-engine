@@ -10,52 +10,52 @@
   "active": [
     {
       "title": "OMEGA Fusion Core",
-      "automation_id": "6abb1012ff408191a6da245488f87dc2",
+      "automation_id": "6ab817357a2c8191ac3a407f14d6a8c1",
       "minute": 0,
       "branch": "main",
       "root": "automation_intelligence/omega_stack/omega",
-      "predecessor_automation_id": "6ab817357a2c8191ac3a407f14d6a8c1",
-      "scheduler_identity_migration": "HARD_PINNED_TO_CURRENT_NATIVE_REGISTRY_OBJECT"
+      "scheduler_identity_migration": "RECONCILED_TO_LIVE_NATIVE_REGISTRY_ID",
+      "temporary_replacement_automation_id": "6abb1012ff408191a6da245488f87dc2"
     },
     {
       "title": "Macro Shock Sentinel",
-      "automation_id": "6abb101aecf8819180edb577bb098364",
+      "automation_id": "6ab8174517b48191b67ac472205a28d3",
       "minute": 12,
       "branch": "main",
       "root": "automation_intelligence/omega_stack/macro",
-      "predecessor_automation_id": "6ab8174517b48191b67ac472205a28d3",
-      "scheduler_identity_migration": "HARD_PINNED_TO_CURRENT_NATIVE_REGISTRY_OBJECT"
+      "scheduler_identity_migration": "RECONCILED_TO_LIVE_NATIVE_REGISTRY_ID",
+      "temporary_replacement_automation_id": "6abb101aecf8819180edb577bb098364"
     },
     {
       "title": "Flow Velocity Engine",
-      "automation_id": "6abb1022ac1881918a86ee30d74fa9dd",
+      "automation_id": "6ab817544e68819197b5db21eb2cbe2b",
       "minute": 24,
       "branch": "main",
       "root": "automation_intelligence/omega_stack/flow",
-      "predecessor_automation_id": "6ab817544e68819197b5db21eb2cbe2b",
-      "scheduler_identity_migration": "HARD_PINNED_TO_CURRENT_NATIVE_REGISTRY_OBJECT"
+      "scheduler_identity_migration": "RECONCILED_TO_LIVE_NATIVE_REGISTRY_ID",
+      "temporary_replacement_automation_id": "6abb1022ac1881918a86ee30d74fa9dd"
     },
     {
       "title": "AION PRIME Quant Scientist",
-      "automation_id": "6abb102bde94819189bbf57062edcb32",
+      "automation_id": "6ab817679a248191928d7bd6fa8e4a3c",
       "minute": 36,
       "branch": "main",
       "root": "automation_intelligence/omega_stack/aion",
       "state_branch": "main",
       "development_branch": "feature/aion-daedalus-prime-v2",
-      "predecessor_automation_id": "6ab817679a248191928d7bd6fa8e4a3c",
-      "scheduler_identity_migration": "HARD_PINNED_TO_CURRENT_NATIVE_REGISTRY_OBJECT"
+      "scheduler_identity_migration": "RECONCILED_TO_LIVE_NATIVE_REGISTRY_ID",
+      "temporary_replacement_automation_id": "6abb102bde94819189bbf57062edcb32"
     },
     {
       "title": "DAEDALUS PRIME Systems Auditor",
-      "automation_id": "6abb103472608191b72f9eaa522b772b",
+      "automation_id": "6ab8177918b48191a97e56c44b57d2c5",
       "minute": 48,
       "branch": "main",
       "root": "automation_intelligence/omega_stack/daedalus",
       "state_branch": "main",
       "development_branch": "feature/aion-daedalus-prime-v2",
-      "predecessor_automation_id": "6ab8177918b48191a97e56c44b57d2c5",
-      "scheduler_identity_migration": "HARD_PINNED_TO_CURRENT_NATIVE_REGISTRY_OBJECT"
+      "scheduler_identity_migration": "RECONCILED_TO_LIVE_NATIVE_REGISTRY_ID",
+      "temporary_replacement_automation_id": "6abb103472608191b72f9eaa522b772b"
     }
   ],
   "legacy_inputs": {
@@ -117,7 +117,7 @@
       "daedalus": 10
     }
   },
-  "control_revision": "2026-09-29-r6",
+  "control_revision": "2026-09-29-r7",
   "connector_policy": {
     "primary_repo_connector": "GitHub",
     "acquire_before_any_repo_read": true,
@@ -154,7 +154,7 @@
     "note": "Baton Pass semantics may be used for handoff/continuity, but Baton files are not scheduler or persistence authority and must not supersede omega_stack state."
   },
   "active_count_semantics": "LIVE_NATIVE_REGISTRY_VERIFIED",
-  "live_scheduler_registry_status": "EXACTLY_FIVE_HARD_PINNED_REPLACEMENT_TASKS_ENABLED",
+  "live_scheduler_registry_status": "EXACTLY_FIVE_ORIGINAL_NATIVE_STACK_TASKS_ENABLED",
   "observed_nonstack_scheduler_activity": {
     "status": "HISTORICAL_CONFLICT_PRESERVED_VISIBLE_NONSTACK_NOW_DISABLED",
     "observed": [
@@ -191,8 +191,8 @@
   },
   "operational_state_branch": "main",
   "scheduler_health_snapshot": {
-    "observed_at_utc": "2026-09-29T01:28:49Z",
-    "status": "EXACTLY_FIVE_HARD_PINNED_REPLACEMENT_TASKS_ENABLED",
+    "observed_at_utc": "2026-09-29T01:31:30Z",
+    "status": "EXACTLY_FIVE_ORIGINAL_NATIVE_STACK_TASKS_ENABLED",
     "native_registry_readable": true,
     "required_enabled_count": 5,
     "exact_minutes": [
@@ -204,22 +204,27 @@
     ],
     "timezone": "America/Chicago",
     "timing_mode": "exact_schedule",
-    "legacy_nonstack_enabled_count": 0,
-    "identity_conflict_incident": "automation_intelligence/omega_stack/incidents/scheduler-identity-conflict-live-registry-20260929T012800Z.json",
     "completion_claim_allowed": false,
-    "next_required_action": "Normalize mutable lane identities to hard-pinned native IDs and retain immutable v3.2 receipts; natural scheduled acceptance remains separate."
+    "next_required_action": "Require a fresh natural scheduled v3.2 finalization receipt for every lane under the reconciled native IDs."
   },
   "scheduler_identity_migration": {
-    "reconciled_at_utc": "2026-09-29T01:28:49Z",
-    "authority": "current native registry for this ChatGPT account",
-    "rule": "Each active task is hard-pinned to its actual native scheduler ID in the task prompt. Repository state cannot migrate or replace that ID.",
+    "reconciled_at_utc": "2026-09-29T01:31:30Z",
+    "authority": "live native automation registry for this ChatGPT account",
+    "rule": "The five original native scheduler IDs currently visible and enabled in the live registry are authoritative. Temporary 6abb replacement IDs are historical repair artifacts only and must not be used for new scheduler/persistence identity validation.",
     "current_ids": {
+      "omega": "6ab817357a2c8191ac3a407f14d6a8c1",
+      "macro": "6ab8174517b48191b67ac472205a28d3",
+      "flow": "6ab817544e68819197b5db21eb2cbe2b",
+      "aion": "6ab817679a248191928d7bd6fa8e4a3c",
+      "daedalus": "6ab8177918b48191a97e56c44b57d2c5"
+    },
+    "temporary_replacement_ids": {
       "omega": "6abb1012ff408191a6da245488f87dc2",
       "macro": "6abb101aecf8819180edb577bb098364",
       "flow": "6abb1022ac1881918a86ee30d74fa9dd",
       "aion": "6abb102bde94819189bbf57062edcb32",
       "daedalus": "6abb103472608191b72f9eaa522b772b"
     },
-    "predecessor_ids_retained_as_historical_only": true
+    "temporary_replacements_status": "HISTORICAL_ONLY_NOT_LIVE_SCHEDULER_AUTHORITY"
   }
 }

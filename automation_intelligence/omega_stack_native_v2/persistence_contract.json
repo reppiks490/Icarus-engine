@@ -1,0 +1,52 @@
+{
+  "schema_version": "omega-stack-persistence-v3.2",
+  "control_plane_id": "omega-aion-daedalus-native-v2",
+  "namespace_root": "automation_intelligence/omega_stack_native_v2",
+  "purpose": "Fail-closed isolated persistence anchored to GitHub-returned blob identity.",
+  "bootstrap": {
+    "first_tool_sequence": [
+      "fetch isolated control_plane.json",
+      "fetch isolated persistence_contract.json",
+      "require exact control-plane/protocol/lane identity",
+      "inspect heartbeat and checkpoint",
+      "fetch heartbeat immediately before write",
+      "update heartbeat IN_PROGRESS using fresh SHA",
+      "re-fetch heartbeat and verify current RUN_ID and automation_id",
+      "write/re-fetch checkpoint BOOTSTRAPPED before substantive work"
+    ],
+    "max_retries_after_initial_failure": 1,
+    "no_substantive_work_before_verified_bootstrap": true
+  },
+  "single_flight": {
+    "active_heartbeat_grace_minutes": 40,
+    "stranded_after_minutes": 45
+  },
+  "checkpointing": {
+    "required": true,
+    "path": "<lane>/checkpoint.json"
+  },
+  "runtime_budget": {
+    "substantive_deadline_minutes": 35,
+    "recovery_threshold_minutes": 45,
+    "default_non_github_external_call_caps": {
+      "omega": 8,
+      "macro": 6,
+      "flow": 6,
+      "aion": 10,
+      "daedalus": 10
+    }
+  },
+  "closure": {
+    "pass_8": "freeze complete RUN_CORE into checkpoint FROZEN_FOR_FINALIZATION and re-fetch",
+    "pass_9": "create/re-fetch immutable core/<RUN_ID>.json and history/<RUN_ID>.json; use GitHub blob SHAs",
+    "pass_10": "write/re-fetch latest.json; create/re-fetch immutable finalization/<RUN_ID>.json binding current core/history/latest blob SHAs; then checkpoint FINALIZED and heartbeat IDLE/FINALIZED"
+  },
+  "contents_api_concurrency": {
+    "same_path_serialized": true,
+    "fresh_sha_before_every_update": true,
+    "retry_once_after_refetch": true
+  },
+  "foreign_writer_rule": "Any artifact written under the old omega_stack namespace or by an automation_id not listed in isolated control_plane.active[] is non-authoritative for omega_stack_native_v2.",
+  "execution_authorized": false,
+  "created_at_utc": "2026-09-29T01:31:00Z"
+}

@@ -1,0 +1,24 @@
+{
+  "schema_version": "omega-stack-persistence-incident-v1",
+  "incident_id": "macro-20260929T021627Z-stalled-after-bootstrap-deadline",
+  "observed_at_utc": "2026-09-29T02:51:36Z",
+  "lane": "macro",
+  "automation_id": "6ab8174517b48191b67ac472205a28d3",
+  "run_id": "macro-20260929T021627Z",
+  "classification": "STALLED_AFTER_BOOTSTRAP_DEADLINE",
+  "evidence": {
+    "started_at_utc": "2026-09-29T02:16:27Z",
+    "elapsed_minutes_gt_35": true,
+    "heartbeat_status": "IN_PROGRESS",
+    "checkpoint_status": "BOOTSTRAPPED",
+    "passes_completed": 1,
+    "run_core_present": false,
+    "core_present": false,
+    "history_present": false,
+    "latest_promoted": false,
+    "finalization_present": false
+  },
+  "disposition": "ABORTED_AND_RESET_FOR_NEXT_SCHEDULED_RUN",
+  "rule": "Substantive work may not remain in-flight beyond 35 minutes. Missing RUN_CORE cannot be reconstructed or promoted.",
+  "execution_authorized": false
+}

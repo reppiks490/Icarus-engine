@@ -33,14 +33,14 @@
       "title": "AION PRIME Quant Scientist",
       "automation_id": "6ab817679a248191928d7bd6fa8e4a3c",
       "minute": 36,
-      "branch": "feature/agent-fabric-apex-v1",
+      "branch": "feature/aion-daedalus-prime-v2",
       "root": "automation_intelligence/omega_stack/aion"
     },
     {
       "title": "DAEDALUS PRIME Systems Auditor",
       "automation_id": "6ab8177918b48191a97e56c44b57d2c5",
       "minute": 48,
-      "branch": "feature/agent-fabric-apex-v1",
+      "branch": "feature/aion-daedalus-prime-v2",
       "root": "automation_intelligence/omega_stack/daedalus"
     }
   ],
@@ -53,7 +53,7 @@
   },
   "namespace_policy": "Only this five-loop stack may write under automation_intelligence/omega_stack/. Other schedulers must use separate namespaces.",
   "global_manifest_policy": "Read-only contextual input. Do not use automation_intelligence/manifest.json as this stack's scheduler source of truth and do not overwrite unrelated scheduler topology fields.",
-  "persistence_policy": "heartbeat.json is the only mutable IN_PROGRESS marker; immutable history/<RUN_ID>.json first; latest.json only after history verification; never overwrite newer state with older state.",
+  "persistence_policy": "heartbeat.json is the only mutable IN_PROGRESS marker; checkpoint.json is mandatory immediately after bootstrap and after material deltas; substantive work stops by 35m; stale prior-cycle heartbeat >=45m is recovered instead of suppressing the next hourly run; pass 8 freezes RUN_CORE into checkpoint; pass 9 writes immutable core/history using GitHub blob SHAs; pass 10 promotes latest and creates immutable finalization receipt; only receipt-verified runs are fully persisted.",
   "execution_authorized": false,
   "migration": {
     "seeded_from_legacy_persisted_runs": {
@@ -62,6 +62,44 @@
       "flow": "flow-20260928T102124Z"
     },
     "aion": "INITIALIZED",
-    "daedalus": "INITIALIZED"
+    "daedalus": "INITIALIZED",
+    "previous_agent_branch": "feature/agent-fabric-apex-v1",
+    "previous_agent_branch_status": "RETAINED_READ_ONLY_HISTORY",
+    "v2_branch_created_from": "main",
+    "v2_reason": "Old agent branch diverged substantially from main; v2 starts from current main and carries only approved design/operational scaffolding."
+  },
+  "agent_development_branch": "feature/aion-daedalus-prime-v2",
+  "persistence_protocol_version": "omega-stack-persistence-v3.2",
+  "library_fallback_root": "/AutomationIntelligenceBacklog/omega_stack",
+  "persistence_bootstrap": {
+    "rule": "No substantive work before verified heartbeat AND verified BOOTSTRAPPED checkpoint. Every run must enter closure by 35m; stale prior-cycle state >=45m is preserved as incident/checkpoint evidence then reset for the new trigger.",
+    "github_first_actions": [
+      "fetch control_plane.json and persistence_contract.json",
+      "require control_plane.persistence_protocol_version == persistence_contract.schema_version",
+      "validate exact lane identity",
+      "recover stale prior-cycle heartbeat/checkpoint when age >=45m and no valid finalization exists",
+      "fetch own heartbeat.json immediately before write",
+      "update heartbeat.json with current RUN_ID and IN_PROGRESS using fresh content SHA",
+      "re-fetch heartbeat.json and verify RUN_ID/control_plane_id/automation_id",
+      "write and re-fetch checkpoint.json with BOOTSTRAPPED"
+    ],
+    "on_github_bootstrap_failure": "Re-fetch heartbeat, reconcile, retry exactly once with fresh content SHA. If still unsuccessful, stop substantive work and attempt a Library failure receipt.",
+    "closure": [
+      "By 35m stop new substantive/external work and enter closure.",
+      "Pass 8 freezes RUN_CORE into checkpoint.json with FROZEN_FOR_FINALIZATION; re-fetch and verify.",
+      "Pass 9 creates immutable core/<RUN_ID>.json and history/<RUN_ID>.json and records GitHub blob SHAs.",
+      "Pass 10 promotes latest.json, creates immutable finalization/<RUN_ID>.json binding current blob SHAs, re-fetch verifies receipt, then marks checkpoint FINALIZED and heartbeat IDLE/FINALIZED."
+    ]
+  },
+  "runtime_budget": {
+    "substantive_deadline_minutes": 35,
+    "stale_recovery_minutes": 45,
+    "non_github_call_caps": {
+      "omega": 8,
+      "macro": 6,
+      "flow": 6,
+      "aion": 10,
+      "daedalus": 10
+    }
   }
 }

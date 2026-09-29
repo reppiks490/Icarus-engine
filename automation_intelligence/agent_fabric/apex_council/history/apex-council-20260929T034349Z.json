@@ -1,0 +1,47 @@
+{
+  "schema_version": "apex-council-run-v2",
+  "RUN_ID": "apex-council-20260929T034349Z",
+  "RUN_STATUS": "PARTIAL_PERSISTENCE",
+  "base_main_sha": "e9841f7dffdb66987ec76670eee97122cb551cdb",
+  "final_main_sha": "e9841f7dffdb66987ec76670eee97122cb551cdb",
+  "specialist_states_consumed": {
+    "robustness_guardian": "robustness-guardian-20260928T200632Z",
+    "alpha_synthesis": "alpha-synthesis-20260928T212646Z"
+  },
+  "evidence_contract_version": "CandidateEvidence-current; correlation-dependence extension RED only",
+  "decision_contract_version": "CouncilDecision-current",
+  "internal_agent_topology": [
+    "robustness-guardian",
+    "alpha-synthesis",
+    "data-integrity",
+    "regime-sentinel",
+    "execution-sentinel",
+    "tail-risk-sentinel",
+    "adversarial-sentinel",
+    "calibration-sentinel",
+    "multiple-testing-sentinel",
+    "ood-sentinel"
+  ],
+  "built_changes": {
+    "branch": "feature/apex-council-20260929T034349Z-correlation-quorum",
+    "red_test_commit": "82e8abc0bcaddae5d437476af324e80283c69f06",
+    "production_code_changed": false
+  },
+  "verification": {
+    "startup_heartbeat_commit": "e9841f7dffdb66987ec76670eee97122cb551cdb",
+    "startup_heartbeat_blob": "8896fb943c15b9759fce7e3aa46b89b0aea7e6bf",
+    "red_workflow_runs": [],
+    "pr_creation": "BLOCKED_BY_CONNECTOR_SAFETY_CHECK"
+  },
+  "collisions": [
+    {
+      "pr_number": 2,
+      "path": "icarus_engine/research_service.py",
+      "action": "untouched"
+    }
+  ],
+  "decision_policy_improvement": "RED specification for correlation-aware effective quorum and fail-closed missing dependence evidence.",
+  "NEXT": "Obtain verified RED workflow evidence, implement a measured specialist-dependence field and effective quorum without weakening hard vetoes, run full regression, open/merge only after green CI.",
+  "execution_authorized": false,
+  "persistence_status": "IMMUTABLE_HISTORY_PENDING_VERIFICATION"
+}

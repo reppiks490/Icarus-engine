@@ -1,0 +1,80 @@
+{
+  "schema_version": "omega-stack-manual-reconciliation-v1",
+  "observed_at_utc": "2026-09-29T16:27:26Z",
+  "control_plane_id": "omega-aion-daedalus-native-v2",
+  "branch": "automation/omega-native-v2",
+  "reason": "Manual verification after user-requested check of new natural scheduler runs.",
+  "scheduler_registry": {
+    "enabled_authoritative_count": 5,
+    "timing_mode": "exact_schedule",
+    "timezone": "America/Chicago",
+    "lanes": [
+      {
+        "engine": "omega",
+        "automation_id": "6abb57443c0c81919676c71d87493353",
+        "last_run_time_utc": "2026-09-29T16:02:28.139538Z"
+      },
+      {
+        "engine": "macro",
+        "automation_id": "6ab8174517b48191b67ac472205a28d3",
+        "last_run_time_utc": "2026-09-29T16:09:28.838866Z"
+      },
+      {
+        "engine": "flow",
+        "automation_id": "6ab817544e68819197b5db21eb2cbe2b",
+        "last_run_time_utc": "2026-09-29T16:22:38.215515Z"
+      },
+      {
+        "engine": "aion",
+        "automation_id": "6abb1618be1c8191943f5d4e2d88978d",
+        "last_run_time_utc": "2026-09-29T15:34:08.183648Z"
+      },
+      {
+        "engine": "daedalus",
+        "automation_id": "6ab8177918b48191a97e56c44b57d2c5",
+        "last_run_time_utc": "2026-09-29T15:46:21.894998Z"
+      }
+    ]
+  },
+  "authoritative_repo_observation": {
+    "omega": {
+      "run_id": "omega-20260929T160156Z",
+      "protocol": "omega-stack-persistence-v4.2-write-first",
+      "finalization_status": "LIVENESS_VERIFIED",
+      "work_phase_status": "PENDING",
+      "assessment": "PHASE1_PERSISTED_PHASE2_STRANDED"
+    },
+    "macro": {
+      "run_id": "macro-20260929T091256Z",
+      "protocol": "omega-stack-persistence-v4.0-atomic-latest",
+      "assessment": "NEWER_SCHEDULER_TRIGGER_WITHOUT_NEW_AUTHORITATIVE_RECEIPT"
+    },
+    "flow": {
+      "run_id": "flow-20260929T152748Z",
+      "protocol": "omega-stack-persistence-v4.2-write-first",
+      "finalization_status": "LIVENESS_VERIFIED",
+      "work_phase_status": "PENDING",
+      "assessment": "LATEST_AUTHORITATIVE_RECEIPT_PRECEDES_NEWEST_SCHEDULER_TRIGGER"
+    },
+    "aion": {
+      "run_id": "aion-20260929T133210Z",
+      "protocol": "omega-stack-persistence-v4.0-atomic-latest",
+      "assessment": "NEWER_SCHEDULER_TRIGGER_WITHOUT_NEW_AUTHORITATIVE_RECEIPT"
+    },
+    "daedalus": {
+      "run_id": "daedalus-20260929T144653Z",
+      "protocol": "omega-stack-persistence-v4.0-atomic-latest",
+      "assessment": "NEWER_SCHEDULER_TRIGGER_WITHOUT_NEW_AUTHORITATIVE_RECEIPT"
+    }
+  },
+  "corrective_action": {
+    "scheduler_topology_changed": false,
+    "schedules_changed": false,
+    "enabled_count_changed": false,
+    "prompt_hardening_applied_to_all_five": true,
+    "invariant": "First tool call must be exact GitHub fetch_file; second tool call must be exact GitHub update_file phase-1 liveness receipt; no analysis/search/plugin discovery before persistence.",
+    "protocol_remains": "omega-stack-persistence-v4.2-write-first",
+    "next_acceptance": "Verify subsequent natural cycles produce fresh v4.2 liveness receipts; do not count this manual record as natural acceptance."
+  },
+  "execution_authorized": false
+}

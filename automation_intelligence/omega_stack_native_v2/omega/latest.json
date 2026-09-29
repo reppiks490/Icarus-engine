@@ -1,22 +1,41 @@
 {
   "engine": "omega",
-  "RUN_ID": "omega-20260929T070242Z",
+  "RUN_ID": "omega-20260929T075551Z",
   "RUN_STATUS": "RUN_PERSISTED",
   "FINALIZATION_STATUS": "VERIFIED",
   "CONTROL_PLANE_ID": "omega-aion-daedalus-native-v2",
   "automation_id": "6abb57443c0c81919676c71d87493353",
   "persistence_protocol_version": "omega-stack-persistence-v4.0-atomic-latest",
-  "scheduled_for": "2026-09-29T02:00:00-05:00",
-  "started_at_utc": "2026-09-29T07:02:42Z",
-  "completed_at_utc": "2026-09-29T07:02:42Z",
-  "PREVIOUS_BLOB_SHA": "d6e84d75f8a103b335ac637f0de4bb28eeb483c4",
-  "NET_NEW_DELTA": "FUSION_WATCHDOG: Flow receipt accepted (flow-20260929T052212Z): fresh BTCUSDT spot snapshot but insufficient for abnormal/cross-asset regime inference. DAEDALUS receipt accepted (daedalus-20260929T054950Z): release gate BLOCKED; audit evidence incomplete and existing material assurance defects unresolved. Macro rejected for fusion: no natural v4 persisted/verified receipt. AION rejected for fusion: no natural v4 persisted/verified receipt. FACT: 2/4 specialists currently receipt-verified. MODEL_INFERENCE: fusion confidence constrained. AUDIT_FINDING: DAEDALUS BLOCKING remains authoritative and is not overridden.",
+  "scheduled_for": "2026-09-29T03:00:00-05:00",
+  "started_at_utc": "2026-09-29T07:55:51Z",
+  "completed_at_utc": "2026-09-29T07:55:51Z",
+  "PREVIOUS_BLOB_SHA": "c696d5fdff7740a84269a2a8f287a813d23aab67",
+  "NET_NEW_DELTA": "FUSION_WATCHDOG: Flow accepted (flow-20260929T0720Z): BTCUSDT spot strengthened versus its prior receipt but remains insufficient for a cross-asset abnormal-flow/regime conclusion. AION accepted (aion-20260929T074042Z): durability verified but research degraded; no new experiment/hypothesis/candidate evidence. DAEDALUS accepted (daedalus-20260929T054950Z): release gate remains BLOCKED with incomplete audit evidence and unresolved material assurance defects. Macro rejected: no natural v4 RUN_PERSISTED/VERIFIED receipt. FACT: 3/4 specialist lanes are currently receipt-verified. MODEL_INFERENCE: fusion confidence remains constrained by missing Macro acceptance, single-provider Flow evidence, degraded AION research, and stale/incomplete DAEDALUS assurance. AUDIT_FINDING: DAEDALUS BLOCKING remains authoritative and cannot be overridden by AION.",
   "DATA_GAPS": [
-    "Macro lacks accepted natural v4 receipt.",
-    "AION lacks accepted natural v4 receipt.",
-    "Flow evidence is single-provider/single-instrument.",
-    "DAEDALUS audit evidence is incomplete."
+    "Macro lacks an accepted natural v4 receipt.",
+    "Flow evidence remains single-provider/single-instrument and insufficient for cross-asset regime inference.",
+    "AION produced no new empirical experiment evidence in its latest accepted receipt.",
+    "DAEDALUS latest accepted receipt is older than current Flow/AION receipts and audit evidence remains incomplete."
   ],
   "CONFLICTS": [],
-  "execution_authorized": false
+  "execution_authorized": false,
+  "specialist_acceptance": {
+    "macro": {
+      "accepted": false,
+      "reason": "MIGRATED_IDLE/MIGRATED_READY; no natural v4 receipt."
+    },
+    "flow": {
+      "accepted": true,
+      "RUN_ID": "flow-20260929T0720Z"
+    },
+    "aion": {
+      "accepted": true,
+      "RUN_ID": "aion-20260929T074042Z"
+    },
+    "daedalus": {
+      "accepted": true,
+      "RUN_ID": "daedalus-20260929T054950Z",
+      "release_gate": "BLOCKED"
+    }
+  }
 }

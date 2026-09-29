@@ -1,5 +1,5 @@
 {
-  "schema_version": "agent-fabric-ledger-fallback-v1",
+  "schema_version": "agent-fabric-ledger-fallback-v2",
   "scope": "automation_intelligence/agent_fabric",
   "primary_contract": "automation_intelligence/agent_fabric/persistence_contract.json",
   "applies_to": [
@@ -14,11 +14,14 @@
     "requirements": [
       "fetch current ledger bytes and blob SHA",
       "preserve prior bytes exactly",
-      "append exactly one compact JSON line",
+      "append exactly one compact JSON object followed by one newline",
       "bind previous_ledger_blob_sha to fetched ledger SHA",
       "include exact RUN_CORE and RUN_CORE_SHA256",
       "fresh-SHA update and exact readback",
-      "RUN_ID occurs exactly once in appended record"
+      "verify the prior ledger bytes are an exact prefix",
+      "parse the appended suffix as exactly one JSONL record",
+      "verify that appended record has top-level record_type=HISTORY_VERIFIED and top-level RUN_ID equal to the intended RUN_ID",
+      "nested RUN_ID fields inside RUN_CORE are allowed and must equal the same intended RUN_ID; never validate uniqueness by raw substring count"
     ],
     "authoritative_history_identity": "ledger blob SHA immediately after verified HISTORY_VERIFIED append"
   },
@@ -27,12 +30,13 @@
     "requirements": [
       "latest and state must already be re-fetched and verified",
       "fetch current ledger bytes and blob SHA",
-      "append one compact JSON line preserving exact prior prefix",
+      "append exactly one compact JSON object followed by one newline while preserving exact prior prefix",
       "bind RUN_ID and RUN_CORE_SHA256",
       "bind authoritative history identity",
       "bind actual latest blob SHA",
       "bind previous_ledger_blob_sha to fetched ledger SHA",
-      "fresh-SHA update and exact readback"
+      "fresh-SHA update and exact readback",
+      "parse the appended suffix as exactly one JSONL record and validate top-level identity; nested repeated identity fields are not errors"
     ],
     "authoritative_finalization_identity": "ledger blob SHA immediately after verified FINALIZATION_VERIFIED append"
   },
@@ -44,6 +48,6 @@
     "previous_partial_run_never_blocks_next_hourly_invocation": true,
     "partial_or_stale_run_may_return_to_IDLE_READY_only_after_failure_evidence_is_durably_preserved": true
   },
-  "primary_validator_note": "Primary immutable-file runs remain governed by persistence_contract.json and the existing validator. Ledger fallback is a separate verified recovery path and must be labeled as such.",
+  "primary_validator_note": "Primary immutable-file runs remain governed by persistence_contract.json. Ledger fallback validation is structural JSONL validation, never raw RUN_ID substring counting.",
   "execution_authorized": false
 }

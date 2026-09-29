@@ -8,17 +8,21 @@
     "flow_microstructure",
     "apex_council"
   ],
-  "updated_at": "2026-09-29T05:11:30Z",
+  "updated_at": "2026-09-29T06:05:30Z",
   "latest_runs": {
     "omega": {
       "run_id": "omega-20260928T100234Z",
       "run_time": "2026-09-28T10:02:34Z",
-      "status": "RUN_PERSISTED"
+      "status": "RUN_PERSISTED",
+      "active": false,
+      "role": "historical_disabled_only"
     },
     "macro": {
       "run_id": "macro-20260928T181445Z",
       "run_time": "2026-09-28T18:14:45Z",
-      "status": "RUN_PERSISTED"
+      "status": "RUN_PERSISTED",
+      "active": false,
+      "role": "historical_disabled_only"
     },
     "flow": {
       "run_id": "flow-20260928T102124Z",
@@ -44,14 +48,18 @@
       "run_time": null,
       "status": "INITIALIZED",
       "branch": "feature/agent-fabric-apex-v1",
-      "note": "First finalized scheduled AION run pending."
+      "note": "First finalized scheduled AION run pending.",
+      "active": false,
+      "role": "historical_disabled_only"
     },
     "daedalus": {
       "run_id": null,
       "run_time": null,
       "status": "INITIALIZED",
       "branch": "feature/agent-fabric-apex-v1",
-      "note": "First finalized scheduled DAEDALUS run pending."
+      "note": "First finalized scheduled DAEDALUS run pending.",
+      "active": false,
+      "role": "historical_disabled_only"
     }
   },
   "latest_blob_shas": {
@@ -110,31 +118,29 @@
     }
   ],
   "HISTORICAL_BACKFILL_STATUS": "PARTIAL",
-  "MIGRATION_PROMPT_REFRESH_STATUS": "BLOCKED",
-  "migration_prompt_refresh_failed_conditions": [
-    "AION and DAEDALUS have initialized namespaces but no first RUN_PERSISTED scheduled artifacts yet.",
-    "Macro and Flow scheduler prompts require live post-correction verification of separate heartbeat.json behavior.",
-    "OMEGA has not yet completed a post-topology fusion cycle consuming finalized AION and DAEDALUS state."
-  ],
+  "MIGRATION_PROMPT_REFRESH_STATUS": "SUPERSEDED_BY_RESTORED_FIVE_LOOP_TOPOLOGY",
+  "migration_prompt_refresh_failed_conditions": [],
   "execution_authorized": false,
   "active_heartbeats": {
-    "flow": {
-      "run_id": "flow-20260928T142120Z",
-      "status": "STRANDED_IN_PROGRESS",
-      "path": "automation_intelligence/flow/heartbeat.json",
-      "note": "Preserved; no matching immutable history was found."
-    }
+    "authority": "lane heartbeat files only; this manifest does not cache live heartbeat status",
+    "robustness_guardian": "automation_intelligence/agent_fabric/robustness_guardian/heartbeat.json",
+    "alpha_synthesis": "automation_intelligence/agent_fabric/alpha_synthesis/heartbeat.json",
+    "flow_microstructure": "automation_intelligence/flow/heartbeat.json",
+    "apex_council": "automation_intelligence/agent_fabric/apex_council/heartbeat.json",
+    "advanced_csv": "reppiks490/icarus-csv-evidence-lab:automation_intelligence/advanced_csv/heartbeat.json"
   },
-  "CLEAN_1_TO_1_STATUS": "CONFIGURED_LIVE_VERIFICATION_PENDING",
-  "CLEAN_1_TO_1_DESIGN": "separate-heartbeat-v2",
+  "CLEAN_1_TO_1_STATUS": "PERSISTENCE_HARDENED_NATURAL_RUN_VALIDATION_IN_PROGRESS",
+  "CLEAN_1_TO_1_DESIGN": "primary-immutable-history-plus-fresh-sha-ledger-fallback",
   "CLEAN_1_TO_1_RECONCILIATION": {
-    "flow_latest_restored_to_last_verified_history": true,
-    "flow_stranded_heartbeat_preserved": true,
-    "macro_latest_history_aligned": true,
-    "aion_namespace_initialized": true,
-    "daedalus_namespace_initialized": true,
-    "hardened_active_chatgpt_schedulers": 5,
-    "post_hardening_cycles_verified": 0
+    "restored_scheduler_count": 5,
+    "agent_primary_contract": "automation_intelligence/agent_fabric/persistence_contract.json",
+    "agent_fallback_contract": "automation_intelligence/agent_fabric/persistence_fallback_contract.json",
+    "flow_contract": "automation_intelligence/flow/persistence_contract.json",
+    "csv_contract": "reppiks490/icarus-csv-evidence-lab:automation_intelligence/advanced_csv/persistence_contract.json",
+    "partial_runs_preserved": true,
+    "stale_partial_heartbeats_recovered_to_ready_when_safe": true,
+    "disabled_foreign_stack_remains_non_authoritative": true,
+    "post_hardening_full_cycles_verified": 0
   },
   "active_engines": [
     "robustness_guardian",
@@ -206,7 +212,7 @@
       "note": "Started before clean 1:1 contract migration; no matching history found as of reconciliation."
     }
   },
-  "ACTIVE_TOPOLOGY_STATUS": "RESTORED_FIVE_LOOP_TOPOLOGY_RUNTIME_VALIDATION_IN_PROGRESS",
+  "ACTIVE_TOPOLOGY_STATUS": "RESTORED_FIVE_LOOP_TOPOLOGY_PERSISTENCE_HARDENED",
   "agent_fabric_lanes": {
     "schema_version": "agent-fabric-lanes-v1",
     "canonical_code_branch": "main",
@@ -220,19 +226,19 @@
         "path": "automation_intelligence/agent_fabric/robustness_guardian",
         "code": "icarus_engine/agents/specialists.py::RobustnessGuardianAgent",
         "schedule_title": "Robustness Guardian Evolution",
-        "status": "RUN_PERSISTED_LEGACY_RECONCILED_CODE_HARDENED"
+        "status": "CURRENT_V3_RUN_IN_PROGRESS"
       },
       "alpha_synthesis": {
         "path": "automation_intelligence/agent_fabric/alpha_synthesis",
         "code": "icarus_engine/agents/specialists.py::AlphaSynthesisAgent",
         "schedule_title": "Alpha Synthesis Evolution",
-        "status": "STARTUP_HEARTBEAT_SEEDED_FIRST_VERIFIED_RUN_PENDING"
+        "status": "IDLE_READY_NEXT_RUN_USES_PRIMARY_OR_LEDGER_FALLBACK"
       },
       "apex_council": {
         "path": "automation_intelligence/agent_fabric/apex_council",
         "code": "icarus_engine/agents/apex.py::ApexCouncilAgent",
         "schedule_title": "Apex Council Evolution",
-        "status": "FIRST_RUN_IN_PROGRESS"
+        "status": "CURRENT_V3_RUN_IN_PROGRESS"
       }
     },
     "research_adapter": {
@@ -306,13 +312,15 @@
       "startup_heartbeat_readback_required": true,
       "finalization_receipt_required": true,
       "secondary_library_backup_requires_exact_readback": true,
-      "execution_authorized": false
+      "execution_authorized": false,
+      "fallback_contract": "automation_intelligence/agent_fabric/persistence_fallback_contract.json",
+      "fallback_mode": "append_only_fresh_sha_lane_ledger"
     }
   },
   "SCHEDULER_TOPOLOGY_STATUS": "FIVE_RESTORED_HOURLY_LOOPS_LIVE_VERIFIED",
   "scheduler_topology": {
     "schema_version": "icarus-scheduler-topology-v2",
-    "verified_at": "2026-09-29T05:11:30Z",
+    "verified_at": "2026-09-29T06:05:30Z",
     "authority": "live ChatGPT automation registry for this account",
     "active_count": 5,
     "cadence": "hourly",
@@ -368,7 +376,7 @@
       "DAEDALUS PRIME Systems Auditor"
     ],
     "execution_authorized": false,
-    "persistence_hardening": "Agent lanes use agent-fabric-persistence-v3; data lanes use GitHub-primary finalization with independent secondary Library backup."
+    "persistence_hardening": "Agent lanes use v3 primary immutable history/finalization with verified append-only lane-ledger fallback; Flow and Advanced CSV use GitHub-primary history with verified append-only ledger fallback; Library backup is secondary and non-blocking."
   },
   "scheduler_topology_supersedes_legacy_active_engines_for_automation_state": true,
   "SCHEDULER_TRUTH_STATUS": "LIVE_REGISTRY_VERIFIED_RESTORED_TOPOLOGY",
@@ -411,24 +419,29 @@
   },
   "runtime_validation": {
     "robustness_guardian": {
-      "latest_successful_run_id": "robustness-guardian-20260928T200632Z",
-      "current_partial_run_id": "robustness-guardian-20260929T050500Z"
+      "status": "IN_PROGRESS",
+      "current_run_id": "robustness-guardian-20260929T060500Z",
+      "previous_partial_run_id": "robustness-guardian-20260929T050500Z"
     },
     "advanced_csv": {
-      "latest_observed_run_id": "advanced-csv-20260929T041500Z",
-      "status": "PARTIAL_PERSISTENCE"
+      "status": "IDLE_READY",
+      "previous_partial_run_id": "advanced-csv-20260929T051500Z",
+      "fallback_ready": true
     },
     "alpha_synthesis": {
-      "latest_successful_run_id": "alpha-synthesis-20260928T212646Z",
-      "current_partial_run_id": "alpha-synthesis-20260929T032129Z"
+      "status": "IDLE_READY",
+      "previous_partial_run_id": "alpha-synthesis-20260929T032129Z",
+      "note": "prior immutable history hash mismatch preserved; next run recomputes canonical hash"
     },
     "flow_microstructure": {
-      "latest_successful_run_id": "flow-20260928T102124Z",
-      "current_partial_run_id": "flow-20260929T033500Z"
+      "status": "IDLE_READY",
+      "previous_partial_run_id": "flow-20260929T053500Z",
+      "fallback_ready": true
     },
     "apex_council": {
-      "latest_successful_run_id": "apex-council-20260928T214335Z",
-      "current_partial_run_id": "apex-council-20260929T034349Z"
+      "status": "IN_PROGRESS",
+      "current_run_id": "apex-council-20260929T054500Z",
+      "fallback_ready_for_future_invocations": true
     }
   },
   "restored_loop_locations": {

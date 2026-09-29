@@ -8,7 +8,7 @@
     "flow_microstructure",
     "apex_council"
   ],
-  "updated_at": "2026-09-29T18:12:00Z",
+  "updated_at": "2026-09-29T18:13:00Z",
   "latest_runs": {
     "omega": {
       "run_id": "omega-20260928T100234Z",
@@ -69,11 +69,16 @@
       "role": "historical_disabled_only"
     },
     "robustness_guardian": {
-      "run_id": "robustness-guardian-20260929T060500Z",
-      "status": "FINALIZATION_VERIFIED_WITH_NEWER_STARTUP_PARTIAL_PRESERVED",
-      "active": true,
+      "run_id": "robustness-guardian-20260929T180500Z",
+      "run_time": "2026-09-29T18:05:00Z",
+      "status": "RUN_PERSISTED",
+      "scheduler_title": "Robustness Guardian Evolution",
       "scheduler_id": "6abaf924e0248191b8a11bd1d32bf0b7",
-      "previous_partial_run_id": "robustness-guardian-20260929T150500Z"
+      "active": true,
+      "history_mode": "primary_immutable_file",
+      "history_blob_sha": "27771f5a7171cda2ac4f3bc928898522f8625f53",
+      "latest_blob_sha": "37712e50831f0c6b7d5c0b854bb38a9f47aeefd7",
+      "finalization_blob_sha": "632edfbc0319946a2ebe61b3e233413684f3ee4a"
     },
     "advanced_csv": {
       "run_id": "advanced-csv-20260929T081500Z",
@@ -92,10 +97,16 @@
       "scheduler_id": "6abaf8d75cf48191bc7ce06bc0006f1c"
     },
     "apex_council": {
-      "run_id": "apex-council-20260929T144500Z",
-      "status": "FINALIZATION_VERIFIED_LEDGER_FALLBACK",
+      "run_id": "apex-council-20260929T174500Z",
+      "run_time": "2026-09-29T17:45:00Z",
+      "status": "RUN_PERSISTED",
+      "scheduler_title": "Apex Council Evolution",
+      "scheduler_id": "6ababd570fac81918777c8f809cf67c9",
       "active": true,
-      "scheduler_id": "6ababd570fac81918777c8f809cf67c9"
+      "history_mode": "ledger_fallback",
+      "history_blob_sha": "5150ab3c440c8899868490458015b48fafdaeae6",
+      "latest_blob_sha": "1079f286bbea9a81fba0f1890b191a5f11a6ea3c",
+      "finalization_ledger_sha": "9ac44f1c0ac5af066c40b2d05b199268accbc943"
     }
   },
   "latest_blob_shas": {
@@ -466,16 +477,12 @@
   },
   "runtime_validation": {
     "robustness_guardian": {
-      "latest_successful_run_id": "robustness-guardian-20260929T170500Z",
+      "latest_successful_run_id": "robustness-guardian-20260929T180500Z",
       "status": "FINALIZATION_VERIFIED",
-      "history_blob_sha": "0a945cb64284fa8cbd8404a4c65b0cb7257fa29f",
-      "latest_blob_sha": "fac8958e99ecec53888a0b49bc35ac3a1dc48045",
-      "finalization_blob_sha": "20d4f6e0d7633319faa91adada5e197074fd5560",
-      "heartbeat_blob_sha": "0b8750613372a2486f51454ab31fed3e240cb93e",
-      "prior_trigger_gaps": [
-        "robustness-guardian-20260929T150500Z",
-        "robustness-guardian-20260929T160500Z"
-      ]
+      "history_blob_sha": "27771f5a7171cda2ac4f3bc928898522f8625f53",
+      "latest_blob_sha": "37712e50831f0c6b7d5c0b854bb38a9f47aeefd7",
+      "finalization_blob_sha": "632edfbc0319946a2ebe61b3e233413684f3ee4a",
+      "heartbeat_blob_sha": "93db510909c76370809f015535d1e450a82573f2"
     },
     "advanced_csv": {
       "repository": "reppiks490/icarus-csv-evidence-lab",
@@ -500,10 +507,12 @@
       "prior_trigger_gap": "flow-20260929T163500Z"
     },
     "apex_council": {
-      "latest_successful_run_id": "apex-council-20260929T144500Z",
-      "status": "RUN_PERSISTED_WITH_LATEST_TRIGGER_GAP_PRESERVED",
-      "latest_trigger_without_startup_expected_run_id": "apex-council-20260929T164500Z",
-      "current_ledger_blob_sha": "fd79fa3f20c9c230441c40f4525099de258563b9"
+      "latest_successful_run_id": "apex-council-20260929T174500Z",
+      "status": "FINALIZATION_VERIFIED_LEDGER_FALLBACK",
+      "history_blob_sha": "5150ab3c440c8899868490458015b48fafdaeae6",
+      "latest_blob_sha": "1079f286bbea9a81fba0f1890b191a5f11a6ea3c",
+      "finalization_ledger_sha": "9ac44f1c0ac5af066c40b2d05b199268accbc943",
+      "heartbeat_blob_sha": "cff2928f4bae27ffd437c1c5706d82486ceccc63"
     }
   },
   "restored_loop_locations": {

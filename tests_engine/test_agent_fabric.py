@@ -189,3 +189,24 @@ def test_robustness_guardian_rejects_missing_stress_evidence():
         verdict = RobustnessGuardianAgent().evaluate(evidence)
         assert verdict.decision == "reject"
         assert verdict.veto is True
+
+
+def test_apex_council_requires_independent_quorum_evidence():
+    result = ApexCouncilAgent().evaluate(strong())
+    assert result.effective_quorum >= 9.0
+    assert result.dependence_evidence_sufficient is True
+
+
+def test_apex_council_common_mode_dependence_cannot_promote():
+    council = ApexCouncilAgent()
+    result = council.evaluate(strong(specialist_effective_independence=0.55))
+    assert result.decision != "promote"
+    assert result.shadow_eligible is False
+    assert result.effective_quorum < council.config.quorum
+
+
+def test_apex_council_missing_dependence_evidence_fails_closed():
+    result = ApexCouncilAgent().evaluate(strong(specialist_effective_independence=None))
+    assert result.decision != "promote"
+    assert result.dependence_evidence_sufficient is False
+    assert result.execution_authorized is False

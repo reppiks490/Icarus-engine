@@ -1,0 +1,56 @@
+{
+  "schema_version": "omega-stack-live-incident-v1",
+  "incident_id": "control-plane-reconciliation-20260929T014100Z",
+  "observed_at_utc": "2026-09-29T01:41:00Z",
+  "stack_instance_id": "ICARUS-LIVE-6ABB-20260929",
+  "control_plane_id": "omega-live-6abb-v1",
+  "live_scheduler_verified": {
+    "enabled_count": 5,
+    "timezone": "America/Chicago",
+    "timing_mode": "exact_schedule",
+    "lanes": [
+      {
+        "lane": "omega",
+        "automation_id": "6abb1012ff408191a6da245488f87dc2",
+        "minute": 0
+      },
+      {
+        "lane": "macro",
+        "automation_id": "6abb101aecf8819180edb577bb098364",
+        "minute": 12
+      },
+      {
+        "lane": "flow",
+        "automation_id": "6abb1022ac1881918a86ee30d74fa9dd",
+        "minute": 24
+      },
+      {
+        "lane": "aion",
+        "automation_id": "6abb102bde94819189bbf57062edcb32",
+        "minute": 36
+      },
+      {
+        "lane": "daedalus",
+        "automation_id": "6abb103472608191b72f9eaa522b772b",
+        "minute": 48
+      }
+    ]
+  },
+  "conflict": {
+    "stale_namespace": "automation_intelligence/omega_stack",
+    "status": "READ_ONLY_HISTORICAL_CONFLICT_EVIDENCE",
+    "finding": "The old control plane contradicted the live native registry by treating predecessor IDs as current and the live 6abb IDs as temporary/historical."
+  },
+  "repairs": [
+    "Rebound Macro Shock Sentinel prompt to automation_intelligence/omega_stack_live_6abb/macro.",
+    "Rebound Flow Velocity Engine prompt to automation_intelligence/omega_stack_live_6abb/flow.",
+    "Rebound AION PRIME Quant Scientist prompt to automation_intelligence/omega_stack_live_6abb/aion.",
+    "Rebound DAEDALUS PRIME Systems Auditor prompt to automation_intelligence/omega_stack_live_6abb/daedalus.",
+    "Initialized missing live_6abb bootstrap files for OMEGA heartbeat, Macro checkpoint, Flow heartbeat, and DAEDALUS heartbeat with exact pinned identities.",
+    "Verified AION v3.2 immutable core/history/latest/finalization binding for RUN_ID aion-live-20260929T013755Z.",
+    "Repaired AION mutable heartbeat from stale IN_PROGRESS to IDLE/FINALIZATION_VERIFIED after receipt and checkpoint verification."
+  ],
+  "immutable_artifacts_preserved": true,
+  "old_namespaces_mutated": false,
+  "execution_authorized": false
+}

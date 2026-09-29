@@ -1,45 +1,61 @@
 {
-  "schema_version": "alpha-synthesis-run-v1",
-  "RUN_ID": "alpha-synthesis-20260928T212646Z",
+  "schema_version": "agent-fabric-persistence-v3",
+  "agent": "alpha_synthesis",
+  "RUN_ID": "alpha-synthesis-20260929T062500Z",
   "RUN_STATUS": "RUN_PERSISTED",
-  "run_start_time": "2026-09-28T21:26:46Z",
-  "completed_at": "2026-09-28T21:30:00Z",
-  "EXPECTED_CADENCE_MINUTES": 60,
-  "PREVIOUS_SUCCESSFUL_RUN_ID": null,
-  "base_main_sha": "51106e9d35b1f4dd1341eec717ffc738922442bf",
-  "final_main_sha": "6e6ed496a8d9e808d2fc538e7c2cb8b283fe633b",
-  "code_paths_read": [
-    "icarus_engine/agents/specialists.py",
-    "icarus_engine/agents/research_adapter.py",
-    "tests_engine/test_agent_fabric.py"
-  ],
-  "datasets_evidence_identity_used": [],
-  "tests_run_ids": [],
-  "pr_commit_evidence": {
-    "open_prs": [
-      2
+  "RUN_CORE": {
+    "agent": "alpha_synthesis",
+    "RUN_ID": "alpha-synthesis-20260929T062500Z",
+    "persistence_protocol_version": "agent-fabric-persistence-v3",
+    "execution_authorized": false,
+    "run_times": {
+      "scheduled_utc": "2026-09-29T06:25:00Z",
+      "startup_commit_observed_utc": "2026-09-29T06:24:11Z"
+    },
+    "evidence_dataset_identity": {
+      "candidate_dataset": "NONE_AVAILABLE_THIS_CYCLE",
+      "protected_final_holdout_used": false,
+      "research_adapter_blob_sha": "4b3cfa7a95d34e13cc4c210d5eb7631b160ab40b",
+      "contracts_blob_sha": "76b8cd964c03066932600183f3ad7e2d6a42b1aa",
+      "specialists_blob_sha": "93be9f7cdb378f36f8ab297f3c5236c09bd55cd7",
+      "tests_blob_sha": "9a7d75d452b1e3e172840219526979c4ff9243b8"
+    },
+    "findings": [
+      "Alpha already scores lower-bound net expectancy, stressed-cost retention, return/drawdown efficiency, tail-risk economics, diversification, capacity utilization, parameter stability and bootstrap sign stability.",
+      "Turnover is transported as a finite non-negative scalar but has no horizon or notional normalization in CandidateEvidence or AdvancedAgentEvidence, so adding it directly to Alpha scoring would be scale-sensitive and economically ambiguous.",
+      "Capacity is represented only as capacity_utilization in [0,1]; the current contract does not bind participation rate, stressed market-impact bps, or a capacity-at-impact threshold.",
+      "The research adapter binds study/dataset/baseline hashes and derives normal/stressed expectancy from qualified fixed-holdout evidence, but turnover and capacity remain caller-supplied advanced evidence rather than derived from an auditable execution-economics model.",
+      "PR #2 remains open and collides with research_service.py; that shared path was not touched."
     ],
-    "known_collision": "PR #2 overlaps icarus_engine/research_service.py; untouched",
-    "startup_heartbeat_commit": "6e6ed496a8d9e808d2fc538e7c2cb8b283fe633b"
+    "built_changes": [],
+    "tests_workflows": {
+      "tests_run": [],
+      "workflow_runs": [],
+      "reason": "No behavioral code change was made; this was a bounded contract/economics review."
+    },
+    "pr_commit_evidence": {
+      "startup_commit_sha": "493ff2384f9380246c036ed67588340fb51db58d",
+      "open_prs": [
+        {
+          "number": 2,
+          "head_sha": "f04ae692a54eff04f9098961bcd8e578cd25d9ca",
+          "collision": "icarus_engine/research_service.py"
+        }
+      ],
+      "base_main_sha_before_startup": "facdc3bd27f06ea87346b8ff0f755d9337f3a0d6",
+      "main_sha_after_startup": "493ff2384f9380246c036ed67588340fb51db58d"
+    },
+    "unresolved_risks": [
+      "No fresh candidate dataset was available for empirical calibration.",
+      "Turnover and capacity economics are under-specified for cross-asset/cross-horizon scoring.",
+      "Adding turnover penalties before unit normalization could create false ranking differences.",
+      "PR #2 collision remains unresolved."
+    ],
+    "NEXT": "Define a versioned execution-economics evidence extension before changing Alpha scoring: turnover horizon and notional basis, participation rate, stressed market-impact bps, capacity-at-impact threshold, and monotonicity tests. Keep research_service.py untouched until PR #2 is reconciled."
   },
-  "capabilities_actually_invoked": [
-    "GitHub"
-  ],
-  "unavailable_capabilities": [],
-  "findings": [
-    "Alpha already scores net expectancy LCB, stressed expectancy retention, deflated/probabilistic Sharpe, return/drawdown efficiency, expected shortfall, diversification, capacity utilization, parameter stability, and bootstrap sign stability.",
-    "Turnover is validated and transported in CandidateEvidence but is not yet an explicit AlphaSynthesisAgent score component.",
-    "No qualified candidate dataset/evidence was available in this cycle; no profitability claim or parameter optimization was performed.",
-    "A future turnover/capacity enhancement requires explicit economically meaningful units and scaling before behavioral code changes."
-  ],
-  "built_changes": [],
-  "unresolved_risks": [
-    "No fresh empirical candidate evidence was available for economic calibration.",
-    "Turnover and richer market-impact/capacity economics remain under-specified for scoring.",
-    "PR #2 remains an open collision on research_service.py and must be reconciled before touching that path."
-  ],
-  "NEXT": "Design a test-first Alpha-owned turnover/capacity economics extension with explicit units, monotonicity and cost-model linkage; do not tune on protected final holdouts.",
-  "PERSISTENCE_STATUS": "GITHUB_FINALIZATION_IN_PROGRESS",
-  "secondary_library_backup_status": "UNVERIFIED_NOT_CLAIMED",
+  "RUN_CORE_SHA256": "323aa5175f900cba4350284028d81716737ec4866f8a9aff47ee27bfb989d2e4",
+  "history_mode": "ledger_fallback",
+  "history_blob_sha": "a77286e0493388fe33cbebe3684770c9dc054454",
+  "ledger_blob_sha": "a77286e0493388fe33cbebe3684770c9dc054454",
   "execution_authorized": false
 }

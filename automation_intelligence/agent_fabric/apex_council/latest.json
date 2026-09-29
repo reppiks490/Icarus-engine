@@ -1,30 +1,31 @@
 {
   "schema_version": "agent-fabric-persistence-v3",
   "agent": "apex_council",
-  "RUN_ID": "apex-council-20260929T144500Z",
+  "RUN_ID": "apex-council-20260929T174500Z",
   "RUN_STATUS": "RUN_PERSISTED",
   "RUN_CORE": {
     "agent": "apex_council",
-    "RUN_ID": "apex-council-20260929T144500Z",
+    "RUN_ID": "apex-council-20260929T174500Z",
     "persistence_protocol_version": "agent-fabric-persistence-v3",
     "execution_authorized": false,
-    "run_start_time": "2026-09-29T14:48:30Z",
-    "run_end_time": "2026-09-29T14:51:00Z",
-    "base_main_sha": "f9e71c5dc1ca7035745ed6d4fb5e0d001248f8ad",
-    "final_main_sha": "31e4642c363f5fe7e0719ed856251a916c7a1e36",
+    "run_start_time": "2026-09-29T17:49:10Z",
+    "run_end_time": "2026-09-29T17:53:00Z",
+    "base_main_sha": "3ea1962629fed1858c59e29e8951d68a25ca3c57",
+    "final_main_sha": "8263e20dc6e18ca24177627f6b7b9d7333ac98a2",
     "specialist_states_consumed": {
       "robustness_guardian": {
-        "run_id": "robustness-guardian-20260929T060500Z",
+        "run_id": "robustness-guardian-20260929T170500Z",
         "status": "RUN_PERSISTED",
-        "persistence": "FINALIZATION_VERIFIED"
+        "history_mode": "primary_immutable_file"
       },
       "alpha_synthesis": {
-        "run_id": "alpha-synthesis-20260928T212646Z",
-        "status": "RUN_PERSISTED"
+        "run_id": "alpha-synthesis-20260929T062500Z",
+        "status": "RUN_PERSISTED",
+        "history_mode": "ledger_fallback"
       }
     },
-    "evidence_contract": "AdvancedAgentEvidence-v2 -> CandidateEvidence",
-    "decision_contract": "ApexCouncilAgent-v1",
+    "evidence_contract": "CandidateEvidence lacks explicit specialist-dependence/common-provenance and immutable dataset/split/cutoff/final-holdout identities",
+    "decision_contract": "ApexCouncilAgent-v1 fixed 9/10 quorum, 8/10 promote minimum, hard-veto dominance, median score, disagreement ceiling, shadow-only",
     "internal_topology": [
       "robustness-guardian",
       "alpha-synthesis",
@@ -40,11 +41,11 @@
     "built_changes": [],
     "tests_workflows": {
       "run_ids": [],
-      "note": "No behavioral code change; bounded architecture evaluation only."
+      "note": "No behavioral code change; collision-safe bounded evaluation only."
     },
     "pr_commit_evidence": {
-      "startup_heartbeat_commit": "31e4642c363f5fe7e0719ed856251a916c7a1e36",
-      "startup_heartbeat_blob": "2e11661ed227b9590efbed221a9e307a83aba3c5",
+      "startup_heartbeat_commit": "8263e20dc6e18ca24177627f6b7b9d7333ac98a2",
+      "startup_heartbeat_blob": "4489f4897dfd159aed5a87cc268fc14277cecaad",
       "open_prs": [
         2
       ],
@@ -52,27 +53,15 @@
       "pr2_collision_path": "icarus_engine/research_service.py"
     },
     "disagreements_collisions": [
-      "PR #2 overlaps icarus_engine/research_service.py; Apex did not touch that path.",
-      "Current fixed quorum assumes vote independence while no first-class specialist-dependence/common-provenance contract exists; no correlation penalty was fabricated."
+      "Robustness Guardian prioritizes immutable dataset/split/cutoff/final-holdout lineage; Alpha Synthesis prioritizes versioned execution-economics evidence. Both are valid sibling gaps and neither is collapsed into Apex ownership.",
+      "Apex dependence-aware quorum remains blocked on explicit specialist dependence/common-provenance evidence; no inferred correlation penalty is permitted.",
+      "PR #2 remains open and overlaps research_service.py; Apex did not touch it."
     ],
-    "decision_policy_review": {
-      "existing": [
-        "hard specialist veto dominance",
-        "9/10 non-reject quorum",
-        "8/10 promote-vote minimum",
-        "median score aggregation",
-        "score-disagreement ceiling",
-        "deterministic trace",
-        "shadow-only promotion"
-      ],
-      "finding": "Dependence-aware effective quorum remains the highest-value bounded Apex improvement, but must fail closed unless explicit specialist dependence/provenance evidence is supplied.",
-      "action": "NO_CODE_CHANGE_THIS_RUN"
-    },
-    "NEXT": "Create RED Apex-only tests for explicit specialist dependence groups/common provenance, missing-dependence fail-closed behavior, specialist-order invariance, preservation of every hard veto, and execution_authorized=false before implementing effective-quorum semantics."
+    "NEXT": "After PR #2/shared-contract collision is reconciled, use a run-specific branch and RED tests to add explicit auditable specialist dependence/common-provenance semantics that fail closed when missing, preserve specialist-order invariance and every hard veto, and keep execution_authorized=false. Coordinate with Guardian lineage and Alpha execution-economics extensions without merging sibling ownership."
   },
-  "RUN_CORE_SHA256": "a39c1b0260090930e28c5c2d4a4f57a3116d8f9779d0fd5464f6e2ac9f4f7daa",
+  "RUN_CORE_SHA256": "360f8646a096e238cb588959058b9e12ac9b2238dc10d2e09f40ec9cd03ca7ea",
   "history_mode": "ledger_fallback",
-  "history_blob_sha": "c9e544bd5d75dd4e2b994453fc1590e35c8acc5a",
-  "ledger_blob_sha": "c9e544bd5d75dd4e2b994453fc1590e35c8acc5a",
+  "history_blob_sha": "5150ab3c440c8899868490458015b48fafdaeae6",
+  "ledger_blob_sha": "5150ab3c440c8899868490458015b48fafdaeae6",
   "execution_authorized": false
 }

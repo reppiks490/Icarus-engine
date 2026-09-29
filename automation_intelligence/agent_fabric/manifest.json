@@ -14,7 +14,9 @@
       "root": "automation_intelligence/agent_fabric/robustness_guardian",
       "code": "icarus_engine/agents/specialists.py::RobustnessGuardianAgent",
       "heartbeat_status": "SEE_LANE_HEARTBEAT",
-      "runtime_status_source": "automation_intelligence/agent_fabric/robustness_guardian/heartbeat.json"
+      "runtime_status_source": "automation_intelligence/agent_fabric/robustness_guardian/heartbeat.json",
+      "history_ledger": "automation_intelligence/agent_fabric/robustness_guardian/history_ledger.jsonl",
+      "persistence_fallback": "agent-fabric-ledger-fallback-v1"
     },
     "alpha_synthesis": {
       "title": "Alpha Synthesis Evolution",
@@ -23,7 +25,9 @@
       "root": "automation_intelligence/agent_fabric/alpha_synthesis",
       "code": "icarus_engine/agents/specialists.py::AlphaSynthesisAgent",
       "heartbeat_status": "SEE_LANE_HEARTBEAT",
-      "runtime_status_source": "automation_intelligence/agent_fabric/alpha_synthesis/heartbeat.json"
+      "runtime_status_source": "automation_intelligence/agent_fabric/alpha_synthesis/heartbeat.json",
+      "history_ledger": "automation_intelligence/agent_fabric/alpha_synthesis/history_ledger.jsonl",
+      "persistence_fallback": "agent-fabric-ledger-fallback-v1"
     },
     "apex_council": {
       "title": "Apex Council Evolution",
@@ -32,7 +36,9 @@
       "root": "automation_intelligence/agent_fabric/apex_council",
       "code": "icarus_engine/agents/apex.py::ApexCouncilAgent",
       "heartbeat_status": "SEE_LANE_HEARTBEAT",
-      "runtime_status_source": "automation_intelligence/agent_fabric/apex_council/heartbeat.json"
+      "runtime_status_source": "automation_intelligence/agent_fabric/apex_council/heartbeat.json",
+      "history_ledger": "automation_intelligence/agent_fabric/apex_council/history_ledger.jsonl",
+      "persistence_fallback": "agent-fabric-ledger-fallback-v1"
     }
   },
   "foreign_or_separate_namespaces": [
@@ -62,5 +68,6 @@
     }
   },
   "execution_authorized": false,
-  "runtime_status_policy": "Lane heartbeat/latest/state/finalization artifacts are runtime truth; this manifest is scheduler binding authority only."
+  "runtime_status_policy": "Lane heartbeat/latest/state plus primary immutable artifacts or verified lane ledger fallback are runtime truth; this manifest is scheduler binding authority only.",
+  "persistence_fallback_contract": "automation_intelligence/agent_fabric/persistence_fallback_contract.json"
 }

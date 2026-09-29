@@ -4,11 +4,15 @@
   "scheduler_title": "Alpha Synthesis Evolution",
   "scheduler_id": "6abaf8d75cf48191bc7ce06bc0006f1c",
   "RUN_ID": "alpha-synthesis-20260929T062500Z",
-  "RUN_STATUS": "IN_PROGRESS",
+  "RUN_STATUS": "PARTIAL_PERSISTENCE",
   "run_start_time": "2026-09-29T06:25:00Z",
   "EXPECTED_CADENCE_MINUTES": 60,
   "persistence_protocol_version": "agent-fabric-persistence-v3",
-  "previous_partial_preserved": true,
-  "PREVIOUS_PARTIAL_RUN_ID": "alpha-synthesis-20260929T032129Z",
+  "RUN_CORE_SHA256": "323aa5175f900cba4350284028d81716737ec4866f8a9aff47ee27bfb989d2e4",
+  "failure_stage": "LEDGER_HISTORY_EXACT_READBACK_VERIFICATION",
+  "failure_reason": "Primary immutable history creation was blocked. Ledger HISTORY_VERIFIED append was written but failed exact fallback verification because RUN_ID occurred more than once in the appended record; latest/state were not advanced.",
+  "latest_advanced": false,
+  "state_advanced": false,
+  "next_hourly_invocation_allowed": true,
   "execution_authorized": false
 }

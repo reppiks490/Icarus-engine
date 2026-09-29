@@ -8,7 +8,7 @@
     "flow_microstructure",
     "apex_council"
   ],
-  "updated_at": "2026-09-29T15:14:00Z",
+  "updated_at": "2026-09-29T17:18:30Z",
   "latest_runs": {
     "omega": {
       "run_id": "omega-20260928T100234Z",
@@ -259,7 +259,7 @@
       "note": "Started before clean 1:1 contract migration; no matching history found as of reconciliation."
     }
   },
-  "ACTIVE_TOPOLOGY_STATUS": "FIVE_LOOP_TOPOLOGY_READY_FOR_NEXT_SCHEDULED_CYCLE",
+  "ACTIVE_TOPOLOGY_STATUS": "RESTORED_FIVE_LOOP_TOPOLOGY_HARDENED_CURRENT_SLOT_CONTINUATION",
   "agent_fabric_lanes": {
     "schema_version": "agent-fabric-lanes-v1",
     "canonical_code_branch": "main",
@@ -364,7 +364,7 @@
       "fallback_mode": "append_only_fresh_sha_lane_ledger"
     }
   },
-  "SCHEDULER_TOPOLOGY_STATUS": "FIVE_RESTORED_HOURLY_LOOPS_LIVE_VERIFIED_READY",
+  "SCHEDULER_TOPOLOGY_STATUS": "FIVE_RESTORED_HOURLY_LOOPS_LIVE_VERIFIED",
   "scheduler_topology": {
     "schema_version": "icarus-scheduler-topology-v2",
     "verified_at": "2026-09-29T15:01:10Z",
@@ -466,51 +466,43 @@
   },
   "runtime_validation": {
     "robustness_guardian": {
-      "status": "IDLE_READY_AFTER_FINALIZED_060500Z_AND_PRESERVED_150500Z_STARTUP_PARTIAL",
-      "current_run_id": "robustness-guardian-20260929T060500Z",
-      "history_blob_sha": "f0379ac13f0ad717c22f1dece93b4adfe22e7fbd",
-      "latest_blob_sha": "b29017808e1ccead51d0892e7a4622f4cae83e9c",
-      "finalization_blob_sha": "c99b171676ca69c200c8b8aa131d24213ab3ef52",
-      "previous_partial_run_id": "robustness-guardian-20260929T150500Z",
-      "heartbeat_blob_sha": "9ae6200631bd092f20c5ff2f699d0deeaf5c883b"
+      "latest_successful_run_id": "robustness-guardian-20260929T170500Z",
+      "status": "FINALIZATION_VERIFIED",
+      "history_blob_sha": "0a945cb64284fa8cbd8404a4c65b0cb7257fa29f",
+      "latest_blob_sha": "fac8958e99ecec53888a0b49bc35ac3a1dc48045",
+      "finalization_blob_sha": "20d4f6e0d7633319faa91adada5e197074fd5560",
+      "heartbeat_blob_sha": "0b8750613372a2486f51454ab31fed3e240cb93e",
+      "prior_trigger_gaps": [
+        "robustness-guardian-20260929T150500Z",
+        "robustness-guardian-20260929T160500Z"
+      ]
     },
     "advanced_csv": {
-      "status": "RUN_PERSISTED_POINTERS_RECONCILED",
-      "current_run_id": "advanced-csv-20260929T081500Z",
-      "history_mode": "ledger_fallback",
-      "history_ledger_blob_sha": "7ee0685be714cd5b625ab03030a7ba4681d7c25d",
-      "latest_blob_sha": "ab3e829aa3b69510395b245031e23f5f1fb0f362",
-      "state_blob_sha": "603e2ba201411a1886017be05f20edd63ca78898",
-      "heartbeat_blob_sha": "5954ac35542664e77faa281d65c5921d9f37082d"
+      "repository": "reppiks490/icarus-csv-evidence-lab",
+      "latest_successful_run_id": "advanced-csv-20260929T081500Z",
+      "status": "IDLE_READY_AFTER_TRIGGER_GAP_PRESERVATION",
+      "latest_trigger_without_startup_expected_run_id": "advanced-csv-20260929T161500Z",
+      "current_ledger_blob_sha": "38cb81e1412e429814d811db034c677942471a57",
+      "note": "No 17:15 durable run evidence observed as of reconciliation; do not infer completion from schedule."
     },
     "alpha_synthesis": {
-      "status": "IDLE_READY_AFTER_FINALIZED_062500Z_AND_PRESERVED_072500Z_PARTIAL",
-      "current_run_id": "alpha-synthesis-20260929T062500Z",
-      "history_mode": "ledger_fallback",
-      "history_identity": "a77286e0493388fe33cbebe3684770c9dc054454",
-      "latest_blob_sha": "333b8dfd9ac676b8c404772b10e1dd8dc48871ee",
-      "state_blob_sha": "481ffaf7b802e87207e54ffd9173472340a5dc28",
-      "finalization_identity": "3013809381e12738fe644d818f22bd94c636d718",
-      "heartbeat_blob_sha": "a5be3d6ac02f7a616f32f0ce75346d865ed0a6cf",
-      "previous_partial_run_id": "alpha-synthesis-20260929T072500Z"
+      "latest_successful_run_id": "alpha-synthesis-20260929T062500Z",
+      "status": "IDLE_READY_AFTER_STALE_HEARTBEAT_REPAIR",
+      "prior_stale_run_id": "alpha-synthesis-20260929T152500Z",
+      "latest_trigger_without_startup_expected_run_id": "alpha-synthesis-20260929T162500Z",
+      "current_ledger_blob_sha": "fe333e6b042f645821456907cf73baacce1aab59"
     },
     "flow_microstructure": {
-      "status": "IDLE_READY_AFTER_PERSISTED_063500Z_AND_PRESERVED_113500Z_PARTIAL",
-      "current_run_id": "flow-20260929T063500Z",
-      "history_mode": "ledger_fallback",
-      "history_identity": "f50f6bf110fccb93ea6ec6ee631fbc2523446b6c",
-      "latest_blob_sha": "5a8f738f75a847edd763eaf5207d4ff17b1fdff7",
-      "heartbeat_blob_sha": "8adad945a11648abef9e90f1f7397c582514f269",
-      "previous_partial_run_id": "flow-20260929T113500Z"
+      "latest_successful_run_id": "flow-20260929T063500Z",
+      "status": "IDLE_READY_AFTER_TRIGGER_GAP_PRESERVATION",
+      "latest_trigger_without_startup_expected_run_id": "flow-20260929T163500Z",
+      "current_ledger_blob_sha": "17407f0aa8901b1d93614761063d7c441c29dcae"
     },
     "apex_council": {
-      "status": "FINALIZATION_VERIFIED_LEDGER_FALLBACK",
-      "current_run_id": "apex-council-20260929T144500Z",
-      "history_identity": "c9e544bd5d75dd4e2b994453fc1590e35c8acc5a",
-      "latest_blob_sha": "d3258c843763dd96171293172cef6057ed311934",
-      "state_blob_sha": "3e95a36431a4f71142637884c4168e3557691b0f",
-      "finalization_blob_sha": "363bba3a184668090ac0e52cef1dab3c0b58334c",
-      "heartbeat_blob_sha": "19b72d464bb7dbb977d739e24bc309539db78335"
+      "latest_successful_run_id": "apex-council-20260929T144500Z",
+      "status": "RUN_PERSISTED_WITH_LATEST_TRIGGER_GAP_PRESERVED",
+      "latest_trigger_without_startup_expected_run_id": "apex-council-20260929T164500Z",
+      "current_ledger_blob_sha": "fd79fa3f20c9c230441c40f4525099de258563b9"
     }
   },
   "restored_loop_locations": {
@@ -539,5 +531,17 @@
       "path": "automation_intelligence/agent_fabric/apex_council",
       "scheduler_id": "6ababd570fac81918777c8f809cf67c9"
     }
+  },
+  "current_slot_continuation_repair": {
+    "status": "APPLIED_TO_ALL_FIVE_SCHEDULER_PROMPTS_AND_DURABLE_BINDINGS",
+    "rule": "Prior-run recovery is STEP 0 only; every invocation must still create and persist its own current scheduled RUN_ID unless current-slot startup persistence itself fails after one safe retry.",
+    "scheduler_ids": [
+      "6abaf924e0248191b8a11bd1d32bf0b7",
+      "6abaef9d5c28819190d98a5af7f308b8",
+      "6abaf8d75cf48191bc7ce06bc0006f1c",
+      "6abaef8effb48191aa5c959455451681",
+      "6ababd570fac81918777c8f809cf67c9"
+    ],
+    "execution_authorized": false
   }
 }

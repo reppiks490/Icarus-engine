@@ -1,0 +1,61 @@
+{
+  "schema_version": "agent-loop-run-v1",
+  "agent": "robustness_guardian",
+  "RUN_ID": "robustness-guardian-20260929T040500Z",
+  "RUN_STATUS": "RUN_PERSISTED",
+  "run_start_time": "2026-09-29T04:05:00Z",
+  "run_end_time": "2026-09-29T04:12:00Z",
+  "EXPECTED_CADENCE_MINUTES": 60,
+  "PREVIOUS_SUCCESSFUL_RUN_ID": "robustness-guardian-20260928T200632Z",
+  "base_main_sha": "74b82cb747f61fbaf02016cce160cc88636b0b57",
+  "final_main_sha": "74b82cb747f61fbaf02016cce160cc88636b0b57",
+  "code_paths_read": [
+    "icarus_engine/agents/contracts.py",
+    "icarus_engine/agents/specialists.py",
+    "tests_engine/test_agent_fabric.py",
+    "automation_intelligence/agent_fabric/manifest.json",
+    "automation_intelligence/agent_fabric/README.md"
+  ],
+  "tests_workflows": {
+    "status": "NO_NEW_CODE_CHANGE",
+    "evidence": "Current main already contains the previously designed direct RobustnessGuardian hard gates and focused test test_robustness_guardian_rejects_missing_stress_evidence; no workflow was triggered because this invocation made no behavioral code change."
+  },
+  "pr_evidence": {
+    "open_prs": [
+      {
+        "number": 2,
+        "head_sha": "f04ae692a54eff04f9098961bcd8e578cd25d9ca",
+        "state": "open",
+        "collision": "icarus_engine/research_service.py remains isolated; no edit attempted"
+      }
+    ],
+    "run_specific_branch": null,
+    "merge": null
+  },
+  "capabilities_invoked": [
+    "GitHub heartbeat fresh-SHA write/readback",
+    "GitHub main/continuity inspection",
+    "GitHub open-PR inspection",
+    "GitHub code/test inspection"
+  ],
+  "unavailable_capabilities": [
+    "No local/remote test execution was triggered because no behavioral code delta was required."
+  ],
+  "findings": [
+    "The previously missing direct guardian hard gates are now present on main: cost-model coverage, latency stress, perturbation pass rate, parameter stability, probability of backtest overfit, OOD stability, and bootstrap positive rate all fail closed.",
+    "The focused test test_robustness_guardian_rejects_missing_stress_evidence is present on main and exercises all seven direct hard gates.",
+    "CandidateEvidence validates bounded robustness metrics and deterministic replay inputs but does not yet encode richer provenance lineage or protected-final-holdout identity; expanding that contract would touch shared interfaces and should be coordinated rather than raced.",
+    "PR #2 remains open and adds icarus_engine/research_service.py plus a separate icarus_engine/contracts.py; this run avoided those paths and did not race the collision."
+  ],
+  "built_changes": [
+    "No production-code change this cycle: fresh main already contains the high-value guardian gates identified by the previous run."
+  ],
+  "unresolved_risks": [
+    "No fresh CI execution was generated in this no-code cycle, so this run does not claim new workflow proof.",
+    "Provenance is represented as coverage ratios/flags rather than immutable lineage identifiers; future work should add evidence identity without colliding with shared contracts.",
+    "Protected-final-holdout isolation is represented by holdout_touched Boolean rather than a cryptographically/auditably distinct dataset identity."
+  ],
+  "NEXT": "Design a backward-compatible evidence-lineage extension on a run-specific branch, test-first, only after confirming no overlapping PR/shared-contract race; target immutable dataset/split identifiers, evaluation-time cutoff, and protected-final-holdout identity while preserving shadow-only authority.",
+  "execution_authorized": false,
+  "PERSISTENCE_STATUS": "RUN_PERSISTED"
+}

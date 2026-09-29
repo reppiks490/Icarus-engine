@@ -141,7 +141,7 @@
     "note": "Baton Pass semantics may be used for handoff/continuity, but Baton files are not scheduler or persistence authority and must not supersede omega_stack state."
   },
   "active_count_semantics": "REQUIRED_TOPOLOGY_COUNT_NOT_LIVE_REGISTRY_PROOF",
-  "live_scheduler_registry_status": "UNVERIFIED_IN_THIS_RUNTIME",
+  "live_scheduler_registry_status": "UNAVAILABLE_IN_CURRENT_OPERATOR_RUNTIME",
   "observed_nonstack_scheduler_activity": {
     "status": "TOPOLOGY_CONFLICT_EVIDENCE",
     "observed": [
@@ -167,5 +167,23 @@
     "aion": "main operational persistence; code/work products may use agent_development_branch",
     "daedalus": "main operational persistence; code/work products may use agent_development_branch"
   },
-  "operational_state_branch": "main"
+  "operational_state_branch": "main",
+  "scheduler_health_snapshot": {
+    "observed_at_utc": "2026-09-29T00:56:18Z",
+    "status": "DEGRADED",
+    "incident_path": "automation_intelligence/omega_stack/incidents/scheduler-health-20260929T005618Z.json",
+    "intended_lane_durable_start_status": {
+      "omega": "NO_DURABLE_START_EVIDENCE",
+      "macro": "NO_DURABLE_START_EVIDENCE",
+      "flow": "STARTED_THEN_ABORTED",
+      "aion": "STARTED_BOOTSTRAP_INCOMPLETE",
+      "daedalus": "NO_DURABLE_START_EVIDENCE"
+    },
+    "nonstack_activity": [
+      "Advanced CSV Data Collector",
+      "Alpha Synthesis Evolution"
+    ],
+    "completion_claim_allowed": false,
+    "next_required_action": "Native scheduler registry must be read and mutated so exactly the five active[] automation IDs are enabled at minutes 0,12,24,36,48 America/Chicago; then fresh scheduled runs must prove v3.2 finalization."
+  }
 }

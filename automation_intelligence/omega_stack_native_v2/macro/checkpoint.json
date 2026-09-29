@@ -2,18 +2,40 @@
   "engine": "macro",
   "schema_version": "automation-intelligence-checkpoint-v1",
   "RUN_ID": "macro-20260929T041049Z",
-  "CHECKPOINT_STATUS": "BOOTSTRAPPED",
-  "PASSES_COMPLETED": 1,
+  "CHECKPOINT_STATUS": "FROZEN_FOR_FINALIZATION",
+  "PASSES_COMPLETED": 8,
   "CONTROL_PLANE_ID": "omega-aion-daedalus-native-v2",
   "automation_id": "6ab8174517b48191b67ac472205a28d3",
   "persistence_protocol_version": "omega-stack-persistence-v3.2",
-  "namespace_root": "automation_intelligence/omega_stack_native_v2",
   "execution_authorized": false,
-  "persistence_branch": "automation/omega-native-v2",
-  "persistence_root": "automation_intelligence/omega_stack_native_v2/macro",
-  "started_at_utc": "2026-09-29T04:10:49Z",
-  "DATA_GAPS": [],
-  "CONFLICTS": [],
-  "RUN_CORE": null,
-  "last_updated_utc": "2026-09-29T04:10:49Z"
+  "RUN_CORE": {
+    "RUN_ID": "macro-20260929T041049Z",
+    "RUN_STATUS": "PERSISTENCE_DEGRADED",
+    "PASSES_COMPLETED": 8,
+    "CONTROL_PLANE_ID": "omega-aion-daedalus-native-v2",
+    "automation_id": "6ab8174517b48191b67ac472205a28d3",
+    "persistence_protocol_version": "omega-stack-persistence-v3.2",
+    "execution_authorized": false,
+    "research_status": "MATERIAL_EVENT_DETECTED_BUT_MATERIAL_CHECKPOINT_WRITE_BLOCKED",
+    "event_summary": {
+      "date": "2026-09-28",
+      "observed": [
+        "Brent 105.28",
+        "WTI 92.60",
+        "US 2Y 4.937%",
+        "S&P -0.8%",
+        "Nasdaq -0.9%",
+        "Dow -0.7%",
+        "gold -3.61%"
+      ],
+      "inference": "Energy/geopolitical inflation shock coincided with higher yields and risk-off assets."
+    },
+    "DATA_GAPS": [
+      "Primary geopolitical source not independently retrieved."
+    ],
+    "CONFLICTS": [
+      "Material-event checkpoint update was blocked twice by connector safety checks."
+    ]
+  },
+  "last_updated_utc": "2026-09-29T04:13:00Z"
 }

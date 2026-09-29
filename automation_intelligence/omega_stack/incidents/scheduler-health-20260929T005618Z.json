@@ -1,0 +1,86 @@
+{
+  "schema_version": "omega-stack-scheduler-incident-v1",
+  "control_plane_id": "omega-aion-daedalus-stack",
+  "observed_at_utc": "2026-09-29T00:56:18Z",
+  "classification": "SCHEDULER_TOPOLOGY_DEGRADED",
+  "expected_slots": [
+    {
+      "lane": "omega",
+      "automation_id": "6ab817357a2c8191ac3a407f14d6a8c1",
+      "minute": 0,
+      "expected_slot_utc": "2026-09-29T00:00:00Z"
+    },
+    {
+      "lane": "macro",
+      "automation_id": "6ab8174517b48191b67ac472205a28d3",
+      "minute": 12,
+      "expected_slot_utc": "2026-09-29T00:12:00Z"
+    },
+    {
+      "lane": "flow",
+      "automation_id": "6ab817544e68819197b5db21eb2cbe2b",
+      "minute": 24,
+      "expected_slot_utc": "2026-09-29T00:24:00Z"
+    },
+    {
+      "lane": "aion",
+      "automation_id": "6ab817679a248191928d7bd6fa8e4a3c",
+      "minute": 36,
+      "expected_slot_utc": "2026-09-29T00:36:00Z"
+    },
+    {
+      "lane": "daedalus",
+      "automation_id": "6ab8177918b48191a97e56c44b57d2c5",
+      "minute": 48,
+      "expected_slot_utc": "2026-09-29T00:48:00Z"
+    }
+  ],
+  "durable_start_evidence": {
+    "omega": "NO_DURABLE_START_EVIDENCE_AS_OF_OBSERVED_AT",
+    "macro": "NO_DURABLE_START_EVIDENCE_AS_OF_OBSERVED_AT",
+    "flow": {
+      "run_id": "flow-20260929T002349Z",
+      "outcome": "ABORTED_AFTER_BOOTSTRAP_AND_RESET_WITH_INCIDENT_EVIDENCE"
+    },
+    "aion": {
+      "run_id": "aion-20260929T004205Z",
+      "outcome": "IN_PROGRESS_HEARTBEAT_WITH_MISSING_BOOTSTRAPPED_CHECKPOINT"
+    },
+    "daedalus": "NO_DURABLE_START_EVIDENCE_AS_OF_OBSERVED_AT"
+  },
+  "nonstack_durable_start_evidence": [
+    {
+      "title": "Advanced CSV Data Collector",
+      "run_id": "advanced-csv-20260929T001500Z",
+      "started_at_utc": "2026-09-29T00:16:50Z",
+      "status": "IN_PROGRESS"
+    },
+    {
+      "title": "Alpha Synthesis Evolution",
+      "run_id": "alpha-synthesis-20260929T002500Z",
+      "started_at_utc": "2026-09-29T00:24:41Z",
+      "status": "IN_PROGRESS"
+    }
+  ],
+  "interpretation": "The intended five-lane topology is not end-to-end healthy. Durable evidence shows two intended lanes started this hour while three have no durable startup evidence, and two non-stack schedulers also started. Absence of a heartbeat is not proof that a scheduler trigger never occurred; it is proof that the required durable startup contract was not established.",
+  "required_native_scheduler_state": {
+    "enabled_exactly": [
+      "6ab817357a2c8191ac3a407f14d6a8c1",
+      "6ab8174517b48191b67ac472205a28d3",
+      "6ab817544e68819197b5db21eb2cbe2b",
+      "6ab817679a248191928d7bd6fa8e4a3c",
+      "6ab8177918b48191a97e56c44b57d2c5"
+    ],
+    "exact_minutes": [
+      0,
+      12,
+      24,
+      36,
+      48
+    ],
+    "timezone": "America/Chicago",
+    "disable_nonstack_legacy_objects": true
+  },
+  "scheduler_registry_access_in_current_operator_runtime": "UNAVAILABLE",
+  "execution_authorized": false
+}

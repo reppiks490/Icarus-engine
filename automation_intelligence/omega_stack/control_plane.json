@@ -42,8 +42,10 @@
       "title": "DAEDALUS PRIME Systems Auditor",
       "automation_id": "6ab8177918b48191a97e56c44b57d2c5",
       "minute": 48,
-      "branch": "feature/aion-daedalus-prime-v2",
-      "root": "automation_intelligence/omega_stack/daedalus"
+      "branch": "main",
+      "root": "automation_intelligence/omega_stack/daedalus",
+      "state_branch": "main",
+      "development_branch": "feature/aion-daedalus-prime-v2"
     }
   ],
   "legacy_inputs": {
@@ -105,7 +107,7 @@
       "daedalus": 10
     }
   },
-  "control_revision": "2026-09-29-r2",
+  "control_revision": "2026-09-29-r3",
   "connector_policy": {
     "primary_repo_connector": "GitHub",
     "acquire_before_any_repo_read": true,
@@ -163,6 +165,7 @@
   },
   "state_branch_policy": {
     "aion": "main operational persistence; code/work products may use agent_development_branch",
-    "daedalus": "pending validation"
-  }
+    "daedalus": "main operational persistence; code/work products may use agent_development_branch"
+  },
+  "operational_state_branch": "main"
 }

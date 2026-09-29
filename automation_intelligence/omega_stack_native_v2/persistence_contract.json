@@ -38,8 +38,35 @@
   },
   "closure": {
     "pass_8": "freeze complete RUN_CORE into checkpoint FROZEN_FOR_FINALIZATION and re-fetch",
-    "pass_9": "create/re-fetch immutable core/<RUN_ID>.json and history/<RUN_ID>.json; use GitHub blob SHAs",
-    "pass_10": "write/re-fetch latest.json; create/re-fetch immutable finalization/<RUN_ID>.json binding current core/history/latest blob SHAs; then checkpoint FINALIZED and heartbeat IDLE/FINALIZED"
+    "pass_9_core": {
+      "rule": "Create immutable core/<RUN_ID>.json containing exactly RUN_CORE; re-fetch and record GitHub core blob SHA."
+    },
+    "pass_9_history": {
+      "rule": "Create immutable history/<RUN_ID>.json as a DISTINCT METADATA ENVELOPE, never as RUN_CORE content.",
+      "required_fields": [
+        "RUN_ID",
+        "RUN_STATUS",
+        "PASSES_COMPLETED",
+        "FINALIZATION_STATUS",
+        "CONTROL_PLANE_ID",
+        "automation_id",
+        "persistence_protocol_version",
+        "core_path",
+        "run_core_blob_sha",
+        "execution_authorized"
+      ],
+      "required_values": {
+        "RUN_STATUS": "HISTORY_VERIFIED",
+        "PASSES_COMPLETED": 9,
+        "FINALIZATION_STATUS": "AWAITING_LATEST_PROMOTION",
+        "execution_authorized": false
+      },
+      "invariant": "history_blob_sha MUST differ from run_core_blob_sha. Equality means INVALID_HISTORY_DUPLICATES_CORE and the run MUST be quarantined with no latest/finalization promotion."
+    },
+    "pass_10": {
+      "rule": "Write/re-fetch latest.json referencing current core/history blob SHAs. Only when core/history are both valid and history_blob_sha != run_core_blob_sha may finalization/<RUN_ID>.json be created. Finalization must bind current core/history/latest blob SHAs. Then checkpoint FINALIZED and heartbeat IDLE/FINALIZED."
+    },
+    "no_fabrication": true
   },
   "contents_api_concurrency": {
     "same_path_serialized": true,
@@ -49,7 +76,7 @@
   "foreign_writer_rule": "Any write outside automation/omega-native-v2:automation_intelligence/omega_stack_native_v2/ or by an automation_id not listed in isolated control_plane.active[] is non-authoritative for native-v2.",
   "execution_authorized": false,
   "created_at_utc": "2026-09-29T01:31:00Z",
-  "contract_revision": "2026-09-29-native-v2-r2",
+  "contract_revision": "2026-09-29-native-v2-r3",
   "authoritative_branch": "automation/omega-native-v2",
   "authoritative_root": "automation_intelligence/omega_stack_native_v2",
   "scheduler_mutation_forbidden": true,
@@ -59,5 +86,11 @@
     "allowed": true,
     "rule": "If heartbeat/checkpoint/latest has RUN_ID null and status IDLE or INITIALIZED, an automation_id mismatch is stale metadata, not an active-run conflict. The current live task may overwrite that mutable file with the control-plane automation_id during bootstrap before assigning a new RUN_ID. Immutable core/history/finalization artifacts are never rewritten.",
     "forbidden_when_active": true
+  },
+  "validation_invariants": {
+    "history_distinct_from_core": true,
+    "finalization_requires_distinct_valid_history": true,
+    "latest_promotion_requires_verified_core_history": true,
+    "immutable_artifacts_never_rewritten": true
   }
 }

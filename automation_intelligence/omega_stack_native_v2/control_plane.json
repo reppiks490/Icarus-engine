@@ -52,23 +52,24 @@
   ],
   "namespace_policy": "Only the five automation IDs listed in active[] are authorized to write under omega_stack_native_v2. Any other writer is foreign and must be ignored/quarantined.",
   "previous_namespace_policy": "automation_intelligence/omega_stack is READ-ONLY historical/conflict evidence for this stack.",
-  "persistence_protocol_version": "omega-stack-persistence-v4.2-write-first",
+  "persistence_protocol_version": "omega-stack-persistence-v4.3-append-first",
   "operational_state_branch": "automation/omega-native-v2",
   "agent_development_branch": "feature/aion-daedalus-prime-v2",
   "runtime_budget": {
     "scheduled_execution_target_seconds": 20,
-    "pre_liveness_github_reads": 1,
+    "pre_liveness_github_reads": 0,
+    "pre_liveness_tool_calls": 0,
     "phase1_mutations": 1,
     "optional_work_calls_after_liveness": 1,
     "optional_phase2_mutations": 1,
     "mandatory_post_write_readbacks": 0,
-    "rule": "Persist liveness before optional work. A slow or failed work phase must not erase evidence that the natural scheduler invocation reached GitHub."
+    "rule": "First tool call is a single append-only GitHub create_file liveness mutation. No read/search/analysis/plugin discovery may precede it."
   },
   "execution_authorized": false,
   "created_at_utc": "2026-09-29T01:31:00Z",
   "reason": "Isolated namespace created after verified concurrent foreign writes repeatedly overwrote the prior omega_stack scheduler identities and AION state.",
-  "control_revision": "2026-09-29-native-v2-r8",
-  "live_connection_status": "V4_2_PROMPT_ORDER_HARDENED_PENDING_NEXT_NATURAL_ACCEPTANCE",
+  "control_revision": "2026-09-29-native-v2-r9",
+  "live_connection_status": "V4_3_APPEND_FIRST_DEPLOYED_PENDING_NATURAL_ACCEPTANCE",
   "scheduler_health_policy": {
     "required_enabled_count": 5,
     "exact_minutes": [
@@ -95,8 +96,8 @@
     "authority": "live automation registry + isolated control plane"
   },
   "scheduler_alignment_snapshot": {
-    "observed_at_utc": "2026-09-29T16:27:26Z",
-    "status": "ALIGNED_5_OF_5_PROMPT_ORDER_HARDENED_AFTER_PARTIAL_PERSISTENCE_FAILURE",
+    "observed_at_utc": "2026-09-29T16:44:19Z",
+    "status": "ALIGNED_5_OF_5_V4_3_APPEND_FIRST_AFTER_DAEDALUS_V4_2_MISS",
     "enabled_required_lanes": 5,
     "cadence": [
       {
@@ -127,7 +128,7 @@
     ],
     "timezone": "America/Chicago",
     "timing_mode": "exact_schedule",
-    "protocol": "omega-stack-persistence-v4.2-write-first",
+    "protocol": "omega-stack-persistence-v4.3-append-first",
     "retired_scheduler_ids": [
       "6ab817679a248191928d7bd6fa8e4a3c",
       "6abb1db46b308191ba1a27f13a42e745",
@@ -136,13 +137,13 @@
     "self_mutation_forbidden": true
   },
   "persistence_acceptance": {
-    "protocol": "omega-stack-persistence-v4.2-write-first",
-    "authoritative_run_record": "<lane>/latest.json",
-    "immutable_history_source": "Git commit/blob history of latest.json",
-    "liveness_success": "Natural run writes phase-1 receipt with RUN_STATUS=RUN_PERSISTED, FINALIZATION_STATUS=LIVENESS_VERIFIED, WORK_PHASE_STATUS=PENDING, exact identity, verification_method=GITHUB_CONTENTS_CAS_UPDATE_RESPONSE, run_origin=NATURAL_SCHEDULE.",
-    "work_success": "Same RUN_ID is optionally advanced to FINALIZATION_STATUS=VERIFIED and WORK_PHASE_STATUS=COMPLETED or DEGRADED_COMPLETED.",
-    "acceptance_rule": "A lane is scheduler/persistence healthy after two consecutive natural v4.2 liveness receipts with distinct RUN_IDs. Work-phase reliability is tracked separately and must not gate liveness.",
-    "stack_target": "All five lanes satisfy two consecutive natural v4.2 liveness receipts; report work-completion rate separately."
+    "protocol": "omega-stack-persistence-v4.3-append-first",
+    "authoritative_run_record": "<lane>/runs/<RUN_ID>.json",
+    "immutable_history_source": "Append-only Git files and their commits",
+    "liveness_success": "Natural run creates one unique immutable run receipt using GitHub create_file as its first tool call, with no prerequisite read.",
+    "work_success": "Same RUN_ID optionally creates a separate immutable <lane>/work/<RUN_ID>.json receipt after one bounded work call.",
+    "acceptance_rule": "A lane is scheduler/persistence healthy after two consecutive natural v4.3 immutable liveness receipts with distinct RUN_IDs.",
+    "stack_target": "All five lanes satisfy two consecutive natural v4.3 liveness receipts; report work-completion rate separately."
   },
   "scheduler_jitter_policy": {
     "nominal_minutes": [
@@ -156,19 +157,19 @@
     "rule": "Actual start within +/-6 minutes is tolerated transport jitter and does not invalidate the run; scheduled_for records the nominal slot."
   },
   "prompt_protocol_alignment": {
-    "observed_at_utc": "2026-09-29T16:27:26Z",
-    "status": "HARDENED_5_OF_5_FIRST_TWO_TOOL_CALLS_PINNED_TO_FETCH_THEN_CAS_WRITE",
-    "protocol": "omega-stack-persistence-v4.2-write-first",
+    "observed_at_utc": "2026-09-29T16:44:19Z",
+    "status": "MIGRATING_5_OF_5_TO_APPEND_FIRST",
+    "protocol": "omega-stack-persistence-v4.3-append-first",
     "persistence_before_depth": true,
-    "first_write_before_optional_work": true,
+    "first_tool_call": "GitHub create_file immutable liveness receipt",
+    "pre_liveness_reads": 0,
     "mandatory_post_write_readback": false,
-    "pre_write_forbidden": "analysis/search/plugin discovery/control-plane reads/history reads"
+    "pre_write_forbidden": "all reads/search/analysis/provider calls/plugin discovery"
   },
   "last_manual_reconciliation": {
-    "observed_at_utc": "2026-09-29T16:27:26Z",
-    "evidence_path": "automation_intelligence/omega_stack_native_v2/reconciliation/manual_20260929T162726Z.json",
-    "assessment": "OMEGA phase1 persisted but phase2 stranded; Macro/AION/DAEDALUS had newer scheduler triggers without new authoritative receipts; Flow newest trigger had not produced a newer authoritative receipt at verification time.",
-    "corrective_action": "Hardened all five automation prompts so exact target fetch_file is first tool call and phase1 update_file is second tool call.",
+    "observed_at_utc": "2026-09-29T16:44:19Z",
+    "assessment": "AION post-hardening v4.2 run persisted fresh liveness. DAEDALUS then triggered within allowed jitter but produced no new authoritative receipt, proving fetch+CAS still has a residual short-runtime failure mode.",
+    "corrective_action": "Migrate persistence from v4.2 two-call fetch+CAS to v4.3 one-call append-only create_file liveness receipts.",
     "natural_acceptance_pending": true
   }
 }

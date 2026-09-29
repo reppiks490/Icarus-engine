@@ -1,0 +1,51 @@
+{
+  "schema_version": "agent-fabric-persistence-v3",
+  "agent": "robustness_guardian",
+  "RUN_ID": "robustness-guardian-20260929T170500Z",
+  "RUN_STATUS": "HISTORY_VERIFIED",
+  "RUN_CORE": {
+    "agent": "robustness_guardian",
+    "RUN_ID": "robustness-guardian-20260929T170500Z",
+    "persistence_protocol_version": "agent-fabric-persistence-v3",
+    "execution_authorized": false,
+    "run_start_time": "2026-09-29T17:08:38Z",
+    "run_end_time": "2026-09-29T17:11:00Z",
+    "base_main_sha": "3ea1962629fed1858c59e29e8951d68a25ca3c57",
+    "final_main_sha": "3ea1962629fed1858c59e29e8951d68a25ca3c57",
+    "evidence": {
+      "startup_heartbeat_blob_sha": "d009354ec7a44e450a70e0625d2889390c4d4016",
+      "primary_contract_blob_sha": "194615ae3295c16ac212f6bcda5651e66bce5e8f",
+      "fallback_contract_blob_sha": "143534b152072e9dcfbe32e3c341a701b9fb48ad",
+      "ledger_pre_run_blob_sha": "5fd74d26171ee1bcd2550f5c21d3b4fd5a8fee04",
+      "contracts_blob_sha": "76b8cd964c03066932600183f3ad7e2d6a42b1aa",
+      "specialists_blob_sha": "93be9f7cdb378f36f8ab297f3c5236c09bd55cd7",
+      "tests_blob_sha": "9a7d75d452b1e3e172840219526979c4ff9243b8",
+      "persistence_blob_sha": "438079ad2e78ce086293ca2f99852b13afd392a8"
+    },
+    "findings": [
+      "Robustness Guardian fail-closed gates remain present for lookahead/holdout contamination, provenance/PIT coverage, replay determinism, execution-cost and latency stress, perturbation/parameter stability, PBO, OOD stability and bootstrap positivity.",
+      "CandidateEvidence still lacks immutable dataset, split, evaluation-cutoff and protected-final-holdout identities; this remains the highest-value provenance hardening gap.",
+      "PR #2 remains open and overlaps shared research/evaluation surfaces; no shared-contract behavioral edit was attempted."
+    ],
+    "built_changes": [
+      "No behavioral code change; collision-safe audit cycle only."
+    ],
+    "test_state": {
+      "status": "NOT_RUN_NO_CODE_CHANGE",
+      "reason": "No behavioral change introduced; focused Guardian regression tests inspected on main."
+    },
+    "pr_state": {
+      "pr_2": {
+        "state": "open",
+        "action": "NO_TOUCH_COLLISION"
+      }
+    },
+    "unresolved_risks": [
+      "Evaluation evidence is not cryptographically bound to immutable dataset/split/cutoff/final-holdout identities.",
+      "PR #2 collision remains unresolved."
+    ],
+    "NEXT": "After PR #2 collision is reconciled, add backward-compatible immutable dataset_id, split_id, evaluation_cutoff_id and protected_final_holdout_id lineage test-first on a run-specific branch; fail closed on missing/inconsistent lineage and merge only after full CI and verified main readback."
+  },
+  "RUN_CORE_SHA256": "56f36116feb6084e27910ac67e0612cdd14bd146232899c488fd08af2aeca65b",
+  "execution_authorized": false
+}

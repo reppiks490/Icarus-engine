@@ -1,0 +1,53 @@
+{
+  "schema_version": "omega-stack-topology-incident-v1",
+  "incident": "LEGACY_OR_NONSTACK_SCHEDULER_ACTIVITY_AFTER_FIVE_LANE_DECLARATION",
+  "status": "OPEN_REQUIRES_LIVE_SCHEDULER_REGISTRY_MUTATION",
+  "required_topology": {
+    "enabled_count": 5,
+    "lanes": [
+      "OMEGA Fusion Core",
+      "Macro Shock Sentinel",
+      "Flow Velocity Engine",
+      "AION PRIME Quant Scientist",
+      "DAEDALUS PRIME Systems Auditor"
+    ],
+    "minutes": [
+      0,
+      12,
+      24,
+      36,
+      48
+    ],
+    "timezone": "America/Chicago"
+  },
+  "durable_conflict_evidence": [
+    {
+      "title": "Advanced CSV Data Collector",
+      "run_id": "advanced-csv-20260929T001500Z",
+      "started_at_utc": "2026-09-29T00:16:50Z",
+      "repository": "reppiks490/icarus-csv-evidence-lab",
+      "path": "automation_intelligence/advanced_csv/heartbeat.json",
+      "status_observed": "IN_PROGRESS"
+    },
+    {
+      "title": "Alpha Synthesis Evolution",
+      "run_id": "alpha-synthesis-20260929T002500Z",
+      "started_at_utc": "2026-09-29T00:24:41Z",
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/agent_fabric/alpha_synthesis/heartbeat.json",
+      "status_observed": "IN_PROGRESS"
+    }
+  ],
+  "interpretation": [
+    "These durable starts prove scheduler activity outside the required omega-stack five after the five-lane topology was declared.",
+    "They do not establish the current enabled count because only the live ChatGPT scheduler registry can prove enabled/disabled state.",
+    "Do not infer scheduler health from repo mirrors or last_run_time."
+  ],
+  "remediation": [
+    "When live scheduler registry mutation is available, verify all scheduler objects.",
+    "Keep only the five required omega-stack lane IDs enabled on exact configured minutes.",
+    "Disable legacy/non-stack scheduler objects; do not delete historical repository evidence.",
+    "After mutation, require one fresh scheduled v3.2 FINALIZATION_VERIFIED receipt per required lane before declaring the ecosystem healthy."
+  ],
+  "execution_authorized": false
+}

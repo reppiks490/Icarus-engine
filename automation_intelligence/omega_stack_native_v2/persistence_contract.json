@@ -1,46 +1,49 @@
 {
-  "schema_version": "omega-stack-persistence-v4.2-write-first",
-  "contract_revision": "2026-09-29-native-v2-r7",
-  "migrated_from": "omega-stack-persistence-v4.1-fast-cas",
+  "schema_version": "omega-stack-persistence-v4.3-append-first",
+  "contract_revision": "2026-09-29-native-v2-r9",
+  "migrated_from": "omega-stack-persistence-v4.2-write-first",
   "control_plane_id": "omega-aion-daedalus-native-v2",
   "authoritative_branch": "automation/omega-native-v2",
   "authoritative_root": "automation_intelligence/omega_stack_native_v2",
   "execution_authorized": false,
   "scheduler_mutation_forbidden": true,
-  "purpose": "Guarantee durable evidence of each natural scheduler invocation before optional research/audit work consumes the short automation execution window.",
+  "purpose": "Make natural-run liveness durable with one GitHub mutation and zero prerequisite reads, so short scheduler runtime cannot prevent persistence before optional work.",
   "root_cause_basis": {
     "observed_execution_window_seconds": "approximately 20-23",
-    "observed_failure_pattern": "Runs often triggered but failed to persist when control-plane reads, optional research, or broad repository queries consumed the execution window before the authoritative update.",
-    "corrective_principle": "write first, enrich second"
+    "observed_failure_pattern": "Even with fetch_file pinned as tool call 1 and CAS update_file pinned as tool call 2, AION persisted successfully while the immediately following DAEDALUS trigger completed without a new authoritative receipt. The two-call prerequisite remains timing-sensitive.",
+    "corrective_principle": "append first: one unique create_file mutation before any read, search, analysis, provider call, or plugin discovery"
   },
   "phase1_liveness": {
     "order": 1,
+    "first_tool_call_required": true,
+    "path_pattern": "<lane>/runs/<RUN_ID>.json",
     "steps": [
-      "Fetch only <lane>/latest.json and retain its blob SHA as PREVIOUS_BLOB_SHA.",
-      "Immediately update <lane>/latest.json once with a fresh RUN_ID and liveness receipt.",
-      "Use FINALIZATION_STATUS=LIVENESS_VERIFIED and WORK_PHASE_STATUS=PENDING.",
-      "Use verification_method=GITHUB_CONTENTS_CAS_UPDATE_RESPONSE and run_origin=NATURAL_SCHEDULE.",
-      "Retain returned content_sha as PHASE1_BLOB_SHA; do not read back."
+      "Construct RUN_ID=<lane>-<UTC YYYYMMDDTHHMMSSZ> immediately from the natural invocation.",
+      "ABSOLUTE FIRST TOOL CALL: GitHub create_file on the authoritative branch at <lane>/runs/<RUN_ID>.json. No GitHub fetch and no other tool call may precede it.",
+      "The immutable receipt records RUN_STATUS=RUN_PERSISTED, FINALIZATION_STATUS=LIVENESS_VERIFIED, WORK_PHASE_STATUS=PENDING, exact identity/protocol, nominal scheduled_for, started_at_utc, NET_NEW_DELTA=LIVENESS_PERSISTED_WORK_PENDING, DATA_GAPS=[], CONFLICTS=[], execution_authorized=false, verification_method=GITHUB_CREATE_FILE_RESPONSE, run_origin=NATURAL_SCHEDULE.",
+      "Commit message must be 'automation: <RUN_ID> liveness [skip ci]'.",
+      "Treat successful create_file response as durable liveness. Do not read back."
     ],
-    "max_github_reads": 1,
-    "max_mutations": 1,
-    "commit_message_requirement": "End phase-1 commit message with [skip ci] to avoid spending CI on the intermediate liveness state."
+    "max_pre_liveness_reads": 0,
+    "max_pre_liveness_tool_calls": 0,
+    "liveness_mutations": 1,
+    "retry_inside_same_run": false
   },
   "phase2_work": {
     "order": 2,
     "optional": true,
     "max_work_calls": 1,
+    "result_path_pattern": "<lane>/work/<RUN_ID>.json",
     "steps": [
-      "After phase-1 is durable, perform at most one bounded lane-specific work call.",
-      "If work returns in time, update latest.json once using PHASE1_BLOB_SHA and the SAME RUN_ID.",
-      "Set FINALIZATION_STATUS=VERIFIED and WORK_PHASE_STATUS=COMPLETED or DEGRADED_COMPLETED.",
-      "Record truthful NET_NEW_DELTA, DATA_GAPS, CONFLICTS and completed_at_utc.",
-      "If work stalls or fails, do not retry; phase-1 liveness remains the durable outcome."
+      "Only after the immutable liveness file is created, perform at most one bounded lane-specific work call.",
+      "If work returns promptly, persist a separate immutable work result with GitHub create_file at <lane>/work/<RUN_ID>.json.",
+      "The work receipt preserves SAME RUN_ID and records FINALIZATION_STATUS=VERIFIED, WORK_PHASE_STATUS=COMPLETED or DEGRADED_COMPLETED, completed_at_utc, truthful NET_NEW_DELTA, DATA_GAPS and CONFLICTS.",
+      "Do not update or rewrite the liveness receipt. If work stalls or fails, stop; liveness remains durable."
     ],
     "max_mutations": 1,
     "mandatory_readback": false
   },
-  "required_phase1_fields": [
+  "required_liveness_fields": [
     "engine",
     "RUN_ID",
     "RUN_STATUS",
@@ -51,7 +54,6 @@
     "persistence_protocol_version",
     "scheduled_for",
     "started_at_utc",
-    "PREVIOUS_BLOB_SHA",
     "NET_NEW_DELTA",
     "DATA_GAPS",
     "CONFLICTS",
@@ -59,17 +61,17 @@
     "verification_method",
     "run_origin"
   ],
-  "required_phase1_values": {
+  "required_liveness_values": {
     "RUN_STATUS": "RUN_PERSISTED",
     "FINALIZATION_STATUS": "LIVENESS_VERIFIED",
     "WORK_PHASE_STATUS": "PENDING",
     "CONTROL_PLANE_ID": "omega-aion-daedalus-native-v2",
-    "persistence_protocol_version": "omega-stack-persistence-v4.2-write-first",
+    "persistence_protocol_version": "omega-stack-persistence-v4.3-append-first",
     "execution_authorized": false,
-    "verification_method": "GITHUB_CONTENTS_CAS_UPDATE_RESPONSE",
+    "verification_method": "GITHUB_CREATE_FILE_RESPONSE",
     "run_origin": "NATURAL_SCHEDULE"
   },
-  "phase2_allowed_values": {
+  "work_allowed_values": {
     "FINALIZATION_STATUS": [
       "VERIFIED"
     ],
@@ -78,12 +80,12 @@
       "DEGRADED_COMPLETED"
     ]
   },
-  "optimistic_concurrency": {
-    "phase1_fresh_sha_required": true,
-    "phase2_uses_phase1_content_sha": true,
-    "max_phase1_attempts": 1,
-    "max_phase2_attempts": 1,
-    "rule": "Never retry inside the same natural execution. Next scheduled invocation starts from fresh state."
+  "immutable_append_policy": {
+    "latest_json_role": "READ_ONLY_LEGACY_CONVENIENCE_POINTER",
+    "natural_runs_must_not_update_latest_json": true,
+    "liveness_file_overwrite_forbidden": true,
+    "work_file_overwrite_forbidden": true,
+    "duplicate_path_behavior": "Treat ALREADY_EXISTS as duplicate/collision evidence; do not retry or overwrite inside the same run."
   },
   "scheduler_jitter": {
     "nominal_minutes": [
@@ -97,14 +99,15 @@
     "rule": "Use nominal slot in scheduled_for. Jitter within tolerance is transport timing, not a persistence failure."
   },
   "acceptance": {
-    "liveness_single_run": "One natural phase-1 receipt stored successfully with exact identity and required values.",
-    "sustained_lane": "Two consecutive natural v4.2 liveness receipts with distinct RUN_IDs and distinct persisted blob SHAs.",
-    "work_completion": "Track the fraction of v4.2 liveness runs that also reach phase-2 VERIFIED/COMPLETED or DEGRADED_COMPLETED.",
-    "stack_5_of_5": "All five active lanes satisfy sustained_lane while scheduler registry remains exactly five enabled authoritative lanes."
+    "liveness_single_run": "One natural immutable run file is created successfully with exact identity and required values.",
+    "sustained_lane": "Two consecutive natural v4.3 immutable liveness files with distinct RUN_IDs.",
+    "work_completion": "Track fraction of v4.3 liveness runs that also create a matching immutable work receipt.",
+    "stack_5_of_5": "All five enabled authoritative lanes satisfy sustained_lane while scheduler registry remains exactly five enabled authoritative lanes."
   },
   "legacy_artifacts": {
     "v3": "heartbeat.json, checkpoint.json, core/, history/, finalization/ are read-only historical evidence.",
-    "v4_0_v4_1": "Existing receipts remain historical evidence but do not count toward v4.2 acceptance."
+    "v4_0_v4_1": "Historical latest.json receipts.",
+    "v4_2": "Historical write-first latest.json receipts; useful evidence but not authoritative for v4.3 natural-run acceptance."
   },
   "no_fabrication": true
 }

@@ -1,127 +1,110 @@
 {
   "engine": "flow",
-  "schema_version": "microstructure-collection-v3",
-  "RUN_ID": "flow-20260929T063500Z",
+  "schema_version": "microstructure-collection-v4",
+  "RUN_ID": "flow-20260929T173500Z",
   "RUN_STATUS": "RUN_PERSISTED",
-  "scheduled_for_utc": "2026-09-29T06:35:00Z",
-  "retrieval_window_utc": "2026-09-29T06:35:46Z/2026-09-29T06:37:00Z",
-  "PREVIOUS_SUCCESSFUL_RUN_ID": "flow-20260929T053500Z",
-  "EXPECTED_CADENCE_MINUTES": 60,
+  "scheduled_for_utc": "2026-09-29T17:35:00Z",
+  "retrieval_window_utc": "2026-09-29T17:37:00Z/2026-09-29T17:38:00Z",
+  "PREVIOUS_SUCCESSFUL_RUN_ID": "flow-20260929T063500Z",
   "scheduler_title": "Microstructure Sensor Grid",
   "scheduler_id": "6abaef8effb48191aa5c959455451681",
-  "PASSES_COMPLETED": 10,
-  "PREVIOUS_STATE_LOADED": true,
-  "STATE_CONTINUITY_STATUS": "VERIFIED_BINDING_CONTRACT_HEARTBEAT_LATEST_LEDGER_MANIFEST; PRIOR_PARTIAL_EVIDENCE_PRESERVED",
-  "HISTORICAL_BACKFILL_STATUS": "PARTIAL",
   "COLLECTION_ONLY": true,
   "execution_authorized": false,
   "NET_NEW_DELTA": {
-    "btc_depth": "Bybit BTCUSDT linear top-of-book was bid-heavy at retrieval: 7.698 BTC best bid vs 0.664 BTC best ask; spread 0.10 USDT; snapshot-local only.",
-    "btc_funding": "Bybit funding neutral at +0.000427%.",
-    "btc_price": "Latest returned 1h candle close 83831.9 USDT; 24 returned bars spanned 82468.0-84352.9.",
-    "cross_market": "QQQ closed 736.53003 (-1.070513%) and SPY 765.60999 (-0.74414862%) for 2026-09-28; FMP Gold Futures quote 4173.8 (+0.12955%).",
-    "provider_quality": "FMP index endpoint denied by plan entitlement; unavailable futures depth/OI/options positioning not synthesized."
+    "btc": "Fresh public cross-venue evidence showed BTC near 83.5k USD with mildly positive funding on major venues; source timestamps vary and are preserved.",
+    "gold": "COMEX Dec-2026 gold evidence showed ~4171.1 USD/oz, +0.06%, OI 325,893; Reuters reported U.S. gold futures 4189.60 (+0.5%) later in the day.",
+    "cross_market": "Rising U.S. Treasury yields pressured equities; direct CME equity-index depth/order-flow was not obtained."
   },
   "observations": {
-    "BTCUSDT_BYBIT_LINEAR": {
-      "best_bid_usdt": 83831.9,
-      "best_bid_qty_btc": 7.698,
-      "best_ask_usdt": 83832,
-      "best_ask_qty_btc": 0.664,
-      "spread_usdt": 0.1,
-      "orderbook_event_time_ms": 1790663777602,
-      "funding_rate_fraction": 0.00000427,
-      "funding_rate_percent": 0.000427,
-      "funding_sentiment": "neutral",
-      "latest_1h": {
-        "time": "2026-09-29T06:00:00Z",
-        "open": 83393.9,
-        "high": 83921.6,
-        "low": 83363.4,
-        "close": 83831.9,
-        "volume_btc": 2138.376
-      },
-      "returned_24x1h_high": 84352.9,
-      "returned_24x1h_low": 82468,
-      "representation_identity": "Bybit BTCUSDT linear perpetual"
+    "BTC_FUNDING_PUBLIC": {
+      "binance_percent_8h": 0.0039,
+      "bybit_percent_8h": 0.01,
+      "okx_percent_8h": 0.0054,
+      "hyperliquid_percent_8h_equiv": 0.0044,
+      "kraken_percent_8h_equiv": 0.0084,
+      "source_event_time": "2026-09-29T00:05:00Z",
+      "representation": "public cross-venue perpetual funding snapshot"
     },
-    "CROSS_MARKET": {
-      "QQQ": {
-        "close_usd": 736.53003,
-        "volume": 41716200,
-        "percent_change": -1.070513,
-        "market_date": "2026-09-28",
-        "representation": "ETF proxy"
-      },
-      "SPY": {
-        "close_usd": 765.60999,
-        "volume": 42296700,
-        "percent_change": -0.74414862,
-        "market_date": "2026-09-28",
-        "representation": "ETF proxy"
-      },
-      "GOLD": {
-        "symbol": "GCUSD",
-        "price_usd": 4173.8,
-        "change_percent": 0.12955,
-        "volume": 36070,
-        "day_low": 4145.2,
-        "day_high": 4179.4,
-        "event_timestamp": 1790663173,
-        "representation": "FMP Gold Futures quote"
-      }
+    "BTC_BYBIT_SETTLED": {
+      "funding_percent": 0.003,
+      "settlement_time": "2026-09-29T00:00:00Z",
+      "interval_hours": 8,
+      "representation": "Bybit BTCUSDT perpetual historical funding"
+    },
+    "GC_DEC2026": {
+      "price_usd_per_oz": 4171.1,
+      "change_percent": 0.06,
+      "day_low": 4145.2,
+      "day_high": 4180.9,
+      "volume_contracts": 43429,
+      "open_interest_contracts": 325893,
+      "event_time": "2026-09-29T08:07:00Z",
+      "representation": "COMEX Dec 2026 Gold Futures public quote"
+    },
+    "GOLD_REUTERS": {
+      "us_gold_futures_usd_per_oz": 4189.6,
+      "change_percent": 0.5,
+      "event_date": "2026-09-29",
+      "representation": "Reuters reported U.S. gold futures"
     }
   },
-  "FLOW_ANOMALIES": [
+  "PROVIDER_CONFLICTS": [
     {
-      "id": "BTC-TOP-BID-ASYMMETRY-20260929T0636Z",
-      "type": "LOCAL_TOP_OF_BOOK_ASYMMETRY",
-      "evidence": "Best bid 7.698 BTC vs best ask 0.664 BTC.",
-      "uncertainty": "Single exchange/instantaneous."
+      "field": "gold_futures_price",
+      "explanation": "Public sources reflect different retrieval/event times and possibly quote conventions; values preserved separately, not reconciled into a synthetic price."
     }
   ],
-  "LIQUIDITY_WARNINGS": [
-    "Do not extrapolate Bybit instantaneous top-of-book imbalance to CME or aggregate crypto liquidity."
-  ],
-  "PROVIDER_CONFLICTS": [],
   "DATA_GAPS": [
-    "Direct NQ/MNQ, ES/MES, YM/MYM, RTY/M2K depth/order-flow/OI/options positioning unavailable this invocation.",
-    "FMP index endpoint required higher subscription tier.",
-    "No direct aggregate crypto liquidation or exchange-wide OI dataset obtained."
+    "No direct NQ/MNQ, ES/MES, YM/MYM, RTY/M2K order-book/depth/OI/options-positioning snapshot obtained.",
+    "No direct MGC micro-gold order-book snapshot obtained.",
+    "No fresh exchange-native BTC order-book depth snapshot obtained in this invocation."
   ],
   "source_provenance": [
     {
-      "source": "Bybit",
-      "representation": "BTCUSDT linear perpetual",
-      "retrieval_window_utc": "2026-09-29T06:35:46Z/2026-09-29T06:37:00Z",
+      "source": "XOOMAR",
+      "event_time": "2026-09-29T00:05:00Z",
       "fields": [
-        "orderbook",
-        "funding",
-        "24 x 1h OHLCV"
-      ],
-      "event_time_ms": 1790663777602
+        "BTC funding",
+        "marks",
+        "open-interest context"
+      ]
     },
     {
-      "source": "Twelve Data",
-      "representation": "QQQ/SPY ETF cash-market quotes",
-      "market_date": "2026-09-28"
+      "source": "Pandabull",
+      "event_time": "2026-09-29T00:00:00Z",
+      "fields": [
+        "Bybit BTCUSDT settled funding"
+      ]
     },
     {
-      "source": "Financial Modeling Prep",
-      "representation": "GCUSD Gold Futures quote",
-      "event_timestamp": 1790663173
+      "source": "FXEmpire",
+      "event_time": "2026-09-29T08:07:00Z",
+      "fields": [
+        "GC Dec-2026 price",
+        "range",
+        "volume",
+        "open interest"
+      ]
+    },
+    {
+      "source": "Reuters",
+      "event_date": "2026-09-29",
+      "fields": [
+        "U.S. gold futures",
+        "macro context"
+      ]
     }
   ],
   "quality_notes": [
-    "Representation identity preserved.",
-    "Event/retrieval time separated where available.",
-    "Missing evidence not fabricated."
+    "Event times preserved where source exposed them.",
+    "Stale/intraday timestamps are not represented as simultaneous current snapshots.",
+    "Missing evidence not fabricated.",
+    "No trading/backtesting/strategy promotion performed."
   ],
-  "BACKLOG_DURABLE": false,
-  "LIBRARY_BACKLOG_STATUS": "LIBRARY_UNVERIFIED",
-  "history_mode": "ledger_fallback",
-  "previous_ledger_blob_sha": "a81fe99e0ec2a4fbf355c2c95d60e10b3e8ec3d0",
-  "ledger_blob_sha": "f50f6bf110fccb93ea6ec6ee631fbc2523446b6c",
+  "history_mode": "primary_immutable",
   "PERSISTENCE_STATUS": "PERSISTED",
-  "FINALIZATION_STATUS": "GITHUB_LEDGER_FALLBACK_VERIFIED_LIBRARY_UNVERIFIED"
+  "FINALIZATION_STATUS": "GITHUB_PRIMARY_HISTORY_VERIFIED",
+  "history_blob_sha": "b199dd3212a9dd342582481ad09354479bd17a00",
+  "LIBRARY_BACKLOG_STATUS": "LIBRARY_UNVERIFIED",
+  "BACKLOG_DURABLE": false
 }

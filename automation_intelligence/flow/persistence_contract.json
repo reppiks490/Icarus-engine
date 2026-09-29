@@ -1,5 +1,5 @@
 {
-  "schema_version": "flow-persistence-v3",
+  "schema_version": "flow-persistence-v4",
   "repository": "reppiks490/Icarus-engine",
   "branch": "main",
   "root": "automation_intelligence/flow",
@@ -15,8 +15,8 @@
     "trigger": "new immutable history file creation blocked by connector safety/write guard",
     "mode": "append_only_fresh_sha_ledger",
     "path": "automation_intelligence/flow/history_ledger.jsonl",
-    "append_rule": "Fetch ledger and blob SHA; preserve exact prior bytes; append one compact JSON line with previous_ledger_blob_sha equal to fetched SHA and the complete finalized payload; update_file with fresh SHA; re-fetch and verify exact-prefix preservation and unique RUN_ID in appended suffix.",
-    "completed_run_rule": "Verified ledger fallback containing the complete finalized payload is valid GitHub history identity; latest and manifest may advance only after ledger readback verification.",
+    "append_rule": "Fetch ledger and blob SHA; preserve exact prior bytes; append exactly one compact JSON object plus newline with previous_ledger_blob_sha equal to fetched SHA and the complete finalized payload; update with fresh SHA; re-fetch; verify exact-prefix preservation; parse the appended suffix as exactly one JSONL record whose top-level RUN_ID equals the intended RUN_ID. Nested RUN_ID fields inside the complete payload are allowed and must match; never use raw substring-count uniqueness.",
+    "completed_run_rule": "Verified ledger fallback containing the complete finalized payload is valid GitHub history identity; latest and manifest may advance only after structural ledger readback verification.",
     "partial_run_rule": "If complete finalized payload is unavailable, append only truthful PARTIAL_PERSISTENCE receipt and do not advance latest/manifest."
   },
   "library_backup": {

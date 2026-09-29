@@ -8,7 +8,8 @@
     "History, latest, and finalization reference that same run_core_blob_sha; they do not duplicate or independently hash RUN_CORE.",
     "A v3.2 run is fully persisted only when immutable core, immutable history, current latest, and immutable finalization receipt mutually agree on RUN_ID/control-plane/automation identity and the receipt binds the current core/history/latest blob SHAs.",
     "Scheduler last_run_time is trigger evidence only, never persistence evidence.",
-    "All five lanes persist scheduler authority on main; development branches are never persistence authority."
+    "All five lanes persist scheduler authority on main; development branches are never persistence authority.",
+    "Scheduler identity migration must never rewrite automation_id on an active or bootstrap-incomplete RUN_ID; preserve prior-run incident evidence and apply replacement identity only after clean finalization or contract-valid stale recovery."
   ],
   "bootstrap": {
     "github_primary_required": true,
@@ -112,7 +113,7 @@
     },
     "exhaustion_behavior": "When a cap is reached or any recoverable non-GitHub failure threatens completion, record NO_ADDITIONAL_DELTA_DUE_BUDGET or an explicit degraded status and proceed immediately to Pass 8. Never sacrifice closure for completeness."
   },
-  "contract_revision": "2026-09-29-r4",
+  "contract_revision": "2026-09-29-r5",
   "connector_requirements": {
     "primary_repo_connector": "GitHub",
     "required_before_repo_state_read": true,

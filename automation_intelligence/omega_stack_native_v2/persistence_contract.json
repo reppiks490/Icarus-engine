@@ -46,7 +46,13 @@
     "fresh_sha_before_every_update": true,
     "retry_once_after_refetch": true
   },
-  "foreign_writer_rule": "Any artifact written under the old omega_stack namespace or by an automation_id not listed in isolated control_plane.active[] is non-authoritative for omega_stack_native_v2.",
+  "foreign_writer_rule": "Any write outside automation/omega-native-v2:automation_intelligence/omega_stack_native_v2/ or by an automation_id not listed in isolated control_plane.active[] is non-authoritative for native-v2.",
   "execution_authorized": false,
-  "created_at_utc": "2026-09-29T01:31:00Z"
+  "created_at_utc": "2026-09-29T01:31:00Z",
+  "contract_revision": "2026-09-29-native-v2-r2",
+  "authoritative_branch": "automation/omega-native-v2",
+  "authoritative_root": "automation_intelligence/omega_stack_native_v2",
+  "scheduler_mutation_forbidden": true,
+  "scheduler_identity_rule": "Each lane's live scheduler ID must exactly match control_plane.active[].automation_id. Scheduled lanes may never mutate scheduler topology.",
+  "operational_state_branch": "automation/omega-native-v2"
 }

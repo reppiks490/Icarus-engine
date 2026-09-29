@@ -8,7 +8,7 @@
     "flow_microstructure",
     "apex_council"
   ],
-  "updated_at": "2026-09-29T14:55:00Z",
+  "updated_at": "2026-09-29T15:01:10Z",
   "latest_runs": {
     "omega": {
       "run_id": "omega-20260928T100234Z",
@@ -167,7 +167,7 @@
     "apex_council": "automation_intelligence/agent_fabric/apex_council/heartbeat.json",
     "advanced_csv": "reppiks490/icarus-csv-evidence-lab:automation_intelligence/advanced_csv/heartbeat.json"
   },
-  "CLEAN_1_TO_1_STATUS": "FIVE_ACTIVE_LANES_RECONCILED_CURRENT_POINTERS_VERIFIED; HISTORICAL_PARTIALS_PRESERVED",
+  "CLEAN_1_TO_1_STATUS": "FIVE_ACTIVE_LANES_READY_FOR_NEXT_CYCLE; CURRENT_POINTERS_VERIFIED; HISTORICAL_PARTIALS_PRESERVED",
   "CLEAN_1_TO_1_DESIGN": "primary-immutable-history-plus-structurally-verified-fresh-sha-ledger-fallback-v2",
   "CLEAN_1_TO_1_RECONCILIATION": {
     "restored_scheduler_count": 5,
@@ -258,7 +258,7 @@
       "note": "Started before clean 1:1 contract migration; no matching history found as of reconciliation."
     }
   },
-  "ACTIVE_TOPOLOGY_STATUS": "RESTORED_FIVE_LOOP_TOPOLOGY_PERSISTENCE_RECONCILED",
+  "ACTIVE_TOPOLOGY_STATUS": "FIVE_LOOP_TOPOLOGY_READY_FOR_NEXT_SCHEDULED_CYCLE",
   "agent_fabric_lanes": {
     "schema_version": "agent-fabric-lanes-v1",
     "canonical_code_branch": "main",
@@ -272,19 +272,19 @@
         "path": "automation_intelligence/agent_fabric/robustness_guardian",
         "code": "icarus_engine/agents/specialists.py::RobustnessGuardianAgent",
         "schedule_title": "Robustness Guardian Evolution",
-        "status": "FINALIZATION_VERIFIED_060500Z"
+        "status": "FINALIZATION_VERIFIED_20260929T060500Z"
       },
       "alpha_synthesis": {
         "path": "automation_intelligence/agent_fabric/alpha_synthesis",
         "code": "icarus_engine/agents/specialists.py::AlphaSynthesisAgent",
         "schedule_title": "Alpha Synthesis Evolution",
-        "status": "IDLE_READY_HASH_MISMATCH_PRESERVED_FALLBACK_READY"
+        "status": "FINALIZATION_VERIFIED_LEDGER_FALLBACK_20260929T062500Z; LANE_READY"
       },
       "apex_council": {
         "path": "automation_intelligence/agent_fabric/apex_council",
         "code": "icarus_engine/agents/apex.py::ApexCouncilAgent",
         "schedule_title": "Apex Council Evolution",
-        "status": "IDLE_READY_BOOTSTRAP_PARTIAL_PRESERVED_FALLBACK_READY"
+        "status": "FINALIZATION_VERIFIED_LEDGER_FALLBACK_20260929T144500Z; LANE_READY"
       }
     },
     "research_adapter": {
@@ -363,10 +363,10 @@
       "fallback_mode": "append_only_fresh_sha_lane_ledger"
     }
   },
-  "SCHEDULER_TOPOLOGY_STATUS": "FIVE_RESTORED_HOURLY_LOOPS_LIVE_VERIFIED_AFTER_AUDIT_REPAIR",
+  "SCHEDULER_TOPOLOGY_STATUS": "FIVE_RESTORED_HOURLY_LOOPS_LIVE_VERIFIED_READY",
   "scheduler_topology": {
     "schema_version": "icarus-scheduler-topology-v2",
-    "verified_at": "2026-09-29T14:55:00Z",
+    "verified_at": "2026-09-29T15:01:10Z",
     "authority": "live ChatGPT automation registry for this account",
     "active_count": 5,
     "cadence": "hourly",

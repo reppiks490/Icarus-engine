@@ -1,0 +1,19 @@
+{
+  "schema_version": "scheduler-binding-v1",
+  "title": "Microstructure Sensor Grid",
+  "automation_id": "6abaef8effb48191aa5c959455451681",
+  "minute": 35,
+  "timezone": "America/Chicago",
+  "timing_mode": "exact_schedule",
+  "repository": "reppiks490/Icarus-engine",
+  "branch": "main",
+  "root": "automation_intelligence/flow",
+  "ownership": "collection_only_microstructure_data_loop",
+  "foreign_or_separate_paths": [
+    "automation_intelligence/omega_stack/flow",
+    "automation_intelligence/omega_stack_native_v2/flow",
+    "automation_intelligence/omega_stack_live_6abb/flow"
+  ],
+  "isolation_policy": "Never adopt scheduler identity, mutable state, or authority from foreign/separate Flow Velocity or omega_stack namespaces.",
+  "execution_authorized": false
+}

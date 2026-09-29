@@ -361,5 +361,29 @@
     "note": "This field is the authoritative repository mirror of scheduled automation state. Legacy active_engines/engine_locations describe older runtime namespaces and are not scheduler truth.",
     "persistence_hardening": "STARTUP_HEARTBEAT_FAIL_CLOSED_ON_ALL_FIVE_ACTIVE_LOOPS"
   },
-  "scheduler_topology_supersedes_legacy_active_engines_for_automation_state": true
+  "scheduler_topology_supersedes_legacy_active_engines_for_automation_state": true,
+  "SCHEDULER_TRUTH_STATUS": "SUPERSEDED_FOR_LIVE_TOPOLOGY",
+  "SCHEDULER_TRUTH_POINTER": "automation_intelligence/omega_stack/control_plane.json",
+  "SCHEDULER_TRUTH_RULE": "This global manifest is historical/contextual only. It MUST NOT be used to infer the current enabled scheduler count or to reactivate legacy loops. Live ChatGPT scheduler registry is authoritative; omega_stack/control_plane.json defines the required five-lane topology.",
+  "LIVE_REGISTRY_VERIFICATION_REQUIRED": true,
+  "OBSERVED_LEGACY_TRIGGER_CONFLICT": {
+    "status": "OPEN_REQUIRES_SCHEDULER_REGISTRY_MUTATION",
+    "evidence": [
+      {
+        "scheduler_title": "Advanced CSV Data Collector",
+        "durable_run_id": "advanced-csv-20260929T001500Z",
+        "durable_started_at_utc": "2026-09-29T00:16:50Z",
+        "evidence_repo": "reppiks490/icarus-csv-evidence-lab",
+        "evidence_path": "automation_intelligence/advanced_csv/heartbeat.json"
+      },
+      {
+        "scheduler_title": "Alpha Synthesis Evolution",
+        "durable_run_id": "alpha-synthesis-20260929T002500Z",
+        "durable_started_at_utc": "2026-09-29T00:24:41Z",
+        "evidence_repo": "reppiks490/Icarus-engine",
+        "evidence_path": "automation_intelligence/agent_fabric/alpha_synthesis/heartbeat.json"
+      }
+    ],
+    "rule": "These durable starts prove legacy/non-omega-stack scheduler activity occurred after the five-lane topology was declared. They do not prove current enabled count. Disable legacy scheduler objects when live registry mutation is available; do not delete historical repo evidence."
+  }
 }

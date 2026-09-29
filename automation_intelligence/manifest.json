@@ -8,7 +8,7 @@
     "flow_microstructure",
     "apex_council"
   ],
-  "updated_at": "2026-09-29T06:07:00Z",
+  "updated_at": "2026-09-29T06:10:00Z",
   "latest_runs": {
     "omega": {
       "run_id": "omega-20260928T100234Z",
@@ -30,7 +30,8 @@
       "status": "RUN_PERSISTED",
       "scheduler_title": "Microstructure Sensor Grid",
       "scheduler_id": "6abaef8effb48191aa5c959455451681",
-      "active": true
+      "active": true,
+      "canonical_active_engine": "flow_microstructure"
     },
     "fundamental": {
       "run_id": "fundamental-20260928T164052Z",
@@ -63,6 +64,34 @@
       "note": "First finalized scheduled DAEDALUS run pending.",
       "active": false,
       "role": "historical_disabled_only"
+    },
+    "robustness_guardian": {
+      "run_id": "robustness-guardian-20260929T060500Z",
+      "status": "FINALIZATION_VERIFIED",
+      "active": true,
+      "scheduler_id": "6abaf924e0248191b8a11bd1d32bf0b7"
+    },
+    "advanced_csv": {
+      "run_id": null,
+      "status": "IDLE_READY_AFTER_PARTIAL",
+      "previous_partial_run_id": "advanced-csv-20260929T051500Z",
+      "active": true,
+      "scheduler_id": "6abaef9d5c28819190d98a5af7f308b8",
+      "repository": "reppiks490/icarus-csv-evidence-lab"
+    },
+    "alpha_synthesis": {
+      "run_id": "alpha-synthesis-20260928T212646Z",
+      "status": "IDLE_READY_AFTER_PRESERVED_HASH_MISMATCH",
+      "previous_partial_run_id": "alpha-synthesis-20260929T032129Z",
+      "active": true,
+      "scheduler_id": "6abaf8d75cf48191bc7ce06bc0006f1c"
+    },
+    "apex_council": {
+      "run_id": "apex-council-20260928T214335Z",
+      "status": "IDLE_READY_AFTER_PRESERVED_BOOTSTRAP_PARTIAL",
+      "previous_partial_run_id": "apex-council-20260929T054500Z",
+      "active": true,
+      "scheduler_id": "6ababd570fac81918777c8f809cf67c9"
     }
   },
   "latest_blob_shas": {
@@ -72,7 +101,8 @@
     "fundamental": "723cd2663dfab473e6abdea99a7e1cf13f367d2f",
     "alt_data_crypto": "b5af6f8d284d78657d5957f681941c957ffc8b06",
     "aion": "5524697b193eda85ca8035ee95ee52f5fa882d88",
-    "daedalus": "7b82a244f3b8d1adc97792bdef966d11f09ed816"
+    "daedalus": "7b82a244f3b8d1adc97792bdef966d11f09ed816",
+    "robustness_guardian": "b29017808e1ccead51d0892e7a4622f4cae83e9c"
   },
   "last_commits": {
     "omega": "36a10b60ab2166c413b8cfe0a40be64203ddabed",
@@ -132,7 +162,7 @@
     "apex_council": "automation_intelligence/agent_fabric/apex_council/heartbeat.json",
     "advanced_csv": "reppiks490/icarus-csv-evidence-lab:automation_intelligence/advanced_csv/heartbeat.json"
   },
-  "CLEAN_1_TO_1_STATUS": "PERSISTENCE_HARDENED_NATURAL_RUN_VALIDATION_IN_PROGRESS",
+  "CLEAN_1_TO_1_STATUS": "TWO_OF_FIVE_POST_HARDENING_CYCLES_VERIFIED_REMAINING_LANES_READY",
   "CLEAN_1_TO_1_DESIGN": "primary-immutable-history-plus-fresh-sha-ledger-fallback",
   "CLEAN_1_TO_1_RECONCILIATION": {
     "restored_scheduler_count": 5,
@@ -143,7 +173,11 @@
     "partial_runs_preserved": true,
     "stale_partial_heartbeats_recovered_to_ready_when_safe": true,
     "disabled_foreign_stack_remains_non_authoritative": true,
-    "post_hardening_full_cycles_verified": 0
+    "post_hardening_full_cycles_verified": 2,
+    "verified_full_cycles": [
+      "robustness-guardian-20260929T060500Z",
+      "flow-20260929T053500Z"
+    ]
   },
   "active_engines": [
     "robustness_guardian",
@@ -229,19 +263,19 @@
         "path": "automation_intelligence/agent_fabric/robustness_guardian",
         "code": "icarus_engine/agents/specialists.py::RobustnessGuardianAgent",
         "schedule_title": "Robustness Guardian Evolution",
-        "status": "CURRENT_V3_RUN_IN_PROGRESS"
+        "status": "FINALIZATION_VERIFIED_060500Z"
       },
       "alpha_synthesis": {
         "path": "automation_intelligence/agent_fabric/alpha_synthesis",
         "code": "icarus_engine/agents/specialists.py::AlphaSynthesisAgent",
         "schedule_title": "Alpha Synthesis Evolution",
-        "status": "IDLE_READY_NEXT_RUN_USES_PRIMARY_OR_LEDGER_FALLBACK"
+        "status": "IDLE_READY_HASH_MISMATCH_PRESERVED_FALLBACK_READY"
       },
       "apex_council": {
         "path": "automation_intelligence/agent_fabric/apex_council",
         "code": "icarus_engine/agents/apex.py::ApexCouncilAgent",
         "schedule_title": "Apex Council Evolution",
-        "status": "CURRENT_V3_RUN_IN_PROGRESS"
+        "status": "IDLE_READY_BOOTSTRAP_PARTIAL_PRESERVED_FALLBACK_READY"
       }
     },
     "research_adapter": {
@@ -422,32 +456,39 @@
   },
   "runtime_validation": {
     "robustness_guardian": {
-      "status": "IN_PROGRESS",
+      "status": "FINALIZATION_VERIFIED",
       "current_run_id": "robustness-guardian-20260929T060500Z",
-      "previous_partial_run_id": "robustness-guardian-20260929T050500Z"
+      "history_blob_sha": "f0379ac13f0ad717c22f1dece93b4adfe22e7fbd",
+      "latest_blob_sha": "b29017808e1ccead51d0892e7a4622f4cae83e9c",
+      "finalization_blob_sha": "c99b171676ca69c200c8b8aa131d24213ab3ef52"
     },
     "advanced_csv": {
       "status": "IDLE_READY",
       "previous_partial_run_id": "advanced-csv-20260929T051500Z",
-      "fallback_ready": true
+      "fallback_ready": true,
+      "history_ledger_blob_sha": "72c18266c2dc924862be180b58c7df7f218473b4"
     },
     "alpha_synthesis": {
       "status": "IDLE_READY",
       "previous_partial_run_id": "alpha-synthesis-20260929T032129Z",
-      "note": "prior immutable history hash mismatch preserved; next run recomputes canonical hash"
+      "fallback_ready": true,
+      "hash_mismatch_preserved": true,
+      "history_ledger_blob_sha": "7f24141a0bc1d3496809bdebe1f9ad89ff914e00"
     },
     "flow_microstructure": {
       "status": "RUN_PERSISTED",
       "current_run_id": "flow-20260929T053500Z",
       "history_blob_sha": "578e6d16cfba4fb6e28270d8ce41b7593e1980bb",
       "latest_blob_sha": "578e6d16cfba4fb6e28270d8ce41b7593e1980bb",
+      "heartbeat_blob_sha": "97588de75b03454bb32f47bcf771df7bc61d4000",
       "recovered_from_pointer_failure": true,
       "fallback_ready": true
     },
     "apex_council": {
-      "status": "IN_PROGRESS",
-      "current_run_id": "apex-council-20260929T054500Z",
-      "fallback_ready_for_future_invocations": true
+      "status": "IDLE_READY",
+      "previous_partial_run_id": "apex-council-20260929T054500Z",
+      "fallback_ready": true,
+      "history_ledger_blob_sha": "9e925b3bd1ec0c62d747fe0cc70210ec24f51252"
     }
   },
   "restored_loop_locations": {

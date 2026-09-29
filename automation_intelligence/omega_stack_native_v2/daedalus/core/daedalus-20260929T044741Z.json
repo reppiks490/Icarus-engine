@@ -1,0 +1,36 @@
+{
+  "RUN_ID": "daedalus-20260929T044741Z",
+  "RUN_STATUS": "BLOCKING",
+  "PASSES_COMPLETED": 8,
+  "FINALIZATION_STATUS": "FROZEN_FOR_FINALIZATION",
+  "CONTROL_PLANE_ID": "omega-aion-daedalus-native-v2",
+  "automation_id": "6ab8177918b48191a97e56c44b57d2c5",
+  "persistence_protocol_version": "omega-stack-persistence-v3.2",
+  "execution_authorized": false,
+  "findings": [
+    {
+      "severity": "BLOCKING",
+      "id": "AION_NATIVE_NO_COMPLETED_RUN",
+      "evidence": "AION native-v2 latest is INITIALIZED with RUN_ID null; no native candidate exists for independent reconstruction."
+    },
+    {
+      "severity": "BLOCKING",
+      "id": "MANDATORY_ATTACK_COVERAGE_UNPROVEN",
+      "evidence": "Development-branch recursive path inspection found no named test artifacts for required leakage/session/roll/holdout/friction attack families; code searches were incomplete and returned zero hits."
+    },
+    {
+      "severity": "HIGH",
+      "id": "STALE_PRIOR_DAEDALUS_RECOVERED",
+      "evidence": "Prior heartbeat remained IN_PROGRESS while checkpoint stayed IDLE beyond 45m; recovered under contract."
+    }
+  ],
+  "attack_status": "UNPROVEN_FOR_ALL_MANDATORY_FAMILIES",
+  "PERSISTENCE_HEALTH": "BOOTSTRAP_VERIFIED_AFTER_ALLOWED_RETRIES",
+  "PROVENANCE_HEALTH": "CONTROL_PLANE_AND_CONTRACT_VERIFIED",
+  "DATA_GAPS": [
+    "No completed AION native-v2 candidate.",
+    "Executable adversarial test evidence unavailable in this cycle."
+  ],
+  "CONFLICTS": [],
+  "decision": "BLOCKING"
+}

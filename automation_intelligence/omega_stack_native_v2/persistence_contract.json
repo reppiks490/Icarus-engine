@@ -1,26 +1,31 @@
 {
-  "schema_version": "omega-stack-persistence-v4.0-atomic-latest",
+  "schema_version": "omega-stack-persistence-v4.1-fast-cas",
+  "contract_revision": "2026-09-29-native-v2-r6",
+  "migrated_from": "omega-stack-persistence-v4.0-atomic-latest",
   "control_plane_id": "omega-aion-daedalus-native-v2",
   "authoritative_branch": "automation/omega-native-v2",
   "authoritative_root": "automation_intelligence/omega_stack_native_v2",
-  "purpose": "Reliable scheduled persistence within the observed short automation execution envelope using one optimistic-concurrency file update plus one readback.",
   "execution_authorized": false,
   "scheduler_mutation_forbidden": true,
-  "identity_rule": "The executing task automation_id must exactly equal its lane automation_id in control_plane.active[].",
-  "run_id_rule": "RUN_ID=<lane>-<UTC_YYYYMMDDTHHMMSSZ>.",
-  "authoritative_state": {
-    "path": "<lane>/latest.json",
-    "history": "Every successful update creates an immutable Git commit/blob. Git history is the authoritative historical ledger; separate per-run core/history/finalization file creation is not required.",
-    "legacy_v3_artifacts": "heartbeat.json, checkpoint.json, core/, history/, finalization/ are read-only historical evidence after v4 migration."
+  "purpose": "Reliable natural scheduled persistence inside the observed short automation runtime by minimizing pre-write tool calls and using GitHub optimistic concurrency as the durability gate.",
+  "root_cause_basis": {
+    "observed_scheduler_execution_window_seconds": "approximately 20-23",
+    "failure_pattern": "Runs with multiple sequential GitHub reads and slower optional retrievals frequently ended before the authoritative update; faster paths persisted.",
+    "corrective_principle": "persistence-before-depth"
+  },
+  "runtime_identity": {
+    "source": "hard-bound scheduler prompt plus out-of-band control-plane audit",
+    "per_run_control_plane_fetch_required": false,
+    "per_run_contract_fetch_required": false,
+    "exact_lane_path_required": true,
+    "exact_automation_id_required": true
   },
   "transaction": [
-    "Fetch isolated control_plane.json and this contract; validate exact protocol/control-plane/lane identity.",
-    "Fetch <lane>/latest.json immediately before mutation and retain its current blob SHA as PREVIOUS_BLOB_SHA.",
-    "Perform at most one optional bounded research/audit retrieval. If unavailable, record DEGRADED/NO_FRESH_DATA; do not abort.",
-    "Build one self-contained RUN_RECEIPT containing all material output and failure/degradation fields.",
-    "Update <lane>/latest.json exactly once using PREVIOUS_BLOB_SHA.",
-    "Re-fetch <lane>/latest.json exactly once and verify RUN_ID, automation_id, CONTROL_PLANE_ID, persistence_protocol_version, FINALIZATION_STATUS=VERIFIED and execution_authorized=false.",
-    "Only the successful readback makes the run authoritative."
+    "Fetch only <lane>/latest.json immediately before mutation and retain its current blob SHA as PREVIOUS_BLOB_SHA.",
+    "Perform at most one bounded work call. If that call is unavailable, slow, stale, incomplete, or uncertain, skip depth and persist a truthful degraded/no-new-evidence receipt.",
+    "Build one self-contained RUN_RECEIPT using the exact hard-bound lane identity and protocol.",
+    "Update <lane>/latest.json exactly once using PREVIOUS_BLOB_SHA. A successful GitHub contents API response is the authoritative write acknowledgement.",
+    "Do not perform a mandatory post-write readback inside the scheduled run. Out-of-band acceptance audits verify the stored blob and commit history."
   ],
   "required_receipt_fields": [
     "engine",
@@ -37,33 +42,51 @@
     "NET_NEW_DELTA",
     "DATA_GAPS",
     "CONFLICTS",
-    "execution_authorized"
+    "execution_authorized",
+    "verification_method",
+    "run_origin"
   ],
   "required_values": {
     "RUN_STATUS": "RUN_PERSISTED",
     "FINALIZATION_STATUS": "VERIFIED",
     "CONTROL_PLANE_ID": "omega-aion-daedalus-native-v2",
-    "persistence_protocol_version": "omega-stack-persistence-v4.0-atomic-latest",
-    "execution_authorized": false
+    "persistence_protocol_version": "omega-stack-persistence-v4.1-fast-cas",
+    "execution_authorized": false,
+    "verification_method": "GITHUB_CONTENTS_CAS_UPDATE_RESPONSE",
+    "run_origin": "NATURAL_SCHEDULE"
   },
   "optimistic_concurrency": {
     "fresh_sha_required": true,
     "max_mutation_attempts": 1,
-    "rule": "Do not loop on mutation failures inside a scheduled execution. A failed CAS write is a failed run; next natural invocation retries from fresh state."
+    "rule": "A CAS conflict or write error is a failed run. Do not spend the remaining scheduler budget retrying; the next natural invocation starts from fresh state."
   },
   "runtime_budget": {
-    "target_seconds": 20,
+    "target_seconds": 15,
+    "max_github_reads_before_write": 1,
+    "max_optional_work_calls_before_write": 1,
     "max_repo_mutations": 1,
-    "post_mutation_readbacks": 1,
-    "max_optional_external_calls": 1,
-    "rule": "Prepare persistence before optional depth. If time/tool budget is uncertain, skip optional research and persist a truthful degraded receipt."
+    "mandatory_post_write_readbacks": 0,
+    "rule": "If optional depth threatens the write deadline, skip optional depth and persist a truthful degraded receipt."
+  },
+  "scheduler_jitter": {
+    "nominal_minutes": [
+      0,
+      12,
+      24,
+      36,
+      48
+    ],
+    "tolerated_start_jitter_seconds": 360,
+    "rule": "Use the nominal slot in scheduled_for. Actual trigger jitter within tolerance does not invalidate a run."
+  },
+  "legacy_artifacts": {
+    "v3": "heartbeat.json, checkpoint.json, core/, history/, finalization/ are read-only historical evidence.",
+    "v4_0": "Existing v4.0 latest.json commits are historical evidence. New natural runs must write v4.1 receipts."
   },
   "acceptance": {
-    "single_run": "One updated latest.json blob read back successfully with all required fields/values.",
-    "sustained_lane": "Two consecutive natural scheduled receipts with distinct RUN_IDs and distinct latest.json blob SHAs.",
-    "stack_5_of_5": "All five lanes satisfy sustained_lane with exact scheduler IDs/minutes."
+    "single_run": "One natural v4.1 receipt stored by successful CAS with all required fields and exact identity.",
+    "sustained_lane": "Two consecutive natural v4.1 receipts with distinct RUN_IDs and distinct latest.json blob SHAs.",
+    "stack_5_of_5": "All five lanes satisfy sustained_lane while the scheduler registry remains exactly five enabled authoritative lanes."
   },
-  "no_fabrication": true,
-  "contract_revision": "2026-09-29-native-v2-r4",
-  "migrated_from": "omega-stack-persistence-v3.2"
+  "no_fabrication": true
 }

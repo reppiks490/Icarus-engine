@@ -1,11 +1,11 @@
 {
   "schema_version": "omega-stack-verification-v1",
-  "verified_at_utc": "2026-09-29T01:11:16Z",
+  "verified_at_utc": "2026-09-29T01:22:15Z",
   "repository": "reppiks490/Icarus-engine",
   "control_plane": "automation_intelligence/omega_stack/control_plane.json",
-  "control_plane_blob_sha": "294a4731b0ac135f2d023f456a48463ff925593e",
+  "control_plane_blob_sha": "3df15340401e3af46cc9f4efcfeef1d8aba59e8e",
   "scheduler": {
-    "status": "RECOVERED_VISIBLE_FIVE_REPLACEMENTS_LIVE_V3_2_ACCEPTANCE_PENDING",
+    "status": "EXACTLY_FIVE_REPLACEMENT_STACK_TASKS_ENABLED_IDENTITY_REBOUND",
     "enabled_count": 5,
     "paused_count": 22,
     "timing_mode": "exact_schedule",
@@ -74,42 +74,34 @@
   "lanes": {
     "omega": {
       "repo_root": "main:automation_intelligence/omega_stack/omega",
-      "state": "MIGRATED_SEED_PRESENT",
-      "latest_run_id": "omega-20260928T100234Z",
-      "first_post_isolation_run": "PENDING"
+      "state": "V3_2_FINALIZATION_VERIFIED",
+      "latest_run_id": "omega-20260929T011700Z",
+      "first_post_isolation_run": "VERIFIED_INTERACTIVE_REPAIR"
     },
     "macro": {
       "repo_root": "main:automation_intelligence/omega_stack/macro",
-      "state": "MIGRATED_SEED_PRESENT",
-      "latest_run_id": "macro-20260928T181445Z",
-      "first_post_isolation_run": "PENDING"
+      "state": "V3_2_FINALIZATION_VERIFIED",
+      "latest_run_id": "macro-20260929T011800Z",
+      "first_post_isolation_run": "VERIFIED_INTERACTIVE_REPAIR"
     },
     "flow": {
       "repo_root": "main:automation_intelligence/omega_stack/flow",
-      "state": "MIGRATED_SEED_PRESENT",
-      "latest_run_id": "flow-20260928T102124Z",
-      "first_post_isolation_run": "PENDING",
-      "live_observation": "IN_FLIGHT_LEGACY_V3_1",
-      "current_run_id": "flow-20260928T222205Z",
-      "note": "Run began under v3.1 before protocol upgrade; do not promote as v3.2. Next fresh Flow run must use v3.2."
+      "state": "V3_2_FINALIZATION_VERIFIED",
+      "latest_run_id": "flow-20260929T011900Z",
+      "first_post_isolation_run": "VERIFIED_INTERACTIVE_REPAIR"
     },
     "aion": {
-      "repo_root": "feature/aion-daedalus-prime-v2:automation_intelligence/omega_stack/aion",
-      "state": "INITIALIZED",
+      "repo_root": "main:automation_intelligence/omega_stack/aion",
+      "state": "BOOTSTRAP_INCOMPLETE_FINALIZATION_ONLY_WINDOW",
       "latest_run_id": null,
-      "first_post_isolation_run": "PENDING",
-      "live_observation": "QUARANTINED_HASH_MISMATCH_RESET_TO_IDLE",
-      "current_run_id": null,
-      "note": "Pass-9 history retained immutably but declared RUN_CORE hash did not reproduce; run is not eligible for Pass 10 or OMEGA acceptance. Heartbeat reset to IDLE for a fresh v3.2 run.",
-      "quarantined_run_id": "aion-20260928T213605Z"
+      "current_run_id": "aion-20260929T004205Z",
+      "note": "Heartbeat exists without matching BOOTSTRAPPED checkpoint. Preserved under v3.2 single-flight rules; no success claim."
     },
     "daedalus": {
-      "repo_root": "feature/aion-daedalus-prime-v2:automation_intelligence/omega_stack/daedalus",
-      "state": "INITIALIZED",
-      "latest_run_id": null,
-      "first_post_isolation_run": "PENDING",
-      "live_observation": "HEARTBEAT_WRITE_READBACK_VERIFIED_IDLE",
-      "note": "Direct two-step heartbeat write/readback probe succeeded on the authoritative agent branch; next scheduled trigger should use the fresh-SHA v3.2 bootstrap sequence."
+      "repo_root": "main:automation_intelligence/omega_stack/daedalus",
+      "state": "V3_2_FINALIZATION_VERIFIED",
+      "latest_run_id": "daedalus-20260929T011955Z",
+      "first_post_isolation_run": "VERIFIED_INTERACTIVE_REPAIR"
     }
   },
   "invariants": {
@@ -135,17 +127,17 @@
     "finalization_receipt_must_bind_core_history_latest_blobs": true
   },
   "live_acceptance_gates": [
-    "OMEGA completes one v3.2 run with immutable core, history, latest, and finalization receipt all verified.",
-    "Macro completes one v3.2 run with immutable core, history, latest, and finalization receipt all verified.",
-    "Flow completes a fresh v3.2 run after its current legacy-v3.1 in-flight cycle resolves or is stranded/quarantined.",
-    "AION completes a fresh v3.2 run; aion-20260928T213605Z remains quarantined because its v3.1 self-hash did not reproduce.",
-    "DAEDALUS completes one v3.2 run after heartbeat write/readback path is verified.",
-    "OMEGA subsequently consumes only receipt-verified v3.2 specialist state as current authoritative input."
+    "OMEGA v3.2 finalization verified.",
+    "Macro v3.2 finalization verified.",
+    "Flow v3.2 finalization verified.",
+    "DAEDALUS v3.2 finalization verified.",
+    "AION bootstrap-incomplete run must reach stale-recovery threshold and be recovered without fabrication, then complete a fresh v3.2 finalization.",
+    "Natural scheduled cycles remain separate from interactive repair verification."
   ],
-  "overall_status": "SCHEDULER_VISIBLE_TOPOLOGY_REPAIRED_V3_2_LIVE_ACCEPTANCE_PENDING",
+  "overall_status": "FOUR_OF_FIVE_V3_2_VERIFIED_AION_RECOVERY_PENDING",
   "execution_authorized": false,
   "persistence_protocol_version": "omega-stack-persistence-v3.2",
-  "persistence_contract_blob_sha": "93346bb6869faea0eca920c753dac028c5ed2c95",
+  "persistence_contract_blob_sha": "b1fea204b6e2d4b1ef1fde04be89cdf37c4d0a59",
   "library_fallback": {
     "status": "ALL_FIVE_WRITE_READBACK_DELETE_VERIFIED",
     "verified_at_utc": "2026-09-28T20:51:39Z",
@@ -190,6 +182,18 @@
     "predecessor_ids_preserved": true,
     "enabled_count_verified_before_repo_rebind": 5,
     "live_v3_2_acceptance": "PENDING_FRESH_FINALIZATION_ALL_FIVE",
+    "execution_authorized": false
+  },
+  "review_5": {
+    "completed_at_utc": "2026-09-29T01:22:15Z",
+    "scheduler_self_preservation": "ENABLED_ALL_FIVE",
+    "finalized_repair_verification_lanes": [
+      "omega",
+      "macro",
+      "flow",
+      "daedalus"
+    ],
+    "aion_status": "BOOTSTRAP_INCOMPLETE_PRESERVED_FINALIZATION_ONLY_WINDOW",
     "execution_authorized": false
   }
 }

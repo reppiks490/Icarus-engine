@@ -1,59 +1,83 @@
 {
   "engine": "flow",
-  "schema_version": "microstructure-collection-v2",
-  "RUN_ID": "flow-20260929T053500Z",
+  "schema_version": "microstructure-collection-v3",
+  "RUN_ID": "flow-20260929T063500Z",
   "RUN_STATUS": "RUN_PERSISTED",
-  "run_start_time": "2026-09-29T05:31:59Z",
-  "retrieval_time": "2026-09-29T05:35:45Z",
-  "PREVIOUS_SUCCESSFUL_RUN_ID": "flow-20260928T102124Z",
+  "scheduled_for_utc": "2026-09-29T06:35:00Z",
+  "retrieval_window_utc": "2026-09-29T06:35:46Z/2026-09-29T06:37:00Z",
+  "PREVIOUS_SUCCESSFUL_RUN_ID": "flow-20260929T053500Z",
   "EXPECTED_CADENCE_MINUTES": 60,
   "scheduler_title": "Microstructure Sensor Grid",
   "scheduler_id": "6abaef8effb48191aa5c959455451681",
   "PASSES_COMPLETED": 10,
   "PREVIOUS_STATE_LOADED": true,
-  "STATE_CONTINUITY_STATUS": "VERIFIED_PRIOR_LATEST_AND_MANIFEST_LOADED; PRIOR_PARTIAL_PRESERVED",
+  "STATE_CONTINUITY_STATUS": "VERIFIED_BINDING_CONTRACT_HEARTBEAT_LATEST_LEDGER_MANIFEST; PRIOR_PARTIAL_EVIDENCE_PRESERVED",
   "HISTORICAL_BACKFILL_STATUS": "PARTIAL",
   "COLLECTION_ONLY": true,
   "execution_authorized": false,
   "NET_NEW_DELTA": {
-    "startup": "Canonical GitHub heartbeat IN_PROGRESS write and exact readback verified before provider calls.",
-    "btc": "Bybit BTCUSDT linear last 83141.10 USDT; 24h change +0.2195%; reported 24h base volume 54367.169 BTC.",
-    "depth": "Top book 83141.00 x 0.525 BTC bid / 83141.10 x 6.696 BTC ask; spread 0.10 USDT.",
-    "funding": "Current funding +0.000876%; neutral.",
-    "range": "24 returned 1h bars high 84352.9, low 82468.0.",
-    "cross_market": "Twelve Data QQQ 736.53998 USD and BTC/USD 83182.68 USD; later requests rate-limited.",
-    "coverage": "No entitled direct CME futures depth/OI/positioning feed available; missing evidence not synthesized."
+    "btc_depth": "Bybit BTCUSDT linear top-of-book was bid-heavy at retrieval: 7.698 BTC best bid vs 0.664 BTC best ask; spread 0.10 USDT; snapshot-local only.",
+    "btc_funding": "Bybit funding neutral at +0.000427%.",
+    "btc_price": "Latest returned 1h candle close 83831.9 USDT; 24 returned bars spanned 82468.0-84352.9.",
+    "cross_market": "QQQ closed 736.53003 (-1.070513%) and SPY 765.60999 (-0.74414862%) for 2026-09-28; FMP Gold Futures quote 4173.8 (+0.12955%).",
+    "provider_quality": "FMP index endpoint denied by plan entitlement; unavailable futures depth/OI/options positioning not synthesized."
   },
   "observations": {
     "BTCUSDT_BYBIT_LINEAR": {
-      "last_price_usdt": 83141.1,
-      "change_24h_percent": 0.2195,
-      "reported_24h_base_volume_btc": 54367.169,
-      "orderbook_event_time_ms": 1790659944602,
-      "best_bid_usdt": 83141,
-      "best_bid_qty_btc": 0.525,
-      "best_ask_usdt": 83141.1,
-      "best_ask_qty_btc": 6.696,
+      "best_bid_usdt": 83831.9,
+      "best_bid_qty_btc": 7.698,
+      "best_ask_usdt": 83832,
+      "best_ask_qty_btc": 0.664,
       "spread_usdt": 0.1,
-      "funding_rate_fraction": 0.00000876,
-      "funding_rate_percent": 0.000876,
+      "orderbook_event_time_ms": 1790663777602,
+      "funding_rate_fraction": 0.00000427,
+      "funding_rate_percent": 0.000427,
       "funding_sentiment": "neutral",
+      "latest_1h": {
+        "time": "2026-09-29T06:00:00Z",
+        "open": 83393.9,
+        "high": 83921.6,
+        "low": 83363.4,
+        "close": 83831.9,
+        "volume_btc": 2138.376
+      },
       "returned_24x1h_high": 84352.9,
       "returned_24x1h_low": 82468,
-      "representation_identity": "Bybit BTCUSDT linear perpetual; exchange-local public market data"
+      "representation_identity": "Bybit BTCUSDT linear perpetual"
     },
     "CROSS_MARKET": {
-      "QQQ_usd": 736.53998,
-      "BTCUSD_twelve_data_usd": 83182.68,
-      "btc_cross_provider_difference_usd": 41.58
+      "QQQ": {
+        "close_usd": 736.53003,
+        "volume": 41716200,
+        "percent_change": -1.070513,
+        "market_date": "2026-09-28",
+        "representation": "ETF proxy"
+      },
+      "SPY": {
+        "close_usd": 765.60999,
+        "volume": 42296700,
+        "percent_change": -0.74414862,
+        "market_date": "2026-09-28",
+        "representation": "ETF proxy"
+      },
+      "GOLD": {
+        "symbol": "GCUSD",
+        "price_usd": 4173.8,
+        "change_percent": 0.12955,
+        "volume": 36070,
+        "day_low": 4145.2,
+        "day_high": 4179.4,
+        "event_timestamp": 1790663173,
+        "representation": "FMP Gold Futures quote"
+      }
     }
   },
   "FLOW_ANOMALIES": [
     {
-      "id": "BTC-TOP-ASK-ASYMMETRY-20260929T0532Z",
+      "id": "BTC-TOP-BID-ASYMMETRY-20260929T0636Z",
       "type": "LOCAL_TOP_OF_BOOK_ASYMMETRY",
-      "evidence": "Best ask 6.696 BTC vs best bid 0.525 BTC.",
-      "uncertainty": "Single venue/instant; not durable or market-wide pressure."
+      "evidence": "Best bid 7.698 BTC vs best ask 0.664 BTC.",
+      "uncertainty": "Single exchange/instantaneous."
     }
   ],
   "LIQUIDITY_WARNINGS": [
@@ -61,39 +85,43 @@
   ],
   "PROVIDER_CONFLICTS": [],
   "DATA_GAPS": [
-    "Direct NQ/MNQ, ES/MES, YM/MYM, RTY/M2K, GC/MGC depth/order-flow/OI unavailable this invocation.",
-    "Twelve Data minute-credit ceiling blocked SPY/DIA/IWM/XAUUSD follow-ups.",
-    "No direct aggregate liquidation/options-positioning dataset obtained."
+    "Direct NQ/MNQ, ES/MES, YM/MYM, RTY/M2K depth/order-flow/OI/options positioning unavailable this invocation.",
+    "FMP index endpoint required higher subscription tier.",
+    "No direct aggregate crypto liquidation or exchange-wide OI dataset obtained."
   ],
   "source_provenance": [
     {
       "source": "Bybit",
-      "type": "direct exchange public API",
-      "retrieval_time_utc": "2026-09-29T05:32-05:35Z",
+      "representation": "BTCUSDT linear perpetual",
+      "retrieval_window_utc": "2026-09-29T06:35:46Z/2026-09-29T06:37:00Z",
       "fields": [
-        "BTCUSDT linear price/24h",
         "orderbook",
         "funding",
         "24 x 1h OHLCV"
-      ]
+      ],
+      "event_time_ms": 1790663777602
     },
     {
       "source": "Twelve Data",
-      "type": "direct market-data API",
-      "retrieval_time_utc": "2026-09-29T05:35Z",
-      "fields": [
-        "QQQ price",
-        "BTC/USD price"
-      ]
+      "representation": "QQQ/SPY ETF cash-market quotes",
+      "market_date": "2026-09-28"
+    },
+    {
+      "source": "Financial Modeling Prep",
+      "representation": "GCUSD Gold Futures quote",
+      "event_timestamp": 1790663173
     }
   ],
   "quality_notes": [
-    "Event time preserved where provider supplied it.",
-    "Cross-provider BTC difference is observational and asynchronous.",
-    "No unavailable measurement fabricated."
+    "Representation identity preserved.",
+    "Event/retrieval time separated where available.",
+    "Missing evidence not fabricated."
   ],
   "BACKLOG_DURABLE": false,
-  "LIBRARY_BACKLOG_STATUS": "LIBRARY_UNVERIFIED_CONTAINER_SESSION_UNAVAILABLE",
+  "LIBRARY_BACKLOG_STATUS": "LIBRARY_UNVERIFIED",
+  "history_mode": "ledger_fallback",
+  "previous_ledger_blob_sha": "a81fe99e0ec2a4fbf355c2c95d60e10b3e8ec3d0",
+  "ledger_blob_sha": "f50f6bf110fccb93ea6ec6ee631fbc2523446b6c",
   "PERSISTENCE_STATUS": "PERSISTED",
-  "FINALIZATION_STATUS": "CLEAN_GITHUB_1_TO_1_VERIFIED_LIBRARY_UNVERIFIED"
+  "FINALIZATION_STATUS": "GITHUB_LEDGER_FALLBACK_VERIFIED_LIBRARY_UNVERIFIED"
 }

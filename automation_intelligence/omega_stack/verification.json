@@ -3,7 +3,7 @@
   "verified_at_utc": "2026-09-29T01:22:15Z",
   "repository": "reppiks490/Icarus-engine",
   "control_plane": "automation_intelligence/omega_stack/control_plane.json",
-  "control_plane_blob_sha": "fbb757c3e3c58054a835e4609c6419c851bd9132",
+  "control_plane_blob_sha": "8e7e504be1645593bc1c15cd2fc51d47e402e695",
   "scheduler": {
     "status": "EXACTLY_FIVE_REPLACEMENT_STACK_TASKS_ENABLED_IDENTITY_REBOUND",
     "enabled_count": 5,
@@ -92,10 +92,10 @@
     },
     "aion": {
       "repo_root": "main:automation_intelligence/omega_stack/aion",
-      "state": "BOOTSTRAP_INCOMPLETE_FINALIZATION_ONLY_WINDOW",
+      "state": "CLEAN_BASELINE_AWAITING_VALID_V3_2_RUN",
       "latest_run_id": null,
-      "current_run_id": "aion-20260929T004205Z",
-      "note": "Heartbeat exists without matching BOOTSTRAPPED checkpoint. Preserved under v3.2 single-flight rules; no success claim."
+      "current_run_id": null,
+      "note": "Invalid AION repair runs are quarantined. Mutable heartbeat/checkpoint/latest are IDLE/IDLE/INITIALIZED and aligned to the live replacement scheduler ID; no success claim until a fresh v3.2 finalization exists."
     },
     "daedalus": {
       "repo_root": "main:automation_intelligence/omega_stack/daedalus",
@@ -134,10 +134,10 @@
     "AION bootstrap-incomplete run must reach stale-recovery threshold and be recovered without fabrication, then complete a fresh v3.2 finalization.",
     "Natural scheduled cycles remain separate from interactive repair verification."
   ],
-  "overall_status": "FOUR_OF_FIVE_V3_2_VERIFIED_AION_RECOVERY_PENDING",
+  "overall_status": "FOUR_OF_FIVE_V3_2_VERIFIED_AION_CLEAN_BASELINE_PENDING_RUN",
   "execution_authorized": false,
   "persistence_protocol_version": "omega-stack-persistence-v3.2",
-  "persistence_contract_blob_sha": "2d26b5b8d2ced6383f2df60a0cbf9f69c3b5ac12",
+  "persistence_contract_blob_sha": "c18cad5412de483395c29be0cf84c5e0c759bbfa",
   "library_fallback": {
     "status": "ALL_FIVE_WRITE_READBACK_DELETE_VERIFIED",
     "verified_at_utc": "2026-09-28T20:51:39Z",

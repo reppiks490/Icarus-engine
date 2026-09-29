@@ -69,5 +69,11 @@
   },
   "execution_authorized": false,
   "runtime_status_policy": "Lane heartbeat/latest/state plus primary immutable artifacts or verified lane ledger fallback are runtime truth; this manifest is scheduler binding authority only.",
-  "persistence_fallback_contract": "automation_intelligence/agent_fabric/persistence_fallback_contract.json"
+  "persistence_fallback_contract": "automation_intelligence/agent_fabric/persistence_fallback_contract.json",
+  "current_slot_continuation_policy": {
+    "required": true,
+    "rule": "Prior-run recovery is STEP 0 only. Every scheduler invocation must start and persist its own current scheduled RUN_ID after recovery unless that current slot's startup persistence fails after one safe retry.",
+    "run_id_source": "scheduler scheduled-for occurrence; if unavailable, nearest configured minute occurrence to invocation start",
+    "old_run_id_reuse_forbidden": true
+  }
 }

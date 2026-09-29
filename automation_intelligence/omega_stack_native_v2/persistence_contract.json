@@ -1,6 +1,6 @@
 {
   "schema_version": "omega-stack-persistence-v4.3-append-first",
-  "contract_revision": "2026-09-29-native-v2-r11",
+  "contract_revision": "2026-09-29-native-v2-r11.1",
   "migrated_from": "omega-stack-persistence-v4.2-write-first",
   "control_plane_id": "omega-aion-daedalus-native-v2",
   "authoritative_branch": "automation/omega-native-v2",
@@ -153,10 +153,12 @@
   "phase2_recovery": {
     "optional": true,
     "prerequisite": "Natural v4.3 liveness receipt for the current run has succeeded.",
-    "rule": "After liveness, at most one bounded backlog lookup may select the oldest unresolved lane backlog item. Recovery may write one immutable reconciliation/recovered artifact with run_origin=BACKFILL_RECOVERY using only actually available historical evidence. It may never create or alter a natural receipt for the missed slot.",
+    "rule": "After liveness, perform bounded reconciliation reads to identify at most one oldest lane backlog item and verify that no corresponding late-arrival or recovered artifact supersedes it. If eligibility cannot be verified within the run budget, leave it unresolved. If eligible, recovery may use at most one bounded lane-specific historical evidence retrieval and write one immutable reconciliation/recovered artifact with run_origin=BACKFILL_RECOVERY. It may never create or alter a natural receipt for the missed slot.",
     "max_backlog_items_per_natural_run": 1,
-    "unresolved_definition": "Backlog item exists and no corresponding recovered artifact exists; a late-arrival artifact means the natural historical event arrived and should not be reconstructed as missing work.",
+    "backlog_priority_over_normal_work": true,
+    "unresolved_definition": "Backlog item exists and no corresponding late-arrival or recovered artifact supersedes it.",
     "historical_truth_rule": "Never represent a field as observed-at-slot unless its source provides valid historical point-in-time data.",
+    "failure_semantics": "Any post-liveness recovery timeout/tool failure leaves backlog unresolved; the current natural liveness receipt remains valid.",
     "execution_authorized": false
   }
 }

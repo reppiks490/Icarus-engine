@@ -54,5 +54,10 @@
   "authoritative_root": "automation_intelligence/omega_stack_native_v2",
   "scheduler_mutation_forbidden": true,
   "scheduler_identity_rule": "Each lane's live scheduler ID must exactly match control_plane.active[].automation_id. Scheduled lanes may never mutate scheduler topology.",
-  "operational_state_branch": "automation/omega-native-v2"
+  "operational_state_branch": "automation/omega-native-v2",
+  "idle_identity_rebind": {
+    "allowed": true,
+    "rule": "If heartbeat/checkpoint/latest has RUN_ID null and status IDLE or INITIALIZED, an automation_id mismatch is stale metadata, not an active-run conflict. The current live task may overwrite that mutable file with the control-plane automation_id during bootstrap before assigning a new RUN_ID. Immutable core/history/finalization artifacts are never rewritten.",
+    "forbidden_when_active": true
+  }
 }

@@ -1,6 +1,6 @@
 {
   "schema_version": "omega-stack-persistence-v4.3-append-first",
-  "contract_revision": "2026-09-29-native-v2-r10",
+  "contract_revision": "2026-09-29-native-v2-r11",
   "migrated_from": "omega-stack-persistence-v4.2-write-first",
   "control_plane_id": "omega-aion-daedalus-native-v2",
   "authoritative_branch": "automation/omega-native-v2",
@@ -113,5 +113,50 @@
     "v4_0_v4_1": "Historical latest.json receipts.",
     "v4_2": "Historical write-first latest.json receipts; useful evidence but not authoritative for v4.3 natural-run acceptance."
   },
-  "no_fabrication": true
+  "no_fabrication": true,
+  "watchdog_reconciliation": {
+    "schema_version": "omega-watchdog-reconciliation-v1",
+    "workflow_path": ".github/workflows/automation-durability-watchdog.yml",
+    "workflow_source_branch": "main",
+    "authoritative_state_branch": "automation/omega-native-v2",
+    "grace_minutes": 12,
+    "rolling_horizon_hours": 48,
+    "root": "automation_intelligence/omega_stack_native_v2/reconciliation",
+    "missed_path_pattern": "reconciliation/missed/<lane>/<SLOT_ID>.json",
+    "backlog_path_pattern": "reconciliation/backlog/<lane>/<SLOT_ID>.json",
+    "late_arrival_path_pattern": "reconciliation/late_arrival/<lane>/<SLOT_ID>.json",
+    "recovered_path_pattern": "reconciliation/recovered/<lane>/<SLOT_ID>/<RECOVERY_RUN_ID>.json",
+    "backlog_status": "RECOVERY_PENDING_AI",
+    "origin_taxonomy": {
+      "natural": "NATURAL_SCHEDULE",
+      "watchdog": "GITHUB_WATCHDOG",
+      "recovery": "BACKFILL_RECOVERY"
+    },
+    "invariants": [
+      "Only ChatGPT AI-plane natural runs may write <lane>/runs/ and use run_origin=NATURAL_SCHEDULE.",
+      "The GitHub watchdog writes only under reconciliation/ and never writes natural runs/ or work/ receipts.",
+      "Missing, backlog, late-arrival, and recovery history is append-only; existing non-identical artifacts are never overwritten.",
+      "A watchdog or recovery artifact must never be promoted into a fabricated natural receipt.",
+      "A GitHub Actions failure remains visible as a failure and must not fall back silently to another credential."
+    ],
+    "verified_actions_run_id": 36628003730,
+    "verified_reconciliation_commit": "f42ea0c1753632056f3b3e2c4efd3017734bc058",
+    "verified_reconciliation_file_count": 140,
+    "execution_authorized": false
+  },
+  "natural_slot_attribution": {
+    "version": "nearest-hourly-boundary-v1",
+    "computation_scope": "LOCAL_ONLY_BEFORE_FIRST_EXTERNAL_ACTION",
+    "rule": "Capture started_at_utc, convert to America/Chicago, choose nearest lane-specific hourly boundary considering previous and next; tie chooses earlier.",
+    "jitter_validation_seconds": 360
+  },
+  "phase2_recovery": {
+    "optional": true,
+    "prerequisite": "Natural v4.3 liveness receipt for the current run has succeeded.",
+    "rule": "After liveness, at most one bounded backlog lookup may select the oldest unresolved lane backlog item. Recovery may write one immutable reconciliation/recovered artifact with run_origin=BACKFILL_RECOVERY using only actually available historical evidence. It may never create or alter a natural receipt for the missed slot.",
+    "max_backlog_items_per_natural_run": 1,
+    "unresolved_definition": "Backlog item exists and no corresponding recovered artifact exists; a late-arrival artifact means the natural historical event arrived and should not be reconstructed as missing work.",
+    "historical_truth_rule": "Never represent a field as observed-at-slot unless its source provides valid historical point-in-time data.",
+    "execution_authorized": false
+  }
 }

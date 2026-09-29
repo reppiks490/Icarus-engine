@@ -1,43 +1,37 @@
 {
-  "schema_version": "omega-stack-persistence-v4.1-fast-cas",
-  "contract_revision": "2026-09-29-native-v2-r6",
-  "migrated_from": "omega-stack-persistence-v4.0-atomic-latest",
+  "schema_version": "omega-stack-persistence-v4.2-write-first",
+  "contract_revision": "2026-09-29-native-v2-r7",
+  "migrated_from": "omega-stack-persistence-v4.1-fast-cas",
   "control_plane_id": "omega-aion-daedalus-native-v2",
   "authoritative_branch": "automation/omega-native-v2",
   "authoritative_root": "automation_intelligence/omega_stack_native_v2",
   "execution_authorized": false,
   "scheduler_mutation_forbidden": true,
-  "purpose": "Reliable natural scheduled persistence inside the observed short automation runtime by minimizing pre-write tool calls and using GitHub optimistic concurrency as the durability gate.",
+  "purpose": "Eliminate silent scheduled-run loss by persisting liveness before any variable-latency research/audit call, then enriching the same RUN_ID only if budget remains.",
   "root_cause_basis": {
     "observed_scheduler_execution_window_seconds": "approximately 20-23",
-    "failure_pattern": "Runs with multiple sequential GitHub reads and slower optional retrievals frequently ended before the authoritative update; faster paths persisted.",
-    "corrective_principle": "persistence-before-depth"
-  },
-  "runtime_identity": {
-    "source": "hard-bound scheduler prompt plus out-of-band control-plane audit",
-    "per_run_control_plane_fetch_required": false,
-    "per_run_contract_fetch_required": false,
-    "exact_lane_path_required": true,
-    "exact_automation_id_required": true
+    "root_cause": "Authoritative persistence occurred after variable-latency work calls, allowing scheduler termination before any durable write.",
+    "corrective_principle": "write-first, depth-second"
   },
   "transaction": [
-    "Fetch only <lane>/latest.json immediately before mutation and retain its current blob SHA as PREVIOUS_BLOB_SHA.",
-    "Perform at most one bounded work call. If that call is unavailable, slow, stale, incomplete, or uncertain, skip depth and persist a truthful degraded/no-new-evidence receipt.",
-    "Build one self-contained RUN_RECEIPT using the exact hard-bound lane identity and protocol.",
-    "Update <lane>/latest.json exactly once using PREVIOUS_BLOB_SHA. A successful GitHub contents API response is the authoritative write acknowledgement.",
-    "Do not perform a mandatory post-write readback inside the scheduled run. Out-of-band acceptance audits verify the stored blob and commit history."
+    "Fetch only <lane>/latest.json and retain its blob SHA as PREVIOUS_BLOB_SHA.",
+    "Immediately write phase-1 receipt for a fresh RUN_ID using PREVIOUS_BLOB_SHA. Required phase-1 values: RUN_STATUS=RUN_PERSISTED, FINALIZATION_STATUS=LIVENESS_VERIFIED, WORK_PHASE_STATUS=PENDING, verification_method=GITHUB_CONTENTS_CAS_UPDATE_RESPONSE, run_origin=NATURAL_SCHEDULE. Use commit message containing [skip ci].",
+    "Use the phase-1 update response content_sha as PHASE1_BLOB_SHA. Do not read back.",
+    "Perform at most one bounded work call. If it fails, is incomplete, or consumes the remaining runtime, stop; phase-1 liveness remains authoritative transport evidence.",
+    "If work completes, update the same <lane>/latest.json exactly once more using PHASE1_BLOB_SHA. Preserve the same RUN_ID, set FINALIZATION_STATUS=VERIFIED and WORK_PHASE_STATUS=COMPLETED or DEGRADED_COMPLETED, and include the truthful work delta. This second commit may run CI.",
+    "Never retry either mutation inside the same scheduled execution."
   ],
-  "required_receipt_fields": [
+  "phase1_required_fields": [
     "engine",
     "RUN_ID",
     "RUN_STATUS",
     "FINALIZATION_STATUS",
+    "WORK_PHASE_STATUS",
     "CONTROL_PLANE_ID",
     "automation_id",
     "persistence_protocol_version",
     "scheduled_for",
     "started_at_utc",
-    "completed_at_utc",
     "PREVIOUS_BLOB_SHA",
     "NET_NEW_DELTA",
     "DATA_GAPS",
@@ -46,27 +40,34 @@
     "verification_method",
     "run_origin"
   ],
-  "required_values": {
+  "phase1_required_values": {
     "RUN_STATUS": "RUN_PERSISTED",
-    "FINALIZATION_STATUS": "VERIFIED",
+    "FINALIZATION_STATUS": "LIVENESS_VERIFIED",
+    "WORK_PHASE_STATUS": "PENDING",
     "CONTROL_PLANE_ID": "omega-aion-daedalus-native-v2",
-    "persistence_protocol_version": "omega-stack-persistence-v4.1-fast-cas",
+    "persistence_protocol_version": "omega-stack-persistence-v4.2-write-first",
     "execution_authorized": false,
     "verification_method": "GITHUB_CONTENTS_CAS_UPDATE_RESPONSE",
     "run_origin": "NATURAL_SCHEDULE"
   },
+  "phase2_required_values": {
+    "RUN_STATUS": "RUN_PERSISTED",
+    "FINALIZATION_STATUS": "VERIFIED",
+    "WORK_PHASE_STATUS": "COMPLETED_OR_DEGRADED_COMPLETED",
+    "persistence_protocol_version": "omega-stack-persistence-v4.2-write-first"
+  },
   "optimistic_concurrency": {
-    "fresh_sha_required": true,
-    "max_mutation_attempts": 1,
-    "rule": "A CAS conflict or write error is a failed run. Do not spend the remaining scheduler budget retrying; the next natural invocation starts from fresh state."
+    "initial_fresh_sha_required": true,
+    "phase2_uses_phase1_content_sha": true,
+    "max_mutation_attempts_per_phase": 1
   },
   "runtime_budget": {
     "target_seconds": 15,
-    "max_github_reads_before_write": 1,
-    "max_optional_work_calls_before_write": 1,
-    "max_repo_mutations": 1,
-    "mandatory_post_write_readbacks": 0,
-    "rule": "If optional depth threatens the write deadline, skip optional depth and persist a truthful degraded receipt."
+    "max_initial_reads": 1,
+    "mandatory_phase1_mutations": 1,
+    "max_optional_work_calls_after_phase1": 1,
+    "max_phase2_mutations": 1,
+    "mandatory_post_write_readbacks": 0
   },
   "scheduler_jitter": {
     "nominal_minutes": [
@@ -77,16 +78,17 @@
       48
     ],
     "tolerated_start_jitter_seconds": 360,
-    "rule": "Use the nominal slot in scheduled_for. Actual trigger jitter within tolerance does not invalidate a run."
+    "rule": "scheduled_for is the nominal slot; actual start jitter within tolerance does not invalidate the run."
   },
   "legacy_artifacts": {
-    "v3": "heartbeat.json, checkpoint.json, core/, history/, finalization/ are read-only historical evidence.",
-    "v4_0": "Existing v4.0 latest.json commits are historical evidence. New natural runs must write v4.1 receipts."
+    "v3": "read-only historical evidence",
+    "v4_0_and_v4_1": "historical receipts; do not count toward v4.2 consecutive acceptance"
   },
   "acceptance": {
-    "single_run": "One natural v4.1 receipt stored by successful CAS with all required fields and exact identity.",
-    "sustained_lane": "Two consecutive natural v4.1 receipts with distinct RUN_IDs and distinct latest.json blob SHAs.",
-    "stack_5_of_5": "All five lanes satisfy sustained_lane while the scheduler registry remains exactly five enabled authoritative lanes."
+    "transport_success": "Natural v4.2 LIVENESS_VERIFIED phase-1 receipt exists.",
+    "full_run_success": "Same RUN_ID upgraded to FINALIZATION_STATUS=VERIFIED with WORK_PHASE_STATUS completed/degraded-completed.",
+    "sustained_lane": "Two consecutive natural fully VERIFIED v4.2 RUN_IDs with distinct blob SHAs.",
+    "stack_5_of_5": "All five lanes satisfy sustained_lane while exactly five authoritative tasks remain enabled."
   },
   "no_fabrication": true
 }

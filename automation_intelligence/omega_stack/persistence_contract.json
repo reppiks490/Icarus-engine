@@ -222,5 +222,12 @@
     "agent_development_branch": "feature/aion-daedalus-prime-v2",
     "rule": "All scheduler/persistence authority lives on main. AION/DAEDALUS may read/write code or work products on the development branch, but heartbeat/checkpoint/core/history/latest/finalization authority is main only.",
     "reason": "Separates durable orchestration state from experimental branch drift and scheduled-runtime branch-routing failures."
+  },
+  "identity_reconciliation": {
+    "current_scheduler_authority": "live native automation registry IDs",
+    "mutable_state_rule": "heartbeat.json must carry the current native scheduler automation_id before a new run starts.",
+    "historical_artifact_rule": "Immutable core/history/finalization artifacts created under prior replacement IDs remain historical migration evidence only. They must never block a fresh native-ID bootstrap. The next valid native-ID run supersedes them as current authoritative lane state.",
+    "checkpoint_rule": "A FINALIZED checkpoint from a prior scheduler identity is historical state. On the next native-ID run, overwrite checkpoint.json immediately after verified heartbeat bootstrap with the current RUN_ID and native automation_id.",
+    "reconciled_at_utc": "2026-09-29T01:29:00Z"
   }
 }

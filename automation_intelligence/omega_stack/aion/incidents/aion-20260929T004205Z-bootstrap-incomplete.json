@@ -1,0 +1,23 @@
+{
+  "schema_version": "omega-stack-incident-v1",
+  "lane": "aion",
+  "RUN_ID": "aion-20260929T004205Z",
+  "incident_class": "BOOTSTRAP_INCOMPLETE",
+  "observed_at_utc": "2026-09-29T00:52:30Z",
+  "evidence": {
+    "heartbeat": {
+      "RUN_STATUS": "IN_PROGRESS",
+      "RUN_ID": "aion-20260929T004205Z",
+      "started_at_utc": "2026-09-29T00:42:05Z"
+    },
+    "checkpoint": {
+      "CHECKPOINT_STATUS": "IDLE",
+      "RUN_ID": null
+    },
+    "bootstrap_commit": "5f19dcf49b122dda74cd4c8a0591c76ad0a6c8d8"
+  },
+  "interpretation": "Heartbeat advanced but the mandatory BOOTSTRAPPED checkpoint did not. Under omega-stack-persistence-v3.2 this is not a successful bootstrap and no substantive or completion claim is accepted.",
+  "root_cause_status": "UNKNOWN_FROM_AVAILABLE_DURABLE_EVIDENCE",
+  "recovery_rule": "Preserve evidence. Do not fabricate missing work. Do not reset an active heartbeat before the contract stale threshold; next eligible recovery must reconcile this RUN_ID and require verified heartbeat+checkpoint before substantive work.",
+  "execution_authorized": false
+}

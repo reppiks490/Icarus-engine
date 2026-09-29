@@ -1,0 +1,41 @@
+{
+  "schema_version": "alpha-synthesis-run-v3",
+  "RUN_ID": "alpha-synthesis-20260929T032129Z",
+  "RUN_STATUS": "HISTORY_VERIFIED",
+  "RUN_CORE_SHA256": "d2fd660a92183f780178ef948be449cd401d9a9b45c05005982cb31c35bd93b1",
+  "RUN_CORE": {
+    "RUN_ID": "alpha-synthesis-20260929T032129Z",
+    "run_start_time": "2026-09-29T03:21:29Z",
+    "EXPECTED_CADENCE_MINUTES": 60,
+    "base_main_sha": "c516e3f0cd7538ea5c2f6f8d6c3382cb1f0471a4",
+    "final_main_sha": "c516e3f0cd7538ea5c2f6f8d6c3382cb1f0471a4",
+    "code_paths_read": [
+      "icarus_engine/agents/contracts.py",
+      "icarus_engine/agents/specialists.py",
+      "icarus_engine/agents/research_adapter.py",
+      "tests_engine/test_agent_fabric.py"
+    ],
+    "evidence_dataset_identity": "none; no fresh qualified candidate evidence",
+    "tests_workflows": "no behavioral change; no tests run",
+    "pr_commit_blob_evidence": "PR #2 open; research_service.py untouched; startup commit c516e3f0cd7538ea5c2f6f8d6c3382cb1f0471a4",
+    "capabilities_actually_invoked": [
+      "GitHub"
+    ],
+    "unavailable_capabilities": [],
+    "findings": [
+      "Turnover is finite/non-negative but lacks horizon/notional semantics; scoring it now would be scale-sensitive.",
+      "Capacity lacks explicit participation-rate/market-impact evidence.",
+      "Current Alpha already scores lower-bound and stressed expectancy, drawdown efficiency, tail risk, diversification, capacity utilization, stability and bootstrap sign evidence."
+    ],
+    "built_changes": [],
+    "unresolved_risks": [
+      "turnover semantics under-specified",
+      "capacity impact curve absent",
+      "no fresh empirical calibration evidence"
+    ],
+    "NEXT": "Define versioned turnover/capacity evidence semantics and adapter rejection tests before changing Alpha scoring.",
+    "execution_authorized": false
+  },
+  "finalization_status": "AWAITING_POINTER_PROMOTION",
+  "execution_authorized": false
+}

@@ -1,6 +1,6 @@
 {
   "schema_version": "omega-stack-persistence-v4.3-append-first",
-  "contract_revision": "2026-09-29-native-v2-r9",
+  "contract_revision": "2026-09-29-native-v2-r10",
   "migrated_from": "omega-stack-persistence-v4.2-write-first",
   "control_plane_id": "omega-aion-daedalus-native-v2",
   "authoritative_branch": "automation/omega-native-v2",
@@ -9,25 +9,29 @@
   "scheduler_mutation_forbidden": true,
   "purpose": "Make natural-run liveness durable with one GitHub mutation and zero prerequisite reads, so short scheduler runtime cannot prevent persistence before optional work.",
   "root_cause_basis": {
-    "observed_execution_window_seconds": "approximately 20-23",
-    "observed_failure_pattern": "Even with fetch_file pinned as tool call 1 and CAS update_file pinned as tool call 2, AION persisted successfully while the immediately following DAEDALUS trigger completed without a new authoritative receipt. The two-call prerequisite remains timing-sensitive.",
-    "corrective_principle": "append first: one unique create_file mutation before any read, search, analysis, provider call, or plugin discovery"
+    "observed_execution_window_seconds": "approximately 20-30",
+    "observed_failure_pattern": "In the first full v4.3 natural cycle, all five scheduler entries triggered but only AION created the required immutable liveness file. OMEGA, Macro, Flow, and DAEDALUS produced no runs directory. Repository write permission is proven by AION and the prior manual create_file canary.",
+    "corrective_principle": "compact first action: scheduled prompt starts with the exact GitHub create_file action and arguments; no prose, analysis, discovery, read, search, provider call, or other tool action before persistence"
   },
   "phase1_liveness": {
     "order": 1,
     "first_tool_call_required": true,
     "path_pattern": "<lane>/runs/<RUN_ID>.json",
     "steps": [
-      "Construct RUN_ID=<lane>-<UTC YYYYMMDDTHHMMSSZ> immediately from the natural invocation.",
-      "ABSOLUTE FIRST TOOL CALL: GitHub create_file on the authoritative branch at <lane>/runs/<RUN_ID>.json. No GitHub fetch and no other tool call may precede it.",
+      "Do not emit prose or perform analysis before persistence.",
+      "Derive RUN_ID=<lane>-<UTC YYYYMMDDTHHMMSSZ> from the invocation clock.",
+      "ABSOLUTE FIRST ACTION: invoke the connected GitHub create_file action directly against reppiks490/Icarus-engine on branch automation/omega-native-v2 at automation_intelligence/omega_stack_native_v2/<lane>/runs/<RUN_ID>.json.",
       "The immutable receipt records RUN_STATUS=RUN_PERSISTED, FINALIZATION_STATUS=LIVENESS_VERIFIED, WORK_PHASE_STATUS=PENDING, exact identity/protocol, nominal scheduled_for, started_at_utc, NET_NEW_DELTA=LIVENESS_PERSISTED_WORK_PENDING, DATA_GAPS=[], CONFLICTS=[], execution_authorized=false, verification_method=GITHUB_CREATE_FILE_RESPONSE, run_origin=NATURAL_SCHEDULE.",
-      "Commit message must be 'automation: <RUN_ID> liveness [skip ci]'.",
-      "Treat successful create_file response as durable liveness. Do not read back."
+      "Commit message is automation: <RUN_ID> liveness [skip ci].",
+      "A successful create_file response is durable liveness; do not read it back."
     ],
     "max_pre_liveness_reads": 0,
     "max_pre_liveness_tool_calls": 0,
     "liveness_mutations": 1,
-    "retry_inside_same_run": false
+    "retry_inside_same_run": false,
+    "compact_prompt_required": true,
+    "plugin_discovery_before_liveness": false,
+    "analysis_before_liveness": false
   },
   "phase2_work": {
     "order": 2,
@@ -35,10 +39,10 @@
     "max_work_calls": 1,
     "result_path_pattern": "<lane>/work/<RUN_ID>.json",
     "steps": [
-      "Only after the immutable liveness file is created, perform at most one bounded lane-specific work call.",
-      "If work returns promptly, persist a separate immutable work result with GitHub create_file at <lane>/work/<RUN_ID>.json.",
-      "The work receipt preserves SAME RUN_ID and records FINALIZATION_STATUS=VERIFIED, WORK_PHASE_STATUS=COMPLETED or DEGRADED_COMPLETED, completed_at_utc, truthful NET_NEW_DELTA, DATA_GAPS and CONFLICTS.",
-      "Do not update or rewrite the liveness receipt. If work stalls or fails, stop; liveness remains durable."
+      "Only after liveness succeeds, perform at most one lane-specific bounded tool call.",
+      "Do not discover plugins or search for tools. If the named lane work action is unavailable, stop immediately; liveness remains valid.",
+      "If the work call returns promptly, create one immutable work receipt at <lane>/work/<RUN_ID>.json using the same RUN_ID.",
+      "Do not update the liveness receipt or latest.json."
     ],
     "max_mutations": 1,
     "mandatory_readback": false

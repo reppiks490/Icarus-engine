@@ -1,19 +1,22 @@
 {
   "engine": "omega",
-  "RUN_ID": null,
-  "RUN_STATUS": "MIGRATED_IDLE",
-  "FINALIZATION_STATUS": "MIGRATED_READY",
+  "RUN_ID": "omega-20260929T070242Z",
+  "RUN_STATUS": "RUN_PERSISTED",
+  "FINALIZATION_STATUS": "VERIFIED",
   "CONTROL_PLANE_ID": "omega-aion-daedalus-native-v2",
   "automation_id": "6abb57443c0c81919676c71d87493353",
   "persistence_protocol_version": "omega-stack-persistence-v4.0-atomic-latest",
-  "scheduled_for": null,
-  "started_at_utc": null,
-  "completed_at_utc": null,
-  "PREVIOUS_BLOB_SHA": "997afa9d93ad687cc50156a4a21037eb0e77b038",
-  "NET_NEW_DELTA": "OMEGA scheduler object rebound from retired Work-bound task to replacement standard scheduled task; awaiting first natural v4 receipt.",
-  "DATA_GAPS": [],
+  "scheduled_for": "2026-09-29T02:00:00-05:00",
+  "started_at_utc": "2026-09-29T07:02:42Z",
+  "completed_at_utc": "2026-09-29T07:02:42Z",
+  "PREVIOUS_BLOB_SHA": "d6e84d75f8a103b335ac637f0de4bb28eeb483c4",
+  "NET_NEW_DELTA": "FUSION_WATCHDOG: Flow receipt accepted (flow-20260929T052212Z): fresh BTCUSDT spot snapshot but insufficient for abnormal/cross-asset regime inference. DAEDALUS receipt accepted (daedalus-20260929T054950Z): release gate BLOCKED; audit evidence incomplete and existing material assurance defects unresolved. Macro rejected for fusion: no natural v4 persisted/verified receipt. AION rejected for fusion: no natural v4 persisted/verified receipt. FACT: 2/4 specialists currently receipt-verified. MODEL_INFERENCE: fusion confidence constrained. AUDIT_FINDING: DAEDALUS BLOCKING remains authoritative and is not overridden.",
+  "DATA_GAPS": [
+    "Macro lacks accepted natural v4 receipt.",
+    "AION lacks accepted natural v4 receipt.",
+    "Flow evidence is single-provider/single-instrument.",
+    "DAEDALUS audit evidence is incomplete."
+  ],
   "CONFLICTS": [],
-  "execution_authorized": false,
-  "legacy_v3_state": "READ_ONLY_HISTORICAL",
-  "acceptance_status": "AWAITING_NATURAL_V4_RECEIPT_AFTER_OMEGA_REBIND"
+  "execution_authorized": false
 }

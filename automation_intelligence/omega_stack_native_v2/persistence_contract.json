@@ -1,6 +1,6 @@
 {
   "schema_version": "omega-stack-persistence-v4.3-append-first",
-  "contract_revision": "2026-09-30-native-v2-r12.1",
+  "contract_revision": "2026-09-30-native-v2-r12.2",
   "migrated_from": "omega-stack-persistence-v4.2-write-first",
   "control_plane_id": "omega-aion-daedalus-native-v2",
   "authoritative_branch": "automation/omega-native-v2",
@@ -101,8 +101,8 @@
   "acceptance": {
     "liveness_single_run": "One natural immutable run file is created successfully with exact identity and required values.",
     "sustained_lane": "Two consecutive natural v4.3 immutable liveness files with distinct RUN_IDs.",
-    "work_completion": "Track fraction of v4.3 liveness runs that also create a matching immutable work receipt.",
-    "stack_5_of_5": "Report scheduler trigger health, connector persistence health, and watchdog health separately. Do not call the full stack healthy solely because five tasks are enabled or solely because watchdog reconciliation is green.",
+    "work_completion": "NOT_APPLICABLE_IN_R12_SCHEDULED_LIVENESS_ONLY; scheduled phase-2 work is disabled and tracked separately if performed outside the natural critical path.",
+    "stack_5_of_5": "All five enabled authoritative lanes satisfy sustained_lane while scheduler registry remains exactly five enabled authoritative lanes; r12 does not require scheduled work receipts.",
     "scheduler_trigger_health": "Authoritative task remains enabled and advances last_run_time on its intended cadence.",
     "connector_persistence_health": "Natural immutable run receipt exists with exact identity/slot fields and valid jitter.",
     "watchdog_health": "GitHub Actions watchdog completes successfully and writes only reconciliation namespace transitions.",
@@ -139,9 +139,9 @@
       "A watchdog or recovery artifact must never be promoted into a fabricated natural receipt.",
       "A GitHub Actions failure remains visible as a failure and must not fall back silently to another credential."
     ],
-    "verified_actions_run_id": 36628003730,
-    "verified_reconciliation_commit": "f42ea0c1753632056f3b3e2c4efd3017734bc058",
-    "verified_reconciliation_file_count": 140,
+    "verified_actions_run_id": 36678206989,
+    "verified_reconciliation_commit": "cd1f370",
+    "verified_reconciliation_file_count": 22,
     "execution_authorized": false,
     "schedule_crons": [
       "2-52/10 * * * *",

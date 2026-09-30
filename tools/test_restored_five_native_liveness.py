@@ -199,5 +199,34 @@ class NativeLivenessTests(unittest.TestCase):
             self.assertTrue(late_verification_path(root, lane, slot).exists())
 
 
+    def test_external_worker_404_equivalent_is_check_unavailable(self):
+        lane = Lane(
+            name="advanced_csv",
+            title="Advanced CSV Data Collector",
+            minute=15,
+            scheduler_id="csv-sched",
+            worker_root="automation_intelligence/advanced_csv",
+            run_prefix="advanced-csv",
+            worker_repository="reppiks490/icarus-csv-evidence-lab",
+        )
+        control = Control(
+            repository="reppiks490/Icarus-engine",
+            activated_at_utc=datetime(2026, 9, 30, 22, 0, tzinfo=timezone.utc),
+            grace_minutes=8,
+            catchup_horizon_minutes=180,
+            timezone="America/Chicago",
+            lanes=(lane,),
+        )
+        status, observed = worker_receipt_status(
+            Path("."),
+            control,
+            lane,
+            datetime(2026, 9, 30, 22, 15, tzinfo=timezone.utc),
+            external_reader=lambda repository, path: ("UNAVAILABLE", {}),
+        )
+        self.assertEqual(status, "WORKER_RECEIPT_CHECK_UNAVAILABLE")
+        self.assertEqual(observed, {})
+
+
 if __name__ == "__main__":
     unittest.main()

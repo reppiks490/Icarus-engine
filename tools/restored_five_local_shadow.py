@@ -49,7 +49,9 @@ def build_shadow_request(lane: str, payload: dict[str, object]) -> ModelRequest:
         "Analyze only the supplied durable JSON evidence. "
         "Do not infer missing facts, do not claim external research, and do not authorize "
         "trading, execution, production activation, or canonical state mutation. "
-        "Return a concise structured assessment. execution_authorized=false."
+        "Return a concise structured assessment. Keep summary under 350 characters, "
+        "net_new_delta under 80 characters, and each gap/conflict item under 120 characters. "
+        "execution_authorized=false."
     )
     return ModelRequest(
         lane=lane,

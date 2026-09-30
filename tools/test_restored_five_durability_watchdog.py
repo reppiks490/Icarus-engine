@@ -8,6 +8,7 @@ from restored_five_durability_watchdog import (
     compare_run_ids,
     expected_slot,
     finalization_can_repair,
+    heartbeat_mirror_valid,
     monitor_missing_evidence,
     monitor_missing_receipt,
     reconcile_lane,
@@ -256,6 +257,43 @@ class WatchdogTests(unittest.TestCase):
                 datetime(2026, 9, 30, 21, 26, tzinfo=timezone.utc),
             )
             self.assertEqual(changed, [])
+
+    def test_heartbeat_binding_rejects_wrong_finalization_identity(self):
+        heartbeat = {
+            "schema_version": "scheduler-heartbeat-v5.7",
+            "RUN_ID": "lane-20260930T210500Z",
+            "RUN_STATUS": "RUN_PERSISTED",
+            "finalization_commit_sha": "wrong-commit",
+            "finalization_state_blob_sha": "wrong-blob",
+            "execution_authorized": False,
+        }
+        self.assertFalse(
+            heartbeat_mirror_valid(
+                heartbeat,
+                "lane-20260930T210500Z",
+                "expected-commit",
+                "expected-blob",
+            )
+        )
+
+    def test_heartbeat_binding_accepts_exact_worker_or_watchdog_mirror(self):
+        for schema in ("scheduler-heartbeat-v5.7", "scheduler-heartbeat-watchdog-v2"):
+            heartbeat = {
+                "schema_version": schema,
+                "RUN_ID": "lane-20260930T210500Z",
+                "RUN_STATUS": "RUN_PERSISTED",
+                "finalization_commit_sha": "expected-commit",
+                "finalization_state_blob_sha": "expected-blob",
+                "execution_authorized": False,
+            }
+            self.assertTrue(
+                heartbeat_mirror_valid(
+                    heartbeat,
+                    "lane-20260930T210500Z",
+                    "expected-commit",
+                    "expected-blob",
+                )
+            )
 
 
 if __name__ == "__main__":

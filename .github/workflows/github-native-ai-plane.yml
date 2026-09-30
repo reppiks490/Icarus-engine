@@ -16,7 +16,7 @@ on:
   workflow_dispatch:
     inputs:
       execute_model:
-        description: "Call the model for this manual canary"
+        description: "Execute the configured backend for this manual canary"
         required: true
         type: boolean
         default: false
@@ -33,7 +33,6 @@ on:
 
 permissions:
   contents: write
-  id-token: write
 
 concurrency:
   group: github-native-ai-plane
@@ -59,10 +58,6 @@ jobs:
         id: lane
         continue-on-error: true
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_IDENTITY_PROVIDER_ID: ${{ vars.OPENAI_IDENTITY_PROVIDER_ID }}
-          OPENAI_SERVICE_ACCOUNT_ID: ${{ vars.OPENAI_SERVICE_ACCOUNT_ID }}
-          OPENAI_WIF_AUDIENCE: ${{ vars.OPENAI_WIF_AUDIENCE }}
           REQUESTED_LANE: ${{ inputs.requested_lane || 'auto' }}
           REQUESTED_SLOT_UTC: ${{ inputs.requested_slot_utc || '' }}
           EXECUTE_MODEL: ${{ inputs.execute_model || false }}
@@ -77,6 +72,13 @@ jobs:
             args+=(--execute-model)
           fi
           python -m tools.github_native_ai_job "${args[@]}"
+
+      - name: Evaluate zero-cost cutover
+        if: steps.lane.outcome == 'success'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m tools.github_native_liveness_cutover --root .
 
       - name: Persist v3 artifacts
         if: always()

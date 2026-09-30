@@ -1,0 +1,47 @@
+{
+  "api_credential_required": false,
+  "canonical_state_mutated": false,
+  "deterministic_facts": {
+    "execution_authorized": false,
+    "expected_RUN_ID": "alpha-synthesis-20260930T222500Z",
+    "fallback_only": true,
+    "observed_worker_RUN_ID": "alpha-synthesis-20260930T112500Z",
+    "observed_worker_RUN_STATUS": "FINALIZATION_VERIFIED",
+    "run_id_match": false,
+    "slot_status": "FALLBACK_LIVENESS_ONLY",
+    "substantive_work_claimed": false,
+    "worker_receipt_status": "WORKER_RECEIPT_MISSING"
+  },
+  "execution_authorized": false,
+  "inference_backend": "local_gguf",
+  "input_path": "/home/runner/work/Icarus-engine/Icarus-engine/automation_intelligence/restored_five_native/receipts/alpha_synthesis/20260930T222500Z.json",
+  "input_sha256": "e92ff0db1b65395e2948e8c0bdd0990c2cbb2acabce3285061f44bc01afa360e",
+  "lane": "alpha_synthesis",
+  "llama_cpp_sha256": "98020bb5a2a9e0284110e5c110158e18dca984a547d5afde1631fef0f03dd826",
+  "model": "Qwen/Qwen3-1.7B-GGUF@90862c4:Q8_0",
+  "model_sha256": "061b54daade076b5d3362dac252678d17da8c68f07560be70818cace6590cb1a",
+  "observed_at_utc": "2026-09-30T23:50:59Z",
+  "paid_api_call_made": false,
+  "payload": {
+    "conflicts": [
+      "The observed worker RUN status is 'FINALIZATION_VERIFIED' but the expected RUN ID is 'alpha-synthesis-20260930T222500...",
+      "OBSERVED_WORKER_RUN_ID_DIFFERS_FROM_EXPECTED"
+    ],
+    "data_gaps": [
+      "The observed worker RUN status indicates fallback-only liveness, but no substantive work is claimed or receipt is mis...",
+      "The expected RUN ID does not match the observed worker RUN ID, suggesting a mismatch in the timeline or process.",
+      "FALLBACK_LIVENESS_ONLY",
+      "WORKER_RECEIPT_NOT_VERIFIED:WORKER_RECEIPT_MISSING",
+      "SUBSTANTIVE_WORK_NOT_PROVEN"
+    ],
+    "execution_authorized": false,
+    "lane": "alpha_synthesis",
+    "net_new_delta": "SHADOW_ASSESSMENT_ONLY",
+    "summary": "Fallback-only liveness with mismatched RUN IDs and no substantive work claimed."
+  },
+  "response_id": "local-f521de2960612fb537d2570e",
+  "response_status": "completed",
+  "run_origin": "GITHUB_NATIVE_LOCAL_GGUF_SHADOW",
+  "schema_version": "restored-five-local-shadow-v1",
+  "substantive_research_source": "DURABLE_REPO_EVIDENCE_ONLY"
+}

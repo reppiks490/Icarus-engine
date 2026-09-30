@@ -1,0 +1,136 @@
+name: restored-five-local-shadow
+
+on:
+  workflow_run:
+    workflows: ["restored-five-native-liveness"]
+    types: [completed]
+    branches: [main]
+  push:
+    branches: [main]
+    paths:
+      - "tools/restored_five_local_shadow.py"
+      - "tools/restored_five_local_shadow_job.py"
+      - "tests/test_restored_five_local_shadow.py"
+      - "tests/test_restored_five_local_shadow_job.py"
+      - "tools/github_native_local_model.py"
+      - ".github/workflows/restored-five-local-shadow.yml"
+  schedule:
+    - cron: "8-58/10 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: restored-five-local-shadow
+  cancel-in-progress: true
+
+jobs:
+  analyze:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run zero-dependency shadow safety tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=. python tests/test_restored_five_local_shadow.py -q
+          PYTHONPATH=. python tests/test_restored_five_local_shadow_job.py -q
+
+      - name: Restore local model cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/icarus-local-model
+          key: local-model-Qwen3-1.7B-Q8_0-061b54da-llama-b10978-98020bb5
+
+      - name: Prepare pinned local runtime and model
+        shell: bash
+        run: |
+          set -euo pipefail
+          CACHE="$HOME/.cache/icarus-local-model"
+          RUNTIME_DIR="$CACHE/llama-b10978"
+          MODEL_PATH="$CACHE/Qwen3-1.7B-Q8_0.gguf"
+          LLAMA_URL="https://github.com/ggml-org/llama.cpp/releases/download/b10978/llama-b10978-bin-ubuntu-x64.tar.gz"
+          LLAMA_SHA="98020bb5a2a9e0284110e5c110158e18dca984a547d5afde1631fef0f03dd826"
+          MODEL_URL="https://huggingface.co/Qwen/Qwen3-1.7B-GGUF/resolve/90862c4b9d2787eaed51d12237eafdfe7c5f6077/Qwen3-1.7B-Q8_0.gguf"
+          MODEL_SHA="061b54daade076b5d3362dac252678d17da8c68f07560be70818cace6590cb1a"
+
+          mkdir -p "$CACHE"
+          LLAMA_BINARY="$(find "$RUNTIME_DIR" -type f -name llama-completion -print -quit 2>/dev/null || true)"
+          if [ -z "$LLAMA_BINARY" ]; then
+            rm -rf "$RUNTIME_DIR"
+            mkdir -p "$RUNTIME_DIR"
+            curl --fail --location --retry 3 --retry-delay 2 "$LLAMA_URL" -o /tmp/llama-runtime.tar.gz
+            echo "$LLAMA_SHA  /tmp/llama-runtime.tar.gz" | sha256sum -c -
+            tar -xzf /tmp/llama-runtime.tar.gz -C "$RUNTIME_DIR"
+            LLAMA_BINARY="$(find "$RUNTIME_DIR" -type f -name llama-completion -print -quit)"
+          fi
+          test -n "$LLAMA_BINARY"
+          chmod +x "$LLAMA_BINARY"
+
+          if [ ! -f "$MODEL_PATH" ]; then
+            curl --fail --location --retry 3 --retry-delay 2 "$MODEL_URL" -o "$MODEL_PATH"
+          fi
+          echo "$MODEL_SHA  $MODEL_PATH" | sha256sum -c -
+
+          echo "LLAMA_BINARY=$LLAMA_BINARY" >> "$GITHUB_ENV"
+          echo "LOCAL_MODEL_PATH=$MODEL_PATH" >> "$GITHUB_ENV"
+
+      - name: Refresh main before selecting pending evidence
+        shell: bash
+        run: git pull --rebase origin main
+
+      - name: Analyze one pending immutable receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m tools.restored_five_local_shadow_job \
+            --root . \
+            --binary "$LLAMA_BINARY" \
+            --model "$LOCAL_MODEL_PATH"
+
+      - name: Stage only immutable shadow outputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ ! -d automation_intelligence/restored_five_native/shadow_outputs ]; then
+            echo "SHADOW_NO_CHANGE=1" >> "$GITHUB_ENV"
+            exit 0
+          fi
+
+          git add automation_intelligence/restored_five_native/shadow_outputs
+          if git diff --cached --quiet; then
+            echo "SHADOW_NO_CHANGE=1" >> "$GITHUB_ENV"
+            exit 0
+          fi
+
+          staged="$(git diff --cached --name-only)"
+          invalid="$(printf '%s\n' "$staged" | grep -Ev '^automation_intelligence/restored_five_native/shadow_outputs/(robustness_guardian|advanced_csv|alpha_synthesis|flow_microstructure|apex_council)/[0-9]{8}T[0-9]{6}Z\.json$' || true)"
+          if [ -n "$invalid" ]; then
+            echo "Refusing out-of-scope shadow output mutation:" >&2
+            printf '%s\n' "$invalid" >&2
+            exit 1
+          fi
+          echo "SHADOW_NO_CHANGE=0" >> "$GITHUB_ENV"
+
+      - name: Commit shadow evidence only
+        if: env.SHADOW_NO_CHANGE != '1'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "shadow: restored-five local evidence $(date -u +%Y%m%dT%H%M%SZ) [skip ci]"
+          git pull --rebase origin main
+          git push origin HEAD:main

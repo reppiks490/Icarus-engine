@@ -1,0 +1,47 @@
+{
+  "schema_version": "scheduler-runtime-v5.4",
+  "lane": "flow_microstructure",
+  "scheduler_id": "6abaef8effb48191aa5c959455451681",
+  "canonical_write_order": [
+    "startup_state",
+    "finalization_state",
+    "heartbeat"
+  ],
+  "startup_state": {
+    "write_count_per_run": 1,
+    "required_status": "STARTED",
+    "readback_required": true
+  },
+  "finalization_state": {
+    "write_count_per_run": 1,
+    "required_status": "FINALIZATION_VERIFIED",
+    "history_mode": "git_commit_finalization",
+    "compact_payload_max_chars": 2500,
+    "readback_required": true,
+    "immutable_history_identity": "Git commit SHA plus blob SHA returned by finalization_state update"
+  },
+  "heartbeat": {
+    "write_count_per_run": 1,
+    "required_status": "RUN_PERSISTED",
+    "must_bind": [
+      "RUN_ID",
+      "finalization_commit_sha",
+      "finalization_state_blob_sha"
+    ],
+    "readback_required": true
+  },
+  "staging": {
+    "canonical": false,
+    "status": "DEPRECATED_NONCANONICAL"
+  },
+  "compatibility_mirrors": {
+    "blocking": false,
+    "allowed_only_after_canonical_closure": true
+  },
+  "bounded_work": {
+    "maximum_substantive_calls_before_closure": 1
+  },
+  "failure_rule": "If finalization_state fails, write one truthful PARTIAL_PERSISTENCE heartbeat if possible and stop. Do not repeatedly rewrite a failed mutable path.",
+  "scheduler_mutation_forbidden": true,
+  "execution_authorized": false
+}

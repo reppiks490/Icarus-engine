@@ -1,15 +1,13 @@
 {
-  "schema_version": "scheduler-finalization-v5.5",
-  "RUN_ID": "flow-20260930T203500Z",
+  "schema_version": "scheduler-finalization-v5.7",
+  "RUN_ID": "flow-20260930T223500Z",
   "RUN_STATUS": "RUN_PERSISTED",
+  "completion_semantics": "DURABILITY_RECEIPT_ONLY",
   "history_mode": "git_commit_finalization",
-  "work_status": "COMPLETED",
+  "work_status": "BASELINE_PERSISTED",
   "payload": {
-    "result": "NEW_EVIDENCE",
-    "observations": "BTC futures aggregate OI $26.36B across 11 exchanges for 2026-09-29; $24.14B cash-settled and $2.22B coin-settled. Separate 3-exchange series $14.42B; do not splice. Venue-attributed BTC perp liquidations included Binance long $151K at $83,206, 03:16:53 UTC and Bybit long $32.3K at $83,154, 00:18:53 UTC. COMEX October gold closed $4,155.60/oz.",
-    "provenance": "Retrieved 2026-09-30. Maketo aggregate futures representations; Newhedge venue-attributed liquidation feed; WSJ COMEX October gold report. USD notional/price units preserved.",
-    "gaps": "No fresh contract-specific NQ/MNQ, ES/MES, YM/MYM, RTY/M2K or MGC depth/order-book evidence. BTC sources third-party, not exchange-native.",
-    "NEXT": "Seek exchange-native contract-specific depth/OI; preserve standard-vs-micro and venue identity."
+    "result": "NO_NEW_EVIDENCE_YET",
+    "NEXT": "Durability proven; substantive evidence remains deferred during stabilization."
   },
   "execution_authorized": false
 }

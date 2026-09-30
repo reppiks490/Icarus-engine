@@ -62,8 +62,13 @@ def load_control(root: Path) -> Control:
         )
         for item in payload["lanes"]
     )
-    if [lane.minute for lane in lanes] != [5, 25, 35, 45]:
-        raise ValueError("engine lane minute topology mismatch")
+    if not lanes:
+        raise ValueError("at least one lane is required")
+    minutes = [lane.minute for lane in lanes]
+    if any(minute < 0 or minute > 59 for minute in minutes):
+        raise ValueError("lane minute out of range")
+    if len(set(minutes)) != len(minutes):
+        raise ValueError("lane minutes must be unique")
     if len({lane.scheduler_id for lane in lanes}) != len(lanes):
         raise ValueError("scheduler IDs must be unique")
     return Control(

@@ -74,6 +74,31 @@ def finalization_identity(repo_root: Path, relpath: str) -> tuple[str, str]:
     return commit_sha, blob_sha
 
 
+def finalization_repairable(finalization: dict) -> bool:
+    run_id = finalization.get("RUN_ID")
+    status = finalization.get("RUN_STATUS")
+    if not run_id or status not in {"FINALIZATION_VERIFIED", "RUN_PERSISTED"}:
+        return False
+    if finalization.get("schema_version") == "scheduler-finalization-v5.7":
+        return canonical_receipt_valid(finalization, run_id)
+    return finalization.get("execution_authorized") is not True
+
+
+def heartbeat_mirror_valid(
+    heartbeat: dict,
+    expected_run_id: str,
+    expected_commit_sha: str,
+    expected_blob_sha: str,
+) -> bool:
+    return (
+        heartbeat.get("RUN_ID") == expected_run_id
+        and heartbeat.get("RUN_STATUS") == "RUN_PERSISTED"
+        and heartbeat.get("finalization_commit_sha") == expected_commit_sha
+        and heartbeat.get("finalization_state_blob_sha") == expected_blob_sha
+        and heartbeat.get("execution_authorized") is False
+    )
+
+
 def finalization_can_repair(
     startup_run_id: str | None,
     final_run_id: str | None,
@@ -121,11 +146,16 @@ def reconcile_lane(
     heartbeat_status = heartbeat.get("RUN_STATUS")
     changed: list[str] = []
 
-    if final_run_id and final_status in {"FINALIZATION_VERIFIED", "RUN_PERSISTED"}:
+    if finalization_repairable(finalization):
         if finalization_can_repair(startup_run_id, final_run_id, heartbeat_run_id):
-            if heartbeat_run_id != final_run_id or heartbeat_status != "RUN_PERSISTED":
-                rel_finalization = str(finalization_path.relative_to(repo_root))
-                commit_sha, blob_sha = finalization_identity(repo_root, rel_finalization)
+            rel_finalization = str(finalization_path.relative_to(repo_root))
+            commit_sha, blob_sha = finalization_identity(repo_root, rel_finalization)
+            if not heartbeat_mirror_valid(
+                heartbeat,
+                final_run_id,
+                commit_sha,
+                blob_sha,
+            ):
                 write_json(
                     heartbeat_path,
                     {

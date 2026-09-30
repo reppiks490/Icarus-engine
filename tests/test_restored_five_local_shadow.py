@@ -11,6 +11,7 @@ from tools.github_native_local_model import LOCAL_MODEL_ID
 from tools.restored_five_local_shadow import (
     ALLOWED_LANES,
     build_shadow_request,
+    enforce_evidence_guards,
     run_shadow,
 )
 
@@ -93,7 +94,49 @@ class RestoredFiveLocalShadowTests(unittest.TestCase):
             self.assertFalse(artifact["execution_authorized"])
             self.assertFalse(artifact["paid_api_call_made"])
             self.assertFalse(artifact["payload"]["execution_authorized"])
+            self.assertEqual(
+                artifact["payload"]["net_new_delta"],
+                "SHADOW_ASSESSMENT_ONLY",
+            )
+            self.assertIn("FALLBACK_LIVENESS_ONLY", artifact["payload"]["data_gaps"])
+            self.assertIn(
+                "WORKER_RECEIPT_NOT_VERIFIED:WORKER_RECEIPT_MISSING",
+                artifact["payload"]["data_gaps"],
+            )
+            self.assertIn(
+                "SUBSTANTIVE_WORK_NOT_PROVEN",
+                artifact["payload"]["data_gaps"],
+            )
             self.assertEqual(len(artifact["input_sha256"]), 64)
+
+
+    def test_deterministic_guards_force_fallback_gaps(self):
+        source = {
+            **sample_receipt(),
+            "expected_RUN_ID": "robustness-guardian-20260930T220500Z",
+            "observed_worker_RUN_ID": "robustness-guardian-20260930T170500Z",
+        }
+        model_payload = {
+            "lane": "robustness_guardian",
+            "summary": "Model omitted the obvious gap.",
+            "net_new_delta": "0",
+            "data_gaps": [],
+            "conflicts": [],
+            "execution_authorized": False,
+        }
+        guarded = enforce_evidence_guards(source, model_payload)
+        self.assertEqual(guarded["net_new_delta"], "SHADOW_ASSESSMENT_ONLY")
+        self.assertIn("FALLBACK_LIVENESS_ONLY", guarded["data_gaps"])
+        self.assertIn(
+            "WORKER_RECEIPT_NOT_VERIFIED:WORKER_RECEIPT_MISSING",
+            guarded["data_gaps"],
+        )
+        self.assertIn("SUBSTANTIVE_WORK_NOT_PROVEN", guarded["data_gaps"])
+        self.assertIn(
+            "OBSERVED_WORKER_RUN_ID_DIFFERS_FROM_EXPECTED",
+            guarded["conflicts"],
+        )
+        self.assertFalse(guarded["execution_authorized"])
 
 
 if __name__ == "__main__":

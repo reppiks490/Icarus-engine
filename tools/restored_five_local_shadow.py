@@ -95,13 +95,40 @@ def build_shadow_request(lane: str, payload: dict[str, object]) -> ModelRequest:
     )
 
 
+def _bounded_text(value: object, limit: int) -> str:
+    text = " ".join(str(value).split())
+    if len(text) <= limit:
+        return text
+    if limit <= 3:
+        return text[:limit]
+    return text[: limit - 3] + "..."
+
+
+def _bounded_items(values: object, *, limit: int = 120, max_items: int = 8) -> list[str]:
+    if not isinstance(values, list):
+        values = []
+    out: list[str] = []
+    seen: set[str] = set()
+    for value in values:
+        if not isinstance(value, str):
+            continue
+        item = _bounded_text(value, limit)
+        if not item or item in seen:
+            continue
+        seen.add(item)
+        out.append(item)
+        if len(out) >= max_items:
+            break
+    return out
+
+
 def enforce_evidence_guards(
     source: dict[str, object],
     model_payload: dict[str, object],
 ) -> dict[str, object]:
     guarded = dict(model_payload)
-    gaps = list(model_payload.get("data_gaps", []))
-    conflicts = list(model_payload.get("conflicts", []))
+    gaps = _bounded_items(model_payload.get("data_gaps", []))
+    conflicts = _bounded_items(model_payload.get("conflicts", []))
 
     slot_status = source.get("slot_status")
     worker_status = source.get("worker_receipt_status")
@@ -132,9 +159,10 @@ def enforce_evidence_guards(
         if marker not in conflicts:
             conflicts.append(marker)
 
+    guarded["summary"] = _bounded_text(model_payload.get("summary", ""), 350)
     guarded["net_new_delta"] = "SHADOW_ASSESSMENT_ONLY"
-    guarded["data_gaps"] = gaps
-    guarded["conflicts"] = conflicts
+    guarded["data_gaps"] = _bounded_items(gaps, limit=120, max_items=8)
+    guarded["conflicts"] = _bounded_items(conflicts, limit=120, max_items=8)
     guarded["execution_authorized"] = False
     return guarded
 

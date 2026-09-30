@@ -15,6 +15,11 @@ NAMESPACE_ROOT = "automation_intelligence/omega_stack_native_v2"
 EXPECTED_LANES = {"omega", "macro", "flow", "aion", "daedalus"}
 RECONCILIATION_ROOT = PurePosixPath(NAMESPACE_ROOT) / "reconciliation"
 WATCHDOG_SCHEMA = "omega-watchdog-reconciliation-v1"
+V3_CONTROL_PLANE_ID = "omega-aion-daedalus-github-native-v3"
+V3_NAMESPACE_ROOT = "automation_intelligence/omega_stack_native_v3"
+V3_PROTOCOL = "omega-stack-github-native-v3"
+V3_AUTHORITATIVE_BRANCH = "main"
+V3_RECONCILIATION_ROOT = PurePosixPath(V3_NAMESPACE_ROOT) / "reconciliation"
 
 
 def _parse_dt(value: str) -> datetime:
@@ -166,6 +171,83 @@ def load_watchdog_config(root: Path) -> WatchdogConfig:
     )
 
 
+
+def load_v3_watchdog_config(root: Path) -> WatchdogConfig:
+    path = root / V3_NAMESPACE_ROOT / "control_plane.json"
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except FileNotFoundError as exc:
+        raise ValueError(f"v3 control plane missing: {path}") from exc
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"v3 control plane malformed: {path}") from exc
+
+    if payload.get("schema_version") != "omega-stack-control-v3":
+        raise ValueError("v3 schema mismatch")
+    if payload.get("control_plane_id") != V3_CONTROL_PLANE_ID:
+        raise ValueError("v3 control_plane_id mismatch")
+    if payload.get("namespace_root") != V3_NAMESPACE_ROOT:
+        raise ValueError("v3 namespace mismatch")
+    if payload.get("execution_authorized") is not False:
+        raise ValueError("execution_authorized must be false")
+
+    timezone_name = payload.get("timezone")
+    if timezone_name != "America/Chicago":
+        raise ValueError("timezone mismatch")
+    ZoneInfo(timezone_name)
+
+    raw_lanes = payload.get("lanes")
+    if not isinstance(raw_lanes, list) or len(raw_lanes) != 5:
+        raise ValueError("v3 topology must contain exactly five lanes")
+
+    lanes: list[LaneConfig] = []
+    names: set[str] = set()
+    minutes: set[int] = set()
+    for item in raw_lanes:
+        if not isinstance(item, dict):
+            raise ValueError("v3 lane must be an object")
+        lane = item.get("name")
+        minute = item.get("minute")
+        automation_id = item.get("legacy_automation_id")
+        if lane not in EXPECTED_LANES:
+            raise ValueError(f"unexpected v3 lane: {lane}")
+        if not isinstance(minute, int) or not 0 <= minute <= 59:
+            raise ValueError(f"invalid v3 minute for {lane}")
+        if not isinstance(automation_id, str) or not automation_id:
+            raise ValueError(f"invalid v3 legacy automation_id for {lane}")
+        if lane in names or minute in minutes:
+            raise ValueError("duplicate v3 lane or minute")
+        names.add(lane)
+        minutes.add(minute)
+        lanes.append(
+            LaneConfig(
+                lane,
+                automation_id,
+                minute,
+                f"{V3_NAMESPACE_ROOT}/lanes/{lane}",
+            )
+        )
+
+    if names != EXPECTED_LANES:
+        raise ValueError("v3 lane set mismatch")
+
+    bound_raw = payload.get("created_at_utc")
+    if not isinstance(bound_raw, str):
+        raise ValueError("v3 created_at_utc missing")
+    identity_bound = _parse_dt(bound_raw).astimezone(timezone.utc)
+
+    lanes.sort(key=lambda x: x.minute)
+    return WatchdogConfig(
+        control_plane_id=V3_CONTROL_PLANE_ID,
+        protocol=V3_PROTOCOL,
+        timezone=timezone_name,
+        authoritative_branch=V3_AUTHORITATIVE_BRANCH,
+        namespace_root=V3_NAMESPACE_ROOT,
+        identity_bound_at_utc=identity_bound,
+        jitter_seconds=360,
+        lanes=tuple(lanes),
+    )
+
+
 def iter_expected_slots(
     config: WatchdogConfig,
     now_utc: datetime,
@@ -197,6 +279,17 @@ def iter_expected_slots(
             )
         cursor += timedelta(minutes=1)
     return slots
+
+
+
+def iter_v3_expected_slots(
+    config: WatchdogConfig,
+    now_utc: datetime,
+    horizon_hours: int = 48,
+) -> list[ExpectedSlot]:
+    if config.namespace_root != V3_NAMESPACE_ROOT:
+        raise ValueError("v3 config required")
+    return iter_expected_slots(config, now_utc, horizon_hours=horizon_hours)
 
 
 def _validate_receipt(payload: object, slot: ExpectedSlot, config: WatchdogConfig) -> tuple[str, ...]:
@@ -257,6 +350,105 @@ def scan_lane_receipts(
             checks.append(ReceiptCheck(relative, False, (f"malformed JSON: {exc}",), None))
             continue
         errors = _validate_receipt(payload, slot, config)
+        run_id = payload.get("RUN_ID") if isinstance(payload, dict) and isinstance(payload.get("RUN_ID"), str) else None
+        check = ReceiptCheck(relative, not errors, errors, run_id)
+        checks.append(check)
+        if not errors and run_id is not None:
+            return ReceiptMatch(relative, run_id, payload), tuple(checks)
+    return None, tuple(checks)
+
+
+
+def _validate_v3_receipt(
+    payload: object,
+    slot: ExpectedSlot,
+    config: WatchdogConfig,
+) -> tuple[str, ...]:
+    if not isinstance(payload, dict):
+        return ("payload must be an object",)
+    errors: list[str] = []
+    expected = {
+        "schema_version": "omega-stack-github-native-run-v1",
+        "engine": slot.lane.name,
+        "lane": slot.lane.name,
+        "SLOT_ID": slot.slot_id,
+        "run_origin": "GITHUB_NATIVE_AI",
+        "control_plane_id": config.control_plane_id,
+        "repository": "reppiks490/Icarus-engine",
+        "branch": "main",
+        "response_status": "completed",
+        "output_validation_status": "VALID",
+        "RUN_STATUS": "RUN_PERSISTED",
+        "FINALIZATION_STATUS": "VERIFIED",
+        "execution_authorized": False,
+    }
+    for key, value in expected.items():
+        if payload.get(key) != value:
+            errors.append(f"{key} mismatch")
+
+    run_id = payload.get("RUN_ID")
+    if not isinstance(run_id, str) or not run_id.startswith(f"{slot.lane.name}-{slot.slot_id}-"):
+        errors.append("RUN_ID mismatch")
+
+    try:
+        slot_utc = _parse_dt(payload.get("slot_utc")).astimezone(timezone.utc)
+        if slot_utc != slot.scheduled_utc:
+            errors.append("slot_utc mismatch")
+    except (ValueError, TypeError):
+        errors.append("slot_utc invalid")
+
+    try:
+        slot_local = _parse_dt(payload.get("slot_local"))
+        if slot_local.astimezone(timezone.utc) != slot.scheduled_utc:
+            errors.append("slot_local mismatch")
+    except (ValueError, TypeError):
+        errors.append("slot_local invalid")
+
+    for key in ("started_at_utc", "completed_at_utc"):
+        try:
+            _parse_dt(payload.get(key)).astimezone(timezone.utc)
+        except (ValueError, TypeError):
+            errors.append(f"{key} invalid")
+
+    fingerprint = payload.get("request_fingerprint")
+    if not isinstance(fingerprint, str) or len(fingerprint) != 64:
+        errors.append("request_fingerprint invalid")
+    if not isinstance(payload.get("response_id"), str) or not payload.get("response_id"):
+        errors.append("response_id invalid")
+    if not isinstance(payload.get("workflow_run_id"), str) or not payload.get("workflow_run_id"):
+        errors.append("workflow_run_id invalid")
+    if not isinstance(payload.get("workflow_run_attempt"), str) or not payload.get("workflow_run_attempt"):
+        errors.append("workflow_run_attempt invalid")
+    if not isinstance(payload.get("workflow_sha"), str) or not payload.get("workflow_sha"):
+        errors.append("workflow_sha invalid")
+    if not isinstance(payload.get("model"), str) or not payload.get("model"):
+        errors.append("model invalid")
+    if not isinstance(payload.get("reasoning_effort"), str) or not payload.get("reasoning_effort"):
+        errors.append("reasoning_effort invalid")
+    for key in ("DATA_GAPS", "CONFLICTS"):
+        value = payload.get(key)
+        if not isinstance(value, list) or any(not isinstance(item, str) for item in value):
+            errors.append(f"{key} invalid")
+    return tuple(errors)
+
+
+def scan_v3_receipts(
+    root: Path,
+    slot: ExpectedSlot,
+    config: WatchdogConfig,
+) -> tuple[ReceiptMatch | None, tuple[ReceiptCheck, ...]]:
+    run_dir = root / slot.lane.root / "runs" / slot.slot_id
+    checks: list[ReceiptCheck] = []
+    if not run_dir.exists():
+        return None, ()
+    for path in sorted(run_dir.glob("*.json")):
+        relative = path.relative_to(root).as_posix()
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as exc:
+            checks.append(ReceiptCheck(relative, False, (f"malformed JSON: {exc}",), None))
+            continue
+        errors = _validate_v3_receipt(payload, slot, config)
         run_id = payload.get("RUN_ID") if isinstance(payload, dict) and isinstance(payload.get("RUN_ID"), str) else None
         check = ReceiptCheck(relative, not errors, errors, run_id)
         checks.append(check)
@@ -380,14 +572,116 @@ def plan_reconciliation(
     return artifacts
 
 
+
+def _v3_artifact_paths(slot: ExpectedSlot) -> tuple[Path, Path, Path]:
+    base = Path(V3_NAMESPACE_ROOT) / "reconciliation"
+    name = f"{slot.slot_id}.json"
+    return (
+        base / "missed" / slot.lane.name / name,
+        base / "backlog" / slot.lane.name / name,
+        base / "late_arrival" / slot.lane.name / name,
+    )
+
+
+def plan_v3_reconciliation(
+    root: Path,
+    config: WatchdogConfig,
+    now_utc: datetime,
+    grace_minutes: int = 12,
+    horizon_hours: int = 48,
+) -> list[Artifact]:
+    if config.namespace_root != V3_NAMESPACE_ROOT:
+        raise ValueError("v3 config required")
+    if now_utc.tzinfo is None:
+        raise ValueError("now_utc must be timezone-aware")
+    if grace_minutes < 0:
+        raise ValueError("grace_minutes must be non-negative")
+    now = now_utc.astimezone(timezone.utc)
+    artifacts: list[Artifact] = []
+    for slot in iter_v3_expected_slots(config, now, horizon_hours=horizon_hours):
+        if now < slot.scheduled_utc + timedelta(minutes=grace_minutes):
+            continue
+        incident_path, backlog_path, late_path = _v3_artifact_paths(slot)
+        incident_abs = root / incident_path
+        backlog_abs = root / backlog_path
+        late_abs = root / late_path
+        match, checks = scan_v3_receipts(root, slot, config)
+
+        if match is not None:
+            if incident_abs.exists() and not late_abs.exists():
+                artifacts.append(
+                    Artifact(
+                        late_path,
+                        {
+                            "schema_version": WATCHDOG_SCHEMA,
+                            "classification": "LATE_GITHUB_NATIVE_AI_RECEIPT_AFTER_INCIDENT",
+                            "lane": slot.lane.name,
+                            "slot_utc": _utc_z(slot.scheduled_utc),
+                            "slot_local": slot.scheduled_local.isoformat(),
+                            "incident_ref": incident_path.as_posix(),
+                            "github_native_receipt_ref": match.path,
+                            "github_native_run_id": match.run_id,
+                            "observed_at_utc": _utc_z(now),
+                            "fallback_origin": "GITHUB_WATCHDOG",
+                            "execution_authorized": False,
+                        },
+                    )
+                )
+            continue
+
+        if not incident_abs.exists():
+            artifacts.append(
+                Artifact(
+                    incident_path,
+                    {
+                        "schema_version": WATCHDOG_SCHEMA,
+                        "kind": "GITHUB_NATIVE_AI_RECEIPT_MISSING",
+                        "lane": slot.lane.name,
+                        "control_plane_id": config.control_plane_id,
+                        "protocol_expected": config.protocol,
+                        "slot_local": slot.scheduled_local.isoformat(),
+                        "slot_utc": _utc_z(slot.scheduled_utc),
+                        "adjudicated_at_utc": _utc_z(now),
+                        "grace_minutes": grace_minutes,
+                        "evidence_checked": _evidence(checks),
+                        "github_native_receipt_found": False,
+                        "fallback_origin": "GITHUB_WATCHDOG",
+                        "execution_authorized": False,
+                    },
+                )
+            )
+        if not backlog_abs.exists():
+            artifacts.append(
+                Artifact(
+                    backlog_path,
+                    {
+                        "schema_version": WATCHDOG_SCHEMA,
+                        "kind": "RECOVERY_BACKLOG_ITEM",
+                        "status": "RECOVERY_PENDING_AI",
+                        "lane": slot.lane.name,
+                        "control_plane_id": config.control_plane_id,
+                        "protocol_expected": config.protocol,
+                        "slot_local": slot.scheduled_local.isoformat(),
+                        "slot_utc": _utc_z(slot.scheduled_utc),
+                        "incident_ref": incident_path.as_posix(),
+                        "created_at_utc": _utc_z(now),
+                        "fallback_origin": "GITHUB_WATCHDOG",
+                        "execution_authorized": False,
+                    },
+                )
+            )
+    artifacts.sort(key=lambda a: a.path.as_posix())
+    return artifacts
+
+
 def _safe_reconciliation_path(path: Path) -> PurePosixPath:
     if path.is_absolute():
         raise ValueError("artifact path must remain inside reconciliation namespace")
     pure = PurePosixPath(path.as_posix())
     if ".." in pure.parts:
         raise ValueError("artifact path must remain inside reconciliation namespace")
-    root_parts = RECONCILIATION_ROOT.parts
-    if pure.parts[: len(root_parts)] != root_parts:
+    allowed_roots = (RECONCILIATION_ROOT.parts, V3_RECONCILIATION_ROOT.parts)
+    if not any(pure.parts[: len(root_parts)] == root_parts for root_parts in allowed_roots):
         raise ValueError("artifact path must remain inside reconciliation namespace")
     return pure
 

@@ -120,3 +120,8 @@ def test_output_only_partial_write_does_not_suppress_retry(tmp_path: Path) -> No
     (output_dir / "orphan-output.json").write_text("{}\n", encoding="utf-8")
 
     assert terminal_artifact_exists(tmp_path, slot) is False
+
+
+def test_repository_control_plane_selects_zero_cost_deterministic_liveness_backend() -> None:
+    control = load_control_plane(Path("."))
+    assert control.inference_backend == "deterministic_liveness"

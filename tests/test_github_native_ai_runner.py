@@ -17,11 +17,14 @@ from tools.github_native_ai_runner import (
 UTC = timezone.utc
 
 
-def _seed_root(tmp_path: Path, lane: str = "aion") -> Path:
+def _seed_root(tmp_path: Path, lane: str = "aion", *, inference_backend: str = "openai") -> Path:
     source = Path(NAMESPACE_ROOT) / "control_plane.json"
     target = tmp_path / NAMESPACE_ROOT / "control_plane.json"
     target.parent.mkdir(parents=True)
     shutil.copy2(source, target)
+    control = json.loads(target.read_text(encoding="utf-8"))
+    control["inference_backend"] = inference_backend
+    target.write_text(json.dumps(control, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
     shared = tmp_path / NAMESPACE_ROOT / "lanes" / "shared" / "system.md"
     task = tmp_path / NAMESPACE_ROOT / "lanes" / lane / "prompts" / "task.md"
@@ -93,6 +96,8 @@ def test_success_writes_immutable_output_and_receipt_with_provenance(tmp_path: P
     output = json.loads(result.output_path.read_text(encoding="utf-8"))
 
     assert receipt["lane"] == "aion"
+    assert receipt["control_plane_id"] == "omega-aion-daedalus-github-native-v3"
+    assert receipt["inference_backend"] == "openai"
     assert receipt["SLOT_ID"] == "20260930T133600Z"
     assert receipt["run_origin"] == "GITHUB_NATIVE_AI"
     assert receipt["workflow_run_id"] == "12345"
@@ -235,3 +240,40 @@ def test_wif_token_resolver_can_supply_auth_without_api_key(tmp_path: Path) -> N
 
     assert result.status == "RUN_PERSISTED"
     assert seen["env"]["GITHUB_RUN_ID"] == "12345"
+
+
+def test_deterministic_liveness_backend_needs_no_api_auth_or_model_call(tmp_path: Path) -> None:
+    root = _seed_root(tmp_path, inference_backend="deterministic_liveness")
+    slot = _slot(root)
+    fixed_now = datetime(2026, 9, 30, 13, 36, 30, tzinfo=UTC)
+
+    def forbidden_resolver(env):
+        raise AssertionError("auth must not be resolved in deterministic liveness mode")
+
+    def forbidden_api(request, token):
+        raise AssertionError("model API must not be called in deterministic liveness mode")
+
+    result = run_lane(
+        root,
+        slot,
+        _env(api_key=""),
+        api_call=forbidden_api,
+        token_resolver=forbidden_resolver,
+        now_fn=lambda: fixed_now,
+    )
+
+    assert result.status == "RUN_PERSISTED"
+    assert result.receipt_path is not None
+    assert result.output_path is not None
+    receipt = json.loads(result.receipt_path.read_text(encoding="utf-8"))
+    output = json.loads(result.output_path.read_text(encoding="utf-8"))
+
+    assert receipt["run_origin"] == "GITHUB_NATIVE_LIVENESS"
+    assert receipt["inference_backend"] == "deterministic_liveness"
+    assert receipt["model"] == "none"
+    assert receipt["reasoning_effort"] == "none"
+    assert receipt["response_status"] == "not_applicable"
+    assert receipt["execution_authorized"] is False
+    assert receipt["DATA_GAPS"] == ["SUBSTANTIVE_AI_INFERENCE_NOT_EXECUTED"]
+    assert output["payload"]["net_new_delta"] == "LIVENESS_PERSISTED_WORK_PENDING"
+    assert output["payload"]["execution_authorized"] is False

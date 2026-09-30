@@ -48,7 +48,9 @@
   "catchup_horizon_minutes": 180,
   "shadow_activation_reason": "GitHub-native AI plane merged and PR CI 5/5 green; begin staged live cutover while v2 ChatGPT tasks remain enabled as canaries.",
   "shadow_started_at_utc": "2026-09-30T15:07:34Z",
-  "credential_status": "CONFIGURATION_BLOCKED_OPENAI_AUTH_MISSING",
+  "credential_status": "NOT_REQUIRED_ZERO_COST_LIVENESS",
   "shadow_suspended_at_utc": "2026-09-30T17:41:00Z",
-  "shadow_suspension_reason": "Neither OPENAI_API_KEY nor the OpenAI WIF repository variables/provider mapping are configured. Suspend v3 expected slots fail-closed until authentication exists; v2 ChatGPT canaries and watchdog remain active."
+  "shadow_suspension_reason": "Neither OPENAI_API_KEY nor the OpenAI WIF repository variables/provider mapping are configured. Suspend v3 expected slots fail-closed until authentication exists; v2 ChatGPT canaries and watchdog remain active.",
+  "inference_backend": "deterministic_liveness",
+  "zero_cost_mode_note": "Default hourly v3 persistence uses deterministic GitHub-native liveness with no paid model/API call. OpenAI integration remains optional and dormant."
 }

@@ -67,25 +67,24 @@ def reconcile_lane(
     # Recover a missed heartbeat only when there is no newer in-progress run.
     if final_run_id and final_status in {"FINALIZATION_VERIFIED", "RUN_PERSISTED"}:
         safe_to_close = (not startup_run_id) or (startup_run_id == final_run_id)
-        if safe_to_close and (
-            heartbeat_run_id != final_run_id or heartbeat_status != "RUN_PERSISTED"
-        ):
-            rel_finalization = str(finalization_path.relative_to(repo_root))
-            commit_sha, blob_sha = finalization_identity(repo_root, rel_finalization)
-            write_json(
-                heartbeat_path,
-                {
-                    "schema_version": "scheduler-heartbeat-watchdog-v1",
-                    "RUN_ID": final_run_id,
-                    "RUN_STATUS": "RUN_PERSISTED",
-                    "scheduler_id": scheduler_id,
-                    "finalization_commit_sha": commit_sha,
-                    "finalization_state_blob_sha": blob_sha,
-                    "recovered_by": "restored-five-durability-watchdog",
-                    "execution_authorized": False,
-                },
-            )
-            changed.append(str(heartbeat_path.relative_to(repo_root)))
+        if safe_to_close:
+            if heartbeat_run_id != final_run_id or heartbeat_status != "RUN_PERSISTED":
+                rel_finalization = str(finalization_path.relative_to(repo_root))
+                commit_sha, blob_sha = finalization_identity(repo_root, rel_finalization)
+                write_json(
+                    heartbeat_path,
+                    {
+                        "schema_version": "scheduler-heartbeat-watchdog-v1",
+                        "RUN_ID": final_run_id,
+                        "RUN_STATUS": "RUN_PERSISTED",
+                        "scheduler_id": scheduler_id,
+                        "finalization_commit_sha": commit_sha,
+                        "finalization_state_blob_sha": blob_sha,
+                        "recovered_by": "restored-five-durability-watchdog",
+                        "execution_authorized": False,
+                    },
+                )
+                changed.append(str(heartbeat_path.relative_to(repo_root)))
 
             if startup_run_id == final_run_id and startup.get("RUN_STATUS") == "STARTED":
                 write_json(

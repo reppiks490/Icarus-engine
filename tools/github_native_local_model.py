@@ -63,6 +63,7 @@ def build_local_model_command(
     *,
     output_file: Path | None = None,
 ) -> list[str]:
+    is_completion = binary.name == "llama-completion"
     command = [
         str(binary),
         "-m",
@@ -72,9 +73,7 @@ def build_local_model_command(
         "-p",
         request.input_text,
         "-st",
-        "--simple-io",
         "--no-display-prompt",
-        "--no-show-timings",
         "--jinja",
         "--reasoning",
         "off",
@@ -91,7 +90,12 @@ def build_local_model_command(
         "-co",
         "off",
     ]
-    if output_file is not None:
+    if not is_completion:
+        command.extend([
+            "--simple-io",
+            "--no-show-timings",
+        ])
+    if output_file is not None and not is_completion:
         command.extend(["-o", str(output_file)])
     return command
 

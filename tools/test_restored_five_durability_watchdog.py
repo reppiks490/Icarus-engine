@@ -2,6 +2,7 @@ import json
 import subprocess
 import tempfile
 import unittest
+from unittest import mock
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -402,6 +403,29 @@ class WatchdogTests(unittest.TestCase):
             ]
             missing = [i for i in incidents if i["record_type"] == "MISSING_CANONICAL_RECEIPT"]
             self.assertEqual([i["RUN_ID"] for i in missing], ["lane-20260930T212500Z"])
+
+    def test_horizon_builds_finalization_history_only_once(self):
+        with tempfile.TemporaryDirectory() as td:
+            repo = Path(td)
+            root = repo / "lane"
+            write_json(root / "finalization_state.json", {
+                "schema_version": "scheduler-finalization-v5.7",
+                "RUN_ID": "lane-20260930T222500Z",
+                "RUN_STATUS": "RUN_PERSISTED",
+                "completion_semantics": "DURABILITY_RECEIPT_ONLY",
+                "execution_authorized": False,
+            })
+            with mock.patch(
+                "restored_five_durability_watchdog.git_json_history",
+                return_value=[],
+            ) as history:
+                monitor_receipt_horizon(
+                    repo, "lane", "lane", "sched", 25, "lane", 12,
+                    datetime(2026, 9, 30, 19, 0, tzinfo=timezone.utc),
+                    datetime(2026, 9, 30, 22, 40, tzinfo=timezone.utc),
+                    4,
+                )
+                self.assertEqual(history.call_count, 1)
 
 
 if __name__ == "__main__":

@@ -3,6 +3,8 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+import shlex
+import shutil
 import subprocess
 import tempfile
 from pathlib import Path
@@ -94,10 +96,28 @@ def build_local_model_command(
     return command
 
 
+def wrap_terminal_command(
+    command: list[str],
+    *,
+    script_binary: str | None = None,
+) -> list[str]:
+    binary = script_binary if script_binary is not None else shutil.which("script")
+    if not binary:
+        return command
+    return [
+        binary,
+        "-q",
+        "-e",
+        "-c",
+        shlex.join(command),
+        "/dev/null",
+    ]
+
+
 def _default_executor(command: list[str], timeout_seconds: int) -> tuple[int, str, str]:
     try:
         result = subprocess.run(
-            command,
+            wrap_terminal_command(command),
             capture_output=True,
             text=True,
             timeout=timeout_seconds,

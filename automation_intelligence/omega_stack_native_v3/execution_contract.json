@@ -1,10 +1,7 @@
 {
   "schema_version": "omega-stack-github-native-v3",
   "control_plane_id": "omega-aion-daedalus-github-native-v3",
-  "run_origin": "GITHUB_NATIVE_AI",
   "execution_authorized": false,
-  "credential_env": "OPENAI_API_KEY",
-  "api_endpoint": "https://api.openai.com/v1/responses",
   "terminal_artifact_kinds": [
     "runs",
     "outputs",
@@ -16,6 +13,30 @@
   "trading_execution_forbidden": true,
   "cutover": {
     "required_consecutive_valid_receipts_per_lane": 2,
-    "legacy_v2_canary_remains_enabled": true
+    "legacy_v2_canary_remains_enabled": true,
+    "accepted_default_origin": "GITHUB_NATIVE_LIVENESS"
+  },
+  "default_inference_backend": "deterministic_liveness",
+  "default_run_origin": "GITHUB_NATIVE_LIVENESS",
+  "inference_backends": {
+    "deterministic_liveness": {
+      "paid_api_required": false,
+      "credentials_required": false,
+      "model": "none",
+      "reasoning_effort": "none",
+      "run_origin": "GITHUB_NATIVE_LIVENESS",
+      "purpose": "authoritative schedule/liveness/persistence durability without substantive AI inference"
+    },
+    "openai": {
+      "enabled_as_optional_fallback": true,
+      "paid_api_required": true,
+      "credentials_required": true,
+      "credential_options": [
+        "OPENAI_API_KEY",
+        "OPENAI_WIF"
+      ],
+      "api_endpoint": "https://api.openai.com/v1/responses",
+      "run_origin": "GITHUB_NATIVE_AI"
+    }
   }
 }

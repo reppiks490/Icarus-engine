@@ -1,5 +1,5 @@
 {
-  "schema_version": "restored-five-scheduler-contract-v2",
+  "schema_version": "restored-five-scheduler-contract-v3",
   "timezone": "America/Chicago",
   "exact_active_count": 5,
   "execution_authorized": false,
@@ -57,5 +57,12 @@
   "canonical_first_file": "finalization_state.json",
   "worker_startup_state_writes": false,
   "mutable_state_rule": "finalization_state, heartbeat, and evidence_state are monotonic by RUN_ID; delayed older invocations are SUPERSEDED.",
-  "scheduler_mutation_rule": "Workers must never invoke scheduler/task-management tools. Only the external orchestrator may repair enabled-state or schedule drift."
+  "scheduler_mutation_rule": "Workers must never invoke scheduler/task-management tools. Only the external orchestrator may repair enabled-state or schedule drift.",
+  "orchestrator_mutation_guard": {
+    "rule": "Before any automations.update on one of the restored five, read the live registry. Do not mutate a task whose last_run_time is within the current invocation window, and do not mutate during the protected pre-slot window.",
+    "active_invocation_window_minutes": 20,
+    "protected_pre_slot_minutes": 5,
+    "action_when_guarded": "READ_ONLY_AUDIT_ONLY",
+    "rationale": "Prompt/config changes during an active scheduler invocation can contaminate or interrupt the slot and invalidate it as natural protocol evidence."
+  }
 }

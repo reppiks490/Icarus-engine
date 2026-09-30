@@ -81,6 +81,13 @@ def finalization_can_repair(
 ) -> bool:
     if not final_run_id:
         return False
+
+    # Heartbeat monotonicity is absolute: never repair from an older finalization.
+    if heartbeat_run_id and heartbeat_run_id != final_run_id:
+        hb_ordering = compare_run_ids(heartbeat_run_id, final_run_id)
+        if hb_ordering == 1:
+            return False
+
     if startup_run_id:
         return startup_run_id == final_run_id
     if not heartbeat_run_id or heartbeat_run_id == final_run_id:

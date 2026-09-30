@@ -433,7 +433,11 @@ V3_NS = "automation_intelligence/omega_stack_native_v3"
 V3_CONTROL_PLANE_ID = "omega-aion-daedalus-github-native-v3"
 
 
-def v3_control_plane(bound_at: str = "2026-09-30T14:05:31Z") -> dict:
+def v3_control_plane(
+    bound_at: str = "2026-09-30T14:05:31Z",
+    *,
+    inference_backend: str = "openai",
+) -> dict:
     return {
         "schema_version": "omega-stack-control-v3",
         "control_plane_id": V3_CONTROL_PLANE_ID,
@@ -442,6 +446,7 @@ def v3_control_plane(bound_at: str = "2026-09-30T14:05:31Z") -> dict:
         "timezone": "America/Chicago",
         "dispatch_tolerance_minutes": 4,
         "execution_authorized": False,
+        "inference_backend": inference_backend,
         "mode": "SHADOW",
         "activated_at_utc": bound_at,
         "catchup_horizon_minutes": 180,
@@ -643,3 +648,35 @@ def test_repository_dark_v3_control_plane_generates_no_expected_slots():
         horizon_hours=2,
     )
     assert slots == []
+
+
+def test_v3_deterministic_liveness_receipt_is_accepted_truthfully(tmp_path):
+    root = tmp_path / "repo-v3-liveness"
+    write_json(
+        root / V3_NS / "control_plane.json",
+        v3_control_plane(inference_backend="deterministic_liveness"),
+    )
+    cfg = load_v3_watchdog_config(root)
+    slot = v3_slot_for(cfg, "aion", "2026-09-30T14:36:00Z")
+    receipt = valid_v3_receipt(
+        slot,
+        run_origin="GITHUB_NATIVE_LIVENESS",
+        inference_backend="deterministic_liveness",
+        model="none",
+        reasoning_effort="none",
+        response_id=f"deterministic:{slot.slot_id}",
+        response_status="not_applicable",
+        DATA_GAPS=["SUBSTANTIVE_AI_INFERENCE_NOT_EXECUTED"],
+    )
+    path = root / slot.lane.root / "runs" / slot.slot_id / "aion.json"
+    write_json(path, receipt)
+
+    match, checks = scan_v3_receipts(root, slot, cfg)
+
+    assert match is not None
+    assert any(c.valid for c in checks)
+
+
+def test_repository_v3_control_plane_uses_zero_cost_backend():
+    payload = json.loads((Path(".") / V3_NS / "control_plane.json").read_text(encoding="utf-8"))
+    assert payload["inference_backend"] == "deterministic_liveness"

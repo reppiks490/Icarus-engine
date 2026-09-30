@@ -1,7 +1,7 @@
 {
   "schema_version": "omega-stack-github-native-cutover-v1",
   "control_plane_id": "omega-aion-daedalus-github-native-v3",
-  "phase": "CONFIGURATION_BLOCKED_AUTH",
+  "phase": "ZERO_COST_SHADOW",
   "authoritative_execution_source": "NOT_YET_CUT_OVER",
   "implementation_branch": "chatgpt/github-native-ai-plane-implementation-20260930",
   "verified_branch_ci": {
@@ -29,9 +29,9 @@
     "live_v3_watchdog_workflow": true,
     "dark_mode_no_expected_slots": true
   },
-  "credential_status": "MISSING_API_KEY_AND_WIF_CONFIGURATION",
+  "credential_status": "NOT_REQUIRED_DETERMINISTIC_LIVENESS",
   "credential_required_name": "OPENAI_API_KEY",
-  "next_cutover_step": "CONFIGURE_OPENAI_API_KEY_OR_OPENAI_WIF_THEN_REACTIVATE_SHADOW",
+  "next_cutover_step": "VERIFY_LIVE_GITHUB_NATIVE_LIVENESS_RECEIPTS_AND_WATCHDOG_ACCEPTANCE",
   "acceptance_requirement": "TWO_CONSECUTIVE_VALID_GITHUB_NATIVE_AI_RECEIPTS_PER_LANE",
   "legacy_v2_chatgpt_canaries_remain_enabled": true,
   "execution_authorized": false,
@@ -50,5 +50,7 @@
     "workflow_run_wakeup_verified": true,
     "import_runtime_verified": true,
     "failure_artifacts_persisted": true
-  }
+  },
+  "inference_backend": "deterministic_liveness",
+  "zero_cost": true
 }

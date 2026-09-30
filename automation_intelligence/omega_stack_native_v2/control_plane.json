@@ -70,8 +70,8 @@
   "execution_authorized": false,
   "created_at_utc": "2026-09-29T01:31:00Z",
   "reason": "Isolated namespace created after verified concurrent foreign writes repeatedly overwrote the prior omega_stack scheduler identities and AION state.",
-  "control_revision": "2026-09-30-native-v2-r12.2",
-  "live_connection_status": "FIVE_ENABLED_LIVENESS_ONLY_PLUS_STAGGERED_DUAL_WATCHDOG_NATURAL_ACCEPTANCE_PENDING",
+  "control_revision": "2026-09-30-native-v2-r12.3",
+  "live_connection_status": "FIVE_ENABLED_LIVENESS_ONLY_WITH_STAGGERED_CRON_AND_MAIN_PUSH_WATCHDOG_FALLBACK",
   "scheduler_health_policy": {
     "required_enabled_count": 5,
     "exact_minutes": [
@@ -195,11 +195,10 @@
     }
   },
   "last_manual_reconciliation": {
-    "observed_at_utc": "2026-09-30T06:28:50Z",
-    "assessment": "Final pre-next-cycle review: five authoritative ChatGPT tasks are enabled with r12 one-external-call liveness-only prompts. Watchdog single */5 cron exhibited sparse scheduled deliveries, so TDD hardened the workflow to two independent 10-minute streams staggered by five minutes at minutes 2/12/22/32/42/52 and 7/17/27/37/47/57. Full repository CI passed on Python 3.11/3.12/3.13 plus CLI and stdlib-only jobs. Post-merge watchdog run 36678206989 succeeded and wrote 11 missed + 11 backlog artifacts only under reconciliation/.",
-    "corrective_action": "Keep r12 natural critical path unchanged; deploy and record staggered dual watchdog schedule. No additional prompt or scheduler changes before the next natural r12 cycle.",
-    "natural_acceptance_pending": true,
-    "metadata_cleanup": "Primary watchdog evidence now points to post-merge run 36678206989 / reconciliation commit cd1f370; r12 acceptance no longer implies a scheduled phase-2 work receipt."
+    "observed_at_utc": "2026-09-30T06:36:03Z",
+    "assessment": "Final pre-bed hardening completed. Five authoritative tasks remain configured for r12 liveness-only execution. GitHub app-specific permission remains Allow all actions. Flow's 06:24Z r12 trigger stayed enabled but produced no natural receipt, proving the remaining fault is the unattended ChatGPT connector hop rather than auto-disable or permission gating. The watchdog immediately captured that miss through the newly added every-main-push fallback.",
+    "corrective_action": "No further prompt mutation. Preserve r12 one-call natural path; use three watchdog delivery paths (two staggered cron streams plus every-main-push fallback) to durably capture misses. Continue natural acceptance testing on subsequent lane slots.",
+    "natural_acceptance_pending": true
   },
   "dual_plane_durability": {
     "enabled": true,
@@ -239,17 +238,21 @@
       "7-57/10 * * * *"
     ],
     "avoids_top_of_hour": true,
-    "latest_verified_actions_run_id": 36678206989,
-    "latest_verified_actions_run_url": "https://github.com/reppiks490/Icarus-engine/actions/runs/36678206989",
-    "latest_verified_reconciliation_commit": "cd1f370",
-    "latest_verified_reconciliation_written_count": 22,
+    "latest_verified_actions_run_id": 36679057927,
+    "latest_verified_actions_run_url": "https://github.com/reppiks490/Icarus-engine/actions/runs/36679057927",
+    "latest_verified_reconciliation_commit": "93b3483",
+    "latest_verified_reconciliation_written_count": 2,
     "latest_verified_reconciliation_counts": {
-      "missed": 11,
-      "backlog": 11,
+      "missed": 1,
+      "backlog": 1,
       "late_arrival": 0
     },
     "schedule_hardening_merge_commit": "23af4b780b67df9d30923aacfa65629687492aa3",
-    "schedule_hardening_ci_status": "GREEN_5_OF_5_JOBS"
+    "schedule_hardening_ci_status": "GREEN_5_OF_5_JOBS",
+    "main_push_fallback_enabled": true,
+    "main_push_scope": "EVERY_PUSH_TO_MAIN",
+    "main_push_fallback_merge_commit": "05bb05cf2195cca8ea288ba4cbcf91d73a2370b4",
+    "latest_verified_case": "Flow 2026-09-30T06:24:00Z natural receipt missing; watchdog persisted missed+backlog via main-push fallback."
   },
   "slot_attribution_policy": {
     "revision": "nearest-hourly-boundary-v1",
@@ -271,7 +274,14 @@
       "assessment": "One-call r12 contained the observed auto-disable behavior in this probe but did not make scheduled connector delivery reliable."
     },
     "connector_delivery_status": "INTERMITTENT_UNRESOLVED_EXTERNAL_RUNTIME_BOUNDARY",
-    "watchdog_schedule_status": "HARDENED_MERGED_PUSH_PATH_VERIFIED_SCHEDULE_STREAM_OBSERVATION_PENDING"
+    "watchdog_schedule_status": "HARDENED_MERGED_PUSH_PATH_VERIFIED_SCHEDULE_STREAM_OBSERVATION_PENDING",
+    "natural_runtime_mitigation": "single external call then stop",
+    "watchdog_delivery_layers": [
+      "staggered cron stream 2-52/10",
+      "staggered cron stream 7-57/10",
+      "every push to main"
+    ],
+    "latest_containment_proof": "watchdog run 36679057927 caught Flow 06:24Z miss and persisted reconciliation commit 93b3483"
   },
   "scheduler_health_semantics": {
     "trigger_health_source": "live ChatGPT automation registry",

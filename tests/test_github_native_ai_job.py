@@ -140,3 +140,5 @@ def test_dark_control_has_no_scheduled_pending_slot(tmp_path: Path) -> None:
         control,
         datetime(2026, 9, 30, 13, 19, tzinfo=UTC),
     ) is None
+
+# Regression gate: tests must not depend on the mutable deployed control mode.

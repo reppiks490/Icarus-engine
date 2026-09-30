@@ -1,0 +1,37 @@
+{
+  "schema_version": "restored-five-protocol-v5.6",
+  "authority_scope": "Robustness Guardian, Advanced CSV, Alpha Synthesis, Microstructure Sensor Grid, Apex Council only",
+  "execution_authorized": false,
+  "semantics": {
+    "finalization_state": {
+      "purpose": "durability receipt only",
+      "RUN_STATUS": "RUN_PERSISTED",
+      "required_field": "completion_semantics=DURABILITY_RECEIPT_ONLY",
+      "warning": "RUN_PERSISTED proves the scheduled slot obtained a durable Git commit identity; it does not prove optional evidence work completed or found new evidence."
+    },
+    "evidence_state": {
+      "purpose": "latest substantive evidence status",
+      "valid_statuses": [
+        "EVIDENCE_VERIFIED",
+        "NO_NEW_EVIDENCE",
+        "WORK_CALL_UNAVAILABLE",
+        "EMPTY_READY"
+      ],
+      "monotonic_guard": "Never overwrite a lexicographically newer RUN_ID.",
+      "warning": "Consumers must not infer substantive evidence from finalization_state alone."
+    },
+    "heartbeat": {
+      "purpose": "recoverable mirror of canonical finalization identity",
+      "authority": "non-canonical"
+    },
+    "startup_state": {
+      "purpose": "transient current-slot startup marker",
+      "stale_recovery_minutes": 30
+    }
+  },
+  "downstream_rules": {
+    "apex_council": "Bind sibling canonical finalization identities for durability/provenance, but consume substantive findings only from sibling evidence_state records whose RUN_ID is not newer than the bound finalization and whose EVIDENCE_STATUS is explicit.",
+    "watchdog": "May repair heartbeat/startup only; never create substantive evidence.",
+    "scheduler": "External authority; worker runs must never mutate scheduler state."
+  }
+}

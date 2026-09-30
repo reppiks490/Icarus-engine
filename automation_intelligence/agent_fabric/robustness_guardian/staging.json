@@ -3,6 +3,22 @@
   "lane": "robustness_guardian",
   "scheduler_id": "6abaf924e0248191b8a11bd1d32bf0b7",
   "RUN_ID": "robustness-guardian-20260930T020500Z",
-  "RUN_STATUS": "STARTED",
-  "execution_authorized": false
+  "RUN_STATUS": "STAGED_FINAL",
+  "execution_authorized": false,
+  "payload": {
+    "CURRENT_RUN_ID": "robustness-guardian-20260930T020500Z",
+    "scheduler_id": "6abaf924e0248191b8a11bd1d32bf0b7",
+    "execution_authorized": false,
+    "evidence": [
+      "guardian root inspected",
+      "PR 2 inspected",
+      "bounded holdout code search had incomplete results"
+    ],
+    "findings": [
+      "No code change made; PR 2 collision avoided.",
+      "Next audit priority: immutable evaluation lineage, multiple-testing identity, execution-friction stress, replay determinism, perturbation and tail defenses."
+    ],
+    "tests": "not run; audit only",
+    "NEXT": "Continue bounded robustness audit."
+  }
 }

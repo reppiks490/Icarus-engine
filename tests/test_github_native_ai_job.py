@@ -158,3 +158,12 @@ def test_shadow_push_event_executes_as_wakeup(tmp_path: Path) -> None:
     assert slot is not None
     assert slot.lane.name == "macro"
     assert slot.slot_id == "20260930T151200Z"
+
+
+def test_shadow_workflow_run_event_executes_as_watchdog_wakeup() -> None:
+    control = replace(
+        load_control_plane(Path(".")),
+        mode="SHADOW",
+        activated_at_utc=datetime(2026, 9, 30, 15, 6, 57, tzinfo=UTC),
+    )
+    assert should_execute(control, event_name="workflow_run", execute_model=False) is True

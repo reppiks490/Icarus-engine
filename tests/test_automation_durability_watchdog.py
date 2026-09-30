@@ -404,6 +404,8 @@ def test_workflow_contract():
     assert 'cron: "2-52/10 * * * *"' in text
     assert 'cron: "7-57/10 * * * *"' in text
     assert 'cron: "*/5 * * * *"' not in text
+    assert 'branches: [main]' in text
+    assert 'branches: [main]\n    paths:' not in text
     assert "workflow_dispatch:" in text
     assert "contents: write" in text
     assert "cancel-in-progress: false" in text

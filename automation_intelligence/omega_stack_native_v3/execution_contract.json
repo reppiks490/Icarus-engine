@@ -1,0 +1,21 @@
+{
+  "schema_version": "omega-stack-github-native-v3",
+  "control_plane_id": "omega-aion-daedalus-github-native-v3",
+  "run_origin": "GITHUB_NATIVE_AI",
+  "execution_authorized": false,
+  "credential_env": "OPENAI_API_KEY",
+  "api_endpoint": "https://api.openai.com/v1/responses",
+  "terminal_artifact_kinds": [
+    "runs",
+    "outputs",
+    "failures"
+  ],
+  "duplicate_policy": "SUPPRESS_IF_ANY_TERMINAL_ARTIFACT_EXISTS_FOR_SLOT",
+  "repository_write_scope": "automation_intelligence/omega_stack_native_v3",
+  "force_push_forbidden": true,
+  "trading_execution_forbidden": true,
+  "cutover": {
+    "required_consecutive_valid_receipts_per_lane": 2,
+    "legacy_v2_canary_remains_enabled": true
+  }
+}

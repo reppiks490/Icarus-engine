@@ -1,0 +1,92 @@
+name: github-native-ai-plane
+
+on:
+  schedule:
+    - cron: "4-59/5 * * * *"
+  workflow_dispatch:
+    inputs:
+      execute_model:
+        description: "Call the model for this manual canary"
+        required: true
+        type: boolean
+        default: false
+      requested_lane:
+        description: "auto, omega, macro, flow, aion, or daedalus"
+        required: false
+        type: string
+        default: "auto"
+      requested_slot_utc:
+        description: "Optional exact lane slot in UTC, e.g. 2026-09-30T13:36:00Z"
+        required: false
+        type: string
+        default: ""
+
+permissions:
+  contents: write
+
+concurrency:
+  group: github-native-ai-plane
+  cancel-in-progress: false
+
+jobs:
+  execute:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Execute due lane
+        id: lane
+        continue-on-error: true
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          REQUESTED_LANE: ${{ inputs.requested_lane || 'auto' }}
+          REQUESTED_SLOT_UTC: ${{ inputs.requested_slot_utc || '' }}
+          EXECUTE_MODEL: ${{ inputs.execute_model || false }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=(--root . --event-name "$GITHUB_EVENT_NAME" --requested-lane "$REQUESTED_LANE")
+          if [ -n "$REQUESTED_SLOT_UTC" ]; then
+            args+=(--requested-slot-utc "$REQUESTED_SLOT_UTC")
+          fi
+          if [ "$EXECUTE_MODEL" = "true" ]; then
+            args+=(--execute-model)
+          fi
+          python tools/github_native_ai_job.py "${args[@]}"
+
+      - name: Persist v3 artifacts
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add automation_intelligence/omega_stack_native_v3
+          staged="$(git diff --cached --name-only)"
+          if [ -z "$staged" ]; then
+            echo "No v3 artifacts to persist."
+            exit 0
+          fi
+          invalid="$(printf '%s\n' "$staged" | grep -Ev '^automation_intelligence/omega_stack_native_v3/' || true)"
+          if [ -n "$invalid" ]; then
+            echo "Refusing out-of-namespace paths:" >&2
+            printf '%s\n' "$invalid" >&2
+            exit 1
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "automation: github-native-ai ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT} [skip ci]"
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+      - name: Fail if lane execution failed
+        if: steps.lane.outcome == 'failure'
+        shell: bash
+        run: exit 1

@@ -1,0 +1,38 @@
+{
+  "schema_version": "omega-stack-github-native-cutover-v1",
+  "control_plane_id": "omega-aion-daedalus-github-native-v3",
+  "phase": "DARK_READY",
+  "authoritative_execution_source": "NOT_YET_CUT_OVER",
+  "implementation_branch": "chatgpt/github-native-ai-plane-implementation-20260930",
+  "verified_branch_ci": {
+    "workflow_run_id": 36733700316,
+    "conclusion": "success",
+    "jobs": [
+      "every CLI path",
+      "core runs with zero dependencies",
+      "pytest (py3.11)",
+      "pytest (py3.12)",
+      "pytest (py3.13)"
+    ],
+    "all_green": true
+  },
+  "implemented_capabilities": {
+    "deterministic_chicago_dispatch": true,
+    "delayed_schedule_catchup": true,
+    "dst_safe_slot_identity": true,
+    "openai_responses_client": true,
+    "structured_output_validation": true,
+    "immutable_v3_run_artifacts": true,
+    "sanitized_failure_artifacts": true,
+    "duplicate_suppression": true,
+    "v3_watchdog_validation": true,
+    "live_v3_watchdog_workflow": true,
+    "dark_mode_no_expected_slots": true
+  },
+  "credential_status": "UNKNOWN_TO_CONNECTED_GITHUB_APP",
+  "credential_required_name": "OPENAI_API_KEY",
+  "next_cutover_step": "MERGE_DARK_THEN_ACTIVATE_SHADOW_WITH_ACTIVATED_AT_UTC",
+  "acceptance_requirement": "TWO_CONSECUTIVE_VALID_GITHUB_NATIVE_AI_RECEIPTS_PER_LANE",
+  "legacy_v2_chatgpt_canaries_remain_enabled": true,
+  "execution_authorized": false
+}

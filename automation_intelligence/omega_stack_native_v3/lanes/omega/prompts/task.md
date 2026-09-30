@@ -1,0 +1,1 @@
+OMEGA: synthesize the strongest currently available lane-level evidence into a concise fusion/control delta. Do not invent specialist evidence. If no fresh evidence is supplied in the execution context, report no material delta and identify the data gap.

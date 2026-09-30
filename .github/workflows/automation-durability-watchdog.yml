@@ -79,3 +79,60 @@ jobs:
           git -C state config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git -C state commit -m "automation: watchdog reconciliation $(date -u +%Y%m%dT%H%M%SZ) [skip ci]"
           git -C state push origin HEAD:automation/omega-native-v2
+
+
+  reconcile-v3:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out v3 authoritative state from main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: v3state
+          fetch-depth: 0
+
+      - name: Set up Python for v3 reconciliation
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Reconcile expected v3 GitHub-native receipts
+        run: >-
+          python v3state/tools/automation_durability_watchdog.py
+          --root v3state
+          --control-version v3
+          --grace-minutes 12
+          --horizon-hours 48
+
+      - name: Stage only v3 reconciliation artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ ! -d v3state/automation_intelligence/omega_stack_native_v3/reconciliation ]; then
+            echo "V3_WATCHDOG_NO_CHANGE=1" >> "$GITHUB_ENV"
+            exit 0
+          fi
+          git -C v3state add automation_intelligence/omega_stack_native_v3/reconciliation
+          staged="$(git -C v3state diff --cached --name-only)"
+          if [ -z "$staged" ]; then
+            echo "V3_WATCHDOG_NO_CHANGE=1" >> "$GITHUB_ENV"
+            exit 0
+          fi
+          invalid="$(printf '%s\n' "$staged" | grep -Ev '^automation_intelligence/omega_stack_native_v3/reconciliation/' || true)"
+          if [ -n "$invalid" ]; then
+            echo "Refusing out-of-namespace v3 paths:" >&2
+            printf '%s\n' "$invalid" >&2
+            exit 1
+          fi
+          echo "V3_WATCHDOG_NO_CHANGE=0" >> "$GITHUB_ENV"
+
+      - name: Commit v3 reconciliation state transitions
+        if: env.V3_WATCHDOG_NO_CHANGE != '1'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git -C v3state config user.name "github-actions[bot]"
+          git -C v3state config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git -C v3state commit -m "automation: v3 watchdog reconciliation $(date -u +%Y%m%dT%H%M%SZ) [skip ci]"
+          git -C v3state pull --rebase origin main
+          git -C v3state push origin HEAD:main

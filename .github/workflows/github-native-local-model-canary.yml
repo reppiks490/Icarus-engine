@@ -1,0 +1,102 @@
+name: github-native-local-model-canary
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/github-native-local-model-canary.yml"
+      - "tools/github_native_local_model.py"
+      - "tools/github_native_local_model_canary.py"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: github-native-local-model-canary
+  cancel-in-progress: false
+
+jobs:
+  canary:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Restore local model cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/icarus-local-model
+          key: local-model-Qwen3-1.7B-Q8_0-061b54da-llama-b10978-98020bb5
+
+      - name: Prepare pinned llama.cpp runtime and Qwen3-1.7B model
+        shell: bash
+        run: |
+          set -euo pipefail
+          CACHE="$HOME/.cache/icarus-local-model"
+          RUNTIME_DIR="$CACHE/llama-b10978"
+          MODEL_PATH="$CACHE/Qwen3-1.7B-Q8_0.gguf"
+          LLAMA_URL="https://github.com/ggml-org/llama.cpp/releases/download/b10978/llama-b10978-bin-ubuntu-x64.tar.gz"
+          LLAMA_SHA="98020bb5a2a9e0284110e5c110158e18dca984a547d5afde1631fef0f03dd826"
+          MODEL_URL="https://huggingface.co/Qwen/Qwen3-1.7B-GGUF/resolve/90862c4b9d2787eaed51d12237eafdfe7c5f6077/Qwen3-1.7B-Q8_0.gguf"
+          MODEL_SHA="061b54daade076b5d3362dac252678d17da8c68f07560be70818cace6590cb1a"
+
+          mkdir -p "$CACHE"
+
+          LLAMA_CLI="$(find "$RUNTIME_DIR" -type f -name llama-cli -print -quit 2>/dev/null || true)"
+          if [ -z "$LLAMA_CLI" ]; then
+            rm -rf "$RUNTIME_DIR"
+            mkdir -p "$RUNTIME_DIR"
+            curl --fail --location --retry 3 --retry-delay 2 "$LLAMA_URL" -o /tmp/llama-runtime.tar.gz
+            echo "$LLAMA_SHA  /tmp/llama-runtime.tar.gz" | sha256sum -c -
+            tar -xzf /tmp/llama-runtime.tar.gz -C "$RUNTIME_DIR"
+            LLAMA_CLI="$(find "$RUNTIME_DIR" -type f -name llama-cli -print -quit)"
+          fi
+          test -n "$LLAMA_CLI"
+          chmod +x "$LLAMA_CLI"
+
+          if [ ! -f "$MODEL_PATH" ]; then
+            curl --fail --location --retry 3 --retry-delay 2 "$MODEL_URL" -o "$MODEL_PATH"
+          fi
+          echo "$MODEL_SHA  $MODEL_PATH" | sha256sum -c -
+
+          echo "LLAMA_CLI=$LLAMA_CLI" >> "$GITHUB_ENV"
+          echo "LOCAL_MODEL_PATH=$MODEL_PATH" >> "$GITHUB_ENV"
+
+      - name: Run zero-cost local inference canary
+        shell: bash
+        run: |
+          set -euo pipefail
+          CANARY_OUTPUT="automation_intelligence/omega_stack_native_v3/local_model_canary/${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}.json"
+          python -m tools.github_native_local_model_canary             --binary "$LLAMA_CLI"             --model "$LOCAL_MODEL_PATH"             --output "$CANARY_OUTPUT"
+          echo "CANARY_OUTPUT=$CANARY_OUTPUT" >> "$GITHUB_ENV"
+
+      - name: Persist local model canary
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add automation_intelligence/omega_stack_native_v3/local_model_canary
+          staged="$(git diff --cached --name-only)"
+          if [ -z "$staged" ]; then
+            echo "No local model canary artifact to persist."
+            exit 1
+          fi
+          invalid="$(printf '%s\n' "$staged" | grep -Ev '^automation_intelligence/omega_stack_native_v3/local_model_canary/' || true)"
+          if [ -n "$invalid" ]; then
+            echo "Refusing out-of-scope canary mutation:" >&2
+            printf '%s\n' "$invalid" >&2
+            exit 1
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "automation: local Qwen canary ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT} [skip ci]"
+          git pull --rebase origin main
+          git push origin HEAD:main

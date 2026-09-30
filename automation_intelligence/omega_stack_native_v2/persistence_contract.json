@@ -1,6 +1,6 @@
 {
   "schema_version": "omega-stack-persistence-v4.3-append-first",
-  "contract_revision": "2026-09-30-native-v2-r12.4",
+  "contract_revision": "2026-09-30-native-v2-r12.5",
   "migrated_from": "omega-stack-persistence-v4.2-write-first",
   "control_plane_id": "omega-aion-daedalus-native-v2",
   "authoritative_branch": "automation/omega-native-v2",
@@ -154,7 +154,7 @@
     "schedule_hardening_merge": "23af4b780b67df9d30923aacfa65629687492aa3",
     "post_merge_push_run_id": 36678206989,
     "post_merge_push_run_success": true,
-    "first_staggered_schedule_run_observation": "PENDING_AT_LAST_CHECK",
+    "first_staggered_schedule_run_observation": "VERIFIED",
     "schedule_strategy": "STAGGERED_DUAL_10_MINUTE_STREAMS_EFFECTIVE_5_MINUTE_COVERAGE",
     "cron_streams": [
       "2-52/10 * * * *",
@@ -187,7 +187,15 @@
     ],
     "main_push_fallback_enabled": true,
     "main_push_fallback_merge_commit": "05bb05cf2195cca8ea288ba4cbcf91d73a2370b4",
-    "latest_verified_case": "Flow 2026-09-30T06:24:00Z missing natural receipt"
+    "latest_verified_case": "Flow 2026-09-30T06:24:00Z missing natural receipt",
+    "schedule_delivery_verified": true,
+    "latest_verified_schedule_run_id": 36717566091,
+    "latest_verified_schedule_run_status": "SUCCESS_NO_CHANGE",
+    "latest_verified_schedule_run_created_at_utc": "2026-09-30T12:51:53Z",
+    "schedule_runs_observed": [
+      36717520644,
+      36717566091
+    ]
   },
   "natural_slot_attribution": {
     "version": "nearest-hourly-boundary-v1",

@@ -1,0 +1,82 @@
+name: restored-five-native-liveness
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "tools/restored_five_native_liveness.py"
+      - "tools/test_restored_five_native_liveness.py"
+      - "automation_intelligence/restored_five_native/control_plane.json"
+      - ".github/workflows/restored-five-native-liveness.yml"
+  schedule:
+    - cron: "3-58/5 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: restored-five-native-liveness
+  cancel-in-progress: false
+
+jobs:
+  persist:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run native-liveness unit tests
+        shell: bash
+        run: python tools/test_restored_five_native_liveness.py -q
+
+      - name: Refresh main before slot evaluation
+        shell: bash
+        run: git pull --rebase origin main
+
+      - name: Persist due slot receipts
+        shell: bash
+        run: python tools/restored_five_native_liveness.py --root .
+
+      - name: Stage only immutable native liveness receipts
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ ! -d automation_intelligence/restored_five_native/receipts ]; then
+            echo "NATIVE_NO_CHANGE=1" >> "$GITHUB_ENV"
+            exit 0
+          fi
+
+          git add automation_intelligence/restored_five_native/receipts
+          if git diff --cached --quiet; then
+            echo "NATIVE_NO_CHANGE=1" >> "$GITHUB_ENV"
+            exit 0
+          fi
+
+          staged="$(git diff --cached --name-only)"
+          invalid="$(printf '%s\n' "$staged" | grep -Ev '^automation_intelligence/restored_five_native/receipts/(robustness_guardian|alpha_synthesis|flow_microstructure|apex_council)/[0-9]{8}T[0-9]{6}Z\.json$' || true)"
+          if [ -n "$invalid" ]; then
+            echo "Refusing out-of-scope native liveness mutation:" >&2
+            printf '%s\n' "$invalid" >&2
+            exit 1
+          fi
+          echo "NATIVE_NO_CHANGE=0" >> "$GITHUB_ENV"
+
+      - name: Commit native liveness receipts
+        if: env.NATIVE_NO_CHANGE != '1'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "automation: restored-five native liveness $(date -u +%Y%m%dT%H%M%SZ) [skip ci]"
+          git pull --rebase origin main
+          git push origin HEAD:main

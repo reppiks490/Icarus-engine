@@ -1,1 +1,15 @@
-{"schema_version":"scheduler-finalization-v5.5","RUN_ID":"flow-20260930T183500Z","RUN_STATUS":"RUN_PERSISTED","history_mode":"git_commit_finalization","work_status":"COMPLETED","payload":{"result":"NEW_EVIDENCE","observations":"BTC futures aggregate OI $26.36B across 11 exchanges (reading 2026-09-29); funding +0.0020% per settlement on 16/17 covered contracts (2026-09-28); 24h futures volume $19.80B on 3/10 covered exchanges. U.S. gold futures settled $4,186.70/oz, +0.2% on 2026-09-30; contract identity unspecified, so not labeled GC/MGC.","provenance":"Maketo BTC Futures page retrieved 2026-09-30; Reuters 2026-09-30 gold report. Third-party aggregate/press representations; not exchange-native depth.","gaps":"No fresh contract-specific NQ/MNQ, ES/MES, YM/MYM, RTY/M2K, GC/MGC depth/order-book evidence in bounded call. BTC source coverage varies by metric/date.","NEXT":"Next scheduled collection should seek exchange-native contract-specific evidence; preserve representation identity and do not infer missing micro contracts."},"execution_authorized":false}
+{
+  "schema_version": "scheduler-finalization-v5.5",
+  "RUN_ID": "flow-20260930T203500Z",
+  "RUN_STATUS": "RUN_PERSISTED",
+  "history_mode": "git_commit_finalization",
+  "work_status": "COMPLETED",
+  "payload": {
+    "result": "NEW_EVIDENCE",
+    "observations": "BTC futures aggregate OI $26.36B across 11 exchanges for 2026-09-29; $24.14B cash-settled and $2.22B coin-settled. Separate 3-exchange series $14.42B; do not splice. Venue-attributed BTC perp liquidations included Binance long $151K at $83,206, 03:16:53 UTC and Bybit long $32.3K at $83,154, 00:18:53 UTC. COMEX October gold closed $4,155.60/oz.",
+    "provenance": "Retrieved 2026-09-30. Maketo aggregate futures representations; Newhedge venue-attributed liquidation feed; WSJ COMEX October gold report. USD notional/price units preserved.",
+    "gaps": "No fresh contract-specific NQ/MNQ, ES/MES, YM/MYM, RTY/M2K or MGC depth/order-book evidence. BTC sources third-party, not exchange-native.",
+    "NEXT": "Seek exchange-native contract-specific depth/OI; preserve standard-vs-micro and venue identity."
+  },
+  "execution_authorized": false
+}

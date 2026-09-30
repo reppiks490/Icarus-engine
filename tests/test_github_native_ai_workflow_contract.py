@@ -24,11 +24,13 @@ def test_workflow_has_least_required_write_permission_and_serial_concurrency() -
     assert "group: github-native-ai-plane" in text
 
 
-def test_workflow_uses_python_311_and_env_only_openai_secret() -> None:
+def test_workflow_uses_python_311_without_paid_model_credentials() -> None:
     text = _text()
     assert 'python-version: "3.11"' in text
-    assert "OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}" in text
-    assert "echo $OPENAI_API_KEY" not in text
+    assert "OPENAI_API_KEY" not in text
+    assert "OPENAI_IDENTITY_PROVIDER_ID" not in text
+    assert "OPENAI_SERVICE_ACCOUNT_ID" not in text
+    assert "OPENAI_WIF_AUDIENCE" not in text
     assert "printenv" not in text
 
 
@@ -73,10 +75,14 @@ def test_workflow_uses_watchdog_workflow_run_wakeup() -> None:
     assert "branches: [main]" in text
 
 
-def test_workflow_grants_oidc_and_passes_wif_variables_without_logging_credentials() -> None:
+def test_zero_cost_workflow_does_not_grant_oidc_permission() -> None:
     text = _text()
-    assert "id-token: write" in text
-    assert "OPENAI_IDENTITY_PROVIDER_ID: ${{ vars.OPENAI_IDENTITY_PROVIDER_ID }}" in text
-    assert "OPENAI_SERVICE_ACCOUNT_ID: ${{ vars.OPENAI_SERVICE_ACCOUNT_ID }}" in text
-    assert "OPENAI_WIF_AUDIENCE: ${{ vars.OPENAI_WIF_AUDIENCE }}" in text
+    assert "id-token: write" not in text
     assert "ACTIONS_ID_TOKEN_REQUEST_TOKEN" not in text
+
+
+def test_workflow_evaluates_zero_cost_cutover_before_persisting() -> None:
+    text = _text()
+    assert "Evaluate zero-cost cutover" in text
+    assert "python -m tools.github_native_liveness_cutover --root ." in text
+    assert text.index("Evaluate zero-cost cutover") < text.index("Persist v3 artifacts")

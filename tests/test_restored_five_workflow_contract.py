@@ -1,0 +1,23 @@
+from pathlib import Path
+
+
+WORKFLOW = Path(".github/workflows/restored-five-durability-watchdog.yml")
+
+
+def test_restored_five_workflow_has_one_complete_commit_block() -> None:
+    text = WORKFLOW.read_text(encoding="utf-8")
+
+    assert text.count("- name: Commit verified recovery state") == 1
+    assert text.count("git pull --rebase origin main") == 1
+    assert text.count("git push origin HEAD:main") == 1
+    assert "\n || true)\"" not in text
+
+
+def test_restored_five_scope_guard_closes_regex_before_shell_fallback() -> None:
+    text = WORKFLOW.read_text(encoding="utf-8")
+
+    guard_lines = [line.strip() for line in text.splitlines() if line.strip().startswith("invalid=")]
+    assert len(guard_lines) == 1
+    guard = guard_lines[0]
+    assert "grep -Ev" in guard
+    assert "$' || true)" in guard

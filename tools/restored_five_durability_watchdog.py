@@ -263,11 +263,73 @@ def monitor_missing_receipt(
     return [str(incident_path.relative_to(repo_root))]
 
 
+
+def monitor_missing_evidence(
+    repo_root: Path,
+    lane: str,
+    lane_root: str,
+    scheduler_id: str,
+    minute: int,
+    run_prefix: str,
+    evidence_grace_minutes: int,
+    monitor_after: datetime | None,
+    now: datetime,
+) -> list[str]:
+    slot = expected_slot(now, minute, evidence_grace_minutes)
+    if monitor_after is not None and slot < monitor_after:
+        return []
+
+    expected_run_id = f"{run_prefix}-{slot.strftime('%Y%m%dT%H%M%SZ')}"
+    root = repo_root / lane_root
+    finalization = read_json(root / "finalization_state.json")
+    evidence = read_json(root / "evidence_state.json")
+    incident_path = root / "watchdog_incidents.jsonl"
+
+    if finalization.get("RUN_ID") != expected_run_id or finalization.get("RUN_STATUS") != "RUN_PERSISTED":
+        return []
+
+    evidence_run_id = evidence.get("RUN_ID")
+    if evidence_run_id == expected_run_id and evidence.get("EVIDENCE_STATUS") in {
+        "EVIDENCE_VERIFIED",
+        "NO_NEW_EVIDENCE",
+        "WORK_CALL_UNAVAILABLE",
+    }:
+        return []
+
+    ordering = compare_run_ids(evidence_run_id, expected_run_id)
+    if ordering == 1:
+        return []
+
+    if incident_exists(incident_path, "EVIDENCE_PHASE_INCOMPLETE", expected_run_id):
+        return []
+
+    append_incident(
+        incident_path,
+        {
+            "schema_version": "restored-five-watchdog-incident-v2",
+            "record_type": "EVIDENCE_PHASE_INCOMPLETE",
+            "lane": lane,
+            "scheduler_id": scheduler_id,
+            "RUN_ID": expected_run_id,
+            "slot_utc": slot.isoformat().replace("+00:00", "Z"),
+            "observed_at_utc": now.isoformat().replace("+00:00", "Z"),
+            "grace_minutes": evidence_grace_minutes,
+            "canonical_receipt_present": True,
+            "observed_evidence_RUN_ID": evidence_run_id,
+            "observed_evidence_status": evidence.get("EVIDENCE_STATUS"),
+            "reason": "CANONICAL_RECEIPT_EXISTS_BUT_EVIDENCE_STATE_NOT_FINALIZED_AFTER_GRACE",
+            "execution_authorized": False,
+        },
+    )
+    return [str(incident_path.relative_to(repo_root))]
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--repo-root", default=".")
     parser.add_argument("--stale-minutes", type=int, default=30)
     parser.add_argument("--monitor-grace-minutes", type=int, default=12)
+    parser.add_argument("--evidence-grace-minutes", type=int, default=20)
     parser.add_argument("--monitor-after")
     parser.add_argument(
         "--lane",
@@ -309,6 +371,19 @@ def main() -> None:
                     minute,
                     run_prefix,
                     args.monitor_grace_minutes,
+                    monitor_after,
+                    now,
+                )
+            )
+            changed.extend(
+                monitor_missing_evidence(
+                    repo_root,
+                    lane,
+                    lane_root,
+                    scheduler_id,
+                    minute,
+                    run_prefix,
+                    args.evidence_grace_minutes,
                     monitor_after,
                     now,
                 )

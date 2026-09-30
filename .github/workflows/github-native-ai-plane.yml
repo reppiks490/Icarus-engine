@@ -67,7 +67,7 @@ jobs:
           if [ "$EXECUTE_MODEL" = "true" ]; then
             args+=(--execute-model)
           fi
-          python tools/github_native_ai_job.py "${args[@]}"
+          python -m tools.github_native_ai_job "${args[@]}"
 
       - name: Persist v3 artifacts
         if: always()

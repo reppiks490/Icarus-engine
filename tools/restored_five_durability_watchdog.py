@@ -21,6 +21,11 @@ def write_json(path: Path, obj: dict) -> None:
     path.write_text(json.dumps(obj, indent=2, sort_keys=True) + "\n")
 
 
+def append_incident(path: Path, obj: dict) -> None:
+    with path.open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(obj, sort_keys=True, separators=(",", ":")) + "\n")
+
+
 def parse_run_time(run_id: str | None):
     if not run_id:
         return None
@@ -108,6 +113,21 @@ def reconcile_lane(
         if started is not None:
             age_minutes = (now - started).total_seconds() / 60
             if age_minutes >= stale_minutes:
+                incident_path = root / "watchdog_incidents.jsonl"
+                append_incident(
+                    incident_path,
+                    {
+                        "schema_version": "restored-five-watchdog-incident-v1",
+                        "record_type": "STRANDED_STARTUP_RECOVERED",
+                        "lane": lane,
+                        "scheduler_id": scheduler_id,
+                        "RUN_ID": startup_run_id,
+                        "observed_at_utc": now.isoformat().replace("+00:00", "Z"),
+                        "reason": f"NO_FINALIZATION_GT_{stale_minutes}M",
+                        "execution_authorized": False,
+                    },
+                )
+                changed.append(str(incident_path.relative_to(repo_root)))
                 write_json(
                     heartbeat_path,
                     {

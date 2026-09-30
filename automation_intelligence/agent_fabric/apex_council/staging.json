@@ -3,6 +3,46 @@
   "lane": "apex_council",
   "scheduler_id": "6ababd570fac81918777c8f809cf67c9",
   "RUN_ID": "apex-council-20260930T024500Z",
-  "RUN_STATUS": "STARTED",
-  "execution_authorized": false
+  "RUN_STATUS": "STAGED_FINAL",
+  "execution_authorized": false,
+  "payload": {
+    "council_cycle": "bounded_v5.2",
+    "specialist_identities_consumed": {
+      "alpha_synthesis": {
+        "RUN_ID": "alpha-synthesis-20260929T202500Z",
+        "RUN_STATUS": "FINALIZATION_VERIFIED",
+        "staging_commit_sha": "a279f7d5d361f0f80cb87eeb2c400fd6cf5977c7",
+        "staging_blob_sha": "5b22e1e51bd13feeb75c9ab20e4c2b39764c1db0"
+      },
+      "robustness_guardian": {
+        "RUN_ID": "robustness-guardian-20260930T020500Z",
+        "RUN_STATUS": "FINALIZATION_VERIFIED",
+        "staging_commit_sha": "f71fed608bb5df71db8330edbd5e72d35faf7f9a",
+        "staging_blob_sha": "d645d94ecb80f6ba945ef42887d6843af45f9379"
+      }
+    },
+    "findings": [
+      "Both sibling inputs have verified durable identities while remaining independent.",
+      "Hard vetoes, fail-closed evidence sufficiency, quorum integrity, calibration, adversarial resilience, OOD/regime awareness and reproducibility are preserved.",
+      "Verified persistence alone is not an affirmative candidate vote or evidence of profitability.",
+      "No behavioral change is justified within the bounded evidence budget."
+    ],
+    "disagreements": [
+      "Sibling finalization does not establish candidate-level agreement.",
+      "Dependence/common provenance remains unresolved without auditable evidence."
+    ],
+    "tests": {
+      "behavioral_changes": false,
+      "tests_run": []
+    },
+    "pr_state": {
+      "inspected": false,
+      "reason": "No code or PR mutation; collision avoidance preserved."
+    },
+    "NEXT": [
+      "Consume newer verified sibling identities when available.",
+      "Behavioral evolution requires collision-safe test-first work and explicit dependence evidence."
+    ],
+    "execution_authorized": false
+  }
 }

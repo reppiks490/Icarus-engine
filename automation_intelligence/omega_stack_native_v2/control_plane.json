@@ -70,7 +70,7 @@
   "execution_authorized": false,
   "created_at_utc": "2026-09-29T01:31:00Z",
   "reason": "Isolated namespace created after verified concurrent foreign writes repeatedly overwrote the prior omega_stack scheduler identities and AION state.",
-  "control_revision": "2026-09-30-native-v2-r12.1",
+  "control_revision": "2026-09-30-native-v2-r12.2",
   "live_connection_status": "FIVE_ENABLED_LIVENESS_ONLY_PLUS_STAGGERED_DUAL_WATCHDOG_NATURAL_ACCEPTANCE_PENDING",
   "scheduler_health_policy": {
     "required_enabled_count": 5,
@@ -156,9 +156,9 @@
     "authoritative_run_record": "<lane>/runs/<RUN_ID>.json",
     "immutable_history_source": "Append-only Git files and their commits",
     "liveness_success": "Natural run creates one unique immutable run receipt using GitHub create_file as its first tool call, with no prerequisite read.",
-    "work_success": "Same RUN_ID optionally creates a separate immutable <lane>/work/<RUN_ID>.json receipt after one bounded work call.",
+    "work_success": "NOT_APPLICABLE_IN_R12_SCHEDULED_LIVENESS_ONLY; work/recovery is outside the natural scheduled critical path.",
     "acceptance_rule": "A lane is scheduler/persistence healthy after two consecutive natural v4.3 immutable liveness receipts with distinct RUN_IDs.",
-    "stack_target": "All five lanes satisfy two consecutive natural v4.3 liveness receipts; report work-completion rate separately."
+    "stack_target": "All five lanes satisfy two consecutive valid natural v4.3 liveness receipts while scheduler registry remains exactly five enabled authoritative lanes. Scheduled phase-2 work is not part of r12 acceptance."
   },
   "scheduler_jitter_policy": {
     "nominal_minutes": [
@@ -195,10 +195,11 @@
     }
   },
   "last_manual_reconciliation": {
-    "observed_at_utc": "2026-09-30T06:26:27Z",
+    "observed_at_utc": "2026-09-30T06:28:50Z",
     "assessment": "Final pre-next-cycle review: five authoritative ChatGPT tasks are enabled with r12 one-external-call liveness-only prompts. Watchdog single */5 cron exhibited sparse scheduled deliveries, so TDD hardened the workflow to two independent 10-minute streams staggered by five minutes at minutes 2/12/22/32/42/52 and 7/17/27/37/47/57. Full repository CI passed on Python 3.11/3.12/3.13 plus CLI and stdlib-only jobs. Post-merge watchdog run 36678206989 succeeded and wrote 11 missed + 11 backlog artifacts only under reconciliation/.",
     "corrective_action": "Keep r12 natural critical path unchanged; deploy and record staggered dual watchdog schedule. No additional prompt or scheduler changes before the next natural r12 cycle.",
-    "natural_acceptance_pending": true
+    "natural_acceptance_pending": true,
+    "metadata_cleanup": "Primary watchdog evidence now points to post-merge run 36678206989 / reconciliation commit cd1f370; r12 acceptance no longer implies a scheduled phase-2 work receipt."
   },
   "dual_plane_durability": {
     "enabled": true,
@@ -216,10 +217,10 @@
     ],
     "natural_receipts_writer": "CHATGPT_AI_PLANE_ONLY",
     "watchdog_writer": "RECONCILIATION_NAMESPACE_ONLY",
-    "verified_actions_run_id": 36628003730,
-    "verified_actions_run_url": "https://github.com/reppiks490/Icarus-engine/actions/runs/36628003730",
-    "verified_reconciliation_commit": "f42ea0c1753632056f3b3e2c4efd3017734bc058",
-    "verified_reconciliation_file_count": 140,
+    "verified_actions_run_id": 36678206989,
+    "verified_actions_run_url": "https://github.com/reppiks490/Icarus-engine/actions/runs/36678206989",
+    "verified_reconciliation_commit": "cd1f370",
+    "verified_reconciliation_file_count": 22,
     "verified_namespace_isolation": true,
     "execution_authorized": false,
     "schedule_crons": [

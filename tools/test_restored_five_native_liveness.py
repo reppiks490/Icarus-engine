@@ -10,6 +10,7 @@ from restored_five_native_liveness import (
     expected_slots,
     persist_slot,
     receipt_path,
+    worker_receipt_status,
 )
 
 
@@ -35,56 +36,84 @@ class NativeLivenessTests(unittest.TestCase):
         )
 
     def test_slot_waits_for_grace(self):
-        slots=list(expected_slots(self.control(), datetime(2026,9,30,22,12,tzinfo=timezone.utc)))
+        slots = list(expected_slots(
+            self.control(),
+            datetime(2026, 9, 30, 22, 12, tzinfo=timezone.utc),
+        ))
         self.assertEqual(slots, [])
-        slots=list(expected_slots(self.control(), datetime(2026,9,30,22,13,tzinfo=timezone.utc)))
-        self.assertEqual(slots[0][1], datetime(2026,9,30,22,5,tzinfo=timezone.utc))
+        slots = list(expected_slots(
+            self.control(),
+            datetime(2026, 9, 30, 22, 13, tzinfo=timezone.utc),
+        ))
+        self.assertEqual(
+            slots[0][1],
+            datetime(2026, 9, 30, 22, 5, tzinfo=timezone.utc),
+        )
 
     def test_missing_worker_receipt_creates_truthful_fallback(self):
         with tempfile.TemporaryDirectory() as td:
-            root=Path(td)
-            lane=self.lane()
-            slot=datetime(2026,9,30,22,5,tzinfo=timezone.utc)
-            out=persist_slot(root,self.control(),lane,slot,datetime(2026,9,30,22,13,tzinfo=timezone.utc))
+            root = Path(td)
+            lane = self.lane()
+            slot = datetime(2026, 9, 30, 22, 5, tzinfo=timezone.utc)
+            out = persist_slot(
+                root,
+                self.control(),
+                lane,
+                slot,
+                datetime(2026, 9, 30, 22, 13, tzinfo=timezone.utc),
+            )
             self.assertIsNotNone(out)
-            payload=json.loads(out.read_text())
-            self.assertEqual(payload["slot_status"],"FALLBACK_LIVENESS_ONLY")
+            payload = json.loads(out.read_text())
+            self.assertEqual(payload["slot_status"], "FALLBACK_LIVENESS_ONLY")
             self.assertFalse(payload["substantive_work_claimed"])
             self.assertFalse(payload["execution_authorized"])
 
     def test_valid_worker_receipt_is_verified_not_fallback(self):
         with tempfile.TemporaryDirectory() as td:
-            root=Path(td)
-            lane=self.lane()
-            slot=datetime(2026,9,30,22,5,tzinfo=timezone.utc)
-            p=root/lane.worker_root/"finalization_state.json"
+            root = Path(td)
+            lane = self.lane()
+            slot = datetime(2026, 9, 30, 22, 5, tzinfo=timezone.utc)
+            p = root / lane.worker_root / "finalization_state.json"
             p.parent.mkdir(parents=True)
             p.write_text(json.dumps({
-                "schema_version":"scheduler-finalization-v5.7",
-                "RUN_ID":"robustness-guardian-20260930T220500Z",
-                "RUN_STATUS":"RUN_PERSISTED",
-                "completion_semantics":"DURABILITY_RECEIPT_ONLY",
-                "execution_authorized":False,
+                "schema_version": "scheduler-finalization-v5.7",
+                "RUN_ID": "robustness-guardian-20260930T220500Z",
+                "RUN_STATUS": "RUN_PERSISTED",
+                "completion_semantics": "DURABILITY_RECEIPT_ONLY",
+                "execution_authorized": False,
             }))
-            out=persist_slot(root,self.control(),lane,slot,datetime(2026,9,30,22,13,tzinfo=timezone.utc))
-            payload=json.loads(out.read_text())
-            self.assertEqual(payload["slot_status"],"WORKER_RECEIPT_VERIFIED")
+            out = persist_slot(
+                root,
+                self.control(),
+                lane,
+                slot,
+                datetime(2026, 9, 30, 22, 13, tzinfo=timezone.utc),
+            )
+            payload = json.loads(out.read_text())
+            self.assertEqual(payload["slot_status"], "WORKER_RECEIPT_VERIFIED")
 
     def test_receipt_is_immutable_duplicate_suppressed(self):
         with tempfile.TemporaryDirectory() as td:
-            root=Path(td)
-            lane=self.lane()
-            slot=datetime(2026,9,30,22,5,tzinfo=timezone.utc)
-            first=persist_slot(root,self.control(),lane,slot,datetime(2026,9,30,22,13,tzinfo=timezone.utc))
-            second=persist_slot(root,self.control(),lane,slot,datetime(2026,9,30,22,14,tzinfo=timezone.utc))
+            root = Path(td)
+            lane = self.lane()
+            slot = datetime(2026, 9, 30, 22, 5, tzinfo=timezone.utc)
+            first = persist_slot(
+                root,
+                self.control(),
+                lane,
+                slot,
+                datetime(2026, 9, 30, 22, 13, tzinfo=timezone.utc),
+            )
+            second = persist_slot(
+                root,
+                self.control(),
+                lane,
+                slot,
+                datetime(2026, 9, 30, 22, 14, tzinfo=timezone.utc),
+            )
             self.assertIsNotNone(first)
             self.assertIsNone(second)
-            self.assertTrue(receipt_path(root,lane,slot).exists())
-
-
-if __name__ == "__main__":
-    unittest.main()
-
+            self.assertTrue(receipt_path(root, lane, slot).exists())
 
     def test_external_worker_receipt_can_be_verified(self):
         lane = Lane(
@@ -111,8 +140,6 @@ if __name__ == "__main__":
             "completion_semantics": "DURABILITY_RECEIPT_ONLY",
             "execution_authorized": False,
         }
-        from restored_five_native_liveness import worker_receipt_status
-
         status, observed = worker_receipt_status(
             Path("."),
             control,
@@ -122,3 +149,7 @@ if __name__ == "__main__":
         )
         self.assertEqual(status, "CHATGPT_CANONICAL_RECEIPT_PRESENT")
         self.assertEqual(observed["RUN_ID"], expected["RUN_ID"])
+
+
+if __name__ == "__main__":
+    unittest.main()

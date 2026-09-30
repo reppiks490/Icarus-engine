@@ -70,7 +70,7 @@
   "execution_authorized": false,
   "created_at_utc": "2026-09-29T01:31:00Z",
   "reason": "Isolated namespace created after verified concurrent foreign writes repeatedly overwrote the prior omega_stack scheduler identities and AION state.",
-  "control_revision": "2026-09-30-native-v2-r12.4",
+  "control_revision": "2026-09-30-native-v2-r12.5",
   "live_connection_status": "FIVE_ENABLED_R12_LIVENESS_ONLY_CONNECTOR_BOUNDARY_INTERMITTENT_WATCHDOG_CONTAINED",
   "scheduler_health_policy": {
     "required_enabled_count": 5,
@@ -206,10 +206,11 @@
     "rejection_reason": "Clean DAEDALUS natural trigger did not perform the main-branch heartbeat update."
   },
   "last_manual_reconciliation": {
-    "observed_at_utc": "2026-09-30T12:49:36Z",
+    "observed_at_utc": "2026-09-30T12:52:07Z",
     "assessment": "Fresh morning audit: scheduler health is 5/5 enabled and tasks continue advancing last_run_time. Natural GitHub persistence remains intermittent. A controlled DAEDALUS r13 test changed both branch and mutation mode to main + existing-file update and still produced no connector mutation, falsifying the remaining repository-operation hypothesis.",
     "corrective_action": "Rollback r13, close its compatibility PR unmerged, delete test seeds, retain r12 as the least-complex natural path, and keep watchdog reconciliation as independent durable detection/backlog. Treat further natural receipt absence as an external scheduled connector failure unless new evidence identifies another controllable cause.",
-    "natural_acceptance_pending": true
+    "natural_acceptance_pending": true,
+    "schedule_delivery_update": "The previously pending staggered-cron observation is now resolved: two schedule-triggered watchdog runs completed successfully."
   },
   "dual_plane_durability": {
     "enabled": true,
@@ -242,7 +243,7 @@
     "schedule_hardening_merge": "23af4b780b67df9d30923aacfa65629687492aa3",
     "post_merge_push_run_id": 36678206989,
     "post_merge_push_run_success": true,
-    "first_staggered_schedule_run_observation": "PENDING_AT_LAST_CHECK",
+    "first_staggered_schedule_run_observation": "VERIFIED",
     "schedule_strategy": "STAGGERED_DUAL_10_MINUTE_STREAMS_EFFECTIVE_5_MINUTE_COVERAGE",
     "cron_streams": [
       "2-52/10 * * * *",
@@ -263,7 +264,15 @@
     "main_push_fallback_enabled": true,
     "main_push_scope": "EVERY_PUSH_TO_MAIN",
     "main_push_fallback_merge_commit": "05bb05cf2195cca8ea288ba4cbcf91d73a2370b4",
-    "latest_verified_case": "Flow 2026-09-30T06:24:00Z natural receipt missing; watchdog persisted missed+backlog via main-push fallback."
+    "latest_verified_case": "Flow 2026-09-30T06:24:00Z natural receipt missing; watchdog persisted missed+backlog via main-push fallback.",
+    "schedule_delivery_verified": true,
+    "latest_verified_schedule_run_id": 36717566091,
+    "latest_verified_schedule_run_status": "SUCCESS_NO_CHANGE",
+    "latest_verified_schedule_run_created_at_utc": "2026-09-30T12:51:53Z",
+    "independently_observed_delivery_paths": [
+      "schedule: 2-52/10 * * * * / 7-57/10 * * * *",
+      "push: every push to main"
+    ]
   },
   "slot_attribution_policy": {
     "revision": "nearest-hourly-boundary-v1",
@@ -285,7 +294,7 @@
       "assessment": "One-call r12 contained the observed auto-disable behavior in this probe but did not make scheduled connector delivery reliable."
     },
     "connector_delivery_status": "INTERMITTENT_UNRESOLVED_SCHEDULED_CONNECTOR_BOUNDARY",
-    "watchdog_schedule_status": "HARDENED_MERGED_PUSH_PATH_VERIFIED_SCHEDULE_STREAM_OBSERVATION_PENDING",
+    "watchdog_schedule_status": "VERIFIED_SCHEDULE_AND_PUSH_DELIVERY",
     "natural_runtime_mitigation": "single external call then stop",
     "watchdog_delivery_layers": [
       "staggered cron stream 2-52/10",
@@ -306,7 +315,8 @@
       "heartbeat_changed": false,
       "pr16_status": "CLOSED_UNMERGED"
     },
-    "no_further_prompt_mutation_without_new_evidence": true
+    "no_further_prompt_mutation_without_new_evidence": true,
+    "latest_schedule_proof": "GitHub Actions schedule runs 36717520644 and 36717566091 both completed successfully; run 36717566091 reconciled cleanly with zero new artifacts."
   },
   "scheduler_health_semantics": {
     "trigger_health_source": "live ChatGPT automation registry",

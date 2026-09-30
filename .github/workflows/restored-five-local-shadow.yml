@@ -13,6 +13,8 @@ on:
       - "tests/test_restored_five_local_shadow.py"
       - "tests/test_restored_five_local_shadow_job.py"
       - "tools/github_native_local_model.py"
+      - "automation_intelligence/restored_five_native/receipts/**"
+      - "automation_intelligence/restored_five_native/late_verifications/**"
       - ".github/workflows/restored-five-local-shadow.yml"
   schedule:
     - cron: "8-58/10 * * * *"
@@ -91,7 +93,7 @@ jobs:
         shell: bash
         run: git pull --rebase origin main
 
-      - name: Analyze one pending immutable receipt
+      - name: Analyze bounded pending immutable receipt batch
         shell: bash
         run: |
           set -euo pipefail

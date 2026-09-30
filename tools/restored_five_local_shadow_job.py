@@ -107,7 +107,9 @@ def reconcile_late_verifications(root: Path) -> list[Path]:
     return created
 
 
-def select_pending(root: Path) -> Pending | None:
+def select_pending_batch(root: Path, limit: int = 3) -> list[Pending]:
+    if limit <= 0:
+        return []
     candidates: list[Pending] = []
     receipt_root = root / RECEIPTS
     output_root = root / OUTPUTS
@@ -121,9 +123,13 @@ def select_pending(root: Path) -> Pending | None:
             if output.exists():
                 continue
             candidates.append(Pending(lane, slot_id, receipt, output))
-    if not candidates:
-        return None
-    return min(candidates, key=lambda item: (item.slot_id, LANES.index(item.lane)))
+    candidates.sort(key=lambda item: (item.slot_id, LANES.index(item.lane)))
+    return candidates[:limit]
+
+
+def select_pending(root: Path) -> Pending | None:
+    batch = select_pending_batch(root, limit=1)
+    return batch[0] if batch else None
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -131,31 +137,37 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument("--root", type=Path, default=Path("."))
     parser.add_argument("--binary", type=Path, required=True)
     parser.add_argument("--model", type=Path, required=True)
+    parser.add_argument("--max-items", type=int, default=3)
     args = parser.parse_args(argv)
 
     root = args.root.resolve()
     reconciled = reconcile_late_verifications(root)
-    pending = select_pending(root)
-    if pending is None:
+    pending_items = select_pending_batch(root, limit=args.max_items)
+    if not pending_items:
         print(json.dumps({
             "status": "NO_PENDING_RECEIPT",
             "reconciliations_created": [str(path.relative_to(root)) for path in reconciled],
         }, sort_keys=True))
         return 0
 
-    run_shadow(
-        pending.lane,
-        root / pending.receipt,
-        root / pending.output,
-        binary=args.binary,
-        model=args.model,
-    )
+    completed: list[dict[str, str]] = []
+    for pending in pending_items:
+        run_shadow(
+            pending.lane,
+            root / pending.receipt,
+            root / pending.output,
+            binary=args.binary,
+            model=args.model,
+        )
+        completed.append({
+            "lane": pending.lane,
+            "slot_id": pending.slot_id,
+            "receipt": pending.receipt.as_posix(),
+            "output": pending.output.as_posix(),
+        })
     print(json.dumps({
-        "status": "SHADOW_PERSISTED_LOCALLY",
-        "lane": pending.lane,
-        "slot_id": pending.slot_id,
-        "receipt": pending.receipt.as_posix(),
-        "output": pending.output.as_posix(),
+        "status": "SHADOW_BATCH_PERSISTED_LOCALLY",
+        "completed": completed,
         "reconciliations_created": [str(path.relative_to(root)) for path in reconciled],
     }, sort_keys=True))
     return 0

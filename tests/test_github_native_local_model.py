@@ -317,3 +317,22 @@ def test_nonzero_runtime_error_uses_sanitized_stderr(tmp_path: Path) -> None:
     message = str(exc.value)
     assert "private reasoning" not in message
     assert "invalid argument --bad-flag" in message
+
+
+def test_completion_command_excludes_cli_only_flags(tmp_path: Path) -> None:
+    binary = tmp_path / "llama-completion"
+    model = tmp_path / "model.gguf"
+    output = tmp_path / "generation.txt"
+    cmd = build_local_model_command(
+        binary,
+        model,
+        _request(),
+        output_file=output,
+    )
+    assert "-st" in cmd
+    assert "--jinja" in cmd
+    assert "--reasoning" in cmd
+    assert "--json-schema" in cmd
+    assert "--simple-io" not in cmd
+    assert "--no-show-timings" not in cmd
+    assert "-o" not in cmd

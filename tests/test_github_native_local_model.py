@@ -295,3 +295,25 @@ def test_run_local_model_parses_pty_ansi_stdout(tmp_path: Path) -> None:
 def test_terminal_wrapper_bypasses_pty_for_llama_completion() -> None:
     original = ["llama-completion", "-p", "hello", "-st"]
     assert wrap_terminal_command(original, script_binary="/usr/bin/script") == original
+
+
+def test_nonzero_runtime_error_uses_sanitized_stderr(tmp_path: Path) -> None:
+    binary = tmp_path / "llama-completion"
+    model = tmp_path / "model.gguf"
+    binary.write_text("", encoding="utf-8")
+    model.write_text("", encoding="utf-8")
+
+    def executor(cmd, timeout):
+        return 1, "", "<think>private reasoning</think> error: invalid argument --bad-flag"
+
+    with pytest.raises(TransportError) as exc:
+        run_local_model(
+            _request(),
+            binary=binary,
+            model=model,
+            executor=executor,
+            timeout_seconds=5,
+        )
+    message = str(exc.value)
+    assert "private reasoning" not in message
+    assert "invalid argument --bad-flag" in message

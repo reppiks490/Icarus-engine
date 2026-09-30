@@ -12,6 +12,7 @@ from tools.github_native_ai_openai import (
     TransportError,
     build_request_payload,
     call_responses_api,
+    resolve_openai_bearer_token,
     validate_lane_output,
 )
 
@@ -187,3 +188,108 @@ def test_lane_output_validation_fails_closed(payload: object) -> None:
 def test_lane_output_validation_accepts_exact_contract() -> None:
     payload = _valid_output()
     assert validate_lane_output(payload, "aion") == payload
+
+
+def test_api_key_is_preferred_over_workload_identity() -> None:
+    env = {
+        "OPENAI_API_KEY": "sk-primary",
+        "OPENAI_IDENTITY_PROVIDER_ID": "idp_unused",
+        "OPENAI_SERVICE_ACCOUNT_ID": "svc_unused",
+        "OPENAI_WIF_AUDIENCE": "https://api.openai.com/v1",
+    }
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("WIF transport must not run when API key exists")
+
+    assert resolve_openai_bearer_token(
+        env,
+        oidc_transport=forbidden,
+        exchange_transport=forbidden,
+    ) == "sk-primary"
+
+
+def test_missing_all_openai_auth_fails_closed() -> None:
+    with pytest.raises(ConfigurationError, match="authentication"):
+        resolve_openai_bearer_token({})
+
+
+def test_github_oidc_wif_exchanges_for_short_lived_openai_token() -> None:
+    env = {
+        "OPENAI_IDENTITY_PROVIDER_ID": "idp_123",
+        "OPENAI_SERVICE_ACCOUNT_ID": "svc_456",
+        "OPENAI_WIF_AUDIENCE": "https://api.openai.com/v1",
+        "ACTIONS_ID_TOKEN_REQUEST_URL": "https://token.actions.githubusercontent.com/oidc?job=1",
+        "ACTIONS_ID_TOKEN_REQUEST_TOKEN": "github-request-secret",
+    }
+    seen = {}
+
+    def oidc_transport(url, headers, timeout):
+        seen["oidc_url"] = url
+        assert headers["Authorization"] == "bearer github-request-secret"
+        return 200, b'{"value":"github-subject-jwt"}'
+
+    def exchange_transport(url, headers, body, timeout):
+        seen["exchange_url"] = url
+        assert headers["Content-Type"] == "application/json"
+        payload = json.loads(body)
+        assert payload == {
+            "grant_type": "urn:ietf:params:oauth:grant-type:token-exchange",
+            "subject_token_type": "urn:ietf:params:oauth:token-type:jwt",
+            "subject_token": "github-subject-jwt",
+            "identity_provider_id": "idp_123",
+            "service_account_id": "svc_456",
+        }
+        return 200, b'{"access_token":"openai-short-lived-token","token_type":"Bearer","expires_in":3600}'
+
+    token = resolve_openai_bearer_token(
+        env,
+        oidc_transport=oidc_transport,
+        exchange_transport=exchange_transport,
+    )
+
+    assert token == "openai-short-lived-token"
+    assert "audience=https%3A%2F%2Fapi.openai.com%2Fv1" in seen["oidc_url"]
+    assert seen["exchange_url"] == "https://auth.openai.com/oauth/token"
+
+
+def test_incomplete_wif_configuration_fails_without_oidc_request() -> None:
+    called = False
+
+    def oidc_transport(*args, **kwargs):
+        nonlocal called
+        called = True
+        raise AssertionError("OIDC request must not run")
+
+    with pytest.raises(ConfigurationError, match="workload identity"):
+        resolve_openai_bearer_token(
+            {"OPENAI_IDENTITY_PROVIDER_ID": "idp_only"},
+            oidc_transport=oidc_transport,
+        )
+    assert called is False
+
+
+def test_wif_exchange_errors_are_sanitized() -> None:
+    env = {
+        "OPENAI_IDENTITY_PROVIDER_ID": "idp_123",
+        "OPENAI_SERVICE_ACCOUNT_ID": "svc_456",
+        "OPENAI_WIF_AUDIENCE": "https://api.openai.com/v1",
+        "ACTIONS_ID_TOKEN_REQUEST_URL": "https://token.actions.githubusercontent.com/oidc",
+        "ACTIONS_ID_TOKEN_REQUEST_TOKEN": "github-request-secret",
+    }
+
+    def oidc_transport(url, headers, timeout):
+        return 200, b'{"value":"github-subject-jwt"}'
+
+    def exchange_transport(url, headers, body, timeout):
+        raise TimeoutError("failed with github-subject-jwt and github-request-secret")
+
+    with pytest.raises(AuthenticationError) as excinfo:
+        resolve_openai_bearer_token(
+            env,
+            oidc_transport=oidc_transport,
+            exchange_transport=exchange_transport,
+        )
+
+    message = str(excinfo.value)
+    assert "github-subject-jwt" not in message
+    assert "github-request-secret" not in message

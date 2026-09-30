@@ -70,8 +70,8 @@
   "execution_authorized": false,
   "created_at_utc": "2026-09-29T01:31:00Z",
   "reason": "Isolated namespace created after verified concurrent foreign writes repeatedly overwrote the prior omega_stack scheduler identities and AION state.",
-  "control_revision": "2026-09-30-native-v2-r12",
-  "live_connection_status": "FIVE_ENABLED_LIVENESS_ONLY_TIMEOUT_HARDENED_NATURAL_ACCEPTANCE_PENDING",
+  "control_revision": "2026-09-30-native-v2-r12.1",
+  "live_connection_status": "FIVE_ENABLED_TRIGGER_STABLE_CONNECTOR_INTERMITTENT_WATCHDOG_SCHEDULE_HARDENED",
   "scheduler_health_policy": {
     "required_enabled_count": 5,
     "exact_minutes": [
@@ -98,8 +98,8 @@
     "authority": "live automation registry + isolated control plane"
   },
   "scheduler_alignment_snapshot": {
-    "observed_at_utc": "2026-09-30T06:19:42Z",
-    "status": "ENABLED_5_OF_5_R12_LIVENESS_ONLY_TIMEOUT_HARDENED",
+    "observed_at_utc": "2026-09-30T06:27:11Z",
+    "status": "ENABLED_5_OF_5_R12_LIVENESS_ONLY_FLOW_TRIGGER_CONFIRMED_CONNECTOR_INTERMITTENT",
     "enabled_required_lanes": 5,
     "cadence": [
       {
@@ -139,7 +139,9 @@
       "flow_20260929T192400Z": "INVALID_JITTER_424S",
       "omega_20260929T200000Z": "INVALID_SCHEDULED_FOR_MISMATCH",
       "macro_latest": "MISSING",
-      "daedalus_latest": "MISSING"
+      "daedalus_latest": "MISSING",
+      "flow_20260930T062400Z": "TRIGGERED_AT_06:24:48Z_NO_NEW_RECEIPT_TASK_REMAINED_ENABLED",
+      "watchdog_merge_23af4b7": "MERGED_AND_PUSH_RUN_36678206989_SUCCEEDED"
     },
     "natural_acceptance_pending": true,
     "retired_scheduler_ids": [
@@ -193,9 +195,9 @@
     }
   },
   "last_manual_reconciliation": {
-    "observed_at_utc": "2026-09-30T06:19:42Z",
-    "assessment": "Fresh registry evidence showed OMEGA, Macro, and Flow paused after failed executions; AION produced a valid 05:39:32Z natural receipt; DAEDALUS triggered at 05:46:08Z but had no new receipt at verification time. Prior pause incidents cluster about 64 seconds after trigger. GitHub plugin permission is Allow all actions, so approval gating is not the primary cause.",
-    "corrective_action": "Resume all five lanes and reduce every scheduled prompt to exactly one external GitHub create_file liveness call followed by immediate stop. Remove recovery, research, provider, discovery, readback, and phase-2 work from the scheduled critical path.",
+    "observed_at_utc": "2026-09-30T06:27:11Z",
+    "assessment": "All five authoritative tasks were enabled. First post-r12 Flow natural slot triggered at 06:24:48Z and Flow remained enabled, but no new Flow natural GitHub receipt appeared. This isolates remaining failure to intermittent scheduled-runtime connector delivery rather than scheduler enablement. GitHub watchdog single */5 stream had also emitted scheduled runs only sparsely; GitHub documents scheduled events may be delayed/dropped under load.",
+    "corrective_action": "Keep r12 one-call natural prompts; harden GitHub watchdog scheduling to two staggered 10-minute cron streams for effective 5-minute coverage; preserve concurrency/idempotent reconciliation; explicitly separate trigger health from persistence health.",
     "natural_acceptance_pending": true
   },
   "dual_plane_durability": {
@@ -219,7 +221,17 @@
     "verified_reconciliation_commit": "f42ea0c1753632056f3b3e2c4efd3017734bc058",
     "verified_reconciliation_file_count": 140,
     "verified_namespace_isolation": true,
-    "execution_authorized": false
+    "execution_authorized": false,
+    "schedule_crons": [
+      "2-52/10 * * * *",
+      "7-57/10 * * * *"
+    ],
+    "effective_schedule_coverage_minutes": 5,
+    "schedule_design": "two independent 10-minute streams staggered by five minutes; avoids :00 high-load concentration",
+    "schedule_hardening_merge": "23af4b780b67df9d30923aacfa65629687492aa3",
+    "post_merge_push_run_id": 36678206989,
+    "post_merge_push_run_success": true,
+    "first_staggered_schedule_run_observation": "PENDING_AT_LAST_CHECK"
   },
   "slot_attribution_policy": {
     "revision": "nearest-hourly-boundary-v1",
@@ -233,6 +245,21 @@
     "github_permission_state": "Allow all actions",
     "mitigation": "single external call then stop",
     "watchdog_remains_enabled": true,
-    "execution_authorized": false
+    "execution_authorized": false,
+    "post_r12_flow_probe": {
+      "scheduler_triggered_at_utc": "2026-09-30T06:24:48.186067Z",
+      "task_remained_enabled": true,
+      "natural_receipt_created": false,
+      "assessment": "One-call r12 contained the observed auto-disable behavior in this probe but did not make scheduled connector delivery reliable."
+    },
+    "connector_delivery_status": "INTERMITTENT_UNRESOLVED_EXTERNAL_RUNTIME_BOUNDARY",
+    "watchdog_schedule_status": "HARDENED_MERGED_PUSH_PATH_VERIFIED_SCHEDULE_STREAM_OBSERVATION_PENDING"
+  },
+  "scheduler_health_semantics": {
+    "trigger_health_source": "live ChatGPT automation registry",
+    "persistence_health_source": "immutable GitHub natural run receipts",
+    "watchdog_health_source": "GitHub Actions workflow runs plus reconciliation commits",
+    "do_not_conflate": true,
+    "rule": "A scheduler trigger may be healthy even when the scheduled GitHub connector mutation is missing. Natural receipt absence is a persistence/connector failure unless registry evidence also shows the task failed to trigger."
   }
 }

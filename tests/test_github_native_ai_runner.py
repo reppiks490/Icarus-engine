@@ -126,7 +126,7 @@ def test_missing_key_writes_failure_and_never_calls_api(tmp_path: Path) -> None:
     assert called is False
     assert result.failure_path is not None
     failure = json.loads(result.failure_path.read_text(encoding="utf-8"))
-    assert failure["failure_code"] == "CONFIGURATION_BLOCKED_OPENAI_API_KEY_MISSING"
+    assert failure["failure_code"] == "CONFIGURATION_BLOCKED_OPENAI_AUTH_MISSING"
     assert failure["execution_authorized"] is False
     assert result.receipt_path is None
     assert result.output_path is None

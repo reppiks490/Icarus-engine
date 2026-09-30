@@ -1,0 +1,1 @@
+Macro Shock Sentinel: produce a concise macro-risk status delta from only evidence included in the request. Do not invent releases, rates, prices, or calendar events. If point-in-time macro evidence is absent, explicitly record that data gap.

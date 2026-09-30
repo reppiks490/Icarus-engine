@@ -21,6 +21,10 @@ iter_expected_slots = _watchdog.iter_expected_slots
 plan_reconciliation = _watchdog.plan_reconciliation
 scan_lane_receipts = _watchdog.scan_lane_receipts
 write_artifacts = _watchdog.write_artifacts
+load_v3_watchdog_config = _watchdog.load_v3_watchdog_config
+iter_v3_expected_slots = _watchdog.iter_v3_expected_slots
+scan_v3_receipts = _watchdog.scan_v3_receipts
+plan_v3_reconciliation = _watchdog.plan_v3_reconciliation
 
 CONTROL_PLANE_ID = "omega-aion-daedalus-native-v2"
 PROTOCOL = "omega-stack-persistence-v4.3-append-first"
@@ -423,3 +427,153 @@ def test_workflow_contract():
     assert "--force" not in text
     assert "force-with-lease" not in text
     assert "secrets." not in text
+
+
+V3_NS = "automation_intelligence/omega_stack_native_v3"
+V3_CONTROL_PLANE_ID = "omega-aion-daedalus-github-native-v3"
+
+
+def v3_control_plane(bound_at: str = "2026-09-30T14:05:31Z") -> dict:
+    return {
+        "schema_version": "omega-stack-control-v3",
+        "control_plane_id": V3_CONTROL_PLANE_ID,
+        "repository": "reppiks490/Icarus-engine",
+        "namespace_root": V3_NS,
+        "timezone": "America/Chicago",
+        "dispatch_tolerance_minutes": 4,
+        "execution_authorized": False,
+        "mode": "DARK",
+        "created_at_utc": bound_at,
+        "model_defaults": {"model": "gpt-5.6-sol", "reasoning_effort": "high"},
+        "lanes": [
+            {"name": "omega", "title": "omega", "minute": 0, "legacy_automation_id": IDS["omega"]},
+            {"name": "macro", "title": "macro", "minute": 12, "legacy_automation_id": IDS["macro"]},
+            {"name": "flow", "title": "flow", "minute": 24, "legacy_automation_id": IDS["flow"]},
+            {"name": "aion", "title": "aion", "minute": 36, "legacy_automation_id": IDS["aion"]},
+            {"name": "daedalus", "title": "daedalus", "minute": 48, "legacy_automation_id": IDS["daedalus"]},
+        ],
+    }
+
+
+def make_v3_root(tmp_path: Path, *, bound_at: str = "2026-09-30T14:05:31Z") -> Path:
+    root = tmp_path / "repo-v3"
+    write_json(root / V3_NS / "control_plane.json", v3_control_plane(bound_at))
+    return root
+
+
+def v3_slot_for(config, lane_name: str, when_utc: str):
+    target = datetime.fromisoformat(when_utc.replace("Z", "+00:00"))
+    matches = [
+        s
+        for s in iter_v3_expected_slots(config, target + timedelta(minutes=1), horizon_hours=2)
+        if s.lane.name == lane_name
+    ]
+    assert matches
+    return min(matches, key=lambda s: abs((s.scheduled_utc - target).total_seconds()))
+
+
+def valid_v3_receipt(slot, **overrides) -> dict:
+    payload = {
+        "schema_version": "omega-stack-github-native-run-v1",
+        "engine": slot.lane.name,
+        "lane": slot.lane.name,
+        "RUN_ID": f"{slot.lane.name}-{slot.slot_id}-12345-1",
+        "SLOT_ID": slot.slot_id,
+        "slot_local": slot.scheduled_local.isoformat(),
+        "slot_utc": slot.scheduled_utc.isoformat().replace("+00:00", "Z"),
+        "started_at_utc": (slot.scheduled_utc + timedelta(seconds=30)).isoformat().replace("+00:00", "Z"),
+        "completed_at_utc": (slot.scheduled_utc + timedelta(seconds=40)).isoformat().replace("+00:00", "Z"),
+        "run_origin": "GITHUB_NATIVE_AI",
+        "control_plane_id": V3_CONTROL_PLANE_ID,
+        "workflow_run_id": "12345",
+        "workflow_run_attempt": "1",
+        "workflow_sha": "abc123",
+        "repository": "reppiks490/Icarus-engine",
+        "branch": "main",
+        "model": "gpt-5.6-sol",
+        "reasoning_effort": "high",
+        "request_fingerprint": "a" * 64,
+        "response_id": "resp_ok",
+        "response_status": "completed",
+        "output_validation_status": "VALID",
+        "RUN_STATUS": "RUN_PERSISTED",
+        "FINALIZATION_STATUS": "VERIFIED",
+        "DATA_GAPS": [],
+        "CONFLICTS": [],
+        "execution_authorized": False,
+    }
+    payload.update(overrides)
+    return payload
+
+
+def test_v3_config_loads_exact_five_lane_topology(tmp_path):
+    cfg = load_v3_watchdog_config(make_v3_root(tmp_path))
+    assert cfg.control_plane_id == V3_CONTROL_PLANE_ID
+    assert cfg.namespace_root == V3_NS
+    assert [(lane.name, lane.minute) for lane in cfg.lanes] == [
+        ("omega", 0),
+        ("macro", 12),
+        ("flow", 24),
+        ("aion", 36),
+        ("daedalus", 48),
+    ]
+
+
+def test_v3_valid_receipt_satisfies_exact_slot(tmp_path):
+    root = make_v3_root(tmp_path)
+    cfg = load_v3_watchdog_config(root)
+    slot = v3_slot_for(cfg, "aion", "2026-09-30T14:36:00Z")
+    path = root / slot.lane.root / "runs" / slot.slot_id / "aion.json"
+    write_json(path, valid_v3_receipt(slot))
+    match, checks = scan_v3_receipts(root, slot, cfg)
+    assert match is not None
+    assert match.path == path.relative_to(root).as_posix()
+    assert any(c.valid for c in checks)
+
+
+@pytest.mark.parametrize(
+    "field,value,error_fragment",
+    [
+        ("run_origin", "NATURAL_SCHEDULE", "run_origin"),
+        ("SLOT_ID", "wrong", "SLOT_ID"),
+        ("lane", "omega", "lane"),
+        ("execution_authorized", True, "execution_authorized"),
+        ("output_validation_status", "INVALID", "output_validation_status"),
+        ("response_status", "failed", "response_status"),
+        ("control_plane_id", "wrong", "control_plane_id"),
+    ],
+)
+def test_v3_receipt_rejects_wrong_provenance_or_status(tmp_path, field, value, error_fragment):
+    root = make_v3_root(tmp_path)
+    cfg = load_v3_watchdog_config(root)
+    slot = v3_slot_for(cfg, "aion", "2026-09-30T14:36:00Z")
+    path = root / slot.lane.root / "runs" / slot.slot_id / "bad.json"
+    write_json(path, valid_v3_receipt(slot, **{field: value}))
+    match, checks = scan_v3_receipts(root, slot, cfg)
+    assert match is None
+    assert any(error_fragment in err for c in checks for err in c.errors)
+
+
+def test_v3_missing_after_grace_creates_v3_incident_and_backlog(tmp_path):
+    root = make_v3_root(tmp_path, bound_at="2026-09-30T14:00:00Z")
+    cfg = load_v3_watchdog_config(root)
+    arts = plan_v3_reconciliation(
+        root,
+        cfg,
+        datetime(2026, 9, 30, 14, 50, tzinfo=timezone.utc),
+        grace_minutes=12,
+        horizon_hours=1,
+    )
+    aion = [
+        a
+        for a in arts
+        if "/aion/" in a.path.as_posix() and a.payload.get("slot_utc") == "2026-09-30T14:36:00Z"
+    ]
+    assert {a.payload.get("kind") for a in aion} == {
+        "GITHUB_NATIVE_AI_RECEIPT_MISSING",
+        "RECOVERY_BACKLOG_ITEM",
+    }
+    assert all(a.payload["execution_authorized"] is False for a in aion)
+    written = write_artifacts(root, aion)
+    assert len(written) == 2
+    assert all(V3_NS in p.as_posix() for p in written)

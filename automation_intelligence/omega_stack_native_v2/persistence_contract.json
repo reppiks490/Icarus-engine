@@ -152,7 +152,22 @@
     "schedule_hardening_merge": "23af4b780b67df9d30923aacfa65629687492aa3",
     "post_merge_push_run_id": 36678206989,
     "post_merge_push_run_success": true,
-    "first_staggered_schedule_run_observation": "PENDING_AT_LAST_CHECK"
+    "first_staggered_schedule_run_observation": "PENDING_AT_LAST_CHECK",
+    "schedule_strategy": "STAGGERED_DUAL_10_MINUTE_STREAMS_EFFECTIVE_5_MINUTE_COVERAGE",
+    "cron_streams": [
+      "2-52/10 * * * *",
+      "7-57/10 * * * *"
+    ],
+    "avoids_top_of_hour": true,
+    "latest_verified_actions_run_id": 36678206989,
+    "latest_verified_reconciliation_commit": "cd1f370",
+    "latest_verified_reconciliation_written_count": 22,
+    "latest_verified_counts": {
+      "missed": 11,
+      "backlog": 11,
+      "late_arrival": 0
+    },
+    "schedule_hardening_merge_commit": "23af4b780b67df9d30923aacfa65629687492aa3"
   },
   "natural_slot_attribution": {
     "version": "nearest-hourly-boundary-v1",

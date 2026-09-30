@@ -8,6 +8,8 @@ from restored_five_native_liveness import (
     Control,
     Lane,
     expected_slots,
+    late_verification_path,
+    persist_late_verification,
     persist_slot,
     receipt_path,
     worker_receipt_status,
@@ -149,6 +151,52 @@ class NativeLivenessTests(unittest.TestCase):
         )
         self.assertEqual(status, "CHATGPT_CANONICAL_RECEIPT_PRESENT")
         self.assertEqual(observed["RUN_ID"], expected["RUN_ID"])
+
+
+    def test_fallback_can_gain_immutable_late_verification(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            lane = self.lane()
+            control = self.control()
+            slot = datetime(2026, 9, 30, 22, 5, tzinfo=timezone.utc)
+            fallback = persist_slot(
+                root, control, lane, slot,
+                datetime(2026, 9, 30, 22, 13, tzinfo=timezone.utc),
+            )
+            self.assertIsNotNone(fallback)
+            original_text = fallback.read_text()
+
+            finalization = root / lane.worker_root / "finalization_state.json"
+            finalization.parent.mkdir(parents=True, exist_ok=True)
+            finalization.write_text(json.dumps({
+                "schema_version": "scheduler-finalization-v5.7",
+                "RUN_ID": "robustness-guardian-20260930T220500Z",
+                "RUN_STATUS": "RUN_PERSISTED",
+                "completion_semantics": "DURABILITY_RECEIPT_ONLY",
+                "execution_authorized": False,
+            }))
+
+            late = persist_late_verification(
+                root, control, lane, slot,
+                datetime(2026, 9, 30, 22, 20, tzinfo=timezone.utc),
+            )
+            self.assertIsNotNone(late)
+            self.assertEqual(fallback.read_text(), original_text)
+            payload = json.loads(late.read_text())
+            self.assertEqual(
+                payload["verification_status"],
+                "LATE_WORKER_RECEIPT_VERIFIED",
+            )
+            self.assertEqual(
+                payload["original_receipt"],
+                str(receipt_path(root, lane, slot).relative_to(root)),
+            )
+            second = persist_late_verification(
+                root, control, lane, slot,
+                datetime(2026, 9, 30, 22, 21, tzinfo=timezone.utc),
+            )
+            self.assertIsNone(second)
+            self.assertTrue(late_verification_path(root, lane, slot).exists())
 
 
 if __name__ == "__main__":

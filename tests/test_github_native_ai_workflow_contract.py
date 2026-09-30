@@ -48,3 +48,13 @@ def test_workflow_stages_only_v3_namespace_and_never_force_pushes() -> None:
     assert "git push origin HEAD:main" in text
     assert "git push --force" not in text
     assert "automation_intelligence/omega_stack_native_v2" not in text
+
+
+def test_workflow_has_non_recursive_main_push_fallback() -> None:
+    text = _text()
+    assert "push:" in text
+    assert "branches: [main]" in text
+    assert "paths-ignore:" in text
+    assert "automation_intelligence/omega_stack_native_v3/lanes/**" in text
+    assert "automation_intelligence/omega_stack_native_v3/reconciliation/**" in text
+    assert "automation_intelligence/omega_stack_native_v3/cutover/**" in text

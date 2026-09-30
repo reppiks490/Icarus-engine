@@ -12,8 +12,7 @@ UTC = timezone.utc
 
 
 def test_dark_mode_scheduled_event_is_noop() -> None:
-    control = load_control_plane(Path("."))
-    assert control.mode == "DARK"
+    control = replace(load_control_plane(Path(".")), mode="DARK", activated_at_utc=None)
     assert should_execute(control, event_name="schedule", execute_model=True) is False
 
 
@@ -133,8 +132,7 @@ def test_scheduled_catchup_never_selects_pre_activation_slot(tmp_path: Path) -> 
 
 
 def test_dark_control_has_no_scheduled_pending_slot(tmp_path: Path) -> None:
-    control = load_control_plane(Path("."))
-    assert control.mode == "DARK"
+    control = replace(load_control_plane(Path(".")), mode="DARK", activated_at_utc=None)
     assert select_pending_slot(
         tmp_path,
         control,
@@ -142,3 +140,13 @@ def test_dark_control_has_no_scheduled_pending_slot(tmp_path: Path) -> None:
     ) is None
 
 # Regression gate: tests must not depend on the mutable deployed control mode.
+
+
+def test_shadow_push_event_can_execute_pending_work() -> None:
+    control = replace(load_control_plane(Path(".")), mode="SHADOW")
+    assert should_execute(control, event_name="push", execute_model=False) is True
+
+
+def test_dark_push_event_is_noop() -> None:
+    control = replace(load_control_plane(Path(".")), mode="DARK", activated_at_utc=None)
+    assert should_execute(control, event_name="push", execute_model=True) is False

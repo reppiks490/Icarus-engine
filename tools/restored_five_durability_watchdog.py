@@ -298,6 +298,19 @@ def monitor_missing_receipt(
 
 
 
+def evidence_record_valid(evidence: dict, expected_run_id: str) -> bool:
+    return (
+        evidence.get("RUN_ID") == expected_run_id
+        and evidence.get("EVIDENCE_STATUS") in {
+            "EVIDENCE_VERIFIED",
+            "NO_NEW_EVIDENCE",
+            "WORK_CALL_UNAVAILABLE",
+        }
+        and evidence.get("schema_version") == "scheduler-evidence-v5.7"
+        and evidence.get("execution_authorized") is False
+    )
+
+
 def monitor_missing_evidence(
     repo_root: Path,
     lane: str,
@@ -319,29 +332,27 @@ def monitor_missing_evidence(
     evidence = read_json(root / "evidence_state.json")
     incident_path = root / "watchdog_incidents.jsonl"
 
-    if finalization.get("RUN_ID") != expected_run_id or finalization.get("RUN_STATUS") != "RUN_PERSISTED":
+    if not canonical_receipt_valid(finalization, expected_run_id):
         return []
 
     evidence_run_id = evidence.get("RUN_ID")
-    if evidence_run_id == expected_run_id and evidence.get("EVIDENCE_STATUS") in {
-        "EVIDENCE_VERIFIED",
-        "NO_NEW_EVIDENCE",
-        "WORK_CALL_UNAVAILABLE",
-    }:
+    if evidence_record_valid(evidence, expected_run_id):
         return []
 
     ordering = compare_run_ids(evidence_run_id, expected_run_id)
     if ordering == 1:
         return []
 
-    if incident_exists(incident_path, "EVIDENCE_PHASE_INCOMPLETE", expected_run_id):
+    malformed_same_run = evidence_run_id == expected_run_id
+    record_type = "MALFORMED_EVIDENCE_STATE" if malformed_same_run else "EVIDENCE_PHASE_INCOMPLETE"
+    if incident_exists(incident_path, record_type, expected_run_id):
         return []
 
     append_incident(
         incident_path,
         {
-            "schema_version": "restored-five-watchdog-incident-v2",
-            "record_type": "EVIDENCE_PHASE_INCOMPLETE",
+            "schema_version": "restored-five-watchdog-incident-v3",
+            "record_type": record_type,
             "lane": lane,
             "scheduler_id": scheduler_id,
             "RUN_ID": expected_run_id,
@@ -351,7 +362,13 @@ def monitor_missing_evidence(
             "canonical_receipt_present": True,
             "observed_evidence_RUN_ID": evidence_run_id,
             "observed_evidence_status": evidence.get("EVIDENCE_STATUS"),
-            "reason": "CANONICAL_RECEIPT_EXISTS_BUT_EVIDENCE_STATE_NOT_FINALIZED_AFTER_GRACE",
+            "observed_evidence_schema_version": evidence.get("schema_version"),
+            "observed_evidence_execution_authorized": evidence.get("execution_authorized"),
+            "reason": (
+                "EXPECTED_RUN_ID_PRESENT_BUT_EVIDENCE_STATE_FIELDS_INVALID"
+                if malformed_same_run
+                else "CANONICAL_RECEIPT_EXISTS_BUT_EVIDENCE_STATE_NOT_FINALIZED_AFTER_GRACE"
+            ),
             "execution_authorized": False,
         },
     )

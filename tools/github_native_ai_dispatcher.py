@@ -153,7 +153,7 @@ def resolve_due_slot(
 
 
 def terminal_artifact_exists(root: Path, slot: Slot) -> bool:
-    for kind in ("runs", "outputs", "failures"):
+    for kind in ("runs", "failures"):
         slot_dir = root / NAMESPACE_ROOT / "lanes" / slot.lane.name / kind / slot.slot_id
         if slot_dir.is_dir() and any(path.is_file() for path in slot_dir.glob("*.json")):
             return True

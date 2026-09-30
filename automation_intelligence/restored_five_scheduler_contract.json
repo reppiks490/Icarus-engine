@@ -1,0 +1,56 @@
+{
+  "schema_version": "restored-five-scheduler-contract-v1",
+  "timezone": "America/Chicago",
+  "exact_active_count": 5,
+  "execution_authorized": false,
+  "tasks": [
+    {
+      "title": "Robustness Guardian Evolution",
+      "id": "6abaf924e0248191b8a11bd1d32bf0b7",
+      "minute": 5,
+      "enabled_expected": true,
+      "repo": "reppiks490/Icarus-engine",
+      "root": "automation_intelligence/agent_fabric/robustness_guardian"
+    },
+    {
+      "title": "Advanced CSV Data Collector",
+      "id": "6abaef9d5c28819190d98a5af7f308b8",
+      "minute": 15,
+      "enabled_expected": true,
+      "repo": "reppiks490/icarus-csv-evidence-lab",
+      "root": "automation_intelligence/advanced_csv"
+    },
+    {
+      "title": "Alpha Synthesis Evolution",
+      "id": "6abaf8d75cf48191bc7ce06bc0006f1c",
+      "minute": 25,
+      "enabled_expected": true,
+      "repo": "reppiks490/Icarus-engine",
+      "root": "automation_intelligence/agent_fabric/alpha_synthesis"
+    },
+    {
+      "title": "Microstructure Sensor Grid",
+      "id": "6abaef8effb48191aa5c959455451681",
+      "minute": 35,
+      "enabled_expected": true,
+      "repo": "reppiks490/Icarus-engine",
+      "root": "automation_intelligence/flow"
+    },
+    {
+      "title": "Apex Council Evolution",
+      "id": "6ababd570fac81918777c8f809cf67c9",
+      "minute": 45,
+      "enabled_expected": true,
+      "repo": "reppiks490/Icarus-engine",
+      "root": "automation_intelligence/agent_fabric/apex_council"
+    }
+  ],
+  "explicitly_disabled_replacement_stack": [
+    "6abb1012ff408191a6da245488f87dc2",
+    "6abb101aecf8819180edb577bb098364",
+    "6abb1022ac1881918a86ee30d74fa9dd",
+    "6abb102bde94819189bbf57062edcb32",
+    "6abb103472608191b72f9eaa522b772b"
+  ],
+  "rule": "Scheduler registry is external authority. Worker loops must never mutate scheduler state. Any observed enabled-state, ID, minute, timezone, or task-count drift is an incident and must be repaired by the orchestrator, not by a worker run."
+}

@@ -1,0 +1,32 @@
+{
+  "engine": "daedalus",
+  "run_origin": "BACKFILL_RECOVERY",
+  "recovery_run_id": "daedalus-20260930T025052Z",
+  "original_slot_id": "20260929T064800Z",
+  "original_slot_local": "2026-09-29T01:48:00-05:00",
+  "original_slot_utc": "2026-09-29T06:48:00Z",
+  "incident_ref": "automation_intelligence/omega_stack_native_v2/reconciliation/missed/daedalus/20260929T064800Z.json",
+  "backlog_ref": "automation_intelligence/omega_stack_native_v2/reconciliation/backlog/daedalus/20260929T064800Z.json",
+  "recovered_at_utc": "2026-09-30T02:51:27.570Z",
+  "recovery_status": "DEGRADED_RECOVERY_RECORDED",
+  "audit_delta": {
+    "natural_receipt_found": false,
+    "scheduler_evidence_status": "UNKNOWN",
+    "point_in_time_release_observation": "UNAVAILABLE"
+  },
+  "blocker_delta": {
+    "severity": "BLOCKING",
+    "cleared": false,
+    "reason": "Historical point-in-time assurance/release evidence was not available in bounded recovery evidence."
+  },
+  "release_gate_delta": {
+    "changed": false,
+    "status": "BLOCKING_UNTIL_INDEPENDENTLY_CLEARED"
+  },
+  "DATA_GAPS": [
+    "No point-in-time DAEDALUS audit/release observation was available for the missed slot.",
+    "Scheduler evidence for the missed slot is UNKNOWN."
+  ],
+  "CONFLICTS": [],
+  "execution_authorized": false
+}

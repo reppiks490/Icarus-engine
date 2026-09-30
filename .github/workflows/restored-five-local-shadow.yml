@@ -1,6 +1,10 @@
 name: restored-five-local-shadow
 
 on:
+  workflow_run:
+    workflows: ["restored-five-native-liveness"]
+    types: [completed]
+    branches: [main]
   push:
     branches: [main]
     paths:
@@ -23,6 +27,7 @@ concurrency:
 
 jobs:
   analyze:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: Check out main
@@ -93,7 +98,8 @@ jobs:
           python -m tools.restored_five_local_shadow_job \
             --root . \
             --binary "$LLAMA_BINARY" \
-            --model "$LOCAL_MODEL_PATH"
+            --model "$LOCAL_MODEL_PATH" \
+            --max-items 3
 
       - name: Stage only immutable shadow outputs
         shell: bash

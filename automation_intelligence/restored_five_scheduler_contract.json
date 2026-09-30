@@ -1,5 +1,5 @@
 {
-  "schema_version": "restored-five-scheduler-contract-v1",
+  "schema_version": "restored-five-scheduler-contract-v2",
   "timezone": "America/Chicago",
   "exact_active_count": 5,
   "execution_authorized": false,
@@ -52,5 +52,10 @@
     "6abb102bde94819189bbf57062edcb32",
     "6abb103472608191b72f9eaa522b772b"
   ],
-  "rule": "Scheduler registry is external authority. Worker loops must never mutate scheduler state. Any observed enabled-state, ID, minute, timezone, or task-count drift is an incident and must be repaired by the orchestrator, not by a worker run."
+  "rule": "Scheduler registry is external authority. Worker loops must never mutate scheduler state. Any observed enabled-state, ID, minute, timezone, or task-count drift is an incident and must be repaired by the orchestrator, not by a worker run.",
+  "worker_protocol": "restored-five-protocol-v5.7",
+  "canonical_first_file": "finalization_state.json",
+  "worker_startup_state_writes": false,
+  "mutable_state_rule": "finalization_state, heartbeat, and evidence_state are monotonic by RUN_ID; delayed older invocations are SUPERSEDED.",
+  "scheduler_mutation_rule": "Workers must never invoke scheduler/task-management tools. Only the external orchestrator may repair enabled-state or schedule drift."
 }

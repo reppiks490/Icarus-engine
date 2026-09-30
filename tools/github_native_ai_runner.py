@@ -22,6 +22,7 @@ from tools.github_native_ai_openai import (
     OutputValidationError,
     TransportError,
     call_responses_api,
+    resolve_openai_bearer_token,
     validate_lane_output,
 )
 
@@ -35,6 +36,7 @@ class RunResult:
 
 
 ApiCall = Callable[[ModelRequest, str], ModelResponse]
+TokenResolver = Callable[[Mapping[str, str]], str]
 NowFn = Callable[[], datetime]
 
 
@@ -157,6 +159,7 @@ def run_lane(
     env: Mapping[str, str],
     *,
     api_call: ApiCall = call_responses_api,
+    token_resolver: TokenResolver = resolve_openai_bearer_token,
     now_fn: NowFn | None = None,
 ) -> RunResult:
     if terminal_artifact_exists(root, slot):
@@ -182,11 +185,22 @@ def run_lane(
 
     run_id = f"{slot.lane.name}-{slot.slot_id}-{workflow['workflow_run_id']}-{workflow['workflow_run_attempt']}"
 
-    api_key = env.get("OPENAI_API_KEY", "")
-    if not api_key:
+    try:
+        bearer_token = token_resolver(env)
+    except ConfigurationError:
         return _failure_result(
             root, slot, workflow, run_id, started_at, clock(),
-            "CONFIGURATION_BLOCKED_OPENAI_API_KEY_MISSING",
+            "CONFIGURATION_BLOCKED_OPENAI_AUTH_MISSING",
+        )
+    except AuthenticationError:
+        return _failure_result(
+            root, slot, workflow, run_id, started_at, clock(),
+            "MODEL_AUTHENTICATION_FAILED",
+        )
+    except TransportError:
+        return _failure_result(
+            root, slot, workflow, run_id, started_at, clock(),
+            "MODEL_TRANSPORT_FAILED",
         )
 
     try:
@@ -200,7 +214,7 @@ def run_lane(
 
     fingerprint = request_fingerprint(request)
     try:
-        response = api_call(request, api_key)
+        response = api_call(request, bearer_token)
     except AuthenticationError:
         return _failure_result(
             root, slot, workflow, run_id, started_at, clock(),

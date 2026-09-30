@@ -63,3 +63,20 @@ def test_workflow_invokes_job_as_package_module() -> None:
     text = _text()
     assert "python -m tools.github_native_ai_job" in text
     assert "python tools/github_native_ai_job.py" not in text
+
+
+def test_workflow_uses_watchdog_workflow_run_wakeup() -> None:
+    text = _text()
+    assert "workflow_run:" in text
+    assert 'workflows: ["automation-durability-watchdog"]' in text
+    assert "types: [completed]" in text
+    assert "branches: [main]" in text
+
+
+def test_workflow_grants_oidc_and_passes_wif_variables_without_logging_credentials() -> None:
+    text = _text()
+    assert "id-token: write" in text
+    assert "OPENAI_IDENTITY_PROVIDER_ID: ${{ vars.OPENAI_IDENTITY_PROVIDER_ID }}" in text
+    assert "OPENAI_SERVICE_ACCOUNT_ID: ${{ vars.OPENAI_SERVICE_ACCOUNT_ID }}" in text
+    assert "OPENAI_WIF_AUDIENCE: ${{ vars.OPENAI_WIF_AUDIENCE }}" in text
+    assert "ACTIONS_ID_TOKEN_REQUEST_TOKEN" not in text

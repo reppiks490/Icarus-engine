@@ -1,6 +1,10 @@
 name: github-native-ai-plane
 
 on:
+  workflow_run:
+    workflows: ["automation-durability-watchdog"]
+    types: [completed]
+    branches: [main]
   push:
     branches: [main]
     paths:
@@ -29,6 +33,7 @@ on:
 
 permissions:
   contents: write
+  id-token: write
 
 concurrency:
   group: github-native-ai-plane
@@ -36,6 +41,7 @@ concurrency:
 
 jobs:
   execute:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: Check out main
@@ -54,6 +60,9 @@ jobs:
         continue-on-error: true
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_IDENTITY_PROVIDER_ID: ${{ vars.OPENAI_IDENTITY_PROVIDER_ID }}
+          OPENAI_SERVICE_ACCOUNT_ID: ${{ vars.OPENAI_SERVICE_ACCOUNT_ID }}
+          OPENAI_WIF_AUDIENCE: ${{ vars.OPENAI_WIF_AUDIENCE }}
           REQUESTED_LANE: ${{ inputs.requested_lane || 'auto' }}
           REQUESTED_SLOT_UTC: ${{ inputs.requested_slot_utc || '' }}
           EXECUTE_MODEL: ${{ inputs.execute_model || false }}

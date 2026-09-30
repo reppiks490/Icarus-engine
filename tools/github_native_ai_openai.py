@@ -4,10 +4,12 @@ import json
 import time
 import urllib.error
 import urllib.request
+import urllib.parse
 from dataclasses import dataclass
-from typing import Callable
+from typing import Callable, Mapping
 
 DEFAULT_ENDPOINT = "https://api.openai.com/v1/responses"
+WIF_TOKEN_ENDPOINT = "https://auth.openai.com/oauth/token"
 DEFAULT_TIMEOUT_SECONDS = 60
 MAX_ATTEMPTS = 3
 RETRYABLE_STATUS = {408, 429, 500, 502, 503, 504}
@@ -50,6 +52,7 @@ class ModelResponse:
 
 
 Transport = Callable[[str, dict[str, str], bytes, int], tuple[int, bytes]]
+OidcTransport = Callable[[str, dict[str, str], int], tuple[int, bytes]]
 
 
 def _lane_schema(lane: str) -> dict[str, object]:
@@ -162,6 +165,117 @@ def _extract_output_text(response: dict[str, object]) -> str:
                     if isinstance(text, str) and text:
                         return text
     raise OutputValidationError("response did not contain output_text")
+
+
+
+def _default_oidc_transport(
+    url: str,
+    headers: dict[str, str],
+    timeout: int,
+) -> tuple[int, bytes]:
+    req = urllib.request.Request(url, headers=headers, method="GET")
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as response:
+            return int(response.status), response.read()
+    except urllib.error.HTTPError as exc:
+        return int(exc.code), exc.read()
+    except Exception:
+        raise AuthenticationError("GitHub OIDC token request failed") from None
+
+
+def resolve_openai_bearer_token(
+    env: Mapping[str, str],
+    *,
+    oidc_transport: OidcTransport | None = None,
+    exchange_transport: Transport | None = None,
+    timeout_seconds: int = 30,
+) -> str:
+    api_key = env.get("OPENAI_API_KEY", "").strip()
+    if api_key:
+        return api_key
+
+    identity_provider_id = env.get("OPENAI_IDENTITY_PROVIDER_ID", "").strip()
+    service_account_id = env.get("OPENAI_SERVICE_ACCOUNT_ID", "").strip()
+    audience = env.get("OPENAI_WIF_AUDIENCE", "").strip()
+    wif_values = (identity_provider_id, service_account_id, audience)
+    if not any(wif_values):
+        raise ConfigurationError("OpenAI authentication is not configured")
+    if not all(wif_values):
+        raise ConfigurationError("OpenAI workload identity configuration is incomplete")
+
+    request_url = env.get("ACTIONS_ID_TOKEN_REQUEST_URL", "").strip()
+    request_token = env.get("ACTIONS_ID_TOKEN_REQUEST_TOKEN", "").strip()
+    if not request_url or not request_token:
+        raise ConfigurationError("GitHub workload identity environment is unavailable")
+
+    parsed = urllib.parse.urlsplit(request_url)
+    query = dict(urllib.parse.parse_qsl(parsed.query, keep_blank_values=True))
+    query["audience"] = audience
+    oidc_url = urllib.parse.urlunsplit(
+        parsed._replace(query=urllib.parse.urlencode(query))
+    )
+
+    oidc_send = oidc_transport or _default_oidc_transport
+    try:
+        oidc_status, oidc_body = oidc_send(
+            oidc_url,
+            {"Authorization": f"bearer {request_token}"},
+            timeout_seconds,
+        )
+    except AuthenticationError:
+        raise
+    except Exception:
+        raise AuthenticationError("GitHub OIDC token request failed") from None
+    if oidc_status < 200 or oidc_status >= 300:
+        raise AuthenticationError(f"GitHub OIDC token request failed: HTTP {oidc_status}")
+
+    try:
+        oidc_payload = json.loads(oidc_body.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        raise AuthenticationError("GitHub OIDC token response was malformed") from None
+    subject_token = oidc_payload.get("value") if isinstance(oidc_payload, dict) else None
+    if not isinstance(subject_token, str) or not subject_token:
+        raise AuthenticationError("GitHub OIDC token response did not include a token")
+
+    exchange_body = json.dumps(
+        {
+            "grant_type": "urn:ietf:params:oauth:grant-type:token-exchange",
+            "subject_token_type": "urn:ietf:params:oauth:token-type:jwt",
+            "subject_token": subject_token,
+            "identity_provider_id": identity_provider_id,
+            "service_account_id": service_account_id,
+        },
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode("utf-8")
+
+    exchange_send = exchange_transport or _default_transport
+    try:
+        exchange_status, exchange_response = exchange_send(
+            WIF_TOKEN_ENDPOINT,
+            {"Content-Type": "application/json"},
+            exchange_body,
+            timeout_seconds,
+        )
+    except Exception:
+        raise AuthenticationError("OpenAI workload identity exchange failed") from None
+    if exchange_status < 200 or exchange_status >= 300:
+        raise AuthenticationError(
+            f"OpenAI workload identity exchange failed: HTTP {exchange_status}"
+        )
+
+    try:
+        exchange_payload = json.loads(exchange_response.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        raise AuthenticationError("OpenAI workload identity response was malformed") from None
+    access_token = (
+        exchange_payload.get("access_token")
+        if isinstance(exchange_payload, dict)
+        else None
+    )
+    if not isinstance(access_token, str) or not access_token:
+        raise AuthenticationError("OpenAI workload identity response did not include an access token")
+    return access_token
 
 
 def call_responses_api(

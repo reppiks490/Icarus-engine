@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from tools.github_native_ai_dispatcher import NAMESPACE_ROOT, load_control_plane, resolve_due_slot
-from tools.github_native_ai_openai import ModelResponse, TransportError
+from tools.github_native_ai_openai import ConfigurationError, ModelResponse, TransportError
 from tools.github_native_ai_runner import (
     build_lane_request,
     request_fingerprint,
@@ -126,7 +126,7 @@ def test_missing_key_writes_failure_and_never_calls_api(tmp_path: Path) -> None:
     assert called is False
     assert result.failure_path is not None
     failure = json.loads(result.failure_path.read_text(encoding="utf-8"))
-    assert failure["failure_code"] == "CONFIGURATION_BLOCKED_OPENAI_API_KEY_MISSING"
+    assert failure["failure_code"] == "CONFIGURATION_BLOCKED_OPENAI_AUTH_MISSING"
     assert failure["execution_authorized"] is False
     assert result.receipt_path is None
     assert result.output_path is None
@@ -210,3 +210,28 @@ def test_artifacts_never_escape_lane_namespace(tmp_path: Path) -> None:
         relative = path.relative_to(root).as_posix()
         assert relative.startswith(f"{NAMESPACE_ROOT}/lanes/flow/")
         assert ".." not in relative
+
+
+def test_wif_token_resolver_can_supply_auth_without_api_key(tmp_path: Path) -> None:
+    root = _seed_root(tmp_path)
+    slot = _slot(root)
+    seen = {}
+
+    def resolver(env):
+        seen["env"] = dict(env)
+        return "short-lived-wif-token"
+
+    def api_call(request, token):
+        assert token == "short-lived-wif-token"
+        return ModelResponse(response_id="resp_wif", status="completed", payload=_payload(request.lane))
+
+    result = run_lane(
+        root,
+        slot,
+        _env(api_key=""),
+        api_call=api_call,
+        token_resolver=resolver,
+    )
+
+    assert result.status == "RUN_PERSISTED"
+    assert seen["env"]["GITHUB_RUN_ID"] == "12345"

@@ -12,18 +12,18 @@ UTC = timezone.utc
 
 
 def test_dark_mode_scheduled_event_is_noop() -> None:
-    control = load_control_plane(Path("."))
+    control = replace(load_control_plane(Path(".")), mode="DARK", activated_at_utc=None)
     assert control.mode == "DARK"
     assert should_execute(control, event_name="schedule", execute_model=True) is False
 
 
 def test_manual_diagnostic_does_not_execute_model() -> None:
-    control = load_control_plane(Path("."))
+    control = replace(load_control_plane(Path(".")), mode="DARK", activated_at_utc=None)
     assert should_execute(control, event_name="workflow_dispatch", execute_model=False) is False
 
 
 def test_manual_explicit_canary_can_execute_while_dark() -> None:
-    control = load_control_plane(Path("."))
+    control = replace(load_control_plane(Path(".")), mode="DARK", activated_at_utc=None)
     assert should_execute(control, event_name="workflow_dispatch", execute_model=True) is True
 
 
@@ -133,7 +133,7 @@ def test_scheduled_catchup_never_selects_pre_activation_slot(tmp_path: Path) -> 
 
 
 def test_dark_control_has_no_scheduled_pending_slot(tmp_path: Path) -> None:
-    control = load_control_plane(Path("."))
+    control = replace(load_control_plane(Path(".")), mode="DARK", activated_at_utc=None)
     assert control.mode == "DARK"
     assert select_pending_slot(
         tmp_path,

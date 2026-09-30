@@ -84,7 +84,7 @@ def test_control_plane_is_exactly_five_fail_closed_lanes() -> None:
     ]
 
 
-@pytest.mark.parametrize("kind", ["runs", "outputs", "failures"])
+@pytest.mark.parametrize("kind", ["runs", "failures"])
 def test_terminal_artifact_suppresses_duplicate_slot(tmp_path: Path, kind: str) -> None:
     control = _control()
     slot = resolve_due_slot(datetime.fromisoformat("2026-09-30T13:24:00+00:00"), control, tolerance_minutes=4)
@@ -107,4 +107,16 @@ def test_terminal_artifact_suppresses_duplicate_slot(tmp_path: Path, kind: str) 
 def test_empty_slot_is_not_suppressed(tmp_path: Path) -> None:
     slot = resolve_due_slot(datetime.fromisoformat("2026-09-30T13:48:00+00:00"), _control(), tolerance_minutes=4)
     assert slot is not None
+    assert terminal_artifact_exists(tmp_path, slot) is False
+
+
+def test_output_only_partial_write_does_not_suppress_retry(tmp_path: Path) -> None:
+    control = _control()
+    slot = resolve_due_slot(datetime.fromisoformat("2026-09-30T13:24:00+00:00"), control, tolerance_minutes=4)
+    assert slot is not None
+
+    output_dir = tmp_path / NAMESPACE_ROOT / "lanes" / slot.lane.name / "outputs" / slot.slot_id
+    output_dir.mkdir(parents=True)
+    (output_dir / "orphan-output.json").write_text("{}\n", encoding="utf-8")
+
     assert terminal_artifact_exists(tmp_path, slot) is False

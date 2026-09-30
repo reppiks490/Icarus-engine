@@ -577,3 +577,16 @@ def test_v3_missing_after_grace_creates_v3_incident_and_backlog(tmp_path):
     written = write_artifacts(root, aion)
     assert len(written) == 2
     assert all(V3_NS in p.as_posix() for p in written)
+
+
+def test_repository_v3_control_plane_is_watchdog_compatible():
+    cfg = load_v3_watchdog_config(Path("."))
+    assert cfg.control_plane_id == V3_CONTROL_PLANE_ID
+    assert cfg.identity_bound_at_utc.tzinfo is not None
+    assert [(lane.name, lane.minute) for lane in cfg.lanes] == [
+        ("omega", 0),
+        ("macro", 12),
+        ("flow", 24),
+        ("aion", 36),
+        ("daedalus", 48),
+    ]

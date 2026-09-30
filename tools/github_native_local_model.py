@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 import subprocess
 import tempfile
 from pathlib import Path
@@ -109,6 +110,16 @@ def _default_executor(command: list[str], timeout_seconds: int) -> tuple[int, st
     return result.returncode, result.stdout, result.stderr
 
 
+def safe_generation_preview(text: str, limit: int = 320) -> str:
+    cleaned = re.sub(r"<think>.*?</think>", "", text, flags=re.IGNORECASE | re.DOTALL)
+    open_think = re.search(r"<think>", cleaned, flags=re.IGNORECASE)
+    if open_think is not None:
+        cleaned = cleaned[:open_think.start()]
+    cleaned = re.sub(r"\x1b\[[0-9;]*[A-Za-z]", "", cleaned)
+    cleaned = " ".join(cleaned.split())
+    return cleaned[:limit]
+
+
 def extract_json_object(text: str) -> dict[str, object]:
     decoder = json.JSONDecoder()
     for index, char in enumerate(text):
@@ -157,8 +168,16 @@ def run_local_model(
             payload = extract_json_object(generated)
             response_text = generated
         except TransportError:
-            payload = extract_json_object(stdout)
-            response_text = stdout
+            try:
+                payload = extract_json_object(stdout)
+                response_text = stdout
+            except TransportError:
+                preview = safe_generation_preview(generated or stdout)
+                raise TransportError(
+                    "local model did not return structured JSON; "
+                    f"generated_len={len(generated)} stdout_len={len(stdout)} "
+                    f"safe_preview={preview!r}"
+                ) from None
 
     validated = validate_lane_output(payload, request.lane)
     response_hash = hashlib.sha256(response_text.encode("utf-8")).hexdigest()[:24]

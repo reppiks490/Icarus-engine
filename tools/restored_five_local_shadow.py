@@ -65,6 +65,50 @@ def build_shadow_request(lane: str, payload: dict[str, object]) -> ModelRequest:
     )
 
 
+def enforce_evidence_guards(
+    source: dict[str, object],
+    model_payload: dict[str, object],
+) -> dict[str, object]:
+    guarded = dict(model_payload)
+    gaps = list(model_payload.get("data_gaps", []))
+    conflicts = list(model_payload.get("conflicts", []))
+
+    slot_status = source.get("slot_status")
+    worker_status = source.get("worker_receipt_status")
+    expected_run = source.get("expected_RUN_ID")
+    observed_run = source.get("observed_worker_RUN_ID")
+    substantive_claim = source.get("substantive_work_claimed")
+
+    if slot_status == "FALLBACK_LIVENESS_ONLY":
+        if "FALLBACK_LIVENESS_ONLY" not in gaps:
+            gaps.append("FALLBACK_LIVENESS_ONLY")
+
+    if worker_status != "CHATGPT_CANONICAL_RECEIPT_PRESENT":
+        marker = f"WORKER_RECEIPT_NOT_VERIFIED:{worker_status}"
+        if marker not in gaps:
+            gaps.append(marker)
+
+    if substantive_claim is not True:
+        if "SUBSTANTIVE_WORK_NOT_PROVEN" not in gaps:
+            gaps.append("SUBSTANTIVE_WORK_NOT_PROVEN")
+
+    if (
+        isinstance(expected_run, str)
+        and isinstance(observed_run, str)
+        and observed_run
+        and observed_run != expected_run
+    ):
+        marker = "OBSERVED_WORKER_RUN_ID_DIFFERS_FROM_EXPECTED"
+        if marker not in conflicts:
+            conflicts.append(marker)
+
+    guarded["net_new_delta"] = "SHADOW_ASSESSMENT_ONLY"
+    guarded["data_gaps"] = gaps
+    guarded["conflicts"] = conflicts
+    guarded["execution_authorized"] = False
+    return guarded
+
+
 def run_shadow(
     lane: str,
     input_path: Path,
@@ -87,6 +131,8 @@ def run_shadow(
     if observed.tzinfo is None:
         raise ValueError("shadow clock must be timezone-aware")
 
+    guarded_payload = enforce_evidence_guards(payload, response.payload)
+
     artifact: dict[str, object] = {
         "schema_version": "restored-five-local-shadow-v1",
         "lane": lane,
@@ -105,7 +151,7 @@ def run_shadow(
         "paid_api_call_made": False,
         "api_credential_required": False,
         "execution_authorized": False,
-        "payload": response.payload,
+        "payload": guarded_payload,
     }
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with output_path.open("x", encoding="utf-8") as handle:

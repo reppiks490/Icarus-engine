@@ -254,7 +254,7 @@ def run_shadow(
     guarded_payload = enforce_evidence_guards(payload, response.payload)
 
     artifact: dict[str, object] = {
-        "schema_version": "restored-five-local-shadow-v1",
+        "schema_version": "restored-five-local-shadow-v2",
         "lane": lane,
         "input_path": input_path.as_posix(),
         "input_sha256": input_sha,

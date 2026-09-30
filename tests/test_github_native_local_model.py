@@ -53,8 +53,10 @@ def test_build_command_is_single_turn_cpu_and_schema_constrained(tmp_path: Path)
     assert "--simple-io" in cmd
     assert "--no-display-prompt" in cmd
     assert "--no-show-timings" in cmd
-    assert "--reasoning-budget" in cmd
-    assert cmd[cmd.index("--reasoning-budget") + 1] == "0"
+    assert "--jinja" in cmd
+    assert "--reasoning" in cmd
+    assert cmd[cmd.index("--reasoning") + 1] == "off"
+    assert "--reasoning-budget" not in cmd
     assert "--json-schema" in cmd
     schema = json.loads(cmd[cmd.index("--json-schema") + 1])
     assert schema["type"] == "object"

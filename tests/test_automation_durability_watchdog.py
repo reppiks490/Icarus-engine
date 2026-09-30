@@ -590,3 +590,44 @@ def test_repository_v3_control_plane_is_watchdog_compatible():
         ("aion", 36),
         ("daedalus", 48),
     ]
+
+
+def test_v3_cli_writes_reconciliation_and_returns_zero(tmp_path, capsys):
+    root = make_v3_root(tmp_path, bound_at="2026-09-30T14:00:00Z")
+    rc = _watchdog.main(
+        [
+            "--root",
+            str(root),
+            "--control-version",
+            "v3",
+            "--now-utc",
+            "2026-09-30T14:50:00Z",
+            "--grace-minutes",
+            "12",
+            "--horizon-hours",
+            "1",
+        ]
+    )
+    assert rc == 0
+    out = json.loads(capsys.readouterr().out)
+    assert out["status"] == "ok"
+    assert out["control_version"] == "v3"
+    assert out["counts"]["missed"] >= 1
+    assert out["counts"]["backlog"] >= 1
+    assert all(path.startswith(f"{V3_NS}/reconciliation/") for path in out["written"])
+
+
+def test_workflow_contract_includes_v3_reconciliation_plane():
+    workflow = (
+        Path(__file__).resolve().parents[1]
+        / ".github"
+        / "workflows"
+        / "automation-durability-watchdog.yml"
+    )
+    text = workflow.read_text(encoding="utf-8")
+    assert "path: v3state" in text
+    assert "--control-version v3" in text
+    assert "git -C v3state add automation_intelligence/omega_stack_native_v3/reconciliation" in text
+    assert "git -C v3state pull --rebase origin main" in text
+    assert "git -C v3state push origin HEAD:main" in text
+    assert "git -C v3state push --force" not in text

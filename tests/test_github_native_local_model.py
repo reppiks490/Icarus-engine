@@ -15,6 +15,7 @@ from tools.github_native_local_model import (
     build_local_model_command,
     extract_json_object,
     run_local_model,
+    normalize_terminal_text,
     safe_generation_preview,
     wrap_terminal_command,
 )
@@ -241,3 +242,51 @@ def test_terminal_wrapper_allocates_script_pty() -> None:
 def test_terminal_wrapper_falls_back_when_script_is_unavailable() -> None:
     original = ["llama-cli", "-p", "hello"]
     assert wrap_terminal_command(original, script_binary="") == original
+
+
+def test_terminal_normalization_recovers_ansi_interleaved_json() -> None:
+    noisy = (
+        "\x1b[32m{\x1b[0m"
+        "\"lane\":\"aion\","
+        "\"summary\":\"ok\","
+        "\"net_new_delta\":\"CANARY_OK\","
+        "\"data_gaps\":[],"
+        "\"conflicts\":[],"
+        "\"execution_authorized\":false"
+        "\x1b[32m}\x1b[0m\r\n"
+    )
+    normalized = normalize_terminal_text(noisy)
+    payload = extract_json_object(normalized)
+    assert payload["lane"] == "aion"
+    assert payload["execution_authorized"] is False
+
+
+def test_run_local_model_parses_pty_ansi_stdout(tmp_path: Path) -> None:
+    binary = tmp_path / "llama-cli"
+    model = tmp_path / "model.gguf"
+    binary.write_text("", encoding="utf-8")
+    model.write_text("", encoding="utf-8")
+    noisy = (
+        "prompt echo\r\n"
+        "\x1b[36m{\x1b[0m"
+        "\"lane\":\"aion\","
+        "\"summary\":\"pty ok\","
+        "\"net_new_delta\":\"CANARY_OK\","
+        "\"data_gaps\":[],"
+        "\"conflicts\":[],"
+        "\"execution_authorized\":false"
+        "\x1b[36m}\x1b[0m\r\n"
+    )
+
+    def executor(cmd, timeout):
+        return 0, noisy, ""
+
+    response = run_local_model(
+        _request(),
+        binary=binary,
+        model=model,
+        executor=executor,
+        timeout_seconds=5,
+    )
+    assert response.status == "completed"
+    assert response.payload["net_new_delta"] == "CANARY_OK"

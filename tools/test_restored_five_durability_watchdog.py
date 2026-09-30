@@ -124,8 +124,11 @@ class WatchdogTests(unittest.TestCase):
             root = repo / "lane"
             expected = "lane-20260930T210500Z"
             write_json(root / "finalization_state.json", {
+                "schema_version": "scheduler-finalization-v5.7",
                 "RUN_ID": expected,
                 "RUN_STATUS": "RUN_PERSISTED",
+                "completion_semantics": "DURABILITY_RECEIPT_ONLY",
+                "execution_authorized": False,
             })
             write_json(root / "evidence_state.json", {
                 "RUN_ID": "lane-20260930T200500Z",

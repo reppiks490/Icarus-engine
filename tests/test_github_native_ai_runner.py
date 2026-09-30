@@ -17,11 +17,14 @@ from tools.github_native_ai_runner import (
 UTC = timezone.utc
 
 
-def _seed_root(tmp_path: Path, lane: str = "aion") -> Path:
+def _seed_root(tmp_path: Path, lane: str = "aion", *, inference_backend: str = "openai") -> Path:
     source = Path(NAMESPACE_ROOT) / "control_plane.json"
     target = tmp_path / NAMESPACE_ROOT / "control_plane.json"
     target.parent.mkdir(parents=True)
     shutil.copy2(source, target)
+    control = json.loads(target.read_text(encoding="utf-8"))
+    control["inference_backend"] = inference_backend
+    target.write_text(json.dumps(control, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
     shared = tmp_path / NAMESPACE_ROOT / "lanes" / "shared" / "system.md"
     task = tmp_path / NAMESPACE_ROOT / "lanes" / lane / "prompts" / "task.md"
@@ -240,11 +243,7 @@ def test_wif_token_resolver_can_supply_auth_without_api_key(tmp_path: Path) -> N
 
 
 def test_deterministic_liveness_backend_needs_no_api_auth_or_model_call(tmp_path: Path) -> None:
-    root = _seed_root(tmp_path)
-    control_path = root / NAMESPACE_ROOT / "control_plane.json"
-    control = json.loads(control_path.read_text(encoding="utf-8"))
-    control["inference_backend"] = "deterministic_liveness"
-    control_path.write_text(json.dumps(control, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    root = _seed_root(tmp_path, inference_backend="deterministic_liveness")
     slot = _slot(root)
     fixed_now = datetime(2026, 9, 30, 13, 36, 30, tzinfo=UTC)
 

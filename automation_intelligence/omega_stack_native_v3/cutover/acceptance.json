@@ -1,11 +1,87 @@
 {
-  "schema_version": "omega-stack-github-native-cutover-v1",
+  "acceptance_requirement": "TWO_CONSECUTIVE_VALID_GITHUB_NATIVE_LIVENESS_RECEIPTS_PER_LANE",
+  "authoritative_execution_source": "GITHUB_NATIVE_LIVENESS",
+  "authoritative_scope": "LIVENESS_PERSISTENCE_ONLY",
+  "consecutive_valid_by_lane": {
+    "aion": 2,
+    "daedalus": 2,
+    "flow": 2,
+    "macro": 2,
+    "omega": 2
+  },
   "control_plane_id": "omega-aion-daedalus-github-native-v3",
-  "phase": "ZERO_COST_SHADOW_LIVE_PROVEN",
-  "authoritative_execution_source": "NOT_YET_CUT_OVER",
+  "credential_required_name": null,
+  "credential_status": "NOT_REQUIRED_DETERMINISTIC_LIVENESS",
+  "execution_authorized": false,
   "implementation_branch": "chatgpt/github-native-ai-plane-implementation-20260930",
+  "implemented_capabilities": {
+    "dark_mode_no_expected_slots": true,
+    "delayed_schedule_catchup": true,
+    "deterministic_chicago_dispatch": true,
+    "dst_safe_slot_identity": true,
+    "duplicate_suppression": true,
+    "immutable_v3_run_artifacts": true,
+    "live_v3_watchdog_workflow": true,
+    "openai_responses_client": true,
+    "sanitized_failure_artifacts": true,
+    "structured_output_validation": true,
+    "truthful_non_ai_provenance": true,
+    "v3_watchdog_validation": true,
+    "zero_cost_deterministic_liveness": true
+  },
+  "inference_backend": "deterministic_liveness",
+  "last_live_evidence": {
+    "execution_authorized": false,
+    "inference_backend": "deterministic_liveness",
+    "lane": "flow",
+    "model": "none",
+    "openai_credentials_present": false,
+    "output_path": "automation_intelligence/omega_stack_native_v3/lanes/flow/outputs/20260930T202400Z/flow-20260930T202400Z-36772407371-1.json",
+    "paid_api_call_made": false,
+    "receipt_path": "automation_intelligence/omega_stack_native_v3/lanes/flow/runs/20260930T202400Z/flow-20260930T202400Z-36772407371-1.json",
+    "result": "RUN_PERSISTED",
+    "run_origin": "GITHUB_NATIVE_LIVENESS",
+    "slot_utc": "2026-09-30T20:24:00Z",
+    "workflow_event": "push",
+    "workflow_run_id": 36772407371
+  },
+  "legacy_v2_chatgpt_canaries_remain_enabled": true,
+  "next_cutover_step": "NONE_FOR_LIVENESS_PERSISTENCE; SUBSTANTIVE_AI_REQUIRES_A_SEPARATE_EXPLICIT_BACKEND",
+  "phase": "ZERO_COST_AUTHORITATIVE_LIVENESS",
+  "promoted_at_utc": "2026-09-30T22:14:31Z",
+  "promotion_evidence_receipts": {
+    "aion": [
+      "automation_intelligence/omega_stack_native_v3/lanes/aion/runs/20260930T213600Z/aion-20260930T213600Z-36780769902-1.json",
+      "automation_intelligence/omega_stack_native_v3/lanes/aion/runs/20260930T203600Z/aion-20260930T203600Z-36773938698-1.json"
+    ],
+    "daedalus": [
+      "automation_intelligence/omega_stack_native_v3/lanes/daedalus/runs/20260930T214800Z/daedalus-20260930T214800Z-36784272294-1.json",
+      "automation_intelligence/omega_stack_native_v3/lanes/daedalus/runs/20260930T204800Z/daedalus-20260930T204800Z-36775127661-1.json"
+    ],
+    "flow": [
+      "automation_intelligence/omega_stack_native_v3/lanes/flow/runs/20260930T212400Z/flow-20260930T212400Z-36779185063-1.json",
+      "automation_intelligence/omega_stack_native_v3/lanes/flow/runs/20260930T202400Z/flow-20260930T202400Z-36772407371-1.json"
+    ],
+    "macro": [
+      "automation_intelligence/omega_stack_native_v3/lanes/macro/runs/20260930T221200Z/macro-20260930T221200Z-36784387399-1.json",
+      "automation_intelligence/omega_stack_native_v3/lanes/macro/runs/20260930T211200Z/macro-20260930T211200Z-36777919341-1.json"
+    ],
+    "omega": [
+      "automation_intelligence/omega_stack_native_v3/lanes/omega/runs/20260930T220000Z/omega-20260930T220000Z-36784366714-1.json",
+      "automation_intelligence/omega_stack_native_v3/lanes/omega/runs/20260930T210000Z/omega-20260930T210000Z-36776623768-1.json"
+    ]
+  },
+  "promotion_requirement": "2_CONSECUTIVE_VALID_GITHUB_NATIVE_LIVENESS_RECEIPTS_PER_LANE",
+  "schema_version": "omega-stack-github-native-cutover-v1",
+  "shadow_activation": {
+    "activated_at_utc": "2026-09-30T20:17:28Z",
+    "activation_commit": "2da94e90ed21689ff73e6041c5608297c74da76d",
+    "first_eligible_lane": "flow",
+    "first_eligible_slot_utc": "2026-09-30T20:24:00Z",
+    "scheduler_catchup_horizon_minutes": 180
+  },
   "verified_branch_ci": {
-    "workflow_run_id": 36733700316,
+    "all_green": true,
     "conclusion": "success",
     "jobs": [
       "every CLI path",
@@ -14,51 +90,7 @@
       "pytest (py3.12)",
       "pytest (py3.13)"
     ],
-    "all_green": true
+    "workflow_run_id": 36733700316
   },
-  "implemented_capabilities": {
-    "deterministic_chicago_dispatch": true,
-    "delayed_schedule_catchup": true,
-    "dst_safe_slot_identity": true,
-    "openai_responses_client": true,
-    "structured_output_validation": true,
-    "immutable_v3_run_artifacts": true,
-    "sanitized_failure_artifacts": true,
-    "duplicate_suppression": true,
-    "v3_watchdog_validation": true,
-    "live_v3_watchdog_workflow": true,
-    "dark_mode_no_expected_slots": true,
-    "zero_cost_deterministic_liveness": true,
-    "truthful_non_ai_provenance": true
-  },
-  "credential_status": "NOT_REQUIRED_DETERMINISTIC_LIVENESS",
-  "credential_required_name": null,
-  "next_cutover_step": "ACCUMULATE_TWO_CONSECUTIVE_LIVE_ZERO_COST_RECEIPTS_PER_LANE_THEN_PROMOTE_V3_AUTHORITATIVE",
-  "acceptance_requirement": "TWO_CONSECUTIVE_VALID_GITHUB_NATIVE_LIVENESS_RECEIPTS_PER_LANE",
-  "legacy_v2_chatgpt_canaries_remain_enabled": true,
-  "execution_authorized": false,
-  "shadow_activation": {
-    "activated_at_utc": "2026-09-30T20:17:28Z",
-    "activation_commit": "2da94e90ed21689ff73e6041c5608297c74da76d",
-    "first_eligible_lane": "flow",
-    "first_eligible_slot_utc": "2026-09-30T20:24:00Z",
-    "scheduler_catchup_horizon_minutes": 180
-  },
-  "last_live_evidence": {
-    "workflow_run_id": 36772407371,
-    "workflow_event": "push",
-    "lane": "flow",
-    "slot_utc": "2026-09-30T20:24:00Z",
-    "result": "RUN_PERSISTED",
-    "receipt_path": "automation_intelligence/omega_stack_native_v3/lanes/flow/runs/20260930T202400Z/flow-20260930T202400Z-36772407371-1.json",
-    "output_path": "automation_intelligence/omega_stack_native_v3/lanes/flow/outputs/20260930T202400Z/flow-20260930T202400Z-36772407371-1.json",
-    "run_origin": "GITHUB_NATIVE_LIVENESS",
-    "inference_backend": "deterministic_liveness",
-    "model": "none",
-    "openai_credentials_present": false,
-    "paid_api_call_made": false,
-    "execution_authorized": false
-  },
-  "inference_backend": "deterministic_liveness",
   "zero_cost": true
 }

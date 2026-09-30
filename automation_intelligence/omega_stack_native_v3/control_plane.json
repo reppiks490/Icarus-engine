@@ -1,55 +1,81 @@
 {
-  "schema_version": "omega-stack-control-v3",
+  "activated_at_utc": "2026-09-30T20:17:28Z",
+  "authoritative_scope": "LIVENESS_PERSISTENCE_ONLY",
+  "catchup_horizon_minutes": 180,
   "control_plane_id": "omega-aion-daedalus-github-native-v3",
-  "repository": "reppiks490/Icarus-engine",
-  "namespace_root": "automation_intelligence/omega_stack_native_v3",
-  "timezone": "America/Chicago",
+  "created_at_utc": "2026-09-30T14:05:26Z",
+  "credential_status": "NOT_REQUIRED_ZERO_COST_LIVENESS",
   "dispatch_tolerance_minutes": 4,
   "execution_authorized": false,
-  "mode": "SHADOW",
+  "inference_backend": "deterministic_liveness",
+  "lanes": [
+    {
+      "legacy_automation_id": "6abb57443c0c81919676c71d87493353",
+      "minute": 0,
+      "name": "omega",
+      "title": "OMEGA Fusion Core"
+    },
+    {
+      "legacy_automation_id": "6ab8174517b48191b67ac472205a28d3",
+      "minute": 12,
+      "name": "macro",
+      "title": "Macro Shock Sentinel"
+    },
+    {
+      "legacy_automation_id": "6ab817544e68819197b5db21eb2cbe2b",
+      "minute": 24,
+      "name": "flow",
+      "title": "Flow Velocity Engine"
+    },
+    {
+      "legacy_automation_id": "6abb1618be1c8191943f5d4e2d88978d",
+      "minute": 36,
+      "name": "aion",
+      "title": "AION PRIME Quant Scientist"
+    },
+    {
+      "legacy_automation_id": "6ab8177918b48191a97e56c44b57d2c5",
+      "minute": 48,
+      "name": "daedalus",
+      "title": "DAEDALUS PRIME Systems Auditor"
+    }
+  ],
+  "mode": "AUTHORITATIVE",
   "model_defaults": {
     "model": "gpt-5.6-sol",
     "reasoning_effort": "high"
   },
-  "lanes": [
-    {
-      "name": "omega",
-      "title": "OMEGA Fusion Core",
-      "minute": 0,
-      "legacy_automation_id": "6abb57443c0c81919676c71d87493353"
-    },
-    {
-      "name": "macro",
-      "title": "Macro Shock Sentinel",
-      "minute": 12,
-      "legacy_automation_id": "6ab8174517b48191b67ac472205a28d3"
-    },
-    {
-      "name": "flow",
-      "title": "Flow Velocity Engine",
-      "minute": 24,
-      "legacy_automation_id": "6ab817544e68819197b5db21eb2cbe2b"
-    },
-    {
-      "name": "aion",
-      "title": "AION PRIME Quant Scientist",
-      "minute": 36,
-      "legacy_automation_id": "6abb1618be1c8191943f5d4e2d88978d"
-    },
-    {
-      "name": "daedalus",
-      "title": "DAEDALUS PRIME Systems Auditor",
-      "minute": 48,
-      "legacy_automation_id": "6ab8177918b48191a97e56c44b57d2c5"
-    }
-  ],
-  "created_at_utc": "2026-09-30T14:05:26Z",
-  "activated_at_utc": "2026-09-30T20:17:28Z",
-  "catchup_horizon_minutes": 180,
+  "namespace_root": "automation_intelligence/omega_stack_native_v3",
+  "promoted_at_utc": "2026-09-30T22:14:31Z",
+  "promotion_evidence_receipts": {
+    "aion": [
+      "automation_intelligence/omega_stack_native_v3/lanes/aion/runs/20260930T213600Z/aion-20260930T213600Z-36780769902-1.json",
+      "automation_intelligence/omega_stack_native_v3/lanes/aion/runs/20260930T203600Z/aion-20260930T203600Z-36773938698-1.json"
+    ],
+    "daedalus": [
+      "automation_intelligence/omega_stack_native_v3/lanes/daedalus/runs/20260930T214800Z/daedalus-20260930T214800Z-36784272294-1.json",
+      "automation_intelligence/omega_stack_native_v3/lanes/daedalus/runs/20260930T204800Z/daedalus-20260930T204800Z-36775127661-1.json"
+    ],
+    "flow": [
+      "automation_intelligence/omega_stack_native_v3/lanes/flow/runs/20260930T212400Z/flow-20260930T212400Z-36779185063-1.json",
+      "automation_intelligence/omega_stack_native_v3/lanes/flow/runs/20260930T202400Z/flow-20260930T202400Z-36772407371-1.json"
+    ],
+    "macro": [
+      "automation_intelligence/omega_stack_native_v3/lanes/macro/runs/20260930T221200Z/macro-20260930T221200Z-36784387399-1.json",
+      "automation_intelligence/omega_stack_native_v3/lanes/macro/runs/20260930T211200Z/macro-20260930T211200Z-36777919341-1.json"
+    ],
+    "omega": [
+      "automation_intelligence/omega_stack_native_v3/lanes/omega/runs/20260930T220000Z/omega-20260930T220000Z-36784366714-1.json",
+      "automation_intelligence/omega_stack_native_v3/lanes/omega/runs/20260930T210000Z/omega-20260930T210000Z-36776623768-1.json"
+    ]
+  },
+  "promotion_requirement": "2_CONSECUTIVE_VALID_GITHUB_NATIVE_LIVENESS_RECEIPTS_PER_LANE",
+  "repository": "reppiks490/Icarus-engine",
+  "schema_version": "omega-stack-control-v3",
   "shadow_activation_reason": "Zero-cost deterministic GitHub-native liveness backend merged; begin live shadow verification with no paid API/model call.",
   "shadow_started_at_utc": "2026-09-30T20:17:28Z",
-  "credential_status": "NOT_REQUIRED_ZERO_COST_LIVENESS",
-  "inference_backend": "deterministic_liveness",
+  "substantive_ai_inference": false,
+  "timezone": "America/Chicago",
   "zero_cost_mode_note": "Default hourly v3 persistence uses deterministic GitHub-native liveness with no paid model/API call. OpenAI integration remains optional and dormant.",
   "zero_cost_probe_requested_at_utc": "2026-09-30T21:00:30Z",
   "zero_cost_probe_requested_lane": "omega"

@@ -15,6 +15,7 @@ from tools.github_native_local_model import (
     build_local_model_command,
     extract_json_object,
     run_local_model,
+    safe_generation_preview,
 )
 
 
@@ -187,3 +188,40 @@ def test_run_local_model_reads_cli_output_file_when_stdio_is_empty(tmp_path: Pat
 
     assert response.status == "completed"
     assert response.payload["net_new_delta"] == "CANARY_OK"
+
+
+def test_safe_generation_preview_strips_thinking() -> None:
+    preview = safe_generation_preview(
+        "<think>private local reasoning that must not leak</think> "
+        "prefix {not-json yet}"
+    )
+    assert "private local reasoning" not in preview
+    assert "prefix" in preview
+
+
+def test_unstructured_error_contains_only_sanitized_preview(tmp_path: Path) -> None:
+    binary = tmp_path / "llama-cli"
+    model = tmp_path / "model.gguf"
+    binary.write_text("", encoding="utf-8")
+    model.write_text("", encoding="utf-8")
+
+    def executor(cmd, timeout):
+        output_path = Path(cmd[cmd.index("-o") + 1])
+        output_path.write_text(
+            "<think>secret reasoning</think> definitely-not-json",
+            encoding="utf-8",
+        )
+        return 0, "", ""
+
+    with pytest.raises(TransportError) as exc:
+        run_local_model(
+            _request(),
+            binary=binary,
+            model=model,
+            executor=executor,
+            timeout_seconds=5,
+        )
+    message = str(exc.value)
+    assert "secret reasoning" not in message
+    assert "definitely-not-json" in message
+    assert "generated_len=" in message

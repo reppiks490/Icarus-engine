@@ -290,3 +290,8 @@ def test_run_local_model_parses_pty_ansi_stdout(tmp_path: Path) -> None:
     )
     assert response.status == "completed"
     assert response.payload["net_new_delta"] == "CANARY_OK"
+
+
+def test_terminal_wrapper_bypasses_pty_for_llama_completion() -> None:
+    original = ["llama-completion", "-p", "hello", "-st"]
+    assert wrap_terminal_command(original, script_binary="/usr/bin/script") == original

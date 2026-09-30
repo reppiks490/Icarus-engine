@@ -193,9 +193,15 @@ def run_local_model(
             request,
             output_file=output_file,
         )
-        exit_code, stdout, _stderr = executor(command, timeout_seconds)
+        exit_code, stdout, stderr = executor(command, timeout_seconds)
         if exit_code != 0:
-            raise TransportError(f"local model runtime failed with exit code {exit_code}")
+            stdout_preview = safe_generation_preview(stdout)
+            stderr_preview = safe_generation_preview(stderr)
+            raise TransportError(
+                f"local model runtime failed with exit code {exit_code}; "
+                f"safe_stdout_preview={stdout_preview!r} "
+                f"safe_stderr_preview={stderr_preview!r}"
+            )
 
         generated = ""
         if output_file.is_file():

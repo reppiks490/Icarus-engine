@@ -401,7 +401,9 @@ def test_workflow_contract():
         / "automation-durability-watchdog.yml"
     )
     text = workflow.read_text(encoding="utf-8")
-    assert 'cron: "*/5 * * * *"' in text
+    assert 'cron: "2-52/10 * * * *"' in text
+    assert 'cron: "7-57/10 * * * *"' in text
+    assert 'cron: "*/5 * * * *"' not in text
     assert "workflow_dispatch:" in text
     assert "contents: write" in text
     assert "cancel-in-progress: false" in text

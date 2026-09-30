@@ -23,7 +23,7 @@ def _parse_utc(value: str) -> datetime:
 def should_execute(control: ControlPlane, *, event_name: str, execute_model: bool) -> bool:
     if event_name == "workflow_dispatch":
         return execute_model
-    if event_name == "schedule":
+    if event_name in {"schedule", "push"}:
         return control.mode in {"SHADOW", "AUTHORITATIVE"}
     return False
 
@@ -105,7 +105,7 @@ def main(argv: list[str] | None = None) -> int:
     control = load_control_plane(root)
     now_override = os.environ.get("GITHUB_NATIVE_NOW_UTC", "")
     now = _parse_utc(now_override) if now_override else datetime.now(timezone.utc)
-    if args.event_name == "schedule" and not args.requested_slot_utc:
+    if args.event_name in {"schedule", "push"} and not args.requested_slot_utc:
         slot = select_pending_slot(root, control, now)
     else:
         slot = select_slot(

@@ -46,11 +46,26 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git add             automation_intelligence/agent_fabric/robustness_guardian/startup_state.json             automation_intelligence/agent_fabric/robustness_guardian/heartbeat.json             automation_intelligence/agent_fabric/alpha_synthesis/startup_state.json             automation_intelligence/agent_fabric/alpha_synthesis/heartbeat.json             automation_intelligence/flow/startup_state.json             automation_intelligence/flow/heartbeat.json             automation_intelligence/agent_fabric/apex_council/startup_state.json             automation_intelligence/agent_fabric/apex_council/heartbeat.json \
-            automation_intelligence/agent_fabric/apex_council/watchdog_incidents.jsonl \
-            automation_intelligence/flow/watchdog_incidents.jsonl \
-            automation_intelligence/agent_fabric/alpha_synthesis/watchdog_incidents.jsonl \
+
+          paths=(
+            automation_intelligence/agent_fabric/robustness_guardian/startup_state.json
+            automation_intelligence/agent_fabric/robustness_guardian/heartbeat.json
+            automation_intelligence/agent_fabric/alpha_synthesis/startup_state.json
+            automation_intelligence/agent_fabric/alpha_synthesis/heartbeat.json
+            automation_intelligence/flow/startup_state.json
+            automation_intelligence/flow/heartbeat.json
+            automation_intelligence/agent_fabric/apex_council/startup_state.json
+            automation_intelligence/agent_fabric/apex_council/heartbeat.json
+            automation_intelligence/agent_fabric/apex_council/watchdog_incidents.jsonl
+            automation_intelligence/flow/watchdog_incidents.jsonl
+            automation_intelligence/agent_fabric/alpha_synthesis/watchdog_incidents.jsonl
             automation_intelligence/agent_fabric/robustness_guardian/watchdog_incidents.jsonl
+          )
+          for path in "${paths[@]}"; do
+            if [ -e "$path" ]; then
+              git add -- "$path"
+            fi
+          done
 
           if git diff --cached --quiet; then
             echo "WATCHDOG_NO_CHANGE=1" >> "$GITHUB_ENV"
@@ -58,7 +73,7 @@ jobs:
           fi
 
           staged="$(git diff --cached --name-only)"
-          invalid="$(printf '%s\n' "$staged" | grep -Ev '^(automation_intelligence/agent_fabric/(robustness_guardian|alpha_synthesis|apex_council)/(startup_state|heartbeat)\\.json|automation_intelligence/flow/(startup_state|heartbeat)\\.json|automation_intelligence/agent_fabric/(robustness_guardian|alpha_synthesis|apex_council)/watchdog_incidents\\.jsonl|automation_intelligence/flow/watchdog_incidents\\.jsonl) || true)"
+          invalid="$(printf '%s\n' "$staged" | grep -Ev '^(automation_intelligence/agent_fabric/(robustness_guardian|alpha_synthesis|apex_council)/(startup_state|heartbeat)\.json|automation_intelligence/flow/(startup_state|heartbeat)\.json|automation_intelligence/agent_fabric/(robustness_guardian|alpha_synthesis|apex_council)/watchdog_incidents\.jsonl|automation_intelligence/flow/watchdog_incidents\.jsonl)$' || true)"
           if [ -n "$invalid" ]; then
             echo "Refusing out-of-scope watchdog mutation:" >&2
             printf '%s\n' "$invalid" >&2
@@ -75,21 +90,4 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "automation: restored-five durability recovery $(date -u +%Y%m%dT%H%M%SZ) [skip ci]"
           git pull --rebase origin main
-          git push origin HEAD:main
- || true)"
-          if [ -n "$invalid" ]; then
-            echo "Refusing out-of-scope watchdog mutation:" >&2
-            printf '%s\n' "$invalid" >&2
-            exit 1
-          fi
-          echo "WATCHDOG_NO_CHANGE=0" >> "$GITHUB_ENV"
-
-      - name: Commit verified recovery state
-        if: env.WATCHDOG_NO_CHANGE != '1'
-        shell: bash
-        run: |
-          set -euo pipefail
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "automation: restored-five durability recovery $(date -u +%Y%m%dT%H%M%SZ) [skip ci]"
           git push origin HEAD:main

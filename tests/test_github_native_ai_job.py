@@ -12,18 +12,18 @@ UTC = timezone.utc
 
 
 def test_dark_mode_scheduled_event_is_noop() -> None:
-    control = load_control_plane(Path("."))
+    control = replace(load_control_plane(Path(".")), mode="DARK", activated_at_utc=None)
     assert control.mode == "DARK"
     assert should_execute(control, event_name="schedule", execute_model=True) is False
 
 
 def test_manual_diagnostic_does_not_execute_model() -> None:
-    control = load_control_plane(Path("."))
+    control = replace(load_control_plane(Path(".")), mode="DARK", activated_at_utc=None)
     assert should_execute(control, event_name="workflow_dispatch", execute_model=False) is False
 
 
 def test_manual_explicit_canary_can_execute_while_dark() -> None:
-    control = load_control_plane(Path("."))
+    control = replace(load_control_plane(Path(".")), mode="DARK", activated_at_utc=None)
     assert should_execute(control, event_name="workflow_dispatch", execute_model=True) is True
 
 
@@ -133,10 +133,28 @@ def test_scheduled_catchup_never_selects_pre_activation_slot(tmp_path: Path) -> 
 
 
 def test_dark_control_has_no_scheduled_pending_slot(tmp_path: Path) -> None:
-    control = load_control_plane(Path("."))
+    control = replace(load_control_plane(Path(".")), mode="DARK", activated_at_utc=None)
     assert control.mode == "DARK"
     assert select_pending_slot(
         tmp_path,
         control,
         datetime(2026, 9, 30, 13, 19, tzinfo=UTC),
     ) is None
+
+
+def test_shadow_push_event_executes_as_wakeup(tmp_path: Path) -> None:
+    control = replace(
+        load_control_plane(Path(".")),
+        mode="SHADOW",
+        activated_at_utc=datetime(2026, 9, 30, 15, 6, 57, tzinfo=UTC),
+        catchup_horizon_minutes=180,
+    )
+    assert should_execute(control, event_name="push", execute_model=False) is True
+    slot = select_pending_slot(
+        tmp_path,
+        control,
+        datetime(2026, 9, 30, 15, 14, tzinfo=UTC),
+    )
+    assert slot is not None
+    assert slot.lane.name == "macro"
+    assert slot.slot_id == "20260930T151200Z"

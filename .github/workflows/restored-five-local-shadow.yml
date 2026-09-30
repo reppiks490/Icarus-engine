@@ -105,13 +105,16 @@ jobs:
           fi
 
           git add automation_intelligence/restored_five_native/shadow_outputs
+          if [ -d automation_intelligence/restored_five_native/shadow_reconciliations ]; then
+            git add automation_intelligence/restored_five_native/shadow_reconciliations
+          fi
           if git diff --cached --quiet; then
             echo "SHADOW_NO_CHANGE=1" >> "$GITHUB_ENV"
             exit 0
           fi
 
           staged="$(git diff --cached --name-only)"
-          invalid="$(printf '%s\n' "$staged" | grep -Ev '^automation_intelligence/restored_five_native/shadow_outputs/(robustness_guardian|advanced_csv|alpha_synthesis|flow_microstructure|apex_council)/[0-9]{8}T[0-9]{6}Z\.json$' || true)"
+          invalid="$(printf '%s\n' "$staged" | grep -Ev '^(automation_intelligence/restored_five_native/shadow_outputs|automation_intelligence/restored_five_native/shadow_reconciliations)/(robustness_guardian|advanced_csv|alpha_synthesis|flow_microstructure|apex_council)/[0-9]{8}T[0-9]{6}Z\.json$' || true)"
           if [ -n "$invalid" ]; then
             echo "Refusing out-of-scope shadow output mutation:" >&2
             printf '%s\n' "$invalid" >&2

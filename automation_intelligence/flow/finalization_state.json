@@ -1,10 +1,46 @@
 {
-  "schema_version": "scheduler-finalization-v5.2",
-  "RUN_ID": "flow-2026-09-30T00:35:00Z",
+  "schema_version": "scheduler-finalization-v5.4",
+  "RUN_ID": "flow-20260930T083500Z",
   "RUN_STATUS": "FINALIZATION_VERIFIED",
-  "history_mode": "git_commit_staging",
-  "staging_commit_sha": "beaeb578cee73c648ce1247a5d6c083370ed347e",
-  "staging_blob_sha": "e638cfb9eeb6f994664bfc4e3435596e3c70a789",
-  "scheduler_id": "6abaef8effb48191aa5c959455451681",
+  "history_mode": "git_commit_finalization",
+  "payload": {
+    "result": "NEW_EVIDENCE",
+    "observations": [
+      {
+        "instrument": "GC",
+        "event_time": "2026-09-30 (source publication)",
+        "retrieval_time": "2026-09-30T08:33Z",
+        "representation": "U.S. gold futures, Reuters",
+        "value": 4227.5,
+        "units": "USD/oz",
+        "change_pct": 1.1,
+        "uncertainty": "contract month not specified; not MGC/order-book evidence"
+      },
+      {
+        "instrument": "BTC",
+        "event_time": "retrieved live snapshot",
+        "retrieval_time": "2026-09-30T08:33Z",
+        "representation": "Coinbase Derivatives BIP-20DEC30-CDE nano Bitcoin Perpetual",
+        "price": 83620,
+        "price_units": "USD",
+        "funding_rate_pct": 0.0004,
+        "funding_direction": "long pays short",
+        "open_interest": 128580000,
+        "oi_units": "USD",
+        "volume_24h": 259040000,
+        "volume_units": "USD",
+        "uncertainty": "single-venue contract; not cross-venue aggregate"
+      }
+    ],
+    "provenance": [
+      "Reuters 2026-09-30 gold report",
+      "Coinbase Derivatives Exchange public contract page"
+    ],
+    "gaps": [
+      "No fresh NQ/MNQ, ES/MES, YM/MYM, RTY/M2K or MGC microstructure within one-call budget.",
+      "No depth/order-book evidence collected."
+    ],
+    "NEXT": "Next scheduled collection should seek exchange-native index/micro futures evidence; preserve representation identity."
+  },
   "execution_authorized": false
 }

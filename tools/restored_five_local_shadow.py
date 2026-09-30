@@ -122,6 +122,35 @@ def _bounded_items(values: object, *, limit: int = 120, max_items: int = 8) -> l
     return out
 
 
+def deterministic_summary(source: dict[str, object]) -> str:
+    expected = source.get("expected_RUN_ID")
+    observed = source.get("observed_worker_RUN_ID")
+    slot_status = source.get("slot_status")
+    worker_status = source.get("worker_receipt_status")
+    substantive = source.get("substantive_work_claimed") is True
+
+    parts: list[str] = []
+    if worker_status == "CHATGPT_CANONICAL_RECEIPT_PRESENT":
+        parts.append("Worker durability receipt verified.")
+    elif slot_status == "FALLBACK_LIVENESS_ONLY":
+        parts.append("Fallback-only durability receipt; worker completion is not verified.")
+    else:
+        parts.append("Worker durability receipt is not verified.")
+
+    if isinstance(expected, str) and isinstance(observed, str) and observed:
+        if expected == observed:
+            parts.append("Observed RUN_ID matches expected.")
+        else:
+            parts.append("Observed RUN_ID differs from expected.")
+
+    if substantive:
+        parts.append("Substantive work is claimed by the source evidence.")
+    else:
+        parts.append("Substantive work is not proven by this durability evidence.")
+
+    return _bounded_text(" ".join(parts), 350)
+
+
 def enforce_evidence_guards(
     source: dict[str, object],
     model_payload: dict[str, object],
@@ -159,7 +188,7 @@ def enforce_evidence_guards(
         if marker not in conflicts:
             conflicts.append(marker)
 
-    guarded["summary"] = _bounded_text(model_payload.get("summary", ""), 350)
+    guarded["summary"] = deterministic_summary(source)
     guarded["net_new_delta"] = "SHADOW_ASSESSMENT_ONLY"
     guarded["data_gaps"] = _bounded_items(gaps, limit=120, max_items=8)
     guarded["conflicts"] = _bounded_items(conflicts, limit=120, max_items=8)

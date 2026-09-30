@@ -2,7 +2,7 @@ name: restored-five-native-liveness
 
 on:
   workflow_run:
-    workflows: ["restored-five-durability-watchdog", "automation-durability-watchdog", "github-native-ai-plane"]
+    workflows: ["automation-durability-watchdog"]
     types: [completed]
     branches: [main]
   push:
@@ -25,7 +25,7 @@ concurrency:
 
 jobs:
   persist:
-    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    if: github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'schedule')
     runs-on: ubuntu-latest
     steps:
       - name: Check out main

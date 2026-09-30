@@ -11,6 +11,7 @@ from urllib.request import Request, urlopen
 
 CONTROL_REL = Path("automation_intelligence/restored_five_native/control_plane.json")
 LEDGER_ROOT = Path("automation_intelligence/restored_five_native/receipts")
+LATE_VERIFICATION_ROOT = Path("automation_intelligence/restored_five_native/late_verifications")
 
 
 @dataclass(frozen=True)
@@ -161,6 +162,61 @@ def receipt_path(root: Path, lane: Lane, slot_utc: datetime) -> Path:
     return root / LEDGER_ROOT / lane.name / f"{slot_id}.json"
 
 
+def late_verification_path(root: Path, lane: Lane, slot_utc: datetime) -> Path:
+    slot_id = slot_utc.strftime("%Y%m%dT%H%M%SZ")
+    return root / LATE_VERIFICATION_ROOT / lane.name / f"{slot_id}.json"
+
+
+def persist_late_verification(
+    root: Path,
+    control: Control,
+    lane: Lane,
+    slot_utc: datetime,
+    now_utc: datetime,
+) -> Path | None:
+    original_path = receipt_path(root, lane, slot_utc)
+    if not original_path.is_file():
+        return None
+    try:
+        original = json.loads(original_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return None
+    if original.get("slot_status") != "FALLBACK_LIVENESS_ONLY":
+        return None
+
+    late_path = late_verification_path(root, lane, slot_utc)
+    if late_path.exists():
+        return None
+
+    status, worker = worker_receipt_status(root, control, lane, slot_utc)
+    if status != "CHATGPT_CANONICAL_RECEIPT_PRESENT":
+        return None
+
+    expected_run_id = f"{lane.run_prefix}-{slot_utc.strftime('%Y%m%dT%H%M%SZ')}"
+    payload = {
+        "schema_version": "restored-five-native-late-verification-v1",
+        "control_plane_id": "restored-five-native-liveness-v1",
+        "lane": lane.name,
+        "scheduler_id": lane.scheduler_id,
+        "slot_utc": utc_z(slot_utc),
+        "expected_RUN_ID": expected_run_id,
+        "observed_at_utc": utc_z(now_utc),
+        "origin": "GITHUB_ACTIONS_NATIVE_LIVENESS",
+        "verification_status": "LATE_WORKER_RECEIPT_VERIFIED",
+        "original_receipt": str(original_path.relative_to(root)),
+        "substantive_work_claimed": False,
+        "execution_authorized": False,
+        "observed_worker_RUN_ID": worker.get("RUN_ID"),
+        "observed_worker_schema_version": worker.get("schema_version"),
+        "observed_worker_RUN_STATUS": worker.get("RUN_STATUS"),
+    }
+    late_path.parent.mkdir(parents=True, exist_ok=True)
+    with late_path.open("x", encoding="utf-8") as handle:
+        json.dump(payload, handle, sort_keys=True, indent=2)
+        handle.write("\n")
+    return late_path
+
+
 def persist_slot(root: Path, control: Control, lane: Lane, slot_utc: datetime, now_utc: datetime) -> Path | None:
     path = receipt_path(root, lane, slot_utc)
     if path.exists():
@@ -198,6 +254,10 @@ def run(root: Path, now_utc: datetime) -> list[str]:
         path = persist_slot(root, control, lane, slot, now_utc)
         if path is not None:
             changed.append(str(path.relative_to(root)))
+            continue
+        late = persist_late_verification(root, control, lane, slot, now_utc)
+        if late is not None:
+            changed.append(str(late.relative_to(root)))
     return changed
 
 

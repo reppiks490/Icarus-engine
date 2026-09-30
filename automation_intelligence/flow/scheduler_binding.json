@@ -22,8 +22,17 @@
   "current_slot_continuation_required": true,
   "current_slot_rule": "Recovery of prior partial/stranded runs is STEP 0 only; every invocation must proceed into its own current scheduled RUN_ID unless current-slot startup persistence itself fails after one safe retry.",
   "runtime_contract": "automation_intelligence/flow/runtime_v5_contract.json",
-  "runtime_protocol": "git_commit_staging_v5",
+  "runtime_protocol": "scheduler-v5.4-minimal-durability",
   "staging": "automation_intelligence/flow/staging.json",
   "finalization_state": "automation_intelligence/flow/finalization_state.json",
-  "compatibility_mirrors_block_success": false
+  "compatibility_mirrors_block_success": false,
+  "startup_state": "automation_intelligence/flow/startup_state.json",
+  "heartbeat": "automation_intelligence/flow/heartbeat.json",
+  "canonical_closure": [
+    "startup_state",
+    "finalization_state",
+    "heartbeat"
+  ],
+  "staging_status": "DEPRECATED_NONCANONICAL",
+  "compatibility_mirrors_nonblocking": true
 }

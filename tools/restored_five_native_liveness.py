@@ -109,9 +109,9 @@ def _read_external_json(repository: str, path: str) -> tuple[str, dict]:
     try:
         with urlopen(request, timeout=10) as response:
             raw = response.read().decode("utf-8")
-    except HTTPError as exc:
-        if exc.code == 404:
-            return "MISSING", {}
+    except HTTPError:
+        # Cross-repo raw reads can return 404 for private/inaccessible repos,
+        # which is not proof that the canonical file is missing.
         return "UNAVAILABLE", {}
     except (URLError, TimeoutError, OSError):
         return "UNAVAILABLE", {}

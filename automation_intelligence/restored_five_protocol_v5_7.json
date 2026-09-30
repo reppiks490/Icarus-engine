@@ -1,5 +1,5 @@
 {
-  "schema_version": "restored-five-protocol-v5.7",
+  "schema_version": "restored-five-protocol-v5.7.1",
   "authority_scope": "Robustness Guardian, Advanced CSV, Alpha Synthesis, Microstructure Sensor Grid, Apex Council only",
   "execution_authorized": false,
   "critical_path": [
@@ -10,10 +10,17 @@
     "file": "finalization_state.json",
     "rule": "After one fresh read for SHA and monotonic RUN_ID check, write the canonical receipt immediately. No startup-state write is required or permitted before it.",
     "status": "RUN_PERSISTED",
-    "completion_semantics": "DURABILITY_RECEIPT_ONLY"
+    "completion_semantics": "DURABILITY_RECEIPT_ONLY",
+    "valid_receipt_requirements": {
+      "schema_version": "scheduler-finalization-v5.7",
+      "RUN_STATUS": "RUN_PERSISTED",
+      "completion_semantics": "DURABILITY_RECEIPT_ONLY",
+      "execution_authorized": false
+    },
+    "same_run_idempotency": "Same RUN_ID is already complete only when every valid_receipt_requirements field matches. A malformed same-RUN receipt must not be accepted as success; repair once from fresh SHA if safe, otherwise fail closed and let watchdog record MALFORMED_CANONICAL_RECEIPT."
   },
   "monotonicity": {
-    "finalization_state": "Never overwrite an existing lexicographically newer RUN_ID. Same RUN_ID is idempotent. A delayed older invocation stops as SUPERSEDED.",
+    "finalization_state": "Never overwrite an existing lexicographically newer RUN_ID. Same RUN_ID may be rewritten only to repair a structurally invalid canonical receipt; a structurally valid same-RUN receipt is immutable/idempotent.",
     "heartbeat": "Never overwrite a heartbeat with an older RUN_ID.",
     "evidence_state": "Never overwrite evidence_state with an older RUN_ID."
   },

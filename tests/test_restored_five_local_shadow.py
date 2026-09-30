@@ -195,5 +195,31 @@ class RestoredFiveLocalShadowTests(unittest.TestCase):
             self.assertTrue(artifact["deterministic_facts"]["fallback_only"])
 
 
+    def test_guarded_shadow_output_is_bounded_and_deduplicated(self):
+        source = {
+            **sample_receipt(),
+            "expected_RUN_ID": "robustness-guardian-20260930T220500Z",
+            "observed_worker_RUN_ID": "robustness-guardian-20260930T170500Z",
+        }
+        long_item = "X" * 300
+        model_payload = {
+            "lane": "robustness_guardian",
+            "summary": "S" * 700,
+            "net_new_delta": "model-value",
+            "data_gaps": [long_item, long_item],
+            "conflicts": [long_item, long_item],
+            "execution_authorized": False,
+        }
+        guarded = enforce_evidence_guards(source, model_payload)
+        self.assertLessEqual(len(guarded["summary"]), 350)
+        self.assertEqual(guarded["net_new_delta"], "SHADOW_ASSESSMENT_ONLY")
+        self.assertLessEqual(len(guarded["data_gaps"]), 8)
+        self.assertLessEqual(len(guarded["conflicts"]), 8)
+        self.assertTrue(all(len(item) <= 120 for item in guarded["data_gaps"]))
+        self.assertTrue(all(len(item) <= 120 for item in guarded["conflicts"]))
+        self.assertEqual(len(set(guarded["data_gaps"])), len(guarded["data_gaps"]))
+        self.assertEqual(len(set(guarded["conflicts"])), len(guarded["conflicts"]))
+
+
 if __name__ == "__main__":
     unittest.main()

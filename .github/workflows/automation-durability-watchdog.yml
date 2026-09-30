@@ -7,7 +7,11 @@ on:
       - ".github/workflows/automation-durability-watchdog.yml"
       - "tools/automation_durability_watchdog.py"
   schedule:
-    - cron: "*/5 * * * *"
+    # Two independent 10-minute streams, staggered by 5 minutes. This preserves
+    # effective 5-minute coverage while avoiding :00 and reducing reliance on a
+    # single GitHub schedule stream, which may be delayed or dropped under load.
+    - cron: "2-52/10 * * * *"
+    - cron: "7-57/10 * * * *"
   workflow_dispatch:
 
 permissions:

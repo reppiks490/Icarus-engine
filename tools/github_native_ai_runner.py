@@ -137,6 +137,8 @@ def _failure_result(
         "started_at_utc": _utc_z(started_at),
         "completed_at_utc": _utc_z(completed_at),
         "run_origin": "GITHUB_NATIVE_AI",
+        "control_plane_id": control.control_plane_id,
+        "inference_backend": control.inference_backend,
         **workflow,
         "RUN_STATUS": "FAILED",
         "FINALIZATION_STATUS": "FAILED",
@@ -151,6 +153,91 @@ def _failure_result(
     else:
         status = "MODEL_FAILED"
     return RunResult(status=status, failure_path=path)
+
+
+
+def _deterministic_liveness_fingerprint(control: ControlPlane, slot: Slot) -> str:
+    canonical = json.dumps(
+        {
+            "control_plane_id": control.control_plane_id,
+            "inference_backend": "deterministic_liveness",
+            "lane": slot.lane.name,
+            "slot_id": slot.slot_id,
+            "slot_utc": _utc_z(slot.scheduled_utc),
+            "execution_authorized": False,
+        },
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode("utf-8")
+    return hashlib.sha256(canonical).hexdigest()
+
+
+def _run_deterministic_liveness(
+    root: Path,
+    control: ControlPlane,
+    slot: Slot,
+    workflow: dict[str, str],
+    run_id: str,
+    started_at: datetime,
+    completed_at: datetime,
+) -> RunResult:
+    payload = {
+        "lane": slot.lane.name,
+        "summary": "GitHub-native liveness persisted; substantive AI inference was not executed in zero-cost mode.",
+        "net_new_delta": "LIVENESS_PERSISTED_WORK_PENDING",
+        "data_gaps": ["SUBSTANTIVE_AI_INFERENCE_NOT_EXECUTED"],
+        "conflicts": [],
+        "execution_authorized": False,
+    }
+    validated = validate_lane_output(payload, slot.lane.name)
+    response_id = f"deterministic:{slot.slot_id}:{workflow['workflow_run_id']}.{workflow['workflow_run_attempt']}"
+    fingerprint = _deterministic_liveness_fingerprint(control, slot)
+    output_path = _artifact_path(root, slot.lane.name, "outputs", slot.slot_id, run_id)
+    receipt_path = _artifact_path(root, slot.lane.name, "runs", slot.slot_id, run_id)
+
+    output_payload: dict[str, object] = {
+        "schema_version": "omega-stack-github-native-output-v1",
+        "lane": slot.lane.name,
+        "RUN_ID": run_id,
+        "SLOT_ID": slot.slot_id,
+        "response_id": response_id,
+        "inference_backend": "deterministic_liveness",
+        "payload": validated,
+        "execution_authorized": False,
+    }
+    receipt: dict[str, object] = {
+        "schema_version": "omega-stack-github-native-run-v1",
+        "engine": slot.lane.name,
+        "lane": slot.lane.name,
+        "RUN_ID": run_id,
+        "SLOT_ID": slot.slot_id,
+        "slot_local": slot.scheduled_local.isoformat(),
+        "slot_utc": _utc_z(slot.scheduled_utc),
+        "started_at_utc": _utc_z(started_at),
+        "completed_at_utc": _utc_z(completed_at),
+        "run_origin": "GITHUB_NATIVE_LIVENESS",
+        "control_plane_id": control.control_plane_id,
+        "inference_backend": "deterministic_liveness",
+        **workflow,
+        "model": "none",
+        "reasoning_effort": "none",
+        "request_fingerprint": fingerprint,
+        "response_id": response_id,
+        "response_status": "not_applicable",
+        "output_validation_status": "VALID",
+        "RUN_STATUS": "RUN_PERSISTED",
+        "FINALIZATION_STATUS": "VERIFIED",
+        "DATA_GAPS": list(validated["data_gaps"]),
+        "CONFLICTS": list(validated["conflicts"]),
+        "execution_authorized": False,
+    }
+    _write_json_exclusive(output_path, output_payload)
+    _write_json_exclusive(receipt_path, receipt)
+    return RunResult(
+        status="RUN_PERSISTED",
+        receipt_path=receipt_path,
+        output_path=output_path,
+    )
 
 
 def run_lane(
@@ -186,6 +273,25 @@ def run_lane(
     run_id = f"{slot.lane.name}-{slot.slot_id}-{workflow['workflow_run_id']}-{workflow['workflow_run_attempt']}"
 
     try:
+        control = load_control_plane(root)
+    except (ConfigurationError, ValueError):
+        return _failure_result(
+            root, slot, workflow, run_id, started_at, clock(),
+            "CONFIGURATION_BLOCKED_PROMPT_OR_CONTROL_PLANE",
+        )
+
+    if control.inference_backend == "deterministic_liveness":
+        return _run_deterministic_liveness(
+            root,
+            control,
+            slot,
+            workflow,
+            run_id,
+            started_at,
+            clock(),
+        )
+
+    try:
         bearer_token = token_resolver(env)
     except ConfigurationError:
         return _failure_result(
@@ -204,9 +310,8 @@ def run_lane(
         )
 
     try:
-        control = load_control_plane(root)
         request = build_lane_request(root, control, slot)
-    except ConfigurationError:
+    except (ConfigurationError, ValueError):
         return _failure_result(
             root, slot, workflow, run_id, started_at, clock(),
             "CONFIGURATION_BLOCKED_PROMPT_OR_CONTROL_PLANE",

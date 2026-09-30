@@ -56,6 +56,7 @@ class WatchdogConfig:
     identity_bound_at_utc: datetime
     jitter_seconds: int
     lanes: tuple[LaneConfig, ...]
+    inference_backend: str = "chatgpt_connector"
 
 
 @dataclass(frozen=True)
@@ -168,6 +169,7 @@ def load_watchdog_config(root: Path) -> WatchdogConfig:
         identity_bound_at_utc=identity_bound,
         jitter_seconds=jitter,
         lanes=tuple(lanes),
+        inference_backend="chatgpt_connector",
     )
 
 
@@ -248,6 +250,10 @@ def load_v3_watchdog_config(root: Path) -> WatchdogConfig:
         if identity_bound < created_at:
             raise ValueError("activated_at_utc cannot predate created_at_utc")
 
+    inference_backend = str(payload.get("inference_backend", "openai"))
+    if inference_backend not in {"openai", "deterministic_liveness"}:
+        raise ValueError("invalid v3 inference_backend")
+
     lanes.sort(key=lambda x: x.minute)
     return WatchdogConfig(
         control_plane_id=V3_CONTROL_PLANE_ID,
@@ -258,6 +264,7 @@ def load_v3_watchdog_config(root: Path) -> WatchdogConfig:
         identity_bound_at_utc=identity_bound,
         jitter_seconds=360,
         lanes=tuple(lanes),
+        inference_backend=inference_backend,
     )
 
 
@@ -389,16 +396,32 @@ def _validate_v3_receipt(
         "engine": slot.lane.name,
         "lane": slot.lane.name,
         "SLOT_ID": slot.slot_id,
-        "run_origin": "GITHUB_NATIVE_AI",
         "control_plane_id": config.control_plane_id,
         "repository": "reppiks490/Icarus-engine",
         "branch": "main",
-        "response_status": "completed",
         "output_validation_status": "VALID",
         "RUN_STATUS": "RUN_PERSISTED",
         "FINALIZATION_STATUS": "VERIFIED",
         "execution_authorized": False,
     }
+    if config.inference_backend == "deterministic_liveness":
+        expected.update(
+            {
+                "run_origin": "GITHUB_NATIVE_LIVENESS",
+                "inference_backend": "deterministic_liveness",
+                "response_status": "not_applicable",
+                "model": "none",
+                "reasoning_effort": "none",
+            }
+        )
+    else:
+        expected.update(
+            {
+                "run_origin": "GITHUB_NATIVE_AI",
+                "inference_backend": "openai",
+                "response_status": "completed",
+            }
+        )
     for key, value in expected.items():
         if payload.get(key) != value:
             errors.append(f"{key} mismatch")

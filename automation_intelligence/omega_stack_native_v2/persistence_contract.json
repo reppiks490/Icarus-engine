@@ -1,6 +1,6 @@
 {
   "schema_version": "omega-stack-persistence-v4.3-append-first",
-  "contract_revision": "2026-09-30-native-v2-r12.3",
+  "contract_revision": "2026-09-30-native-v2-r12.4",
   "migrated_from": "omega-stack-persistence-v4.2-write-first",
   "control_plane_id": "omega-aion-daedalus-native-v2",
   "authoritative_branch": "automation/omega-native-v2",
@@ -9,9 +9,9 @@
   "scheduler_mutation_forbidden": true,
   "purpose": "Make natural-run liveness durable with exactly one GitHub mutation and zero prerequisite or follow-up external calls inside the scheduled execution.",
   "root_cause_basis": {
-    "observed_failure_pattern": "Post-r12 Flow triggered at 06:24:48Z and remained enabled, but the scheduled GitHub create_file still did not appear. Earlier failed lanes sometimes auto-paused about 64 seconds after trigger. GitHub app-specific permission remains Allow all actions.",
-    "inference_boundary": "Task enablement and connector persistence are separate health dimensions. The registry does not expose the exact internal reason when a scheduled connector action disappears, so platform-internal causation is not asserted.",
-    "corrective_principle": "Keep the ChatGPT scheduled critical path at one external call; use GitHub-native reconciliation as independent durability; separately classify scheduler trigger health versus connector persistence health."
+    "observed_failure_pattern": "Scheduler triggers remain healthy and enabled while natural GitHub mutations are intermittently absent. The clean DAEDALUS r13 experiment at 2026-09-30T12:47:39.641145Z also failed using fetch_file+update_file against an existing file on main.",
+    "inference_boundary": "The evidence rules out a simple create_file-vs-update_file or state-branch-vs-main explanation. The automation registry exposes no internal connector invocation error, so the exact platform-internal cause remains unknown.",
+    "corrective_principle": "Do not churn prompts or fabricate receipts. Keep the minimal r12 path and independently persist missing-slot evidence/backlog with GitHub-native reconciliation."
   },
   "phase1_liveness": {
     "order": 1,
@@ -32,7 +32,8 @@
     "compact_prompt_required": true,
     "plugin_discovery_before_liveness": false,
     "analysis_before_liveness": false,
-    "max_total_external_calls": 1
+    "max_total_external_calls": 1,
+    "rule_after_r13_falsification": "Retain this r12 create_file path because alternate main/update-file persistence also failed under a clean natural run; further prompt-level mutation requires new evidence."
   },
   "phase2_work": {
     "order": 2,
@@ -104,9 +105,10 @@
     "work_completion": "NOT_APPLICABLE_IN_R12_SCHEDULED_LIVENESS_ONLY; scheduled phase-2 work is disabled and tracked separately if performed outside the natural critical path.",
     "stack_5_of_5": "All five enabled authoritative lanes satisfy sustained_lane while scheduler registry remains exactly five enabled authoritative lanes; r12 does not require scheduled work receipts.",
     "scheduler_trigger_health": "Authoritative task remains enabled and advances last_run_time on its intended cadence.",
-    "connector_persistence_health": "Natural immutable run receipt exists with exact identity/slot fields and valid jitter.",
+    "connector_persistence_health": "Natural immutable r12 run receipt exists with exact identity/slot fields and valid jitter. Absence after a confirmed scheduler trigger is classified as connector persistence failure, not scheduler failure.",
     "watchdog_health": "GitHub Actions watchdog completes successfully and writes only reconciliation namespace transitions.",
-    "do_not_conflate_health_dimensions": true
+    "do_not_conflate_health_dimensions": true,
+    "architecture_status": "R12 retained as least-complex natural connector path after r13 main/update experiment failed. No additional prompt protocol change is authorized by current evidence."
   },
   "legacy_artifacts": {
     "v3": "heartbeat.json, checkpoint.json, core/, history/, finalization/ are read-only historical evidence.",
@@ -209,5 +211,20 @@
     "remained_enabled": true,
     "natural_receipt_created": false,
     "conclusion": "r12 reduced the auto-disable failure surface in this probe, but connector delivery remains intermittent"
+  },
+  "r13_falsification": {
+    "protocol_tested": "omega-stack-persistence-r13-main-heartbeat",
+    "lane": "daedalus",
+    "trigger_utc": "2026-09-30T12:47:39.641145Z",
+    "target_branch": "main",
+    "operations": [
+      "fetch_file existing heartbeat",
+      "update_file same heartbeat"
+    ],
+    "result": "FAILED_NO_MUTATION",
+    "hypothesis_status": "FALSIFIED",
+    "rollback_complete": true,
+    "pr16": "CLOSED_UNMERGED",
+    "seeded_files_removed": true
   }
 }

@@ -6,6 +6,8 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
+from urllib.error import HTTPError, URLError
+from urllib.request import Request, urlopen
 
 CONTROL_REL = Path("automation_intelligence/restored_five_native/control_plane.json")
 LEDGER_ROOT = Path("automation_intelligence/restored_five_native/receipts")
@@ -19,10 +21,12 @@ class Lane:
     scheduler_id: str
     worker_root: str
     run_prefix: str
+    worker_repository: str | None = None
 
 
 @dataclass(frozen=True)
 class Control:
+    repository: str
     activated_at_utc: datetime
     grace_minutes: int
     catchup_horizon_minutes: int
@@ -59,6 +63,11 @@ def load_control(root: Path) -> Control:
             scheduler_id=str(item["scheduler_id"]),
             worker_root=str(item["worker_root"]),
             run_prefix=str(item["run_prefix"]),
+            worker_repository=(
+                str(item["worker_repository"])
+                if item.get("worker_repository")
+                else None
+            ),
         )
         for item in payload["lanes"]
     )
@@ -72,6 +81,7 @@ def load_control(root: Path) -> Control:
     if len({lane.scheduler_id for lane in lanes}) != len(lanes):
         raise ValueError("scheduler IDs must be unique")
     return Control(
+        repository=str(payload["repository"]),
         activated_at_utc=parse_utc(str(payload["activated_at_utc"])),
         grace_minutes=int(payload["grace_minutes"]),
         catchup_horizon_minutes=int(payload["catchup_horizon_minutes"]),
@@ -92,13 +102,49 @@ def expected_slots(control: Control, now_utc: datetime):
         cursor += timedelta(minutes=1)
 
 
-def worker_receipt_status(root: Path, lane: Lane, slot_utc: datetime) -> tuple[str, dict]:
-    expected_run_id = f"{lane.run_prefix}-{slot_utc.strftime('%Y%m%dT%H%M%SZ')}"
-    path = root / lane.worker_root / "finalization_state.json"
+def _read_external_json(repository: str, path: str) -> tuple[str, dict]:
+    url = f"https://raw.githubusercontent.com/{repository}/main/{path}"
+    request = Request(url, headers={"User-Agent": "restored-five-native-liveness/1"})
     try:
-        obj = json.loads(path.read_text(encoding="utf-8"))
-    except (FileNotFoundError, json.JSONDecodeError):
-        return "WORKER_RECEIPT_MISSING", {}
+        with urlopen(request, timeout=10) as response:
+            raw = response.read().decode("utf-8")
+    except HTTPError as exc:
+        if exc.code == 404:
+            return "MISSING", {}
+        return "UNAVAILABLE", {}
+    except (URLError, TimeoutError, OSError):
+        return "UNAVAILABLE", {}
+    try:
+        payload = json.loads(raw)
+    except json.JSONDecodeError:
+        return "MALFORMED", {}
+    return ("FOUND", payload) if isinstance(payload, dict) else ("MALFORMED", {})
+
+
+def worker_receipt_status(
+    root: Path,
+    control: Control,
+    lane: Lane,
+    slot_utc: datetime,
+    *,
+    external_reader=_read_external_json,
+) -> tuple[str, dict]:
+    expected_run_id = f"{lane.run_prefix}-{slot_utc.strftime('%Y%m%dT%H%M%SZ')}"
+    worker_repo = lane.worker_repository or control.repository
+    relpath = f"{lane.worker_root}/finalization_state.json"
+
+    if worker_repo == control.repository:
+        path = root / relpath
+        try:
+            obj = json.loads(path.read_text(encoding="utf-8"))
+        except (FileNotFoundError, json.JSONDecodeError):
+            return "WORKER_RECEIPT_MISSING", {}
+    else:
+        read_status, obj = external_reader(worker_repo, relpath)
+        if read_status == "UNAVAILABLE":
+            return "WORKER_RECEIPT_CHECK_UNAVAILABLE", {}
+        if read_status != "FOUND":
+            return "WORKER_RECEIPT_MISSING", {}
 
     valid = (
         obj.get("RUN_ID") == expected_run_id
@@ -119,7 +165,7 @@ def persist_slot(root: Path, control: Control, lane: Lane, slot_utc: datetime, n
     path = receipt_path(root, lane, slot_utc)
     if path.exists():
         return None
-    status, worker = worker_receipt_status(root, lane, slot_utc)
+    status, worker = worker_receipt_status(root, control, lane, slot_utc)
     expected_run_id = f"{lane.run_prefix}-{slot_utc.strftime('%Y%m%dT%H%M%SZ')}"
     payload = {
         "schema_version": "restored-five-native-liveness-receipt-v1",

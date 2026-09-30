@@ -225,6 +225,16 @@ def expected_slot(now: datetime, minute: int, grace_minutes: int) -> datetime:
     return slot
 
 
+def canonical_receipt_valid(finalization: dict, expected_run_id: str) -> bool:
+    return (
+        finalization.get("RUN_ID") == expected_run_id
+        and finalization.get("RUN_STATUS") == "RUN_PERSISTED"
+        and finalization.get("schema_version") == "scheduler-finalization-v5.7"
+        and finalization.get("completion_semantics") == "DURABILITY_RECEIPT_ONLY"
+        and finalization.get("execution_authorized") is False
+    )
+
+
 def monitor_missing_receipt(
     repo_root: Path,
     lane: str,
@@ -247,7 +257,7 @@ def monitor_missing_receipt(
     finalization = read_json(finalization_path)
     final_run_id = finalization.get("RUN_ID")
 
-    if final_run_id == expected_run_id:
+    if canonical_receipt_valid(finalization, expected_run_id):
         return []
 
     ordering = compare_run_ids(final_run_id, expected_run_id)
@@ -255,14 +265,16 @@ def monitor_missing_receipt(
     if ordering == 1:
         return []
 
-    if incident_exists(incident_path, "MISSING_CANONICAL_RECEIPT", expected_run_id):
+    malformed_same_run = final_run_id == expected_run_id
+    record_type = "MALFORMED_CANONICAL_RECEIPT" if malformed_same_run else "MISSING_CANONICAL_RECEIPT"
+    if incident_exists(incident_path, record_type, expected_run_id):
         return []
 
     append_incident(
         incident_path,
         {
-            "schema_version": "restored-five-watchdog-incident-v2",
-            "record_type": "MISSING_CANONICAL_RECEIPT",
+            "schema_version": "restored-five-watchdog-incident-v3",
+            "record_type": record_type,
             "lane": lane,
             "scheduler_id": scheduler_id,
             "RUN_ID": expected_run_id,
@@ -270,7 +282,15 @@ def monitor_missing_receipt(
             "observed_at_utc": now.isoformat().replace("+00:00", "Z"),
             "grace_minutes": grace_minutes,
             "observed_finalization_RUN_ID": final_run_id,
-            "reason": "EXPECTED_SLOT_HAS_NO_CURRENT_CANONICAL_RECEIPT_AFTER_GRACE",
+            "observed_schema_version": finalization.get("schema_version"),
+            "observed_RUN_STATUS": finalization.get("RUN_STATUS"),
+            "observed_completion_semantics": finalization.get("completion_semantics"),
+            "observed_execution_authorized": finalization.get("execution_authorized"),
+            "reason": (
+                "EXPECTED_RUN_ID_PRESENT_BUT_CANONICAL_RECEIPT_FIELDS_INVALID"
+                if malformed_same_run
+                else "EXPECTED_SLOT_HAS_NO_CURRENT_CANONICAL_RECEIPT_AFTER_GRACE"
+            ),
             "execution_authorized": False,
         },
     )

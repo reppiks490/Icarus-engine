@@ -73,7 +73,7 @@ def test_build_command_is_single_turn_cpu_and_schema_constrained(tmp_path: Path)
     }
     assert cmd[cmd.index("-t") + 1] == "4"
     assert cmd[cmd.index("-c") + 1] == "4096"
-    assert cmd[cmd.index("-n") + 1] == "384"
+    assert cmd[cmd.index("-n") + 1] == "768"
 
 
 def test_extract_json_object_ignores_thinking_and_noise() -> None:

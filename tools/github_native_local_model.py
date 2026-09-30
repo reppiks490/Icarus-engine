@@ -101,6 +101,10 @@ def wrap_terminal_command(
     *,
     script_binary: str | None = None,
 ) -> list[str]:
+    # llama-completion is designed for redirected one-and-done automation.
+    # llama-cli still needs a pseudo-terminal on affected Linux builds.
+    if Path(command[0]).name == "llama-completion":
+        return command
     binary = script_binary if script_binary is not None else shutil.which("script")
     if not binary:
         return command

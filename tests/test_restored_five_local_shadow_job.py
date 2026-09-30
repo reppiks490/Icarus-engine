@@ -7,6 +7,7 @@ from pathlib import Path
 from tools.restored_five_local_shadow_job import (
     LANES,
     reconcile_late_verifications,
+    reconcile_pre_hardening_summaries,
     select_pending,
     select_pending_batch,
 )
@@ -139,6 +140,43 @@ class RestoredFiveLocalShadowJobTests(unittest.TestCase):
                 ],
             )
             self.assertEqual(select_pending_batch(root, limit=0), [])
+
+
+    def test_pre_hardening_summary_gets_separate_correction(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            slot = "20260930T223500Z"
+            receipt = root / f"automation_intelligence/restored_five_native/receipts/flow_microstructure/{slot}.json"
+            shadow = root / f"automation_intelligence/restored_five_native/shadow_outputs/flow_microstructure/{slot}.json"
+            receipt.parent.mkdir(parents=True, exist_ok=True)
+            shadow.parent.mkdir(parents=True, exist_ok=True)
+            receipt.write_text(
+                '{"slot_status":"WORKER_RECEIPT_VERIFIED","worker_receipt_status":"CHATGPT_CANONICAL_RECEIPT_PRESENT","expected_RUN_ID":"flow-20260930T223500Z","observed_worker_RUN_ID":"flow-20260930T223500Z","substantive_work_claimed":false,"execution_authorized":false}',
+                encoding="utf-8",
+            )
+            shadow.write_text(
+                '{"schema_version":"restored-five-local-shadow-v1","payload":{"summary":"No gaps or conflicts.","data_gaps":["SUBSTANTIVE_WORK_NOT_PROVEN"]}}',
+                encoding="utf-8",
+            )
+            shadow_before = shadow.read_text()
+
+            created = reconcile_pre_hardening_summaries(root)
+            self.assertEqual(len(created), 1)
+            payload = __import__("json").loads(created[0].read_text())
+            self.assertEqual(
+                payload["reconciliation_kind"],
+                "PRE_HARDENING_SUMMARY_CORRECTION",
+            )
+            self.assertIn("Worker durability receipt verified.", payload["effective_summary"])
+            self.assertIn(
+                "Substantive work is not proven by this durability evidence.",
+                payload["effective_summary"],
+            )
+            self.assertEqual(shadow.read_text(), shadow_before)
+            self.assertFalse(payload["canonical_state_mutated"])
+            self.assertFalse(payload["execution_authorized"])
+
+            self.assertEqual(reconcile_pre_hardening_summaries(root), [])
 
 
 if __name__ == "__main__":

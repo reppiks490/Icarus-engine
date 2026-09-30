@@ -1,6 +1,12 @@
 name: github-native-ai-plane
 
 on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "automation_intelligence/omega_stack_native_v3/lanes/**"
+      - "automation_intelligence/omega_stack_native_v3/reconciliation/**"
+      - "automation_intelligence/omega_stack_native_v3/cutover/**"
   schedule:
     - cron: "4-59/5 * * * *"
   workflow_dispatch:

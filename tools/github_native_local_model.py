@@ -130,12 +130,24 @@ def _default_executor(command: list[str], timeout_seconds: int) -> tuple[int, st
     return result.returncode, result.stdout, result.stderr
 
 
+def normalize_terminal_text(text: str) -> str:
+    # Strip CSI/OSC terminal controls and normalize CR/backspace artifacts
+    # before structured parsing. Do not attempt to interpret model reasoning.
+    text = re.sub(r"\x1b\][^\x07\x1b]*(?:\x07|\x1b\\)", "", text)
+    text = re.sub(r"\x1b\[[0-?]*[ -/]*[@-~]", "", text)
+    text = text.replace("\r\n", "\n").replace("\r", "\n")
+    while "\b" in text:
+        text = re.sub(r"[^\n]\b", "", text)
+        text = text.replace("\b", "")
+    return "".join(ch for ch in text if ch in "\n\t" or ord(ch) >= 32)
+
+
 def safe_generation_preview(text: str, limit: int = 320) -> str:
-    cleaned = re.sub(r"<think>.*?</think>", "", text, flags=re.IGNORECASE | re.DOTALL)
+    cleaned = normalize_terminal_text(text)
+    cleaned = re.sub(r"<think>.*?</think>", "", cleaned, flags=re.IGNORECASE | re.DOTALL)
     open_think = re.search(r"<think>", cleaned, flags=re.IGNORECASE)
     if open_think is not None:
         cleaned = cleaned[:open_think.start()]
-    cleaned = re.sub(r"\x1b\[[0-9;]*[A-Za-z]", "", cleaned)
     cleaned = " ".join(cleaned.split())
     return cleaned[:limit]
 
@@ -184,19 +196,23 @@ def run_local_model(
         generated = ""
         if output_file.is_file():
             generated = output_file.read_text(encoding="utf-8", errors="replace")
+        normalized_generated = normalize_terminal_text(generated)
+        normalized_stdout = normalize_terminal_text(stdout)
         try:
-            payload = extract_json_object(generated)
-            response_text = generated
+            payload = extract_json_object(normalized_generated)
+            response_text = normalized_generated
         except TransportError:
             try:
-                payload = extract_json_object(stdout)
-                response_text = stdout
+                payload = extract_json_object(normalized_stdout)
+                response_text = normalized_stdout
             except TransportError:
-                preview = safe_generation_preview(generated or stdout)
+                generated_preview = safe_generation_preview(generated)
+                stdout_preview = safe_generation_preview(stdout)
                 raise TransportError(
                     "local model did not return structured JSON; "
                     f"generated_len={len(generated)} stdout_len={len(stdout)} "
-                    f"safe_preview={preview!r}"
+                    f"safe_generated_preview={generated_preview!r} "
+                    f"safe_stdout_preview={stdout_preview!r}"
                 ) from None
 
     validated = validate_lane_output(payload, request.lane)

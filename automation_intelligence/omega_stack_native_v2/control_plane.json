@@ -56,22 +56,22 @@
   "operational_state_branch": "automation/omega-native-v2",
   "agent_development_branch": "feature/aion-daedalus-prime-v2",
   "runtime_budget": {
-    "scheduled_execution_target_seconds": 20,
-    "observed_scheduler_run_window_seconds": "approximately 20-30",
-    "prompt_profile": "COMPACT_FIRST_ACTION",
+    "scheduled_execution_target_seconds": 15,
+    "observed_failure_signature": "Multiple failed lanes paused about 64 seconds after trigger; GitHub app permission is Allow all actions, while successful lanes persist normally.",
+    "prompt_profile": "SINGLE_EXTERNAL_CALL_LIVENESS_ONLY",
     "pre_liveness_github_reads": 0,
     "pre_liveness_tool_calls": 0,
     "phase1_mutations": 1,
-    "optional_work_calls_after_liveness": 1,
-    "optional_phase2_mutations": 1,
+    "optional_work_calls_after_liveness": 0,
+    "optional_phase2_mutations": 0,
     "mandatory_post_write_readbacks": 0,
-    "rule": "The scheduled prompt begins with an explicit GitHub create_file action and exact arguments. No prose, analysis, discovery, read, search, provider call, or other tool call may precede it."
+    "rule": "Each scheduled lane performs local clock/slot computation only, then exactly one GitHub create_file liveness mutation, then stops immediately. No recovery, research, provider, discovery, readback, or second external call occurs inside the scheduled run."
   },
   "execution_authorized": false,
   "created_at_utc": "2026-09-29T01:31:00Z",
   "reason": "Isolated namespace created after verified concurrent foreign writes repeatedly overwrote the prior omega_stack scheduler identities and AION state.",
-  "control_revision": "2026-09-29-native-v2-r11.1",
-  "live_connection_status": "DUAL_PLANE_WATCHDOG_VERIFIED_5_OF_5_ENABLED_RECOVERY_DEPLOYED",
+  "control_revision": "2026-09-30-native-v2-r12",
+  "live_connection_status": "FIVE_ENABLED_LIVENESS_ONLY_TIMEOUT_HARDENED_NATURAL_ACCEPTANCE_PENDING",
   "scheduler_health_policy": {
     "required_enabled_count": 5,
     "exact_minutes": [
@@ -98,8 +98,8 @@
     "authority": "live automation registry + isolated control plane"
   },
   "scheduler_alignment_snapshot": {
-    "observed_at_utc": "2026-09-29T20:44:36Z",
-    "status": "ENABLED_5_OF_5_DUAL_PLANE_WATCHDOG_VERIFIED_NATURAL_ACCEPTANCE_PENDING",
+    "observed_at_utc": "2026-09-30T06:19:42Z",
+    "status": "ENABLED_5_OF_5_R12_LIVENESS_ONLY_TIMEOUT_HARDENED",
     "enabled_required_lanes": 5,
     "cadence": [
       {
@@ -170,8 +170,8 @@
     "rule": "Actual start within +/-6 minutes is tolerated transport jitter and does not invalidate the run; scheduled_for records the nominal slot."
   },
   "prompt_protocol_alignment": {
-    "observed_at_utc": "2026-09-29T20:44:36Z",
-    "status": "ALIGNED_5_OF_5_R11_1_LIVENESS_SLOT_ATTRIBUTION_AND_BACKFILL",
+    "observed_at_utc": "2026-09-30T06:19:42Z",
+    "status": "ALIGNED_5_OF_5_R12_SINGLE_EXTERNAL_CALL_LIVENESS_ONLY",
     "protocol": "omega-stack-persistence-v4.3-append-first",
     "persistence_before_depth": true,
     "first_external_action": "GitHub create_file immutable natural liveness receipt",
@@ -182,20 +182,20 @@
     "pre_liveness_external_reads": 0,
     "plugin_discovery_before_liveness": false,
     "mandatory_post_write_readback": false,
+    "scheduled_external_call_budget": 1,
     "post_liveness_recovery": {
-      "priority": "BACKLOG_BEFORE_NORMAL_WORK",
-      "max_items_per_run": 1,
-      "required_origin": "BACKFILL_RECOVERY",
-      "no_natural_receipt_fabrication": true,
-      "leave_unresolved_if_eligibility_or_point_in_time_evidence_cannot_be_verified": true
+      "enabled": false,
+      "reason": "Removed from scheduled runtime after repeated approximately-64-second failure/pause signature. Recovery remains represented by the reconciliation backlog and is processed outside the natural liveness critical path."
+    },
+    "post_liveness_work": {
+      "enabled": false,
+      "reason": "Removed from scheduled runtime to keep natural liveness below the observed failure window."
     }
   },
   "last_manual_reconciliation": {
-    "observed_at_utc": "2026-09-29T20:44:36Z",
-    "assessment": "GitHub dual-plane watchdog is verified end-to-end; its first live reconciliation commit changed 140 reconciliation-only files and no runs/work paths. The known valid AION 17:36Z slot was not falsely incidented; Flow 19:24Z was correctly rejected for 424s jitter and OMEGA 20:00Z was correctly rejected for scheduled_for mismatch. Live registry is five authoritative tasks enabled with unchanged 00/12/24/36/48 cadence; retired tasks remain disabled.",
-    "corrective_action": "Keep watchdog active; retain strict 360s natural jitter validation; use nearest-boundary slot attribution; process at most one eligible backlog item only after current natural liveness is durable.",
-    "verified_actions_run_id": 36628003730,
-    "verified_reconciliation_commit": "f42ea0c1753632056f3b3e2c4efd3017734bc058",
+    "observed_at_utc": "2026-09-30T06:19:42Z",
+    "assessment": "Fresh registry evidence showed OMEGA, Macro, and Flow paused after failed executions; AION produced a valid 05:39:32Z natural receipt; DAEDALUS triggered at 05:46:08Z but had no new receipt at verification time. Prior pause incidents cluster about 64 seconds after trigger. GitHub plugin permission is Allow all actions, so approval gating is not the primary cause.",
+    "corrective_action": "Resume all five lanes and reduce every scheduled prompt to exactly one external GitHub create_file liveness call followed by immediate stop. Remove recovery, research, provider, discovery, readback, and phase-2 work from the scheduled critical path.",
     "natural_acceptance_pending": true
   },
   "dual_plane_durability": {
@@ -226,5 +226,13 @@
     "rule": "Natural prompts compute scheduled_for locally before the first external tool action as the nearest configured hourly lane boundary in America/Chicago, considering both previous and next boundaries; ties choose earlier.",
     "reason": "Prevents delayed invocations near the next boundary from claiming the previous hour, as observed in OMEGA.",
     "scheduler_jitter_validation_seconds": 360
+  },
+  "failure_containment": {
+    "revision": "r12-liveness-only",
+    "observed_pause_correlation_seconds": "approximately 64",
+    "github_permission_state": "Allow all actions",
+    "mitigation": "single external call then stop",
+    "watchdog_remains_enabled": true,
+    "execution_authorized": false
   }
 }

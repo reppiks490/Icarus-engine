@@ -8,7 +8,8 @@ def test_restored_five_workflow_has_one_complete_commit_block() -> None:
     text = WORKFLOW.read_text(encoding="utf-8")
 
     assert text.count("- name: Commit verified recovery state") == 1
-    assert text.count("git pull --rebase origin main") == 1
+    assert text.count("- name: Refresh main after grace") == 1
+    assert text.count("git pull --rebase origin main") == 2
     assert text.count("git push origin HEAD:main") == 1
     assert "\n || true)\"" not in text
 

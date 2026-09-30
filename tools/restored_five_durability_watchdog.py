@@ -248,6 +248,82 @@ def reconcile_lane(
     return changed
 
 
+def git_json_history(repo_root: Path, relpath: str, max_commits: int = 500) -> list[dict]:
+    try:
+        output = subprocess.check_output(
+            ["git", "log", f"-n{max_commits}", "--format=%H", "--", relpath],
+            cwd=repo_root,
+            text=True,
+            stderr=subprocess.DEVNULL,
+        ).strip()
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return []
+
+    records: list[dict] = []
+    for commit_sha in [line for line in output.splitlines() if line]:
+        try:
+            raw = subprocess.check_output(
+                ["git", "show", f"{commit_sha}:{relpath}"],
+                cwd=repo_root,
+                text=True,
+                stderr=subprocess.DEVNULL,
+            )
+            obj = json.loads(raw)
+        except (subprocess.CalledProcessError, FileNotFoundError, json.JSONDecodeError):
+            continue
+        if isinstance(obj, dict):
+            records.append(obj)
+    return records
+
+
+def records_for_run(repo_root: Path, relpath: str, expected_run_id: str) -> list[dict]:
+    records: list[dict] = []
+    current = read_json(repo_root / relpath)
+    if current.get("RUN_ID") == expected_run_id:
+        records.append(current)
+    for obj in git_json_history(repo_root, relpath):
+        if obj.get("RUN_ID") == expected_run_id and obj not in records:
+            records.append(obj)
+    return records
+
+
+def historical_record_state(
+    repo_root: Path,
+    relpath: str,
+    expected_run_id: str,
+    validator,
+) -> str:
+    records = records_for_run(repo_root, relpath, expected_run_id)
+    if any(validator(obj, expected_run_id) for obj in records):
+        return "VALID"
+    return "MALFORMED" if records else "MISSING"
+
+
+def eligible_slots(
+    now: datetime,
+    minute: int,
+    grace_minutes: int,
+    monitor_after: datetime | None,
+    horizon_hours: int,
+) -> list[datetime]:
+    cutoff = now - timedelta(minutes=grace_minutes)
+    latest = cutoff.replace(minute=minute, second=0, microsecond=0)
+    if latest > cutoff:
+        latest -= timedelta(hours=1)
+
+    floor = now - timedelta(hours=max(1, horizon_hours))
+    if monitor_after is not None and monitor_after > floor:
+        floor = monitor_after
+
+    slots: list[datetime] = []
+    slot = latest
+    while slot >= floor:
+        slots.append(slot)
+        slot -= timedelta(hours=1)
+    slots.reverse()
+    return slots
+
+
 def expected_slot(now: datetime, minute: int, grace_minutes: int) -> datetime:
     slot = now.replace(minute=minute, second=0, microsecond=0)
     if now < slot + timedelta(minutes=grace_minutes):
@@ -265,6 +341,71 @@ def canonical_receipt_valid(finalization: dict, expected_run_id: str) -> bool:
     )
 
 
+def _monitor_receipt_slots(
+    repo_root: Path,
+    lane: str,
+    lane_root: str,
+    scheduler_id: str,
+    run_prefix: str,
+    grace_minutes: int,
+    slots: list[datetime],
+) -> list[str]:
+    root = repo_root / lane_root
+    relpath = str((root / "finalization_state.json").relative_to(repo_root))
+    incident_path = root / "watchdog_incidents.jsonl"
+    changed = False
+
+    for slot in slots:
+        expected_run_id = f"{run_prefix}-{slot.strftime('%Y%m%dT%H%M%SZ')}"
+        state = historical_record_state(
+            repo_root,
+            relpath,
+            expected_run_id,
+            canonical_receipt_valid,
+        )
+        if state == "VALID":
+            continue
+
+        record_type = (
+            "MALFORMED_CANONICAL_RECEIPT"
+            if state == "MALFORMED"
+            else "MISSING_CANONICAL_RECEIPT"
+        )
+        if incident_exists(incident_path, record_type, expected_run_id):
+            continue
+
+        records = records_for_run(repo_root, relpath, expected_run_id)
+        observed = records[0] if records else {}
+        append_incident(
+            incident_path,
+            {
+                "schema_version": "restored-five-watchdog-incident-v4",
+                "record_type": record_type,
+                "lane": lane,
+                "scheduler_id": scheduler_id,
+                "RUN_ID": expected_run_id,
+                "slot_utc": slot.isoformat().replace("+00:00", "Z"),
+                "observed_at_utc": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+                "grace_minutes": grace_minutes,
+                "observed_finalization_RUN_ID": observed.get("RUN_ID"),
+                "observed_schema_version": observed.get("schema_version"),
+                "observed_RUN_STATUS": observed.get("RUN_STATUS"),
+                "observed_completion_semantics": observed.get("completion_semantics"),
+                "observed_execution_authorized": observed.get("execution_authorized"),
+                "history_reconstructed": True,
+                "reason": (
+                    "EXPECTED_RUN_ID_PRESENT_IN_GIT_HISTORY_BUT_CANONICAL_RECEIPT_FIELDS_INVALID"
+                    if state == "MALFORMED"
+                    else "EXPECTED_SLOT_HAS_NO_VALID_CANONICAL_RECEIPT_IN_GIT_HISTORY_AFTER_GRACE"
+                ),
+                "execution_authorized": False,
+            },
+        )
+        changed = True
+
+    return [str(incident_path.relative_to(repo_root))] if changed else []
+
+
 def monitor_missing_receipt(
     repo_root: Path,
     lane: str,
@@ -279,54 +420,38 @@ def monitor_missing_receipt(
     slot = expected_slot(now, minute, grace_minutes)
     if monitor_after is not None and slot < monitor_after:
         return []
-
-    expected_run_id = f"{run_prefix}-{slot.strftime('%Y%m%dT%H%M%SZ')}"
-    root = repo_root / lane_root
-    finalization_path = root / "finalization_state.json"
-    incident_path = root / "watchdog_incidents.jsonl"
-    finalization = read_json(finalization_path)
-    final_run_id = finalization.get("RUN_ID")
-
-    if canonical_receipt_valid(finalization, expected_run_id):
-        return []
-
-    ordering = compare_run_ids(final_run_id, expected_run_id)
-    # If a newer receipt is already current, do not infer whether this historical slot existed.
-    if ordering == 1:
-        return []
-
-    malformed_same_run = final_run_id == expected_run_id
-    record_type = "MALFORMED_CANONICAL_RECEIPT" if malformed_same_run else "MISSING_CANONICAL_RECEIPT"
-    if incident_exists(incident_path, record_type, expected_run_id):
-        return []
-
-    append_incident(
-        incident_path,
-        {
-            "schema_version": "restored-five-watchdog-incident-v3",
-            "record_type": record_type,
-            "lane": lane,
-            "scheduler_id": scheduler_id,
-            "RUN_ID": expected_run_id,
-            "slot_utc": slot.isoformat().replace("+00:00", "Z"),
-            "observed_at_utc": now.isoformat().replace("+00:00", "Z"),
-            "grace_minutes": grace_minutes,
-            "observed_finalization_RUN_ID": final_run_id,
-            "observed_schema_version": finalization.get("schema_version"),
-            "observed_RUN_STATUS": finalization.get("RUN_STATUS"),
-            "observed_completion_semantics": finalization.get("completion_semantics"),
-            "observed_execution_authorized": finalization.get("execution_authorized"),
-            "reason": (
-                "EXPECTED_RUN_ID_PRESENT_BUT_CANONICAL_RECEIPT_FIELDS_INVALID"
-                if malformed_same_run
-                else "EXPECTED_SLOT_HAS_NO_CURRENT_CANONICAL_RECEIPT_AFTER_GRACE"
-            ),
-            "execution_authorized": False,
-        },
+    return _monitor_receipt_slots(
+        repo_root,
+        lane,
+        lane_root,
+        scheduler_id,
+        run_prefix,
+        grace_minutes,
+        [slot],
     )
-    return [str(incident_path.relative_to(repo_root))]
 
 
+def monitor_receipt_horizon(
+    repo_root: Path,
+    lane: str,
+    lane_root: str,
+    scheduler_id: str,
+    minute: int,
+    run_prefix: str,
+    grace_minutes: int,
+    monitor_after: datetime | None,
+    now: datetime,
+    horizon_hours: int,
+) -> list[str]:
+    return _monitor_receipt_slots(
+        repo_root,
+        lane,
+        lane_root,
+        scheduler_id,
+        run_prefix,
+        grace_minutes,
+        eligible_slots(now, minute, grace_minutes, monitor_after, horizon_hours),
+    )
 
 def evidence_record_valid(evidence: dict, expected_run_id: str) -> bool:
     return (
@@ -339,6 +464,81 @@ def evidence_record_valid(evidence: dict, expected_run_id: str) -> bool:
         and evidence.get("schema_version") == "scheduler-evidence-v5.7"
         and evidence.get("execution_authorized") is False
     )
+
+
+def _monitor_evidence_slots(
+    repo_root: Path,
+    lane: str,
+    lane_root: str,
+    scheduler_id: str,
+    run_prefix: str,
+    evidence_grace_minutes: int,
+    slots: list[datetime],
+) -> list[str]:
+    root = repo_root / lane_root
+    final_rel = str((root / "finalization_state.json").relative_to(repo_root))
+    evidence_rel = str((root / "evidence_state.json").relative_to(repo_root))
+    incident_path = root / "watchdog_incidents.jsonl"
+    changed = False
+
+    for slot in slots:
+        expected_run_id = f"{run_prefix}-{slot.strftime('%Y%m%dT%H%M%SZ')}"
+        receipt_state = historical_record_state(
+            repo_root,
+            final_rel,
+            expected_run_id,
+            canonical_receipt_valid,
+        )
+        if receipt_state != "VALID":
+            continue
+
+        evidence_state = historical_record_state(
+            repo_root,
+            evidence_rel,
+            expected_run_id,
+            evidence_record_valid,
+        )
+        if evidence_state == "VALID":
+            continue
+
+        record_type = (
+            "MALFORMED_EVIDENCE_STATE"
+            if evidence_state == "MALFORMED"
+            else "EVIDENCE_PHASE_INCOMPLETE"
+        )
+        if incident_exists(incident_path, record_type, expected_run_id):
+            continue
+
+        records = records_for_run(repo_root, evidence_rel, expected_run_id)
+        observed = records[0] if records else {}
+        append_incident(
+            incident_path,
+            {
+                "schema_version": "restored-five-watchdog-incident-v4",
+                "record_type": record_type,
+                "lane": lane,
+                "scheduler_id": scheduler_id,
+                "RUN_ID": expected_run_id,
+                "slot_utc": slot.isoformat().replace("+00:00", "Z"),
+                "observed_at_utc": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+                "grace_minutes": evidence_grace_minutes,
+                "canonical_receipt_present": True,
+                "observed_evidence_RUN_ID": observed.get("RUN_ID"),
+                "observed_evidence_status": observed.get("EVIDENCE_STATUS"),
+                "observed_evidence_schema_version": observed.get("schema_version"),
+                "observed_evidence_execution_authorized": observed.get("execution_authorized"),
+                "history_reconstructed": True,
+                "reason": (
+                    "EXPECTED_RUN_ID_PRESENT_IN_GIT_HISTORY_BUT_EVIDENCE_STATE_FIELDS_INVALID"
+                    if evidence_state == "MALFORMED"
+                    else "CANONICAL_RECEIPT_EXISTS_BUT_NO_VALID_EVIDENCE_STATE_IN_GIT_HISTORY_AFTER_GRACE"
+                ),
+                "execution_authorized": False,
+            },
+        )
+        changed = True
+
+    return [str(incident_path.relative_to(repo_root))] if changed else []
 
 
 def monitor_missing_evidence(
@@ -355,55 +555,44 @@ def monitor_missing_evidence(
     slot = expected_slot(now, minute, evidence_grace_minutes)
     if monitor_after is not None and slot < monitor_after:
         return []
-
-    expected_run_id = f"{run_prefix}-{slot.strftime('%Y%m%dT%H%M%SZ')}"
-    root = repo_root / lane_root
-    finalization = read_json(root / "finalization_state.json")
-    evidence = read_json(root / "evidence_state.json")
-    incident_path = root / "watchdog_incidents.jsonl"
-
-    if not canonical_receipt_valid(finalization, expected_run_id):
-        return []
-
-    evidence_run_id = evidence.get("RUN_ID")
-    if evidence_record_valid(evidence, expected_run_id):
-        return []
-
-    ordering = compare_run_ids(evidence_run_id, expected_run_id)
-    if ordering == 1:
-        return []
-
-    malformed_same_run = evidence_run_id == expected_run_id
-    record_type = "MALFORMED_EVIDENCE_STATE" if malformed_same_run else "EVIDENCE_PHASE_INCOMPLETE"
-    if incident_exists(incident_path, record_type, expected_run_id):
-        return []
-
-    append_incident(
-        incident_path,
-        {
-            "schema_version": "restored-five-watchdog-incident-v3",
-            "record_type": record_type,
-            "lane": lane,
-            "scheduler_id": scheduler_id,
-            "RUN_ID": expected_run_id,
-            "slot_utc": slot.isoformat().replace("+00:00", "Z"),
-            "observed_at_utc": now.isoformat().replace("+00:00", "Z"),
-            "grace_minutes": evidence_grace_minutes,
-            "canonical_receipt_present": True,
-            "observed_evidence_RUN_ID": evidence_run_id,
-            "observed_evidence_status": evidence.get("EVIDENCE_STATUS"),
-            "observed_evidence_schema_version": evidence.get("schema_version"),
-            "observed_evidence_execution_authorized": evidence.get("execution_authorized"),
-            "reason": (
-                "EXPECTED_RUN_ID_PRESENT_BUT_EVIDENCE_STATE_FIELDS_INVALID"
-                if malformed_same_run
-                else "CANONICAL_RECEIPT_EXISTS_BUT_EVIDENCE_STATE_NOT_FINALIZED_AFTER_GRACE"
-            ),
-            "execution_authorized": False,
-        },
+    return _monitor_evidence_slots(
+        repo_root,
+        lane,
+        lane_root,
+        scheduler_id,
+        run_prefix,
+        evidence_grace_minutes,
+        [slot],
     )
-    return [str(incident_path.relative_to(repo_root))]
 
+
+def monitor_evidence_horizon(
+    repo_root: Path,
+    lane: str,
+    lane_root: str,
+    scheduler_id: str,
+    minute: int,
+    run_prefix: str,
+    evidence_grace_minutes: int,
+    monitor_after: datetime | None,
+    now: datetime,
+    horizon_hours: int,
+) -> list[str]:
+    return _monitor_evidence_slots(
+        repo_root,
+        lane,
+        lane_root,
+        scheduler_id,
+        run_prefix,
+        evidence_grace_minutes,
+        eligible_slots(
+            now,
+            minute,
+            evidence_grace_minutes,
+            monitor_after,
+            horizon_hours,
+        ),
+    )
 
 def main() -> None:
     parser = argparse.ArgumentParser()
@@ -413,6 +602,7 @@ def main() -> None:
     parser.add_argument("--monitor-grace-minutes", type=int, default=12)
     parser.add_argument("--evidence-grace-minutes", type=int, default=20)
     parser.add_argument("--monitor-after")
+    parser.add_argument("--horizon-hours", type=int, default=48)
     parser.add_argument(
         "--lane",
         action="append",
@@ -446,7 +636,7 @@ def main() -> None:
             minute = int(parts[3])
             run_prefix = parts[4]
             changed.extend(
-                monitor_missing_receipt(
+                monitor_receipt_horizon(
                     repo_root,
                     lane,
                     lane_root,
@@ -456,10 +646,11 @@ def main() -> None:
                     args.monitor_grace_minutes,
                     monitor_after,
                     now,
+                    args.horizon_hours,
                 )
             )
             changed.extend(
-                monitor_missing_evidence(
+                monitor_evidence_horizon(
                     repo_root,
                     lane,
                     lane_root,
@@ -469,6 +660,7 @@ def main() -> None:
                     args.evidence_grace_minutes,
                     monitor_after,
                     now,
+                    args.horizon_hours,
                 )
             )
 

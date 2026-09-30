@@ -57,3 +57,9 @@ def test_workflow_has_watchdog_driven_push_wakeup_paths() -> None:
     assert ".github/workflows/github-native-ai-plane.yml" in text
     assert "automation_intelligence/omega_stack_native_v3/control_plane.json" in text
     assert "automation_intelligence/omega_stack_native_v3/reconciliation/**" in text
+
+
+def test_workflow_invokes_job_as_package_module() -> None:
+    text = _text()
+    assert "python -m tools.github_native_ai_job" in text
+    assert "python tools/github_native_ai_job.py" not in text

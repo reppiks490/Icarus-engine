@@ -36,6 +36,7 @@ class RestoredFiveLocalShadowTests(unittest.TestCase):
         self.assertEqual(req.reasoning_effort, "local")
         self.assertIn("read-only", req.instructions)
         self.assertIn("execution_authorized=false", req.instructions)
+        self.assertIn("summary under 350 characters", req.instructions)
         self.assertIn("FALLBACK_LIVENESS_ONLY", req.input_text)
 
     def test_shadow_rejects_unknown_lane(self):

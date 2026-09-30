@@ -41,6 +41,28 @@ def load_input(path: Path) -> tuple[dict[str, object], str]:
     return payload, hashlib.sha256(raw).hexdigest()
 
 
+def derive_receipt_facts(payload: dict[str, object]) -> dict[str, object]:
+    expected = payload.get("expected_RUN_ID")
+    observed = payload.get("observed_worker_RUN_ID")
+    expected_run_id = expected if isinstance(expected, str) and expected else None
+    observed_run_id = observed if isinstance(observed, str) and observed else None
+    return {
+        "slot_status": payload.get("slot_status"),
+        "worker_receipt_status": payload.get("worker_receipt_status"),
+        "expected_RUN_ID": expected_run_id,
+        "observed_worker_RUN_ID": observed_run_id,
+        "observed_worker_RUN_STATUS": payload.get("observed_worker_RUN_STATUS"),
+        "run_id_match": (
+            expected_run_id == observed_run_id
+            if expected_run_id is not None and observed_run_id is not None
+            else None
+        ),
+        "fallback_only": payload.get("slot_status") == "FALLBACK_LIVENESS_ONLY",
+        "substantive_work_claimed": payload.get("substantive_work_claimed") is True,
+        "execution_authorized": payload.get("execution_authorized") is True,
+    }
+
+
 def build_shadow_request(lane: str, payload: dict[str, object]) -> ModelRequest:
     if lane not in ALLOWED_LANES:
         raise ValueError("unsupported restored-five lane")
@@ -61,7 +83,10 @@ def build_shadow_request(lane: str, payload: dict[str, object]) -> ModelRequest:
         input_text=(
             "Assess this immutable liveness/durability evidence for continuity, gaps, "
             "conflicts, and the next safe non-executing research step. "
-            "If evidence is fallback-only, say so explicitly. JSON:\n"
+            "If evidence is fallback-only, say so explicitly. "
+            "AUTHORITATIVE_FACTS:\n"
+            + json.dumps(facts, sort_keys=True, separators=(",", ":"))
+            + "\nSOURCE_JSON:\n"
             + json.dumps(payload, sort_keys=True, separators=(",", ":"))
         ),
     )
@@ -149,6 +174,7 @@ def run_shadow(
         "response_id": response.response_id,
         "response_status": response.status,
         "canonical_state_mutated": False,
+        "deterministic_facts": derive_receipt_facts(payload),
         "substantive_research_source": "DURABLE_REPO_EVIDENCE_ONLY",
         "paid_api_call_made": False,
         "api_credential_required": False,

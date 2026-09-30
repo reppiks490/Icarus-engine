@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "tools/restored_five_durability_watchdog.py"
+      - "tools/test_restored_five_durability_watchdog.py"
       - ".github/workflows/restored-five-durability-watchdog.yml"
       - "automation_intelligence/agent_fabric/robustness_guardian/finalization_state.json"
       - "automation_intelligence/agent_fabric/alpha_synthesis/finalization_state.json"
@@ -35,6 +36,10 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+
+      - name: Run watchdog unit tests
+        shell: bash
+        run: python tools/test_restored_five_durability_watchdog.py -q
 
       - name: Worker mirror grace
         if: github.event_name == 'push'

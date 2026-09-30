@@ -427,6 +427,32 @@ class WatchdogTests(unittest.TestCase):
                 )
                 self.assertEqual(history.call_count, 1)
 
+    def test_stabilization_receipt_intentionally_defers_evidence_alarm(self):
+        with tempfile.TemporaryDirectory() as td:
+            repo = Path(td)
+            root = repo / "lane"
+            expected = "lane-20260930T210500Z"
+            write_json(root / "finalization_state.json", {
+                "schema_version": "scheduler-finalization-v5.7",
+                "RUN_ID": expected,
+                "RUN_STATUS": "RUN_PERSISTED",
+                "completion_semantics": "DURABILITY_RECEIPT_ONLY",
+                "history_mode": "git_commit_finalization",
+                "work_status": "BASELINE_PERSISTED",
+                "payload": {
+                    "result": "NO_NEW_EVIDENCE_YET",
+                    "NEXT": "Durability proven; substantive evidence remains deferred during stabilization."
+                },
+                "execution_authorized": False,
+            })
+            write_json(root / "evidence_state.json", {})
+            changed = monitor_missing_evidence(
+                repo, "lane", "lane", "sched", 5, "lane", 20,
+                datetime(2026, 9, 30, 21, 0, tzinfo=timezone.utc),
+                datetime(2026, 9, 30, 21, 26, tzinfo=timezone.utc),
+            )
+            self.assertEqual(changed, [])
+
 
 if __name__ == "__main__":
     unittest.main()

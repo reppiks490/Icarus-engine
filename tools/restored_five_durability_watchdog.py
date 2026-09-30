@@ -487,6 +487,17 @@ def monitor_receipt_horizon(
         eligible_slots(now, minute, grace_minutes, monitor_after, horizon_hours),
     )
 
+def evidence_deferred_by_receipt(receipt: dict) -> bool:
+    payload = receipt.get("payload") if isinstance(receipt.get("payload"), dict) else {}
+    next_text = str(payload.get("NEXT", "")).lower()
+    return (
+        receipt.get("work_status") == "BASELINE_PERSISTED"
+        and payload.get("result") == "NO_NEW_EVIDENCE_YET"
+        and "deferred during stabilization" in next_text
+        and receipt.get("execution_authorized") is False
+    )
+
+
 def evidence_record_valid(evidence: dict, expected_run_id: str) -> bool:
     return (
         evidence.get("RUN_ID") == expected_run_id
@@ -525,6 +536,17 @@ def _monitor_evidence_slots(
             canonical_receipt_valid,
         )
         if receipt_state != "VALID":
+            continue
+
+        valid_receipt = next(
+            (
+                obj
+                for obj in final_index.get(expected_run_id, [])
+                if canonical_receipt_valid(obj, expected_run_id)
+            ),
+            None,
+        )
+        if valid_receipt is not None and evidence_deferred_by_receipt(valid_receipt):
             continue
 
         evidence_state = record_state_from_index(

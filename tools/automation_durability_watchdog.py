@@ -10,6 +10,7 @@ from zoneinfo import ZoneInfo
 
 CONTROL_PLANE_ID = "omega-aion-daedalus-native-v2"
 PROTOCOL = "omega-stack-persistence-v4.3-append-first"
+MAIN_HEARTBEAT_PROTOCOL = "omega-stack-persistence-r13-main-heartbeat"
 AUTHORITATIVE_BRANCH = "automation/omega-native-v2"
 NAMESPACE_ROOT = "automation_intelligence/omega_stack_native_v2"
 EXPECTED_LANES = {"omega", "macro", "flow", "aion", "daedalus"}
@@ -240,6 +241,91 @@ def _validate_receipt(payload: object, slot: ExpectedSlot, config: WatchdogConfi
     return tuple(errors)
 
 
+def _validate_main_heartbeat(payload: object, slot: ExpectedSlot, config: WatchdogConfig) -> tuple[str, ...]:
+    if not isinstance(payload, dict):
+        return ("payload must be an object",)
+    errors: list[str] = []
+    expected = {
+        "engine": slot.lane.name,
+        "automation_id": slot.lane.automation_id,
+        "CONTROL_PLANE_ID": config.control_plane_id,
+        "persistence_protocol_version": MAIN_HEARTBEAT_PROTOCOL,
+        "RUN_STATUS": "RUN_PERSISTED",
+        "FINALIZATION_STATUS": "LIVENESS_VERIFIED",
+        "verification_method": "GITHUB_UPDATE_FILE_RESPONSE",
+        "run_origin": "NATURAL_SCHEDULE",
+        "execution_authorized": False,
+    }
+    for key, value in expected.items():
+        if payload.get(key) != value:
+            label = "protocol" if key == "persistence_protocol_version" else key
+            errors.append(f"{label} mismatch")
+
+    run_id = payload.get("RUN_ID")
+    if not isinstance(run_id, str) or not run_id.startswith(f"{slot.lane.name}-"):
+        errors.append("RUN_ID mismatch")
+
+    try:
+        scheduled = _parse_dt(payload.get("scheduled_for"))
+        if scheduled.astimezone(timezone.utc) != slot.scheduled_utc:
+            errors.append("scheduled_for mismatch")
+    except (ValueError, TypeError):
+        errors.append("scheduled_for invalid")
+
+    try:
+        started = _parse_dt(payload.get("started_at_utc")).astimezone(timezone.utc)
+        delta = abs((started - slot.scheduled_utc).total_seconds())
+        if delta > config.jitter_seconds:
+            errors.append(f"started_at_utc exceeds jitter ({int(delta)}s > {config.jitter_seconds}s)")
+    except (ValueError, TypeError):
+        errors.append("started_at_utc invalid")
+    return tuple(errors)
+
+
+def scan_main_heartbeat(
+    main_root: Path,
+    slot: ExpectedSlot,
+    config: WatchdogConfig,
+) -> tuple[ReceiptMatch | None, tuple[ReceiptCheck, ...]]:
+    path = main_root / NAMESPACE_ROOT / slot.lane.name / "heartbeat.json"
+    relative = path.relative_to(main_root).as_posix()
+    if not path.exists():
+        return None, ()
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        return None, (ReceiptCheck(relative, False, (f"malformed JSON: {exc}",), None),)
+    errors = _validate_main_heartbeat(payload, slot, config)
+    run_id = payload.get("RUN_ID") if isinstance(payload, dict) and isinstance(payload.get("RUN_ID"), str) else None
+    check = ReceiptCheck(relative, not errors, errors, run_id)
+    if errors or run_id is None:
+        return None, (check,)
+    return ReceiptMatch(relative, run_id, payload), (check,)
+
+
+def _accepted_main_heartbeat_path(slot: ExpectedSlot) -> Path:
+    return Path(NAMESPACE_ROOT) / "reconciliation" / "accepted_main_heartbeat" / slot.lane.name / f"{slot.slot_id}.json"
+
+
+def _accepted_main_heartbeat_valid(path: Path, slot: ExpectedSlot) -> bool:
+    if not path.exists():
+        return False
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return False
+    return (
+        payload.get("kind") == "NATURAL_MAIN_HEARTBEAT_ACCEPTED"
+        and payload.get("lane") == slot.lane.name
+        and payload.get("slot_utc") == _utc_z(slot.scheduled_utc)
+        and payload.get("expected_automation_id") == slot.lane.automation_id
+        and payload.get("source_protocol") == MAIN_HEARTBEAT_PROTOCOL
+        and payload.get("source_verification_method") == "GITHUB_UPDATE_FILE_RESPONSE"
+        and payload.get("source_run_origin") == "NATURAL_SCHEDULE"
+        and payload.get("execution_authorized") is False
+    )
+
+
 def scan_lane_receipts(
     root: Path,
     slot: ExpectedSlot,
@@ -293,6 +379,7 @@ def plan_reconciliation(
     now_utc: datetime,
     grace_minutes: int = 12,
     horizon_hours: int = 48,
+    main_root: Path | None = None,
 ) -> list[Artifact]:
     if now_utc.tzinfo is None:
         raise ValueError("now_utc must be timezone-aware")
@@ -304,13 +391,48 @@ def plan_reconciliation(
         if now < slot.scheduled_utc + timedelta(minutes=grace_minutes):
             continue
         incident_path, backlog_path, late_path = _artifact_paths(slot)
+        accepted_path = _accepted_main_heartbeat_path(slot)
         incident_abs = root / incident_path
         backlog_abs = root / backlog_path
         late_abs = root / late_path
-        match, checks = scan_lane_receipts(root, slot, config)
+        accepted_abs = root / accepted_path
 
-        if match is not None:
-            if incident_abs.exists() and not late_abs.exists():
+        legacy_match, legacy_checks = scan_lane_receipts(root, slot, config)
+        heartbeat_match: ReceiptMatch | None = None
+        heartbeat_checks: tuple[ReceiptCheck, ...] = ()
+        accepted_match = _accepted_main_heartbeat_valid(accepted_abs, slot)
+        if not accepted_match and main_root is not None:
+            heartbeat_match, heartbeat_checks = scan_main_heartbeat(main_root, slot, config)
+
+        match = legacy_match or heartbeat_match
+        checks = legacy_checks + heartbeat_checks
+
+        if accepted_match or match is not None:
+            if heartbeat_match is not None and not accepted_abs.exists():
+                artifacts.append(
+                    Artifact(
+                        accepted_path,
+                        {
+                            "schema_version": WATCHDOG_SCHEMA,
+                            "kind": "NATURAL_MAIN_HEARTBEAT_ACCEPTED",
+                            "lane": slot.lane.name,
+                            "slot_utc": _utc_z(slot.scheduled_utc),
+                            "slot_local": slot.scheduled_local.isoformat(),
+                            "expected_automation_id": slot.lane.automation_id,
+                            "natural_run_id": heartbeat_match.run_id,
+                            "source_ref": heartbeat_match.path,
+                            "source_protocol": MAIN_HEARTBEAT_PROTOCOL,
+                            "source_verification_method": "GITHUB_UPDATE_FILE_RESPONSE",
+                            "source_run_origin": "NATURAL_SCHEDULE",
+                            "source_started_at_utc": heartbeat_match.payload.get("started_at_utc"),
+                            "source_scheduled_for": heartbeat_match.payload.get("scheduled_for"),
+                            "observed_at_utc": _utc_z(now),
+                            "acceptance_origin": "GITHUB_WATCHDOG_VALIDATED_MAIN_HEARTBEAT",
+                            "execution_authorized": False,
+                        },
+                    )
+                )
+            if incident_abs.exists() and not late_abs.exists() and match is not None:
                 artifacts.append(
                     Artifact(
                         late_path,
@@ -418,6 +540,7 @@ def write_artifacts(root: Path, artifacts: list[Artifact]) -> list[Path]:
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Reconcile ICARUS automation natural-run liveness")
     parser.add_argument("--root", type=Path, required=True)
+    parser.add_argument("--main-root", type=Path)
     parser.add_argument("--now-utc")
     parser.add_argument("--grace-minutes", type=int, default=12)
     parser.add_argument("--horizon-hours", type=int, default=48)
@@ -431,9 +554,10 @@ def main(argv: Sequence[str] | None = None) -> int:
             now,
             grace_minutes=args.grace_minutes,
             horizon_hours=args.horizon_hours,
+            main_root=args.main_root,
         )
         written = write_artifacts(args.root, artifacts)
-        counts = {"missed": 0, "backlog": 0, "late_arrival": 0}
+        counts = {"missed": 0, "backlog": 0, "late_arrival": 0, "accepted_main_heartbeat": 0}
         for path in written:
             parts = path.relative_to(args.root).parts
             if "missed" in parts:
@@ -442,6 +566,8 @@ def main(argv: Sequence[str] | None = None) -> int:
                 counts["backlog"] += 1
             elif "late_arrival" in parts:
                 counts["late_arrival"] += 1
+            elif "accepted_main_heartbeat" in parts:
+                counts["accepted_main_heartbeat"] += 1
         print(json.dumps({"status": "ok", "counts": counts, "written": [p.relative_to(args.root).as_posix() for p in written]}, sort_keys=True))
         return 0
     except Exception as exc:

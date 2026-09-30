@@ -34,6 +34,8 @@ class ControlPlane:
     dispatch_tolerance_minutes: int
     execution_authorized: bool
     mode: str
+    activated_at_utc: datetime | None
+    catchup_horizon_minutes: int
     model: str
     reasoning_effort: str
     lanes: tuple[LaneConfig, ...]
@@ -93,6 +95,23 @@ def load_control_plane(root: Path) -> ControlPlane:
     if not isinstance(defaults, dict):
         raise ValueError("model_defaults missing")
 
+    activated_raw = payload.get("activated_at_utc")
+    activated_at_utc: datetime | None = None
+    if activated_raw is not None:
+        if not isinstance(activated_raw, str):
+            raise ValueError("activated_at_utc must be a string or null")
+        try:
+            activated_at_utc = datetime.fromisoformat(activated_raw.replace("Z", "+00:00"))
+        except ValueError as exc:
+            raise ValueError("activated_at_utc invalid") from exc
+        if activated_at_utc.tzinfo is None:
+            raise ValueError("activated_at_utc must be timezone-aware")
+        activated_at_utc = activated_at_utc.astimezone(timezone.utc)
+
+    catchup = payload.get("catchup_horizon_minutes", 180)
+    if not isinstance(catchup, int) or catchup < 12 or catchup > 1440:
+        raise ValueError("invalid catchup_horizon_minutes")
+
     tolerance = payload.get("dispatch_tolerance_minutes")
     if not isinstance(tolerance, int) or tolerance < 0 or tolerance > 5:
         raise ValueError("invalid dispatch tolerance")
@@ -106,6 +125,8 @@ def load_control_plane(root: Path) -> ControlPlane:
         dispatch_tolerance_minutes=tolerance,
         execution_authorized=False,
         mode=str(payload.get("mode")),
+        activated_at_utc=activated_at_utc,
+        catchup_horizon_minutes=catchup,
         model=str(defaults.get("model")),
         reasoning_effort=str(defaults.get("reasoning_effort")),
         lanes=tuple(lanes),

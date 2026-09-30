@@ -3,10 +3,10 @@ from __future__ import annotations
 import argparse
 import json
 import os
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from tools.github_native_ai_dispatcher import ControlPlane, Slot, load_control_plane, resolve_due_slot
+from tools.github_native_ai_dispatcher import ControlPlane, Slot, load_control_plane, resolve_due_slot, terminal_artifact_exists
 from tools.github_native_ai_runner import run_lane
 
 
@@ -61,6 +61,37 @@ def select_slot(
     return slot
 
 
+
+def select_pending_slot(
+    root: Path,
+    control: ControlPlane,
+    now_utc: datetime,
+) -> Slot | None:
+    if now_utc.tzinfo is None:
+        raise ValueError("now_utc must be timezone-aware")
+    if control.mode not in {"SHADOW", "AUTHORITATIVE"}:
+        return None
+    if control.activated_at_utc is None:
+        raise ValueError("active control plane requires activated_at_utc")
+
+    now = now_utc.astimezone(timezone.utc)
+    start = max(
+        control.activated_at_utc,
+        now - timedelta(minutes=control.catchup_horizon_minutes),
+    )
+    cursor = start.replace(second=0, microsecond=0)
+    if cursor < start:
+        cursor += timedelta(minutes=1)
+
+    while cursor <= now:
+        slot = resolve_due_slot(cursor, control, tolerance_minutes=0)
+        if slot is not None and slot.scheduled_utc >= control.activated_at_utc:
+            if not terminal_artifact_exists(root, slot):
+                return slot
+        cursor += timedelta(minutes=1)
+    return None
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Run one GitHub-native AI lane if a slot is due.")
     parser.add_argument("--root", default=".")
@@ -74,12 +105,15 @@ def main(argv: list[str] | None = None) -> int:
     control = load_control_plane(root)
     now_override = os.environ.get("GITHUB_NATIVE_NOW_UTC", "")
     now = _parse_utc(now_override) if now_override else datetime.now(timezone.utc)
-    slot = select_slot(
-        control,
-        now,
-        requested_lane=args.requested_lane,
-        requested_slot_utc=args.requested_slot_utc,
-    )
+    if args.event_name == "schedule" and not args.requested_slot_utc:
+        slot = select_pending_slot(root, control, now)
+    else:
+        slot = select_slot(
+            control,
+            now,
+            requested_lane=args.requested_lane,
+            requested_slot_utc=args.requested_slot_utc,
+        )
 
     base = {
         "control_mode": control.mode,

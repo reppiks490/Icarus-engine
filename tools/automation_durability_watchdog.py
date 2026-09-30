@@ -230,10 +230,23 @@ def load_v3_watchdog_config(root: Path) -> WatchdogConfig:
     if names != EXPECTED_LANES:
         raise ValueError("v3 lane set mismatch")
 
-    bound_raw = payload.get("created_at_utc")
-    if not isinstance(bound_raw, str):
+    created_raw = payload.get("created_at_utc")
+    if not isinstance(created_raw, str):
         raise ValueError("v3 created_at_utc missing")
-    identity_bound = _parse_dt(bound_raw).astimezone(timezone.utc)
+    created_at = _parse_dt(created_raw).astimezone(timezone.utc)
+
+    mode = payload.get("mode")
+    if mode not in {"DARK", "SHADOW", "AUTHORITATIVE"}:
+        raise ValueError("invalid v3 mode")
+    if mode == "DARK":
+        identity_bound = datetime.max.replace(tzinfo=timezone.utc)
+    else:
+        activated_raw = payload.get("activated_at_utc")
+        if not isinstance(activated_raw, str):
+            raise ValueError("active v3 control plane requires activated_at_utc")
+        identity_bound = _parse_dt(activated_raw).astimezone(timezone.utc)
+        if identity_bound < created_at:
+            raise ValueError("activated_at_utc cannot predate created_at_utc")
 
     lanes.sort(key=lambda x: x.minute)
     return WatchdogConfig(
@@ -712,20 +725,31 @@ def write_artifacts(root: Path, artifacts: list[Artifact]) -> list[Path]:
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Reconcile ICARUS automation natural-run liveness")
     parser.add_argument("--root", type=Path, required=True)
+    parser.add_argument("--control-version", choices=("v2", "v3"), default="v2")
     parser.add_argument("--now-utc")
     parser.add_argument("--grace-minutes", type=int, default=12)
     parser.add_argument("--horizon-hours", type=int, default=48)
     args = parser.parse_args(argv)
     try:
         now = _parse_dt(args.now_utc).astimezone(timezone.utc) if args.now_utc else datetime.now(timezone.utc)
-        config = load_watchdog_config(args.root)
-        artifacts = plan_reconciliation(
-            args.root,
-            config,
-            now,
-            grace_minutes=args.grace_minutes,
-            horizon_hours=args.horizon_hours,
-        )
+        if args.control_version == "v3":
+            config = load_v3_watchdog_config(args.root)
+            artifacts = plan_v3_reconciliation(
+                args.root,
+                config,
+                now,
+                grace_minutes=args.grace_minutes,
+                horizon_hours=args.horizon_hours,
+            )
+        else:
+            config = load_watchdog_config(args.root)
+            artifacts = plan_reconciliation(
+                args.root,
+                config,
+                now,
+                grace_minutes=args.grace_minutes,
+                horizon_hours=args.horizon_hours,
+            )
         written = write_artifacts(args.root, artifacts)
         counts = {"missed": 0, "backlog": 0, "late_arrival": 0}
         for path in written:
@@ -736,7 +760,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 counts["backlog"] += 1
             elif "late_arrival" in parts:
                 counts["late_arrival"] += 1
-        print(json.dumps({"status": "ok", "counts": counts, "written": [p.relative_to(args.root).as_posix() for p in written]}, sort_keys=True))
+        print(json.dumps({"status": "ok", "control_version": args.control_version, "counts": counts, "written": [p.relative_to(args.root).as_posix() for p in written]}, sort_keys=True))
         return 0
     except Exception as exc:
         print(json.dumps({"status": "error", "error": str(exc)}, sort_keys=True))

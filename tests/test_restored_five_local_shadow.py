@@ -10,6 +10,7 @@ from tools.github_native_ai_openai import ModelResponse
 from tools.github_native_local_model import LOCAL_MODEL_ID
 from tools.restored_five_local_shadow import (
     ALLOWED_LANES,
+    bounded_model_advisory,
     build_shadow_request,
     derive_receipt_facts,
     deterministic_summary,
@@ -259,6 +260,35 @@ class RestoredFiveLocalShadowTests(unittest.TestCase):
         self.assertIn("Fallback-only durability receipt", summary)
         self.assertIn("Observed RUN_ID differs from expected.", summary)
         self.assertIn("Substantive work is not proven", summary)
+
+
+    def test_model_conflicts_are_non_authoritative(self):
+        source = {
+            "slot_status": "FALLBACK_LIVENESS_ONLY",
+            "worker_receipt_status": "WORKER_RECEIPT_CHECK_UNAVAILABLE",
+            "expected_RUN_ID": "advanced-csv-20260930T231500Z",
+            "observed_worker_RUN_ID": None,
+            "substantive_work_claimed": False,
+            "execution_authorized": False,
+        }
+        model_payload = {
+            "lane": "advanced_csv",
+            "summary": "Model prose.",
+            "net_new_delta": "model-value",
+            "data_gaps": ["invented model gap"],
+            "conflicts": ["no worker_receipt_status observed"],
+            "execution_authorized": False,
+        }
+        guarded = enforce_evidence_guards(source, model_payload)
+        self.assertNotIn("invented model gap", guarded["data_gaps"])
+        self.assertNotIn("no worker_receipt_status observed", guarded["conflicts"])
+        self.assertIn(
+            "WORKER_RECEIPT_NOT_VERIFIED:WORKER_RECEIPT_CHECK_UNAVAILABLE",
+            guarded["data_gaps"],
+        )
+        advisory = bounded_model_advisory(model_payload)
+        self.assertTrue(advisory["non_authoritative"])
+        self.assertIn("no worker_receipt_status observed", advisory["conflicts"])
 
 
 if __name__ == "__main__":

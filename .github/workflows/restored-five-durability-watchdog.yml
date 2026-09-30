@@ -1,6 +1,15 @@
 name: restored-five-durability-watchdog
 
 on:
+  # Independent liveness source: both upstream workflows have proven frequent
+  # GitHub-native execution. This watchdog remains namespace-isolated and only
+  # observes their completion as a clock signal.
+  workflow_run:
+    workflows:
+      - "automation-durability-watchdog"
+      - "github-native-ai-plane"
+    types: [completed]
+    branches: [main]
   push:
     branches: [main]
     paths:

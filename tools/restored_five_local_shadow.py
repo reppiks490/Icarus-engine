@@ -66,9 +66,12 @@ def derive_receipt_facts(payload: dict[str, object]) -> dict[str, object]:
 def build_shadow_request(lane: str, payload: dict[str, object]) -> ModelRequest:
     if lane not in ALLOWED_LANES:
         raise ValueError("unsupported restored-five lane")
+    facts = derive_receipt_facts(payload)
     instructions = (
         "You are a read-only ICARUS shadow evidence analyst. "
-        "Analyze only the supplied durable JSON evidence. "
+        "Analyze only the supplied durable JSON evidence and AUTHORITATIVE_FACTS. "
+        "AUTHORITATIVE_FACTS are machine-derived and must never be contradicted or redefined. "
+        "A conflict may be stated only when AUTHORITATIVE_FACTS directly proves it. "
         "Do not infer missing facts, do not claim external research, and do not authorize "
         "trading, execution, production activation, or canonical state mutation. "
         "Return a concise structured assessment. Keep summary under 350 characters, "

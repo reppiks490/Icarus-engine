@@ -36,6 +36,7 @@ class RestoredFiveLocalShadowTests(unittest.TestCase):
         self.assertEqual(req.model, LOCAL_MODEL_ID)
         self.assertEqual(req.reasoning_effort, "local")
         self.assertIn("read-only", req.instructions)
+        self.assertIn("AUTHORITATIVE_FACTS", req.instructions)
         self.assertIn("execution_authorized=false", req.instructions)
         self.assertIn("summary under 350 characters", req.instructions)
         self.assertIn("FALLBACK_LIVENESS_ONLY", req.input_text)
@@ -111,7 +112,6 @@ class RestoredFiveLocalShadowTests(unittest.TestCase):
             )
             self.assertEqual(len(artifact["input_sha256"]), 64)
 
-
     def test_deterministic_guards_force_fallback_gaps(self):
         source = {
             **sample_receipt(),
@@ -140,60 +140,60 @@ class RestoredFiveLocalShadowTests(unittest.TestCase):
         )
         self.assertFalse(guarded["execution_authorized"])
 
+    def test_deterministic_receipt_facts_are_authoritative(self):
+        receipt = sample_receipt() | {
+            "expected_RUN_ID": "robustness-guardian-20260930T220500Z",
+            "observed_worker_RUN_ID": "robustness-guardian-20260930T170500Z",
+            "observed_worker_RUN_STATUS": "RUN_PERSISTED",
+        }
+        facts = derive_receipt_facts(receipt)
+        self.assertFalse(facts["run_id_match"])
+        self.assertTrue(facts["fallback_only"])
+        self.assertFalse(facts["substantive_work_claimed"])
+        self.assertFalse(facts["execution_authorized"])
+
+        req = build_shadow_request("robustness_guardian", receipt)
+        self.assertIn("AUTHORITATIVE_FACTS", req.instructions)
+        self.assertIn('"run_id_match":false', req.input_text)
+
+    def test_shadow_artifact_embeds_deterministic_facts(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            input_path = root / "receipt.json"
+            output_path = root / "shadow.json"
+            receipt = sample_receipt() | {
+                "expected_RUN_ID": "robustness-guardian-20260930T220500Z",
+                "observed_worker_RUN_ID": "robustness-guardian-20260930T170500Z",
+            }
+            input_path.write_text(json.dumps(receipt, sort_keys=True), encoding="utf-8")
+
+            def fake_runner(request, *, binary, model, timeout_seconds=180):
+                return ModelResponse(
+                    response_id="local-grounded-proof",
+                    status="completed",
+                    payload={
+                        "lane": "robustness_guardian",
+                        "summary": "Machine facts show an older observed worker RUN_ID.",
+                        "net_new_delta": "SHADOW_ASSESSMENT_ONLY",
+                        "data_gaps": ["SUBSTANTIVE_WORK_NOT_PROVEN"],
+                        "conflicts": ["EXPECTED_AND_OBSERVED_RUN_ID_DIFFER"],
+                        "execution_authorized": False,
+                    },
+                )
+
+            run_shadow(
+                "robustness_guardian",
+                input_path,
+                output_path,
+                binary=Path("/runtime/llama-completion"),
+                model=Path("/models/qwen.gguf"),
+                model_runner=fake_runner,
+                now_fn=lambda: datetime(2026, 9, 30, 23, 0, tzinfo=UTC),
+            )
+            artifact = json.loads(output_path.read_text(encoding="utf-8"))
+            self.assertFalse(artifact["deterministic_facts"]["run_id_match"])
+            self.assertTrue(artifact["deterministic_facts"]["fallback_only"])
+
 
 if __name__ == "__main__":
     unittest.main()
-
-
-def test_deterministic_receipt_facts_are_authoritative() -> None:
-    receipt = sample_receipt() | {
-        "expected_RUN_ID": "robustness-guardian-20260930T220500Z",
-        "observed_worker_RUN_ID": "robustness-guardian-20260930T170500Z",
-        "observed_worker_RUN_STATUS": "RUN_PERSISTED",
-    }
-    facts = derive_receipt_facts(receipt)
-    assert facts["run_id_match"] is False
-    assert facts["fallback_only"] is True
-    assert facts["substantive_work_claimed"] is False
-    assert facts["execution_authorized"] is False
-
-    req = build_shadow_request("robustness_guardian", receipt)
-    assert "AUTHORITATIVE_FACTS" in req.instructions
-    assert '"run_id_match":false' in req.input_text
-
-
-def test_shadow_artifact_embeds_deterministic_facts(tmp_path: Path) -> None:
-    input_path = tmp_path / "receipt.json"
-    output_path = tmp_path / "shadow.json"
-    receipt = sample_receipt() | {
-        "expected_RUN_ID": "robustness-guardian-20260930T220500Z",
-        "observed_worker_RUN_ID": "robustness-guardian-20260930T170500Z",
-    }
-    input_path.write_text(json.dumps(receipt, sort_keys=True), encoding="utf-8")
-
-    def fake_runner(request, *, binary, model, timeout_seconds=180):
-        return ModelResponse(
-            response_id="local-grounded-proof",
-            status="completed",
-            payload={
-                "lane": "robustness_guardian",
-                "summary": "Machine facts show an older observed worker RUN_ID.",
-                "net_new_delta": "SHADOW_ASSESSMENT_ONLY",
-                "data_gaps": ["SUBSTANTIVE_WORK_NOT_PROVEN"],
-                "conflicts": ["EXPECTED_AND_OBSERVED_RUN_ID_DIFFER"],
-                "execution_authorized": False,
-            },
-        )
-
-    run_shadow(
-        "robustness_guardian",
-        input_path,
-        output_path,
-        binary=Path("/runtime/llama-completion"),
-        model=Path("/models/qwen.gguf"),
-        model_runner=fake_runner,
-        now_fn=lambda: datetime(2026, 9, 30, 23, 0, tzinfo=UTC),
-    )
-    artifact = json.loads(output_path.read_text(encoding="utf-8"))
-    assert artifact["deterministic_facts"]["run_id_match"] is False
-    assert artifact["deterministic_facts"]["fallback_only"] is True

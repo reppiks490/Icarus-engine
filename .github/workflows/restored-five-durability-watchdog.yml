@@ -36,6 +36,11 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Worker mirror grace
+        if: github.event_name == 'push'
+        shell: bash
+        run: sleep 20
+
       - name: Reconcile restored ICARUS lanes
         run: >-
           python tools/restored_five_durability_watchdog.py

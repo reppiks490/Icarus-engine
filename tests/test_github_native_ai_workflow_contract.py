@@ -36,7 +36,7 @@ def test_workflow_persists_failure_artifacts_before_failing_job() -> None:
     text = _text()
     assert "continue-on-error: true" in text
     assert "if: always()" in text
-    assert "tools/github_native_ai_job.py" in text
+    assert "tools.github_native_ai_job" in text
     assert "Fail if lane execution failed" in text
 
 

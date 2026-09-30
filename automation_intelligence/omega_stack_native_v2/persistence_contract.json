@@ -1,29 +1,29 @@
 {
   "schema_version": "omega-stack-persistence-v4.3-append-first",
-  "contract_revision": "2026-09-29-native-v2-r11.1",
+  "contract_revision": "2026-09-30-native-v2-r12",
   "migrated_from": "omega-stack-persistence-v4.2-write-first",
   "control_plane_id": "omega-aion-daedalus-native-v2",
   "authoritative_branch": "automation/omega-native-v2",
   "authoritative_root": "automation_intelligence/omega_stack_native_v2",
   "execution_authorized": false,
   "scheduler_mutation_forbidden": true,
-  "purpose": "Make natural-run liveness durable with one GitHub mutation and zero prerequisite reads, so short scheduler runtime cannot prevent persistence before optional work.",
+  "purpose": "Make natural-run liveness durable with exactly one GitHub mutation and zero prerequisite or follow-up external calls inside the scheduled execution.",
   "root_cause_basis": {
-    "observed_execution_window_seconds": "approximately 20-30",
-    "observed_failure_pattern": "In the first full v4.3 natural cycle, all five scheduler entries triggered but only AION created the required immutable liveness file. OMEGA, Macro, Flow, and DAEDALUS produced no runs directory. Repository write permission is proven by AION and the prior manual create_file canary.",
-    "corrective_principle": "compact first action: scheduled prompt starts with the exact GitHub create_file action and arguments; no prose, analysis, discovery, read, search, provider call, or other tool action before persistence"
+    "observed_failure_pattern": "OMEGA, Macro, and Flow were found paused after failed executions; multiple pause timestamps occurred approximately 64 seconds after the corresponding trigger. AION and DAEDALUS have demonstrated successful GitHub liveness writes. GitHub app-specific permission is Allow all actions.",
+    "inference_boundary": "The automation registry exposes no pause reason code, so the exact platform-internal cause is not asserted. The repeated approximately-64-second signature is treated as an execution-budget/tool-path failure risk.",
+    "corrective_principle": "Minimize the scheduled critical path to local timestamp/slot computation plus exactly one GitHub create_file liveness mutation, then stop."
   },
   "phase1_liveness": {
     "order": 1,
     "first_tool_call_required": true,
     "path_pattern": "<lane>/runs/<RUN_ID>.json",
     "steps": [
-      "Do not emit prose or perform analysis before persistence.",
+      "Perform only local timestamp and nearest-slot computation before persistence.",
       "Derive RUN_ID=<lane>-<UTC YYYYMMDDTHHMMSSZ> from the invocation clock.",
-      "ABSOLUTE FIRST ACTION: invoke the connected GitHub create_file action directly against reppiks490/Icarus-engine on branch automation/omega-native-v2 at automation_intelligence/omega_stack_native_v2/<lane>/runs/<RUN_ID>.json.",
-      "The immutable receipt records RUN_STATUS=RUN_PERSISTED, FINALIZATION_STATUS=LIVENESS_VERIFIED, WORK_PHASE_STATUS=PENDING, exact identity/protocol, nominal scheduled_for, started_at_utc, NET_NEW_DELTA=LIVENESS_PERSISTED_WORK_PENDING, DATA_GAPS=[], CONFLICTS=[], execution_authorized=false, verification_method=GITHUB_CREATE_FILE_RESPONSE, run_origin=NATURAL_SCHEDULE.",
+      "FIRST AND ONLY EXTERNAL ACTION: invoke connected GitHub create_file directly against reppiks490/Icarus-engine on branch automation/omega-native-v2 at automation_intelligence/omega_stack_native_v2/<lane>/runs/<RUN_ID>.json.",
+      "Write the immutable v4.3 liveness receipt with exact identity, nominal scheduled_for, started_at_utc, execution_authorized=false, verification_method=GITHUB_CREATE_FILE_RESPONSE, and run_origin=NATURAL_SCHEDULE.",
       "Commit message is automation: <RUN_ID> liveness [skip ci].",
-      "A successful create_file response is durable liveness; do not read it back."
+      "After create_file returns, stop immediately. No second tool call."
     ],
     "max_pre_liveness_reads": 0,
     "max_pre_liveness_tool_calls": 0,
@@ -31,21 +31,17 @@
     "retry_inside_same_run": false,
     "compact_prompt_required": true,
     "plugin_discovery_before_liveness": false,
-    "analysis_before_liveness": false
+    "analysis_before_liveness": false,
+    "max_total_external_calls": 1
   },
   "phase2_work": {
     "order": 2,
-    "optional": true,
-    "max_work_calls": 1,
-    "result_path_pattern": "<lane>/work/<RUN_ID>.json",
-    "steps": [
-      "Only after liveness succeeds, perform at most one lane-specific bounded tool call.",
-      "Do not discover plugins or search for tools. If the named lane work action is unavailable, stop immediately; liveness remains valid.",
-      "If the work call returns promptly, create one immutable work receipt at <lane>/work/<RUN_ID>.json using the same RUN_ID.",
-      "Do not update the liveness receipt or latest.json."
-    ],
-    "max_mutations": 1,
-    "mandatory_readback": false
+    "optional": false,
+    "enabled_in_scheduled_run": false,
+    "max_work_calls": 0,
+    "max_mutations": 0,
+    "mandatory_readback": false,
+    "rule": "No phase-2 work occurs inside the natural scheduled run under r12. Work is deliberately outside the liveness critical path."
   },
   "required_liveness_fields": [
     "engine",
@@ -151,14 +147,12 @@
     "jitter_validation_seconds": 360
   },
   "phase2_recovery": {
-    "optional": true,
-    "prerequisite": "Natural v4.3 liveness receipt for the current run has succeeded.",
-    "rule": "After liveness, perform bounded reconciliation reads to identify at most one oldest lane backlog item and verify that no corresponding late-arrival or recovered artifact supersedes it. If eligibility cannot be verified within the run budget, leave it unresolved. If eligible, recovery may use at most one bounded lane-specific historical evidence retrieval and write one immutable reconciliation/recovered artifact with run_origin=BACKFILL_RECOVERY. It may never create or alter a natural receipt for the missed slot.",
-    "max_backlog_items_per_natural_run": 1,
-    "backlog_priority_over_normal_work": true,
-    "unresolved_definition": "Backlog item exists and no corresponding late-arrival or recovered artifact supersedes it.",
-    "historical_truth_rule": "Never represent a field as observed-at-slot unless its source provides valid historical point-in-time data.",
-    "failure_semantics": "Any post-liveness recovery timeout/tool failure leaves backlog unresolved; the current natural liveness receipt remains valid.",
+    "optional": false,
+    "enabled_in_scheduled_run": false,
+    "max_backlog_items_per_natural_run": 0,
+    "backlog_priority_over_normal_work": false,
+    "rule": "Recovery backlog remains durable under reconciliation/, but natural scheduled runs do not inspect or process it under r12.",
+    "failure_semantics": "Backlog remains unresolved until processed outside the natural liveness critical path.",
     "execution_authorized": false
   }
 }

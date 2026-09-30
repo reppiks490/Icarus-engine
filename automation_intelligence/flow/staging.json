@@ -1,7 +1,54 @@
 {
   "schema_version": "scheduler-staging-v5.2",
   "RUN_ID": "flow-2026-09-30T00:35:00Z",
-  "RUN_STATUS": "STARTED",
+  "RUN_STATUS": "STAGED_FINAL",
   "scheduler_id": "6abaef8effb48191aa5c959455451681",
-  "execution_authorized": false
+  "execution_authorized": false,
+  "payload": {
+    "RUN_ID": "flow-2026-09-30T00:35:00Z",
+    "scheduler_id": "6abaef8effb48191aa5c959455451681",
+    "execution_authorized": false,
+    "collection_only": true,
+    "retrieved_at": "2026-09-30T00:31:04Z",
+    "observations": [
+      {
+        "instrument": "GC",
+        "representation": "U.S. gold futures settlement",
+        "event_date": "2026-09-29",
+        "value": 4179.7,
+        "units": "USD/troy_oz",
+        "change_pct": 0.3,
+        "provenance": "Reuters"
+      },
+      {
+        "instrument": "GC",
+        "representation": "front-month COMEX October settlement",
+        "event_date": "2026-09-29",
+        "value": 4147.7,
+        "units": "USD/troy_oz",
+        "change_pct": 0.27,
+        "provenance": "WSJ"
+      },
+      {
+        "instrument": "cross-market",
+        "representation": "US 10Y Treasury yield",
+        "event_date": "2026-09-29",
+        "value": 5.256,
+        "units": "percent",
+        "provenance": "WSJ"
+      }
+    ],
+    "conflicts": [
+      {
+        "field": "gold_futures_price",
+        "reason": "different contract/representation; retain separately"
+      }
+    ],
+    "gaps": [
+      "No fresh exchange-native NQ/MNQ, ES/MES, YM/MYM, RTY/M2K depth/OI/options evidence within bounded collection.",
+      "No fresh MGC depth evidence.",
+      "No sufficiently fresh BTC perpetual funding/OI/order-book evidence within bounded collection."
+    ],
+    "NEXT": "Next scheduled cycle should prioritize exchange-native BTC perpetual and CME index/micro futures evidence."
+  }
 }

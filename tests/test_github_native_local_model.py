@@ -16,6 +16,7 @@ from tools.github_native_local_model import (
     extract_json_object,
     run_local_model,
     safe_generation_preview,
+    wrap_terminal_command,
 )
 
 
@@ -225,3 +226,18 @@ def test_unstructured_error_contains_only_sanitized_preview(tmp_path: Path) -> N
     assert "secret reasoning" not in message
     assert "definitely-not-json" in message
     assert "generated_len=" in message
+
+
+def test_terminal_wrapper_allocates_script_pty() -> None:
+    original = ["llama-cli", "-p", "hello world", "--reasoning", "off"]
+    wrapped = wrap_terminal_command(original, script_binary="/usr/bin/script")
+    assert wrapped[:4] == ["/usr/bin/script", "-q", "-e", "-c"]
+    assert wrapped[-1] == "/dev/null"
+    assert "llama-cli" in wrapped[4]
+    assert "'hello world'" in wrapped[4]
+    assert "--reasoning off" in wrapped[4]
+
+
+def test_terminal_wrapper_falls_back_when_script_is_unavailable() -> None:
+    original = ["llama-cli", "-p", "hello"]
+    assert wrap_terminal_command(original, script_binary="") == original

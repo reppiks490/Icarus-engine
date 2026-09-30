@@ -7,11 +7,10 @@ on:
     branches: [main]
   push:
     branches: [main]
-    paths:
-      - "tools/restored_five_native_liveness.py"
-      - "tools/test_restored_five_native_liveness.py"
-      - "automation_intelligence/restored_five_native/control_plane.json"
-      - ".github/workflows/restored-five-native-liveness.yml"
+    paths-ignore:
+      - "automation_intelligence/restored_five_native/receipts/**"
+      - "automation_intelligence/restored_five_native/late_verifications/**"
+      - "automation_intelligence/omega_stack_native_v3/local_model_canary/**"
   schedule:
     - cron: "3-58/5 * * * *"
   workflow_dispatch:
@@ -21,7 +20,7 @@ permissions:
 
 concurrency:
   group: restored-five-native-liveness
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   persist:

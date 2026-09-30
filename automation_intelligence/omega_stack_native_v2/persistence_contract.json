@@ -1,6 +1,6 @@
 {
   "schema_version": "omega-stack-persistence-v4.3-append-first",
-  "contract_revision": "2026-09-30-native-v2-r12",
+  "contract_revision": "2026-09-30-native-v2-r12.1",
   "migrated_from": "omega-stack-persistence-v4.2-write-first",
   "control_plane_id": "omega-aion-daedalus-native-v2",
   "authoritative_branch": "automation/omega-native-v2",
@@ -9,9 +9,9 @@
   "scheduler_mutation_forbidden": true,
   "purpose": "Make natural-run liveness durable with exactly one GitHub mutation and zero prerequisite or follow-up external calls inside the scheduled execution.",
   "root_cause_basis": {
-    "observed_failure_pattern": "OMEGA, Macro, and Flow were found paused after failed executions; multiple pause timestamps occurred approximately 64 seconds after the corresponding trigger. AION and DAEDALUS have demonstrated successful GitHub liveness writes. GitHub app-specific permission is Allow all actions.",
-    "inference_boundary": "The automation registry exposes no pause reason code, so the exact platform-internal cause is not asserted. The repeated approximately-64-second signature is treated as an execution-budget/tool-path failure risk.",
-    "corrective_principle": "Minimize the scheduled critical path to local timestamp/slot computation plus exactly one GitHub create_file liveness mutation, then stop."
+    "observed_failure_pattern": "Post-r12 Flow triggered at 06:24:48Z and remained enabled, but the scheduled GitHub create_file still did not appear. Earlier failed lanes sometimes auto-paused about 64 seconds after trigger. GitHub app-specific permission remains Allow all actions.",
+    "inference_boundary": "Task enablement and connector persistence are separate health dimensions. The registry does not expose the exact internal reason when a scheduled connector action disappears, so platform-internal causation is not asserted.",
+    "corrective_principle": "Keep the ChatGPT scheduled critical path at one external call; use GitHub-native reconciliation as independent durability; separately classify scheduler trigger health versus connector persistence health."
   },
   "phase1_liveness": {
     "order": 1,
@@ -102,7 +102,11 @@
     "liveness_single_run": "One natural immutable run file is created successfully with exact identity and required values.",
     "sustained_lane": "Two consecutive natural v4.3 immutable liveness files with distinct RUN_IDs.",
     "work_completion": "Track fraction of v4.3 liveness runs that also create a matching immutable work receipt.",
-    "stack_5_of_5": "All five enabled authoritative lanes satisfy sustained_lane while scheduler registry remains exactly five enabled authoritative lanes."
+    "stack_5_of_5": "Report scheduler trigger health, connector persistence health, and watchdog health separately. Do not call the full stack healthy solely because five tasks are enabled or solely because watchdog reconciliation is green.",
+    "scheduler_trigger_health": "Authoritative task remains enabled and advances last_run_time on its intended cadence.",
+    "connector_persistence_health": "Natural immutable run receipt exists with exact identity/slot fields and valid jitter.",
+    "watchdog_health": "GitHub Actions watchdog completes successfully and writes only reconciliation namespace transitions.",
+    "do_not_conflate_health_dimensions": true
   },
   "legacy_artifacts": {
     "v3": "heartbeat.json, checkpoint.json, core/, history/, finalization/ are read-only historical evidence.",
@@ -138,7 +142,17 @@
     "verified_actions_run_id": 36628003730,
     "verified_reconciliation_commit": "f42ea0c1753632056f3b3e2c4efd3017734bc058",
     "verified_reconciliation_file_count": 140,
-    "execution_authorized": false
+    "execution_authorized": false,
+    "schedule_crons": [
+      "2-52/10 * * * *",
+      "7-57/10 * * * *"
+    ],
+    "effective_schedule_coverage_minutes": 5,
+    "schedule_design": "two independent 10-minute streams staggered by five minutes; avoids :00 load concentration and reduces dependence on one schedule stream",
+    "schedule_hardening_merge": "23af4b780b67df9d30923aacfa65629687492aa3",
+    "post_merge_push_run_id": 36678206989,
+    "post_merge_push_run_success": true,
+    "first_staggered_schedule_run_observation": "PENDING_AT_LAST_CHECK"
   },
   "natural_slot_attribution": {
     "version": "nearest-hourly-boundary-v1",
@@ -154,5 +168,13 @@
     "rule": "Recovery backlog remains durable under reconciliation/, but natural scheduled runs do not inspect or process it under r12.",
     "failure_semantics": "Backlog remains unresolved until processed outside the natural liveness critical path.",
     "execution_authorized": false
+  },
+  "r12_probe_evidence": {
+    "lane": "flow",
+    "nominal_slot": "2026-09-30T01:24:00-05:00",
+    "registry_last_run_time_utc": "2026-09-30T06:24:48.186067Z",
+    "remained_enabled": true,
+    "natural_receipt_created": false,
+    "conclusion": "r12 reduced the auto-disable failure surface in this probe, but connector delivery remains intermittent"
   }
 }

@@ -8,6 +8,7 @@ from tools.restored_five_local_shadow_job import (
     LANES,
     reconcile_late_verifications,
     select_pending,
+    select_pending_batch,
 )
 
 
@@ -112,6 +113,32 @@ class RestoredFiveLocalShadowJobTests(unittest.TestCase):
                 encoding="utf-8",
             )
             self.assertEqual(reconcile_late_verifications(root), [])
+
+
+    def test_select_pending_batch_is_bounded_and_oldest_first(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            rows = [
+                ("apex_council", "20260930T224500Z"),
+                ("flow_microstructure", "20260930T223500Z"),
+                ("alpha_synthesis", "20260930T222500Z"),
+                ("advanced_csv", "20260930T221500Z"),
+                ("robustness_guardian", "20260930T220500Z"),
+            ]
+            for lane, slot in rows:
+                p = root / "automation_intelligence/restored_five_native/receipts" / lane / f"{slot}.json"
+                p.parent.mkdir(parents=True, exist_ok=True)
+                p.write_text("{}", encoding="utf-8")
+            batch = select_pending_batch(root, limit=3)
+            self.assertEqual(
+                [(item.lane, item.slot_id) for item in batch],
+                [
+                    ("robustness_guardian", "20260930T220500Z"),
+                    ("advanced_csv", "20260930T221500Z"),
+                    ("alpha_synthesis", "20260930T222500Z"),
+                ],
+            )
+            self.assertEqual(select_pending_batch(root, limit=0), [])
 
 
 if __name__ == "__main__":

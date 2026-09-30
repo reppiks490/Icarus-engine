@@ -19,7 +19,16 @@
       "persistence_fallback": "agent-fabric-ledger-fallback-v1",
       "staging": "automation_intelligence/agent_fabric/robustness_guardian/staging.json",
       "finalization_state": "automation_intelligence/agent_fabric/robustness_guardian/finalization_state.json",
-      "runtime_protocol": "git_commit_staging_v5"
+      "runtime_protocol": "scheduler-v5.4-minimal-durability",
+      "startup_state": "automation_intelligence/agent_fabric/robustness_guardian/startup_state.json",
+      "heartbeat": "automation_intelligence/agent_fabric/robustness_guardian/heartbeat.json",
+      "canonical_closure": [
+        "startup_state",
+        "finalization_state",
+        "heartbeat"
+      ],
+      "staging_status": "DEPRECATED_NONCANONICAL",
+      "compatibility_mirrors_nonblocking": true
     },
     "alpha_synthesis": {
       "title": "Alpha Synthesis Evolution",
@@ -33,7 +42,16 @@
       "persistence_fallback": "agent-fabric-ledger-fallback-v1",
       "staging": "automation_intelligence/agent_fabric/alpha_synthesis/staging.json",
       "finalization_state": "automation_intelligence/agent_fabric/alpha_synthesis/finalization_state.json",
-      "runtime_protocol": "git_commit_staging_v5"
+      "runtime_protocol": "scheduler-v5.4-minimal-durability",
+      "startup_state": "automation_intelligence/agent_fabric/alpha_synthesis/startup_state.json",
+      "heartbeat": "automation_intelligence/agent_fabric/alpha_synthesis/heartbeat.json",
+      "canonical_closure": [
+        "startup_state",
+        "finalization_state",
+        "heartbeat"
+      ],
+      "staging_status": "DEPRECATED_NONCANONICAL",
+      "compatibility_mirrors_nonblocking": true
     },
     "apex_council": {
       "title": "Apex Council Evolution",
@@ -47,7 +65,16 @@
       "persistence_fallback": "agent-fabric-ledger-fallback-v1",
       "staging": "automation_intelligence/agent_fabric/apex_council/staging.json",
       "finalization_state": "automation_intelligence/agent_fabric/apex_council/finalization_state.json",
-      "runtime_protocol": "git_commit_staging_v5"
+      "runtime_protocol": "scheduler-v5.4-minimal-durability",
+      "startup_state": "automation_intelligence/agent_fabric/apex_council/startup_state.json",
+      "heartbeat": "automation_intelligence/agent_fabric/apex_council/heartbeat.json",
+      "canonical_closure": [
+        "startup_state",
+        "finalization_state",
+        "heartbeat"
+      ],
+      "staging_status": "DEPRECATED_NONCANONICAL",
+      "compatibility_mirrors_nonblocking": true
     }
   },
   "foreign_or_separate_namespaces": [
@@ -86,5 +113,6 @@
     "old_run_id_reuse_forbidden": true
   },
   "runtime_contract": "automation_intelligence/agent_fabric/runtime_v5_contract.json",
-  "runtime_protocol": "git_commit_staging_v5"
+  "runtime_protocol": "scheduler-v5.4-minimal-durability",
+  "runtime_protocol_rule": "Exactly three canonical writes per run: startup_state once, finalization_state once, heartbeat once. Git commit of finalization_state is immutable run-history identity. Staging and other mirrors are noncanonical/nonblocking."
 }

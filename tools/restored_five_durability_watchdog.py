@@ -95,6 +95,7 @@ def reconcile_lane(
     lane_root: str,
     scheduler_id: str,
     stale_minutes: int,
+    receipt_first_stale_minutes: int,
     now: datetime,
 ) -> list[str]:
     root = repo_root / lane_root
@@ -149,12 +150,18 @@ def reconcile_lane(
                 changed.append(str(startup_path.relative_to(repo_root)))
             return changed
 
-    # Legacy V5.6-and-earlier cleanup only. V5.7 workers never create STARTED.
+    # Legacy cleanup only. V5.7 workers never create STARTED.
     if startup_run_id and startup.get("RUN_STATUS") == "STARTED":
         started = parse_run_time(startup_run_id)
         if started is not None:
             age_minutes = (now - started).total_seconds() / 60
-            if age_minutes >= stale_minutes:
+            startup_schema = startup.get("schema_version")
+            effective_stale_minutes = (
+                receipt_first_stale_minutes
+                if startup_schema == "scheduler-startup-v5.6"
+                else stale_minutes
+            )
+            if age_minutes >= effective_stale_minutes:
                 incident_path = root / "watchdog_incidents.jsonl"
                 if not incident_exists(incident_path, "STRANDED_STARTUP_RECOVERED", startup_run_id):
                     append_incident(
@@ -166,7 +173,7 @@ def reconcile_lane(
                             "scheduler_id": scheduler_id,
                             "RUN_ID": startup_run_id,
                             "observed_at_utc": now.isoformat().replace("+00:00", "Z"),
-                            "reason": f"NO_SAME_RUN_FINALIZATION_GT_{stale_minutes}M",
+                            "reason": f"NO_SAME_RUN_FINALIZATION_GT_{effective_stale_minutes}M",
                             "execution_authorized": False,
                         },
                     )
@@ -181,7 +188,7 @@ def reconcile_lane(
                             "RUN_ID": startup_run_id,
                             "RUN_STATUS": "PARTIAL_PERSISTENCE",
                             "scheduler_id": scheduler_id,
-                            "reason": f"WATCHDOG_STALE_STARTUP_NO_SAME_RUN_FINALIZATION_GT_{stale_minutes}M",
+                            "reason": f"WATCHDOG_STALE_STARTUP_NO_SAME_RUN_FINALIZATION_GT_{effective_stale_minutes}M",
                             "execution_authorized": False,
                         },
                     )
@@ -328,6 +335,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--repo-root", default=".")
     parser.add_argument("--stale-minutes", type=int, default=30)
+    parser.add_argument("--receipt-first-stale-minutes", type=int, default=12)
     parser.add_argument("--monitor-grace-minutes", type=int, default=12)
     parser.add_argument("--evidence-grace-minutes", type=int, default=20)
     parser.add_argument("--monitor-after")
@@ -356,6 +364,7 @@ def main() -> None:
                 lane_root,
                 scheduler_id,
                 args.stale_minutes,
+                args.receipt_first_stale_minutes,
                 now,
             )
         )

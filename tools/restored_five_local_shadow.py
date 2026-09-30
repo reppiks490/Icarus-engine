@@ -151,32 +151,36 @@ def deterministic_summary(source: dict[str, object]) -> str:
     return _bounded_text(" ".join(parts), 350)
 
 
-def enforce_evidence_guards(
-    source: dict[str, object],
-    model_payload: dict[str, object],
-) -> dict[str, object]:
-    guarded = dict(model_payload)
-    gaps = _bounded_items(model_payload.get("data_gaps", []))
-    conflicts = _bounded_items(model_payload.get("conflicts", []))
+def deterministic_gap_markers(source: dict[str, object]) -> list[str]:
+    gaps: list[str] = []
+    slot_status = source.get("slot_status")
+    worker_status = source.get("worker_receipt_status")
+    substantive_claim = source.get("substantive_work_claimed")
+    expected_run = source.get("expected_RUN_ID")
+    observed_run = source.get("observed_worker_RUN_ID")
 
+    if slot_status == "FALLBACK_LIVENESS_ONLY":
+        gaps.append("FALLBACK_LIVENESS_ONLY")
+    if worker_status != "CHATGPT_CANONICAL_RECEIPT_PRESENT":
+        gaps.append(f"WORKER_RECEIPT_NOT_VERIFIED:{worker_status}")
+    if substantive_claim is not True:
+        gaps.append("SUBSTANTIVE_WORK_NOT_PROVEN")
+    if not isinstance(expected_run, str) or not expected_run:
+        gaps.append("EXPECTED_RUN_ID_MISSING")
+    if worker_status == "CHATGPT_CANONICAL_RECEIPT_PRESENT" and (
+        not isinstance(observed_run, str) or not observed_run
+    ):
+        gaps.append("OBSERVED_WORKER_RUN_ID_MISSING")
+
+    return _bounded_items(gaps, limit=120, max_items=8)
+
+
+def deterministic_conflict_markers(source: dict[str, object]) -> list[str]:
+    conflicts: list[str] = []
     slot_status = source.get("slot_status")
     worker_status = source.get("worker_receipt_status")
     expected_run = source.get("expected_RUN_ID")
     observed_run = source.get("observed_worker_RUN_ID")
-    substantive_claim = source.get("substantive_work_claimed")
-
-    if slot_status == "FALLBACK_LIVENESS_ONLY":
-        if "FALLBACK_LIVENESS_ONLY" not in gaps:
-            gaps.append("FALLBACK_LIVENESS_ONLY")
-
-    if worker_status != "CHATGPT_CANONICAL_RECEIPT_PRESENT":
-        marker = f"WORKER_RECEIPT_NOT_VERIFIED:{worker_status}"
-        if marker not in gaps:
-            gaps.append(marker)
-
-    if substantive_claim is not True:
-        if "SUBSTANTIVE_WORK_NOT_PROVEN" not in gaps:
-            gaps.append("SUBSTANTIVE_WORK_NOT_PROVEN")
 
     if (
         isinstance(expected_run, str)
@@ -184,16 +188,45 @@ def enforce_evidence_guards(
         and observed_run
         and observed_run != expected_run
     ):
-        marker = "OBSERVED_WORKER_RUN_ID_DIFFERS_FROM_EXPECTED"
-        if marker not in conflicts:
-            conflicts.append(marker)
+        conflicts.append("OBSERVED_WORKER_RUN_ID_DIFFERS_FROM_EXPECTED")
 
-    guarded["summary"] = deterministic_summary(source)
-    guarded["net_new_delta"] = "SHADOW_ASSESSMENT_ONLY"
-    guarded["data_gaps"] = _bounded_items(gaps, limit=120, max_items=8)
-    guarded["conflicts"] = _bounded_items(conflicts, limit=120, max_items=8)
-    guarded["execution_authorized"] = False
-    return guarded
+    if (
+        slot_status == "WORKER_RECEIPT_VERIFIED"
+        and worker_status != "CHATGPT_CANONICAL_RECEIPT_PRESENT"
+    ) or (
+        slot_status == "FALLBACK_LIVENESS_ONLY"
+        and worker_status == "CHATGPT_CANONICAL_RECEIPT_PRESENT"
+    ):
+        conflicts.append("SLOT_STATUS_CONFLICTS_WITH_WORKER_RECEIPT")
+
+    if source.get("execution_authorized") is True:
+        conflicts.append("SOURCE_EXECUTION_AUTHORIZED_TRUE")
+
+    return _bounded_items(conflicts, limit=120, max_items=8)
+
+
+def bounded_model_advisory(model_payload: dict[str, object]) -> dict[str, object]:
+    return {
+        "summary": _bounded_text(model_payload.get("summary", ""), 350),
+        "data_gaps": _bounded_items(model_payload.get("data_gaps", []), limit=120, max_items=8),
+        "conflicts": _bounded_items(model_payload.get("conflicts", []), limit=120, max_items=8),
+        "non_authoritative": True,
+        "execution_authorized": False,
+    }
+
+
+def enforce_evidence_guards(
+    source: dict[str, object],
+    model_payload: dict[str, object],
+) -> dict[str, object]:
+    return {
+        "lane": model_payload.get("lane"),
+        "summary": deterministic_summary(source),
+        "net_new_delta": "SHADOW_ASSESSMENT_ONLY",
+        "data_gaps": deterministic_gap_markers(source),
+        "conflicts": deterministic_conflict_markers(source),
+        "execution_authorized": False,
+    }
 
 
 def run_shadow(
@@ -235,6 +268,7 @@ def run_shadow(
         "response_status": response.status,
         "canonical_state_mutated": False,
         "deterministic_facts": derive_receipt_facts(payload),
+        "model_advisory": bounded_model_advisory(response.payload),
         "substantive_research_source": "DURABLE_REPO_EVIDENCE_ONLY",
         "paid_api_call_made": False,
         "api_credential_required": False,

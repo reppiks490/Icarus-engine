@@ -151,3 +151,37 @@ def test_run_local_model_rejects_unstructured_output(tmp_path: Path) -> None:
             executor=executor,
             timeout_seconds=5,
         )
+
+
+def test_run_local_model_reads_cli_output_file_when_stdio_is_empty(tmp_path: Path) -> None:
+    binary = tmp_path / "llama-cli"
+    model = tmp_path / "model.gguf"
+    binary.write_text("", encoding="utf-8")
+    model.write_text("", encoding="utf-8")
+    output = json.dumps(
+        {
+            "lane": "aion",
+            "summary": "Local file-channel canary succeeded.",
+            "net_new_delta": "CANARY_OK",
+            "data_gaps": [],
+            "conflicts": [],
+            "execution_authorized": False,
+        }
+    )
+
+    def executor(cmd, timeout):
+        assert "-o" in cmd
+        output_path = Path(cmd[cmd.index("-o") + 1])
+        output_path.write_text(output, encoding="utf-8")
+        return 0, "", ""
+
+    response = run_local_model(
+        _request(),
+        binary=binary,
+        model=model,
+        executor=executor,
+        timeout_seconds=5,
+    )
+
+    assert response.status == "completed"
+    assert response.payload["net_new_delta"] == "CANARY_OK"

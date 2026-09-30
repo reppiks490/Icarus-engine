@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import subprocess
+import tempfile
 from pathlib import Path
 from typing import Callable
 
@@ -56,8 +57,10 @@ def build_local_model_command(
     binary: Path,
     model: Path,
     request: ModelRequest,
+    *,
+    output_file: Path | None = None,
 ) -> list[str]:
-    return [
+    command = [
         str(binary),
         "-m",
         str(model),
@@ -84,6 +87,9 @@ def build_local_model_command(
         "-co",
         "off",
     ]
+    if output_file is not None:
+        command.extend(["-o", str(output_file)])
+    return command
 
 
 def _default_executor(command: list[str], timeout_seconds: int) -> tuple[int, str, str]:
@@ -131,14 +137,30 @@ def run_local_model(
     if timeout_seconds <= 0:
         raise ValueError("timeout_seconds must be positive")
 
-    command = build_local_model_command(binary, model, request)
-    exit_code, stdout, _stderr = executor(command, timeout_seconds)
-    if exit_code != 0:
-        raise TransportError(f"local model runtime failed with exit code {exit_code}")
+    with tempfile.TemporaryDirectory(prefix="icarus-local-model-") as temp_dir:
+        output_file = Path(temp_dir) / "generation.txt"
+        command = build_local_model_command(
+            binary,
+            model,
+            request,
+            output_file=output_file,
+        )
+        exit_code, stdout, _stderr = executor(command, timeout_seconds)
+        if exit_code != 0:
+            raise TransportError(f"local model runtime failed with exit code {exit_code}")
 
-    payload = extract_json_object(stdout)
+        generated = ""
+        if output_file.is_file():
+            generated = output_file.read_text(encoding="utf-8", errors="replace")
+        try:
+            payload = extract_json_object(generated)
+            response_text = generated
+        except TransportError:
+            payload = extract_json_object(stdout)
+            response_text = stdout
+
     validated = validate_lane_output(payload, request.lane)
-    response_hash = hashlib.sha256(stdout.encode("utf-8")).hexdigest()[:24]
+    response_hash = hashlib.sha256(response_text.encode("utf-8")).hexdigest()[:24]
     return ModelResponse(
         response_id=f"local-{response_hash}",
         status="completed",

@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Sequence
 
-from tools.restored_five_local_shadow import run_shadow
+from tools.restored_five_local_shadow import deterministic_summary, run_shadow
 
 ROOT = Path("automation_intelligence/restored_five_native")
 RECEIPTS = ROOT / "receipts"
@@ -125,6 +125,62 @@ def select_pending_batch(root: Path, limit: int = 3) -> list[Pending]:
             candidates.append(Pending(lane, slot_id, receipt, output))
     candidates.sort(key=lambda item: (item.slot_id, LANES.index(item.lane)))
     return candidates[:limit]
+
+
+def reconcile_pre_hardening_summaries(root: Path) -> list[Path]:
+    created: list[Path] = []
+    output_root = root / OUTPUTS
+    if not output_root.is_dir():
+        return created
+
+    for lane in LANES:
+        lane_dir = output_root / lane
+        if not lane_dir.is_dir():
+            continue
+        for shadow_path in sorted(lane_dir.glob("*.json")):
+            slot_id = shadow_path.stem
+            receipt_path = root / RECEIPTS / lane / f"{slot_id}.json"
+            reconciliation_path = root / RECONCILIATIONS / lane / f"{slot_id}.json"
+            if reconciliation_path.exists() or not receipt_path.is_file():
+                continue
+
+            shadow = _load_object(shadow_path)
+            receipt = _load_object(receipt_path)
+            model_payload = shadow.get("payload")
+            if not isinstance(model_payload, dict):
+                continue
+            observed_summary = model_payload.get("summary")
+            if not isinstance(observed_summary, str):
+                continue
+            expected_summary = deterministic_summary(receipt)
+            if observed_summary == expected_summary:
+                continue
+
+            payload: dict[str, object] = {
+                "schema_version": "restored-five-shadow-reconciliation-v1",
+                "reconciliation_kind": "PRE_HARDENING_SUMMARY_CORRECTION",
+                "lane": lane,
+                "slot_id": slot_id,
+                "original_receipt_path": str(receipt_path.relative_to(root)),
+                "original_receipt_sha256": _sha256(receipt_path),
+                "base_shadow_path": str(shadow_path.relative_to(root)),
+                "base_shadow_sha256": _sha256(shadow_path),
+                "original_summary": observed_summary,
+                "effective_summary": expected_summary,
+                "original_shadow_preserved": True,
+                "canonical_state_mutated": False,
+                "execution_authorized": False,
+                "correction": (
+                    "The immutable base shadow predates deterministic-summary hardening. "
+                    "Effective summary is recomputed from the bound receipt facts."
+                ),
+            }
+            reconciliation_path.parent.mkdir(parents=True, exist_ok=True)
+            with reconciliation_path.open("x", encoding="utf-8") as handle:
+                json.dump(payload, handle, sort_keys=True, indent=2)
+                handle.write("\n")
+            created.append(reconciliation_path)
+    return created
 
 
 def select_pending(root: Path) -> Pending | None:

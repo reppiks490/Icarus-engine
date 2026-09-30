@@ -51,24 +51,30 @@ jobs:
 
           mkdir -p "$CACHE"
 
-          LLAMA_CLI="$(find "$RUNTIME_DIR" -type f -name llama-cli -print -quit 2>/dev/null || true)"
-          if [ -z "$LLAMA_CLI" ]; then
+          LLAMA_BINARY="$(find "$RUNTIME_DIR" -type f -name llama-completion -print -quit 2>/dev/null || true)"
+          if [ -z "$LLAMA_BINARY" ]; then
+            LLAMA_BINARY="$(find "$RUNTIME_DIR" -type f -name llama-cli -print -quit 2>/dev/null || true)"
+          fi
+          if [ -z "$LLAMA_BINARY" ]; then
             rm -rf "$RUNTIME_DIR"
             mkdir -p "$RUNTIME_DIR"
             curl --fail --location --retry 3 --retry-delay 2 "$LLAMA_URL" -o /tmp/llama-runtime.tar.gz
             echo "$LLAMA_SHA  /tmp/llama-runtime.tar.gz" | sha256sum -c -
             tar -xzf /tmp/llama-runtime.tar.gz -C "$RUNTIME_DIR"
-            LLAMA_CLI="$(find "$RUNTIME_DIR" -type f -name llama-cli -print -quit)"
+            LLAMA_BINARY="$(find "$RUNTIME_DIR" -type f -name llama-completion -print -quit 2>/dev/null || true)"
+            if [ -z "$LLAMA_BINARY" ]; then
+              LLAMA_BINARY="$(find "$RUNTIME_DIR" -type f -name llama-cli -print -quit)"
+            fi
           fi
-          test -n "$LLAMA_CLI"
-          chmod +x "$LLAMA_CLI"
+          test -n "$LLAMA_BINARY"
+          chmod +x "$LLAMA_BINARY"
 
           if [ ! -f "$MODEL_PATH" ]; then
             curl --fail --location --retry 3 --retry-delay 2 "$MODEL_URL" -o "$MODEL_PATH"
           fi
           echo "$MODEL_SHA  $MODEL_PATH" | sha256sum -c -
 
-          echo "LLAMA_CLI=$LLAMA_CLI" >> "$GITHUB_ENV"
+          echo "LLAMA_BINARY=$LLAMA_BINARY" >> "$GITHUB_ENV"
           echo "LOCAL_MODEL_PATH=$MODEL_PATH" >> "$GITHUB_ENV"
 
       - name: Run zero-cost local inference canary
@@ -76,7 +82,7 @@ jobs:
         run: |
           set -euo pipefail
           CANARY_OUTPUT="automation_intelligence/omega_stack_native_v3/local_model_canary/${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}.json"
-          python -m tools.github_native_local_model_canary             --binary "$LLAMA_CLI"             --model "$LOCAL_MODEL_PATH"             --output "$CANARY_OUTPUT"
+          python -m tools.github_native_local_model_canary             --binary "$LLAMA_BINARY"             --model "$LOCAL_MODEL_PATH"             --output "$CANARY_OUTPUT"
           echo "CANARY_OUTPUT=$CANARY_OUTPUT" >> "$GITHUB_ENV"
 
       - name: Persist local model canary

@@ -84,7 +84,7 @@ def build_local_model_command(
         "-c",
         "4096",
         "-n",
-        "384",
+        "768",
         "--temp",
         "0",
         "-co",

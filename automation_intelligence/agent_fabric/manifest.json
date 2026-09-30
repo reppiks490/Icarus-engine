@@ -28,7 +28,9 @@
         "heartbeat"
       ],
       "staging_status": "DEPRECATED_NONCANONICAL",
-      "compatibility_mirrors_nonblocking": true
+      "compatibility_mirrors_nonblocking": true,
+      "runtime_contract": "automation_intelligence/agent_fabric/runtime_v5_4_contract.json",
+      "persistence_protocol": "scheduler-v5.4-minimal-durability"
     },
     "alpha_synthesis": {
       "title": "Alpha Synthesis Evolution",
@@ -51,7 +53,9 @@
         "heartbeat"
       ],
       "staging_status": "DEPRECATED_NONCANONICAL",
-      "compatibility_mirrors_nonblocking": true
+      "compatibility_mirrors_nonblocking": true,
+      "runtime_contract": "automation_intelligence/agent_fabric/runtime_v5_4_contract.json",
+      "persistence_protocol": "scheduler-v5.4-minimal-durability"
     },
     "apex_council": {
       "title": "Apex Council Evolution",
@@ -74,7 +78,9 @@
         "heartbeat"
       ],
       "staging_status": "DEPRECATED_NONCANONICAL",
-      "compatibility_mirrors_nonblocking": true
+      "compatibility_mirrors_nonblocking": true,
+      "runtime_contract": "automation_intelligence/agent_fabric/runtime_v5_4_contract.json",
+      "persistence_protocol": "scheduler-v5.4-minimal-durability"
     }
   },
   "foreign_or_separate_namespaces": [
@@ -104,7 +110,7 @@
     }
   },
   "execution_authorized": false,
-  "runtime_status_policy": "For runtime-v5 runs, heartbeat + finalization_state + staging Git commit/blob are authoritative. Legacy latest/state/history/ledger are compatibility evidence and cannot rebind scheduler identity.",
+  "runtime_status_policy": "For scheduler-runtime-v5.4, canonical truth is startup_state + finalization_state Git commit/blob + heartbeat. Staging and legacy latest/state/history/ledger are compatibility evidence only and cannot block success or rebind scheduler identity.",
   "persistence_fallback_contract": "automation_intelligence/agent_fabric/persistence_fallback_contract.json",
   "current_slot_continuation_policy": {
     "required": true,
@@ -112,7 +118,7 @@
     "run_id_source": "scheduler scheduled-for occurrence; if unavailable, nearest configured minute occurrence to invocation start",
     "old_run_id_reuse_forbidden": true
   },
-  "runtime_contract": "automation_intelligence/agent_fabric/runtime_v5_contract.json",
+  "runtime_contract": "automation_intelligence/agent_fabric/runtime_v5_4_contract.json",
   "runtime_protocol": "scheduler-v5.4-minimal-durability",
   "runtime_protocol_rule": "Exactly three canonical writes per run: startup_state once, finalization_state once, heartbeat once. Git commit of finalization_state is immutable run-history identity. Staging and other mirrors are noncanonical/nonblocking."
 }

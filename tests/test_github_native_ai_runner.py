@@ -93,6 +93,8 @@ def test_success_writes_immutable_output_and_receipt_with_provenance(tmp_path: P
     output = json.loads(result.output_path.read_text(encoding="utf-8"))
 
     assert receipt["lane"] == "aion"
+    assert receipt["control_plane_id"] == "omega-aion-daedalus-github-native-v3"
+    assert receipt["inference_backend"] == "openai"
     assert receipt["SLOT_ID"] == "20260930T133600Z"
     assert receipt["run_origin"] == "GITHUB_NATIVE_AI"
     assert receipt["workflow_run_id"] == "12345"

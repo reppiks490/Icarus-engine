@@ -491,6 +491,7 @@ def valid_v3_receipt(slot, **overrides) -> dict:
         "started_at_utc": (slot.scheduled_utc + timedelta(seconds=30)).isoformat().replace("+00:00", "Z"),
         "completed_at_utc": (slot.scheduled_utc + timedelta(seconds=40)).isoformat().replace("+00:00", "Z"),
         "run_origin": "GITHUB_NATIVE_AI",
+        "inference_backend": "openai",
         "control_plane_id": V3_CONTROL_PLANE_ID,
         "workflow_run_id": "12345",
         "workflow_run_attempt": "1",

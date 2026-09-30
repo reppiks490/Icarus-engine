@@ -12,6 +12,7 @@ from tools.restored_five_local_shadow import (
     ALLOWED_LANES,
     build_shadow_request,
     derive_receipt_facts,
+    deterministic_summary,
     enforce_evidence_guards,
     run_shadow,
 )
@@ -219,6 +220,45 @@ class RestoredFiveLocalShadowTests(unittest.TestCase):
         self.assertTrue(all(len(item) <= 120 for item in guarded["conflicts"]))
         self.assertEqual(len(set(guarded["data_gaps"])), len(guarded["data_gaps"]))
         self.assertEqual(len(set(guarded["conflicts"])), len(guarded["conflicts"]))
+
+
+    def test_verified_receipt_summary_cannot_claim_no_gaps(self):
+        source = {
+            "slot_status": "WORKER_RECEIPT_VERIFIED",
+            "worker_receipt_status": "CHATGPT_CANONICAL_RECEIPT_PRESENT",
+            "expected_RUN_ID": "flow-20260930T223500Z",
+            "observed_worker_RUN_ID": "flow-20260930T223500Z",
+            "substantive_work_claimed": False,
+            "execution_authorized": False,
+        }
+        model_payload = {
+            "lane": "flow_microstructure",
+            "summary": "No gaps or conflicts.",
+            "net_new_delta": "0",
+            "data_gaps": [],
+            "conflicts": [],
+            "execution_authorized": False,
+        }
+        guarded = enforce_evidence_guards(source, model_payload)
+        self.assertIn("Worker durability receipt verified.", guarded["summary"])
+        self.assertIn("Observed RUN_ID matches expected.", guarded["summary"])
+        self.assertIn(
+            "Substantive work is not proven by this durability evidence.",
+            guarded["summary"],
+        )
+        self.assertNotEqual(guarded["summary"], model_payload["summary"])
+        self.assertIn("SUBSTANTIVE_WORK_NOT_PROVEN", guarded["data_gaps"])
+
+    def test_fallback_summary_is_machine_derived(self):
+        source = {
+            **sample_receipt(),
+            "expected_RUN_ID": "robustness-guardian-20260930T220500Z",
+            "observed_worker_RUN_ID": "robustness-guardian-20260930T170500Z",
+        }
+        summary = deterministic_summary(source)
+        self.assertIn("Fallback-only durability receipt", summary)
+        self.assertIn("Observed RUN_ID differs from expected.", summary)
+        self.assertIn("Substantive work is not proven", summary)
 
 
 if __name__ == "__main__":

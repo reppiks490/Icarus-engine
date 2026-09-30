@@ -2,7 +2,7 @@ name: restored-five-native-liveness
 
 on:
   workflow_run:
-    workflows: ["restored-five-durability-watchdog"]
+    workflows: ["restored-five-durability-watchdog", "automation-durability-watchdog", "github-native-ai-plane"]
     types: [completed]
     branches: [main]
   push:
@@ -67,7 +67,7 @@ jobs:
           fi
 
           staged="$(git diff --cached --name-only)"
-          invalid="$(printf '%s\n' "$staged" | grep -Ev '^automation_intelligence/restored_five_native/receipts/(robustness_guardian|alpha_synthesis|flow_microstructure|apex_council)/[0-9]{8}T[0-9]{6}Z\.json$' || true)"
+          invalid="$(printf '%s\n' "$staged" | grep -Ev '^automation_intelligence/restored_five_native/receipts/(robustness_guardian|advanced_csv|alpha_synthesis|flow_microstructure|apex_council)/[0-9]{8}T[0-9]{6}Z\.json$' || true)"
           if [ -n "$invalid" ]; then
             echo "Refusing out-of-scope native liveness mutation:" >&2
             printf '%s\n' "$invalid" >&2

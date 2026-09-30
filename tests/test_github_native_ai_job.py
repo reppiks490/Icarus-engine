@@ -140,3 +140,21 @@ def test_dark_control_has_no_scheduled_pending_slot(tmp_path: Path) -> None:
         control,
         datetime(2026, 9, 30, 13, 19, tzinfo=UTC),
     ) is None
+
+
+def test_shadow_push_event_executes_as_wakeup(tmp_path: Path) -> None:
+    control = replace(
+        load_control_plane(Path(".")),
+        mode="SHADOW",
+        activated_at_utc=datetime(2026, 9, 30, 15, 6, 57, tzinfo=UTC),
+        catchup_horizon_minutes=180,
+    )
+    assert should_execute(control, event_name="push", execute_model=False) is True
+    slot = select_pending_slot(
+        tmp_path,
+        control,
+        datetime(2026, 9, 30, 15, 14, tzinfo=UTC),
+    )
+    assert slot is not None
+    assert slot.lane.name == "macro"
+    assert slot.slot_id == "20260930T151200Z"

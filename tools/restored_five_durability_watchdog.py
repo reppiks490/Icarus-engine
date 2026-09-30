@@ -276,15 +276,43 @@ def git_json_history(repo_root: Path, relpath: str, max_commits: int = 500) -> l
     return records
 
 
-def records_for_run(repo_root: Path, relpath: str, expected_run_id: str) -> list[dict]:
-    records: list[dict] = []
+def build_history_index(repo_root: Path, relpath: str) -> dict[str, list[dict]]:
+    index: dict[str, list[dict]] = {}
     current = read_json(repo_root / relpath)
-    if current.get("RUN_ID") == expected_run_id:
+    records: list[dict] = []
+    if isinstance(current, dict) and current.get("RUN_ID"):
         records.append(current)
-    for obj in git_json_history(repo_root, relpath):
-        if obj.get("RUN_ID") == expected_run_id and obj not in records:
-            records.append(obj)
-    return records
+    records.extend(git_json_history(repo_root, relpath))
+
+    for obj in records:
+        run_id = obj.get("RUN_ID")
+        if not run_id:
+            continue
+        bucket = index.setdefault(run_id, [])
+        if obj not in bucket:
+            bucket.append(obj)
+    return index
+
+
+def records_for_run(
+    repo_root: Path,
+    relpath: str,
+    expected_run_id: str,
+    history_index: dict[str, list[dict]] | None = None,
+) -> list[dict]:
+    index = history_index if history_index is not None else build_history_index(repo_root, relpath)
+    return list(index.get(expected_run_id, []))
+
+
+def record_state_from_index(
+    history_index: dict[str, list[dict]],
+    expected_run_id: str,
+    validator,
+) -> str:
+    records = history_index.get(expected_run_id, [])
+    if any(validator(obj, expected_run_id) for obj in records):
+        return "VALID"
+    return "MALFORMED" if records else "MISSING"
 
 
 def historical_record_state(
@@ -293,10 +321,11 @@ def historical_record_state(
     expected_run_id: str,
     validator,
 ) -> str:
-    records = records_for_run(repo_root, relpath, expected_run_id)
-    if any(validator(obj, expected_run_id) for obj in records):
-        return "VALID"
-    return "MALFORMED" if records else "MISSING"
+    return record_state_from_index(
+        build_history_index(repo_root, relpath),
+        expected_run_id,
+        validator,
+    )
 
 
 def eligible_slots(
@@ -353,13 +382,13 @@ def _monitor_receipt_slots(
     root = repo_root / lane_root
     relpath = str((root / "finalization_state.json").relative_to(repo_root))
     incident_path = root / "watchdog_incidents.jsonl"
+    history_index = build_history_index(repo_root, relpath)
     changed = False
 
     for slot in slots:
         expected_run_id = f"{run_prefix}-{slot.strftime('%Y%m%dT%H%M%SZ')}"
-        state = historical_record_state(
-            repo_root,
-            relpath,
+        state = record_state_from_index(
+            history_index,
             expected_run_id,
             canonical_receipt_valid,
         )
@@ -374,7 +403,12 @@ def _monitor_receipt_slots(
         if incident_exists(incident_path, record_type, expected_run_id):
             continue
 
-        records = records_for_run(repo_root, relpath, expected_run_id)
+        records = records_for_run(
+            repo_root,
+            relpath,
+            expected_run_id,
+            history_index,
+        )
         observed = records[0] if records else {}
         append_incident(
             incident_path,
@@ -479,22 +513,22 @@ def _monitor_evidence_slots(
     final_rel = str((root / "finalization_state.json").relative_to(repo_root))
     evidence_rel = str((root / "evidence_state.json").relative_to(repo_root))
     incident_path = root / "watchdog_incidents.jsonl"
+    final_index = build_history_index(repo_root, final_rel)
+    evidence_index = build_history_index(repo_root, evidence_rel)
     changed = False
 
     for slot in slots:
         expected_run_id = f"{run_prefix}-{slot.strftime('%Y%m%dT%H%M%SZ')}"
-        receipt_state = historical_record_state(
-            repo_root,
-            final_rel,
+        receipt_state = record_state_from_index(
+            final_index,
             expected_run_id,
             canonical_receipt_valid,
         )
         if receipt_state != "VALID":
             continue
 
-        evidence_state = historical_record_state(
-            repo_root,
-            evidence_rel,
+        evidence_state = record_state_from_index(
+            evidence_index,
             expected_run_id,
             evidence_record_valid,
         )
@@ -509,7 +543,12 @@ def _monitor_evidence_slots(
         if incident_exists(incident_path, record_type, expected_run_id):
             continue
 
-        records = records_for_run(repo_root, evidence_rel, expected_run_id)
+        records = records_for_run(
+            repo_root,
+            evidence_rel,
+            expected_run_id,
+            evidence_index,
+        )
         observed = records[0] if records else {}
         append_incident(
             incident_path,

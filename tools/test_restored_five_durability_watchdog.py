@@ -10,6 +10,8 @@ from restored_five_durability_watchdog import (
     finalization_can_repair,
     finalization_repairable,
     heartbeat_mirror_valid,
+    historical_record_state,
+    monitor_receipt_horizon,
     monitor_missing_evidence,
     monitor_missing_receipt,
     reconcile_lane,
@@ -316,6 +318,88 @@ class WatchdogTests(unittest.TestCase):
                 "execution_authorized": False,
             })
         )
+
+    def _init_git_repo(self, repo: Path):
+        subprocess.run(["git", "init"], cwd=repo, check=True, capture_output=True, text=True)
+        subprocess.run(["git", "config", "user.email", "test@example.com"], cwd=repo, check=True)
+        subprocess.run(["git", "config", "user.name", "Test"], cwd=repo, check=True)
+
+    def _commit_path(self, repo: Path, relpath: str, obj: dict, message: str):
+        path = repo / relpath
+        write_json(path, obj)
+        subprocess.run(["git", "add", relpath], cwd=repo, check=True)
+        subprocess.run(["git", "commit", "-m", message], cwd=repo, check=True, capture_output=True, text=True)
+
+    def test_history_finds_valid_older_receipt_behind_newer_pointer(self):
+        with tempfile.TemporaryDirectory() as td:
+            repo = Path(td)
+            self._init_git_repo(repo)
+            rel = "lane/finalization_state.json"
+            old_run = "lane-20260930T212500Z"
+            new_run = "lane-20260930T222500Z"
+            self._commit_path(repo, rel, {
+                "schema_version": "scheduler-finalization-v5.7",
+                "RUN_ID": old_run,
+                "RUN_STATUS": "RUN_PERSISTED",
+                "completion_semantics": "DURABILITY_RECEIPT_ONLY",
+                "execution_authorized": False,
+            }, "old receipt")
+            self._commit_path(repo, rel, {
+                "schema_version": "scheduler-finalization-v5.7",
+                "RUN_ID": new_run,
+                "RUN_STATUS": "RUN_PERSISTED",
+                "completion_semantics": "DURABILITY_RECEIPT_ONLY",
+                "execution_authorized": False,
+            }, "new receipt")
+            self.assertEqual(
+                historical_record_state(repo, rel, old_run, canonical_receipt_valid),
+                "VALID",
+            )
+
+    def test_history_marks_same_run_malformed_when_no_valid_version_exists(self):
+        with tempfile.TemporaryDirectory() as td:
+            repo = Path(td)
+            self._init_git_repo(repo)
+            rel = "lane/finalization_state.json"
+            run_id = "lane-20260930T212500Z"
+            self._commit_path(repo, rel, {
+                "schema_version": "scheduler-finalization-v5.7",
+                "RUN_ID": run_id,
+                "RUN_STATUS": "PARTIAL_PERSISTENCE",
+                "completion_semantics": "DURABILITY_RECEIPT_ONLY",
+                "execution_authorized": False,
+            }, "bad receipt")
+            self.assertEqual(
+                historical_record_state(repo, rel, run_id, canonical_receipt_valid),
+                "MALFORMED",
+            )
+
+    def test_horizon_monitor_detects_older_gap_even_with_newer_valid_pointer(self):
+        with tempfile.TemporaryDirectory() as td:
+            repo = Path(td)
+            self._init_git_repo(repo)
+            rel = "lane/finalization_state.json"
+            new_run = "lane-20260930T222500Z"
+            self._commit_path(repo, rel, {
+                "schema_version": "scheduler-finalization-v5.7",
+                "RUN_ID": new_run,
+                "RUN_STATUS": "RUN_PERSISTED",
+                "completion_semantics": "DURABILITY_RECEIPT_ONLY",
+                "execution_authorized": False,
+            }, "new receipt only")
+            changed = monitor_receipt_horizon(
+                repo, "lane", "lane", "sched", 25, "lane", 12,
+                datetime(2026, 9, 30, 21, 0, tzinfo=timezone.utc),
+                datetime(2026, 9, 30, 22, 40, tzinfo=timezone.utc),
+                4,
+            )
+            self.assertEqual(changed, ["lane/watchdog_incidents.jsonl"])
+            incidents = [
+                json.loads(line)
+                for line in (repo / "lane/watchdog_incidents.jsonl").read_text().splitlines()
+            ]
+            missing = [i for i in incidents if i["record_type"] == "MISSING_CANONICAL_RECEIPT"]
+            self.assertEqual([i["RUN_ID"] for i in missing], ["lane-20260930T212500Z"])
 
 
 if __name__ == "__main__":

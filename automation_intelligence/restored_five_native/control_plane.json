@@ -1,0 +1,45 @@
+{
+  "schema_version": "restored-five-native-control-v1",
+  "control_plane_id": "restored-five-native-liveness-v1",
+  "repository": "reppiks490/Icarus-engine",
+  "namespace_root": "automation_intelligence/restored_five_native",
+  "timezone": "America/Chicago",
+  "activated_at_utc": "2026-09-30T22:00:00Z",
+  "grace_minutes": 8,
+  "catchup_horizon_minutes": 180,
+  "execution_authorized": false,
+  "lanes": [
+    {
+      "name": "robustness_guardian",
+      "title": "Robustness Guardian Evolution",
+      "minute": 5,
+      "scheduler_id": "6abaf924e0248191b8a11bd1d32bf0b7",
+      "worker_root": "automation_intelligence/agent_fabric/robustness_guardian",
+      "run_prefix": "robustness-guardian"
+    },
+    {
+      "name": "alpha_synthesis",
+      "title": "Alpha Synthesis Evolution",
+      "minute": 25,
+      "scheduler_id": "6abaf8d75cf48191bc7ce06bc0006f1c",
+      "worker_root": "automation_intelligence/agent_fabric/alpha_synthesis",
+      "run_prefix": "alpha-synthesis"
+    },
+    {
+      "name": "flow_microstructure",
+      "title": "Microstructure Sensor Grid",
+      "minute": 35,
+      "scheduler_id": "6abaef8effb48191aa5c959455451681",
+      "worker_root": "automation_intelligence/flow",
+      "run_prefix": "flow"
+    },
+    {
+      "name": "apex_council",
+      "title": "Apex Council Evolution",
+      "minute": 45,
+      "scheduler_id": "6ababd570fac81918777c8f809cf67c9",
+      "worker_root": "automation_intelligence/agent_fabric/apex_council",
+      "run_prefix": "apex-council"
+    }
+  ]
+}

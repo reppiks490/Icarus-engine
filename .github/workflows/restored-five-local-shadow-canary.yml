@@ -34,7 +34,7 @@ jobs:
 
       - name: Run shadow safety tests
         shell: bash
-        run: python -m pytest -q tests/test_restored_five_local_shadow.py
+        run: python tests/test_restored_five_local_shadow.py -q
 
       - name: Restore local model cache
         uses: actions/cache@v4

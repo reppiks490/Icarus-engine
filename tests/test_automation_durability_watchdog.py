@@ -442,7 +442,9 @@ def v3_control_plane(bound_at: str = "2026-09-30T14:05:31Z") -> dict:
         "timezone": "America/Chicago",
         "dispatch_tolerance_minutes": 4,
         "execution_authorized": False,
-        "mode": "DARK",
+        "mode": "SHADOW",
+        "activated_at_utc": bound_at,
+        "catchup_horizon_minutes": 180,
         "created_at_utc": bound_at,
         "model_defaults": {"model": "gpt-5.6-sol", "reasoning_effort": "high"},
         "lanes": [
@@ -631,3 +633,13 @@ def test_workflow_contract_includes_v3_reconciliation_plane():
     assert "git -C v3state pull --rebase origin main" in text
     assert "git -C v3state push origin HEAD:main" in text
     assert "git -C v3state push --force" not in text
+
+
+def test_repository_dark_v3_control_plane_generates_no_expected_slots():
+    cfg = load_v3_watchdog_config(Path("."))
+    slots = iter_v3_expected_slots(
+        cfg,
+        datetime(2026, 9, 30, 15, 0, tzinfo=timezone.utc),
+        horizon_hours=2,
+    )
+    assert slots == []

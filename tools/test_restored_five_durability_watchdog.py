@@ -11,6 +11,7 @@ from restored_five_durability_watchdog import (
     finalization_can_repair,
     finalization_repairable,
     heartbeat_mirror_valid,
+    canonical_receipt_valid,
     historical_record_state,
     monitor_receipt_horizon,
     monitor_missing_evidence,

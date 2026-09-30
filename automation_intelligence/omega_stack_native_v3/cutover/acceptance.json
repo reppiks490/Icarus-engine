@@ -1,8 +1,8 @@
 {
   "schema_version": "omega-stack-github-native-cutover-v1",
   "control_plane_id": "omega-aion-daedalus-github-native-v3",
-  "phase": "DARK_READY",
-  "authoritative_execution_source": "NOT_YET_CUT_OVER",
+  "phase": "SHADOW_ACTIVATED",
+  "authoritative_execution_source": "V2_REMAINS_AUTHORITATIVE_DURING_SHADOW",
   "implementation_branch": "chatgpt/github-native-ai-plane-implementation-20260930",
   "verified_branch_ci": {
     "workflow_run_id": 36733700316,
@@ -31,8 +31,15 @@
   },
   "credential_status": "UNKNOWN_TO_CONNECTED_GITHUB_APP",
   "credential_required_name": "OPENAI_API_KEY",
-  "next_cutover_step": "MERGE_DARK_THEN_ACTIVATE_SHADOW_WITH_ACTIVATED_AT_UTC",
+  "next_cutover_step": "OBSERVE_VALID_GITHUB_NATIVE_AI_RECEIPTS_AND_CREDENTIAL_RESULT",
   "acceptance_requirement": "TWO_CONSECUTIVE_VALID_GITHUB_NATIVE_AI_RECEIPTS_PER_LANE",
   "legacy_v2_chatgpt_canaries_remain_enabled": true,
-  "execution_authorized": false
+  "execution_authorized": false,
+  "shadow_activation": {
+    "activated_at_utc": "2026-09-30T15:07:34Z",
+    "activation_commit": "6e1e6ba919d806f9d0da42d531976e9283b7fdfc",
+    "first_eligible_lane": "macro",
+    "first_eligible_slot_utc": "2026-09-30T15:12:00Z",
+    "scheduler_catchup_horizon_minutes": 180
+  }
 }

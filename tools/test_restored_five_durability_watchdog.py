@@ -8,6 +8,7 @@ from restored_five_durability_watchdog import (
     compare_run_ids,
     expected_slot,
     finalization_can_repair,
+    finalization_repairable,
     heartbeat_mirror_valid,
     monitor_missing_evidence,
     monitor_missing_receipt,
@@ -294,6 +295,27 @@ class WatchdogTests(unittest.TestCase):
                     "expected-blob",
                 )
             )
+
+    def test_malformed_v57_finalization_is_not_repairable(self):
+        self.assertFalse(
+            finalization_repairable({
+                "schema_version": "scheduler-finalization-v5.7",
+                "RUN_ID": "lane-20260930T210500Z",
+                "RUN_STATUS": "RUN_PERSISTED",
+                "completion_semantics": "WRONG",
+                "execution_authorized": False,
+            })
+        )
+
+    def test_legacy_finalization_remains_repairable(self):
+        self.assertTrue(
+            finalization_repairable({
+                "schema_version": "scheduler-finalization-v5.5",
+                "RUN_ID": "lane-20260930T210500Z",
+                "RUN_STATUS": "RUN_PERSISTED",
+                "execution_authorized": False,
+            })
+        )
 
 
 if __name__ == "__main__":

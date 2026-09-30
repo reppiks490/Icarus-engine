@@ -1,0 +1,27 @@
+{
+  "schema_version": "restored-five-protocol-v5.7",
+  "authority_scope": "Robustness Guardian, Advanced CSV, Alpha Synthesis, Microstructure Sensor Grid, Apex Council only",
+  "execution_authorized": false,
+  "critical_path": [
+    "finalization_state.json canonical durability receipt",
+    "heartbeat.json best-effort mirror"
+  ],
+  "first_repository_action": {
+    "file": "finalization_state.json",
+    "rule": "After one fresh read for SHA and monotonic RUN_ID check, write the canonical receipt immediately. No startup-state write is required or permitted before it.",
+    "status": "RUN_PERSISTED",
+    "completion_semantics": "DURABILITY_RECEIPT_ONLY"
+  },
+  "monotonicity": {
+    "finalization_state": "Never overwrite an existing lexicographically newer RUN_ID. Same RUN_ID is idempotent. A delayed older invocation stops as SUPERSEDED.",
+    "heartbeat": "Never overwrite a heartbeat with an older RUN_ID.",
+    "evidence_state": "Never overwrite evidence_state with an older RUN_ID."
+  },
+  "optional_after_receipt": {
+    "heartbeat": "Best-effort mirror binding exact finalization commit/blob. Failure does not downgrade the receipt.",
+    "evidence_state": "At most one bounded evidence call, then one evidence-state write. Substantive consumers use evidence_state, not the durability receipt.",
+    "startup_state": "Legacy compatibility only. V5.7 workers do not write STARTED. Watchdog may clear stranded pre-V5.7 markers."
+  },
+  "scheduler_rule": "Workers must never call scheduler/task-management tools or mutate enabled state, IDs, titles, schedules, timezone, or siblings.",
+  "watchdog_rule": "Recovery-only. May repair heartbeat from a newer canonical receipt and clean legacy startup markers; must never move RUN_ID state backward or fabricate evidence."
+}

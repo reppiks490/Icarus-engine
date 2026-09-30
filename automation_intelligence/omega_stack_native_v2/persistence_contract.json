@@ -1,6 +1,6 @@
 {
   "schema_version": "omega-stack-persistence-v4.3-append-first",
-  "contract_revision": "2026-09-30-native-v2-r12.2",
+  "contract_revision": "2026-09-30-native-v2-r12.3",
   "migrated_from": "omega-stack-persistence-v4.2-write-first",
   "control_plane_id": "omega-aion-daedalus-native-v2",
   "authoritative_branch": "automation/omega-native-v2",
@@ -159,15 +159,33 @@
       "7-57/10 * * * *"
     ],
     "avoids_top_of_hour": true,
-    "latest_verified_actions_run_id": 36678206989,
-    "latest_verified_reconciliation_commit": "cd1f370",
-    "latest_verified_reconciliation_written_count": 22,
+    "latest_verified_actions_run_id": 36679057927,
+    "latest_verified_reconciliation_commit": "93b3483",
+    "latest_verified_reconciliation_written_count": 2,
     "latest_verified_counts": {
-      "missed": 11,
-      "backlog": 11,
+      "missed": 1,
+      "backlog": 1,
       "late_arrival": 0
     },
-    "schedule_hardening_merge_commit": "23af4b780b67df9d30923aacfa65629687492aa3"
+    "schedule_hardening_merge_commit": "23af4b780b67df9d30923aacfa65629687492aa3",
+    "delivery_paths": [
+      {
+        "type": "schedule",
+        "cron": "2-52/10 * * * *"
+      },
+      {
+        "type": "schedule",
+        "cron": "7-57/10 * * * *"
+      },
+      {
+        "type": "push",
+        "branch": "main",
+        "path_filter": null
+      }
+    ],
+    "main_push_fallback_enabled": true,
+    "main_push_fallback_merge_commit": "05bb05cf2195cca8ea288ba4cbcf91d73a2370b4",
+    "latest_verified_case": "Flow 2026-09-30T06:24:00Z missing natural receipt"
   },
   "natural_slot_attribution": {
     "version": "nearest-hourly-boundary-v1",

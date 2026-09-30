@@ -1,6 +1,11 @@
 name: restored-five-durability-watchdog
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - "tools/restored_five_durability_watchdog.py"
+      - ".github/workflows/restored-five-durability-watchdog.yml"
   schedule:
     - cron: "*/10 * * * *"
   workflow_dispatch:

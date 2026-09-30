@@ -24,6 +24,7 @@ write_artifacts = _watchdog.write_artifacts
 
 CONTROL_PLANE_ID = "omega-aion-daedalus-native-v2"
 PROTOCOL = "omega-stack-persistence-v4.3-append-first"
+MAIN_HEARTBEAT_PROTOCOL = "omega-stack-persistence-r13-main-heartbeat"
 BRANCH = "automation/omega-native-v2"
 NS = "automation_intelligence/omega_stack_native_v2"
 IDS = {
@@ -114,6 +115,31 @@ def valid_receipt(slot, *, started_offset_seconds: int = 0, **overrides) -> dict
     return payload
 
 
+def valid_main_heartbeat(slot, *, started_offset_seconds: int = 0, **overrides) -> dict:
+    payload = {
+        "engine": slot.lane.name,
+        "RUN_ID": f"{slot.lane.name}-{slot.slot_id}",
+        "RUN_STATUS": "RUN_PERSISTED",
+        "FINALIZATION_STATUS": "LIVENESS_VERIFIED",
+        "WORK_PHASE_STATUS": "PENDING",
+        "CONTROL_PLANE_ID": CONTROL_PLANE_ID,
+        "automation_id": slot.lane.automation_id,
+        "persistence_protocol_version": MAIN_HEARTBEAT_PROTOCOL,
+        "scheduled_for": slot.scheduled_local.isoformat(),
+        "started_at_utc": (slot.scheduled_utc + timedelta(seconds=started_offset_seconds))
+        .isoformat()
+        .replace("+00:00", "Z"),
+        "NET_NEW_DELTA": "MAIN_HEARTBEAT_PERSISTED_WORK_PENDING",
+        "DATA_GAPS": [],
+        "CONFLICTS": [],
+        "execution_authorized": False,
+        "verification_method": "GITHUB_UPDATE_FILE_RESPONSE",
+        "run_origin": "NATURAL_SCHEDULE",
+    }
+    payload.update(overrides)
+    return payload
+
+
 def test_config_loads_exact_authoritative_topology(tmp_path):
     cfg = load_watchdog_config(make_root(tmp_path))
     assert cfg.control_plane_id == CONTROL_PLANE_ID
@@ -180,6 +206,92 @@ def test_valid_receipt_satisfies_slot(tmp_path):
     assert match is not None
     assert match.path == path.relative_to(root).as_posix()
     assert any(c.valid for c in checks)
+
+
+def test_valid_main_heartbeat_satisfies_slot_and_is_sealed(tmp_path):
+    root = make_root(tmp_path, bound_at="2026-09-29T17:00:00Z")
+    main_root = tmp_path / "main"
+    cfg = load_watchdog_config(root)
+    slot = slot_for(cfg, "aion", "2026-09-29T17:36:00Z")
+    write_json(
+        main_root / NS / "aion" / "heartbeat.json",
+        valid_main_heartbeat(slot, started_offset_seconds=25, RUN_ID="aion-20260929T173625Z"),
+    )
+    arts = plan_reconciliation(
+        root,
+        cfg,
+        datetime(2026, 9, 29, 17, 50, tzinfo=timezone.utc),
+        grace_minutes=12,
+        horizon_hours=1,
+        main_root=main_root,
+    )
+    accepted = [a for a in arts if "/accepted_main_heartbeat/aion/" in a.path.as_posix()]
+    assert len(accepted) == 1
+    assert accepted[0].payload["natural_run_id"] == "aion-20260929T173625Z"
+    assert accepted[0].payload["source_protocol"] == MAIN_HEARTBEAT_PROTOCOL
+    assert accepted[0].payload["source_verification_method"] == "GITHUB_UPDATE_FILE_RESPONSE"
+    assert not [
+        a
+        for a in arts
+        if ("/missed/aion/" in a.path.as_posix() or "/backlog/aion/" in a.path.as_posix())
+        and a.payload.get("slot_utc") == "2026-09-29T17:36:00Z"
+    ]
+
+
+def test_sealed_main_heartbeat_survives_rolling_file_change(tmp_path):
+    root = make_root(tmp_path, bound_at="2026-09-29T17:00:00Z")
+    main_root = tmp_path / "main"
+    cfg = load_watchdog_config(root)
+    old_slot = slot_for(cfg, "aion", "2026-09-29T17:36:00Z")
+    heartbeat = main_root / NS / "aion" / "heartbeat.json"
+    write_json(heartbeat, valid_main_heartbeat(old_slot, started_offset_seconds=25))
+    first = plan_reconciliation(
+        root,
+        cfg,
+        datetime(2026, 9, 29, 17, 50, tzinfo=timezone.utc),
+        grace_minutes=12,
+        horizon_hours=1,
+        main_root=main_root,
+    )
+    write_artifacts(root, first)
+    new_slot = slot_for(cfg, "aion", "2026-09-29T18:36:00Z")
+    write_json(heartbeat, valid_main_heartbeat(new_slot, started_offset_seconds=15))
+    later = plan_reconciliation(
+        root,
+        cfg,
+        datetime(2026, 9, 29, 18, 50, tzinfo=timezone.utc),
+        grace_minutes=12,
+        horizon_hours=2,
+        main_root=main_root,
+    )
+    assert not [
+        a
+        for a in later
+        if ("/missed/aion/" in a.path.as_posix() or "/backlog/aion/" in a.path.as_posix())
+        and a.payload.get("slot_utc") == "2026-09-29T17:36:00Z"
+    ]
+
+
+def test_invalid_main_heartbeat_does_not_satisfy_slot(tmp_path):
+    root = make_root(tmp_path, bound_at="2026-09-29T17:00:00Z")
+    main_root = tmp_path / "main"
+    cfg = load_watchdog_config(root)
+    slot = slot_for(cfg, "aion", "2026-09-29T17:36:00Z")
+    write_json(
+        main_root / NS / "aion" / "heartbeat.json",
+        valid_main_heartbeat(slot, automation_id="wrong"),
+    )
+    arts = plan_reconciliation(
+        root,
+        cfg,
+        datetime(2026, 9, 29, 17, 50, tzinfo=timezone.utc),
+        grace_minutes=12,
+        horizon_hours=1,
+        main_root=main_root,
+    )
+    assert not [a for a in arts if "/accepted_main_heartbeat/aion/" in a.path.as_posix()]
+    assert any("/missed/aion/" in a.path.as_posix() for a in arts)
+    assert any("/backlog/aion/" in a.path.as_posix() for a in arts)
 
 
 @pytest.mark.parametrize(
@@ -416,6 +528,7 @@ def test_workflow_contract():
     assert 'python-version: "3.11"' in text
     assert "--grace-minutes 12" in text
     assert "--horizon-hours 48" in text
+    assert "--main-root control" in text
     assert (
         "git -C state add automation_intelligence/omega_stack_native_v2/reconciliation"
         in text

@@ -182,6 +182,78 @@ class WatchdogTests(unittest.TestCase):
             )
             self.assertEqual(changed, [])
 
+    def test_malformed_receipt_does_not_trigger_evidence_alarm(self):
+        with tempfile.TemporaryDirectory() as td:
+            repo = Path(td)
+            root = repo / "lane"
+            expected = "lane-20260930T210500Z"
+            write_json(root / "finalization_state.json", {
+                "schema_version": "scheduler-finalization-v5.7",
+                "RUN_ID": expected,
+                "RUN_STATUS": "RUN_PERSISTED",
+                "completion_semantics": "WRONG",
+                "execution_authorized": False,
+            })
+            write_json(root / "evidence_state.json", {})
+            changed = monitor_missing_evidence(
+                repo, "lane", "lane", "sched", 5, "lane", 20,
+                datetime(2026, 9, 30, 21, 0, tzinfo=timezone.utc),
+                datetime(2026, 9, 30, 21, 26, tzinfo=timezone.utc),
+            )
+            self.assertEqual(changed, [])
+
+    def test_same_run_malformed_evidence_is_flagged(self):
+        with tempfile.TemporaryDirectory() as td:
+            repo = Path(td)
+            root = repo / "lane"
+            expected = "lane-20260930T210500Z"
+            write_json(root / "finalization_state.json", {
+                "schema_version": "scheduler-finalization-v5.7",
+                "RUN_ID": expected,
+                "RUN_STATUS": "RUN_PERSISTED",
+                "completion_semantics": "DURABILITY_RECEIPT_ONLY",
+                "execution_authorized": False,
+            })
+            write_json(root / "evidence_state.json", {
+                "schema_version": "scheduler-evidence-v5.6",
+                "RUN_ID": expected,
+                "EVIDENCE_STATUS": "EVIDENCE_VERIFIED",
+                "execution_authorized": False,
+            })
+            changed = monitor_missing_evidence(
+                repo, "lane", "lane", "sched", 5, "lane", 20,
+                datetime(2026, 9, 30, 21, 0, tzinfo=timezone.utc),
+                datetime(2026, 9, 30, 21, 26, tzinfo=timezone.utc),
+            )
+            self.assertEqual(changed, ["lane/watchdog_incidents.jsonl"])
+            incident = json.loads((root / "watchdog_incidents.jsonl").read_text().splitlines()[0])
+            self.assertEqual(incident["record_type"], "MALFORMED_EVIDENCE_STATE")
+
+    def test_valid_v57_evidence_is_accepted(self):
+        with tempfile.TemporaryDirectory() as td:
+            repo = Path(td)
+            root = repo / "lane"
+            expected = "lane-20260930T210500Z"
+            write_json(root / "finalization_state.json", {
+                "schema_version": "scheduler-finalization-v5.7",
+                "RUN_ID": expected,
+                "RUN_STATUS": "RUN_PERSISTED",
+                "completion_semantics": "DURABILITY_RECEIPT_ONLY",
+                "execution_authorized": False,
+            })
+            write_json(root / "evidence_state.json", {
+                "schema_version": "scheduler-evidence-v5.7",
+                "RUN_ID": expected,
+                "EVIDENCE_STATUS": "NO_NEW_EVIDENCE",
+                "execution_authorized": False,
+            })
+            changed = monitor_missing_evidence(
+                repo, "lane", "lane", "sched", 5, "lane", 20,
+                datetime(2026, 9, 30, 21, 0, tzinfo=timezone.utc),
+                datetime(2026, 9, 30, 21, 26, tzinfo=timezone.utc),
+            )
+            self.assertEqual(changed, [])
+
 
 if __name__ == "__main__":
     unittest.main()

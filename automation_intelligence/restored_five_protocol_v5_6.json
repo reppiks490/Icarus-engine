@@ -1,5 +1,5 @@
 {
-  "schema_version": "restored-five-protocol-v5.6",
+  "schema_version": "restored-five-protocol-v5.6.1",
   "authority_scope": "Robustness Guardian, Advanced CSV, Alpha Synthesis, Microstructure Sensor Grid, Apex Council only",
   "execution_authorized": false,
   "semantics": {
@@ -7,7 +7,8 @@
       "purpose": "durability receipt only",
       "RUN_STATUS": "RUN_PERSISTED",
       "required_field": "completion_semantics=DURABILITY_RECEIPT_ONLY",
-      "warning": "RUN_PERSISTED proves the scheduled slot obtained a durable Git commit identity; it does not prove optional evidence work completed or found new evidence."
+      "warning": "RUN_PERSISTED proves the scheduled slot obtained a durable Git commit identity; it does not prove optional evidence work completed or found new evidence.",
+      "monotonic_guard": "Before any write, compare existing RUN_ID to CURRENT_RUN_ID. Never overwrite a lexicographically newer RUN_ID; a delayed older invocation is SUPERSEDED and must stop without mutation."
     },
     "evidence_state": {
       "purpose": "latest substantive evidence status",
@@ -22,16 +23,19 @@
     },
     "heartbeat": {
       "purpose": "recoverable mirror of canonical finalization identity",
-      "authority": "non-canonical"
+      "authority": "non-canonical",
+      "monotonic_guard": "Never overwrite a heartbeat whose RUN_ID is newer than the finalization or startup being mirrored/recovered."
     },
     "startup_state": {
       "purpose": "transient current-slot startup marker",
-      "stale_recovery_minutes": 30
+      "stale_recovery_minutes": 30,
+      "monotonic_guard": "Before any write, compare existing RUN_ID to CURRENT_RUN_ID. Never replace a lexicographically newer active RUN_ID. Same RUN_ID is idempotent; older/null state may be advanced."
     }
   },
   "downstream_rules": {
     "apex_council": "Bind sibling canonical finalization identities for durability/provenance, but consume substantive findings only from sibling evidence_state records whose RUN_ID is not newer than the bound finalization and whose EVIDENCE_STATUS is explicit.",
     "watchdog": "May repair heartbeat/startup only; never create substantive evidence.",
-    "scheduler": "External authority; worker runs must never mutate scheduler state."
+    "scheduler": "External authority; worker runs must never invoke scheduler/task-management tools or mutate scheduler state.",
+    "delayed_invocations": "All mutable runtime files are monotonic by RUN_ID. Older delayed invocations must fail closed as SUPERSEDED rather than overwrite newer state."
   }
 }

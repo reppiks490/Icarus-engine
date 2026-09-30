@@ -302,6 +302,10 @@ def iter_v3_expected_slots(
 ) -> list[ExpectedSlot]:
     if config.namespace_root != V3_NAMESPACE_ROOT:
         raise ValueError("v3 config required")
+    if now_utc.tzinfo is None:
+        raise ValueError("now_utc must be timezone-aware")
+    if config.identity_bound_at_utc > now_utc.astimezone(timezone.utc):
+        return []
     return iter_expected_slots(config, now_utc, horizon_hours=horizon_hours)
 
 

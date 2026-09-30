@@ -238,6 +238,83 @@ def _run_deterministic_liveness(
     )
 
 
+
+def _deterministic_liveness_result(
+    root: Path,
+    slot: Slot,
+    workflow: dict[str, str],
+    run_id: str,
+    started_at: datetime,
+    completed_at: datetime,
+) -> RunResult:
+    payload = {
+        "lane": slot.lane.name,
+        "summary": "Durable liveness persisted; substantive AI inference was not executed.",
+        "net_new_delta": "LIVENESS_PERSISTED_WORK_PENDING",
+        "data_gaps": ["SUBSTANTIVE_AI_INFERENCE_NOT_EXECUTED"],
+        "conflicts": [],
+        "execution_authorized": False,
+    }
+    canonical = json.dumps(
+        {
+            "backend": "deterministic_liveness",
+            "lane": slot.lane.name,
+            "slot_id": slot.slot_id,
+            "control_plane_id": "omega-aion-daedalus-github-native-v3",
+            "execution_authorized": False,
+        },
+        sort_keys=True,
+        separators=(",", ":"),
+    ).encode("utf-8")
+    fingerprint = hashlib.sha256(canonical).hexdigest()
+    response_id = f"deterministic:{slot.slot_id}"
+
+    output_path = _artifact_path(root, slot.lane.name, "outputs", slot.slot_id, run_id)
+    receipt_path = _artifact_path(root, slot.lane.name, "runs", slot.slot_id, run_id)
+    output_payload: dict[str, object] = {
+        "schema_version": "omega-stack-github-native-output-v1",
+        "lane": slot.lane.name,
+        "RUN_ID": run_id,
+        "SLOT_ID": slot.slot_id,
+        "response_id": response_id,
+        "payload": payload,
+        "execution_authorized": False,
+    }
+    receipt: dict[str, object] = {
+        "schema_version": "omega-stack-github-native-run-v1",
+        "engine": slot.lane.name,
+        "lane": slot.lane.name,
+        "RUN_ID": run_id,
+        "SLOT_ID": slot.slot_id,
+        "slot_local": slot.scheduled_local.isoformat(),
+        "slot_utc": _utc_z(slot.scheduled_utc),
+        "started_at_utc": _utc_z(started_at),
+        "completed_at_utc": _utc_z(completed_at),
+        "run_origin": "GITHUB_NATIVE_LIVENESS",
+        **workflow,
+        "control_plane_id": "omega-aion-daedalus-github-native-v3",
+        "inference_backend": "deterministic_liveness",
+        "model": "none",
+        "reasoning_effort": "none",
+        "request_fingerprint": fingerprint,
+        "response_id": response_id,
+        "response_status": "not_applicable",
+        "output_validation_status": "VALID",
+        "RUN_STATUS": "RUN_PERSISTED",
+        "FINALIZATION_STATUS": "VERIFIED",
+        "DATA_GAPS": ["SUBSTANTIVE_AI_INFERENCE_NOT_EXECUTED"],
+        "CONFLICTS": [],
+        "execution_authorized": False,
+    }
+    _write_json_exclusive(output_path, output_payload)
+    _write_json_exclusive(receipt_path, receipt)
+    return RunResult(
+        status="RUN_PERSISTED",
+        receipt_path=receipt_path,
+        output_path=output_path,
+    )
+
+
 def run_lane(
     root: Path,
     slot: Slot,

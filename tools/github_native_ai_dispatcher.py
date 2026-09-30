@@ -34,6 +34,7 @@ class ControlPlane:
     dispatch_tolerance_minutes: int
     execution_authorized: bool
     mode: str
+    inference_backend: str
     activated_at_utc: datetime | None
     catchup_horizon_minutes: int
     inference_backend: str
@@ -96,6 +97,10 @@ def load_control_plane(root: Path) -> ControlPlane:
     if not isinstance(defaults, dict):
         raise ValueError("model_defaults missing")
 
+    inference_backend = payload.get("inference_backend", "openai")
+    if inference_backend not in {"openai", "deterministic_liveness"}:
+        raise ValueError("invalid inference_backend")
+
     inference_backend = str(payload.get("inference_backend", "openai"))
     if inference_backend not in {"openai", "deterministic_liveness"}:
         raise ValueError("invalid inference_backend")
@@ -130,6 +135,7 @@ def load_control_plane(root: Path) -> ControlPlane:
         dispatch_tolerance_minutes=tolerance,
         execution_authorized=False,
         mode=str(payload.get("mode")),
+        inference_backend=inference_backend,
         activated_at_utc=activated_at_utc,
         catchup_horizon_minutes=catchup,
         inference_backend=inference_backend,

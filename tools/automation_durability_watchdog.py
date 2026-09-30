@@ -56,6 +56,7 @@ class WatchdogConfig:
     identity_bound_at_utc: datetime
     jitter_seconds: int
     lanes: tuple[LaneConfig, ...]
+    inference_backend: str = "openai"
     inference_backend: str = "chatgpt_connector"
 
 
@@ -236,6 +237,10 @@ def load_v3_watchdog_config(root: Path) -> WatchdogConfig:
     if not isinstance(created_raw, str):
         raise ValueError("v3 created_at_utc missing")
     created_at = _parse_dt(created_raw).astimezone(timezone.utc)
+
+    inference_backend = payload.get("inference_backend", "openai")
+    if inference_backend not in {"openai", "deterministic_liveness"}:
+        raise ValueError("invalid v3 inference_backend")
 
     mode = payload.get("mode")
     if mode not in {"DARK", "SHADOW", "AUTHORITATIVE"}:

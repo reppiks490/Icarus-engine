@@ -298,10 +298,13 @@ def serve(port: Portfolio, http_port: int = 8791, token: str = "icarus", start: 
                     job_id = start_robustness(port, asset, body.get("fields"), body.get("fraction", 0.10))
                     return self._json(200, {"ok": True, "job": job_id, "note": f"local robustness scan {asset} started", "execution_authorized": False})
                 if p.path == "/admin/research/regression":
-                    if set(body) != {"asset","mode"}:
-                        raise ValueError("regression requires asset and mode only")
-                    job_id = start_regression(port, asset, str(body.get("mode","")))
-                    return self._json(200, {"ok": True, "job": job_id, "note": f"regression {body.get('mode')} {asset} started", "execution_authorized": False})
+                    if not {"asset","mode"} <= set(body) or set(body) - {"asset","mode","confirm"}:
+                        raise ValueError("regression requires asset, mode and optional confirm")
+                    mode = str(body.get("mode",""))
+                    if mode == "baseline" and body.get("confirm") is not True:
+                        return self._json(400, {"detail": "saving a regression baseline requires confirm=true"})
+                    job_id = start_regression(port, asset, mode)
+                    return self._json(200, {"ok": True, "job": job_id, "note": f"regression {mode} {asset} started", "execution_authorized": False})
                 if p.path == "/admin/research/adaptation":
                     return self._json(200, research.configure_adaptation(body))
                 if p.path == "/admin/research/source-watch":

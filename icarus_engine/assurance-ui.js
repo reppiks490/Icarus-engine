@@ -75,6 +75,24 @@
     </details>`;
   }
 
+  function referenceReportHtml(a) {
+    const rows=a?.private_reference_reports || [];
+    if (!rows.length) return "";
+    const body=rows.map(x=>`<tr>
+      <td>${esc(x.chart_type||x.price_geometry||"—")}</td>
+      <td class="${x.local_file_verified?"pos":"muted"}">${x.local_file_verified?"HASH VERIFIED LOCALLY":"INTAKE HASH CATALOGUED"}</td>
+      <td>${esc(x.trading_range||"—")}</td>
+      <td>${Number(x.closed_trades??0).toLocaleString()}${x.open_trades?(" + "+x.open_trades+" open"):""}</td>
+      <td>${money(x.net_profit_usd)}</td>
+      <td>${x.percent_profitable==null?"—":Number(x.percent_profitable).toFixed(2)+"%"}</td>
+      <td>${money(x.max_drawdown_intrabar_usd)}</td>
+    </tr>`).join("");
+    return `<details class="group" open><summary>Long-history RTH report witnesses <span class="cnt">${rows.length}</span></summary>
+      <div class="scroll"><table><thead><tr><th>Geometry</th><th>Local verification</th><th>Report range</th><th>Closed trades</th><th>Net P&L</th><th>Profitable</th><th>Intrabar max DD</th></tr></thead><tbody>${body}</tbody></table></div>
+      <div class="small muted">These are exact operator strategy-report witnesses from the private intake. They preserve the 2019→2026 RTH reference results but are <b>not raw bar history</b>, cannot seed warm-up, and do not authorize trading.</div>
+    </details>`;
+  }
+
   function historyShardHtml(a) {
     const used=a?.warmup_shards || [], ignored=a?.warmup_ignored_session_shards || [], stitch=a?.warmup_stitch || null, priv=a?.warmup_private_history || null;
     if (!used.length && !ignored.length && !stitch && !priv) return "";
@@ -288,6 +306,7 @@
       ${integrityHtml(a)}
       ${voteAttributionHtml(a)}
       ${executionStressHtml(a)}
+      ${referenceReportHtml(a)}
       ${historyShardHtml(a)}
       ${cacheHtml(a)}
       ${breakdownHtml(a)}`;

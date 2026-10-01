@@ -98,9 +98,23 @@
       <td>${x.percent_profitable==null?"—":Number(x.percent_profitable).toFixed(2)+"%"}</td>
       <td>${money(x.max_drawdown_intrabar_usd)}</td>
     </tr>`).join("");
+    const detail=rows.map(x=>{
+      const r=x.trade_reference||{}, yearly=r.yearly||{}, open=r.terminal_open_trade;
+      const yearRows=Object.entries(yearly).map(([y,v])=>`<tr><td>${esc(y)}</td><td>${Number(v.closed||0).toLocaleString()}</td><td>${money(v.net_pnl_usd)}</td><td>${v.win_rate_pct==null?"—":Number(v.win_rate_pct).toFixed(2)+"%"}</td></tr>`).join("");
+      const dirRows=Object.entries(r.direction||{}).map(([d,v])=>`<tr><td>${esc(d.toUpperCase())}</td><td>${Number(v.closed||0).toLocaleString()}</td><td>${money(v.net_pnl_usd)}</td><td>${v.win_rate_pct==null?"—":Number(v.win_rate_pct).toFixed(2)+"%"}</td></tr>`).join("");
+      const openLine=open?`<div class="small muted"><b>Terminal open trade:</b> #${open.trade_number} ${esc(open.direction||"")} from ${esc(open.entry_time_naive||"—")} @ ${nfmt(open.entry_price)} · qty ${nfmt(open.qty)} · report P&L ${money(open.report_net_pnl_usd)} · duration ${Number(open.duration_bars||0).toLocaleString()} bars. This is preserved as report evidence, not treated as a realized close.</div>`:"";
+      return `<details class="group"><summary>${esc(x.chart_type||x.price_geometry||"Reference")} trade-ledger summary <span class="cnt">${Number(r.closed||0).toLocaleString()} closed</span></summary>
+        <div class="small muted">Ledger digest ${esc((r.records_sha256||"").slice(0,16))}… · first entry ${esc(r.first_entry_naive||"—")} · last closed exit ${esc(r.last_closed_exit_naive||"—")} · timestamps are report-local/naive; timezone is not inferred.</div>
+        ${r.reconciliation_note?`<div class="small muted">${esc(r.reconciliation_note)}</div>`:""}
+        ${openLine}
+        <div class="scroll"><table><thead><tr><th>Year</th><th>Closed trades</th><th>Closed net P&L</th><th>Win rate</th></tr></thead><tbody>${yearRows||'<tr><td colspan="4" class="muted">no yearly rows</td></tr>'}</tbody></table></div>
+        <div class="scroll"><table><thead><tr><th>Direction</th><th>Closed trades</th><th>Net P&L</th><th>Win rate</th></tr></thead><tbody>${dirRows||'<tr><td colspan="4" class="muted">no direction rows</td></tr>'}</tbody></table></div>
+      </details>`;
+    }).join("");
     return `<details class="group" open><summary>Long-history RTH report witnesses <span class="cnt">${rows.length}</span></summary>
       <div class="scroll"><table><thead><tr><th>Geometry</th><th>Local verification</th><th>Report range</th><th>Closed trades</th><th>Net P&L</th><th>Profitable</th><th>Intrabar max DD</th></tr></thead><tbody>${body}</tbody></table></div>
       <div class="small muted">These are exact operator strategy-report witnesses from the private intake. They preserve the 2019→2026 RTH reference results but are <b>not raw bar history</b>, cannot seed warm-up, and do not authorize trading.</div>
+      ${detail}
     </details>`;
   }
 

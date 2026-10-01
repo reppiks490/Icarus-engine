@@ -19,9 +19,9 @@ def _stats(rows):
             "avg_drawdown":(sum(float(_get(x,"drawdown",0.0) or 0.0) for x in rows)/len(rows) if rows else None)}
 
 def trade_breakdown(trades, limit=1000):
-    """Describe closed trades by direction, CT entry hour and holding-duration bucket."""
+    """Describe closed trades by direction, time, duration and exit cause."""
     rows=list(trades)[-max(1,int(limit)):]
-    dirs={"long":[],"short":[]}; hours={}; holds={"1-3":[],"4-10":[],"11-30":[],"31+":[]}
+    dirs={"long":[],"short":[]}; hours={}; holds={"1-3":[],"4-10":[],"11-30":[],"31+":[]}; exits={}
     for t in rows:
         d="long" if int(_get(t,"direction",1) or 1)>0 else "short"; dirs[d].append(t)
         ts=int(_get(t,"entry_ts",0) or 0)
@@ -30,9 +30,12 @@ def trade_breakdown(trades, limit=1000):
         b=int(_get(t,"bars",0) or 0)+1
         k="1-3" if b<=3 else "4-10" if b<=10 else "11-30" if b<=30 else "31+"
         holds[k].append(t)
+        reason=str(_get(t,"exit_comment","") or _get(t,"exit_kind","") or "UNSPECIFIED")
+        exits.setdefault(reason,[]).append(t)
     return {"overall":_stats(rows),"direction":{k:_stats(v) for k,v in dirs.items()},
             "entry_hour_ct":{k:_stats(v) for k,v in sorted(hours.items())},
             "holding_bars":{k:_stats(v) for k,v in holds.items()},
+            "exit_reason":{k:_stats(v) for k,v in sorted(exits.items())},
             "sample_scope":"MOST_RECENT_CLOSED_TRADES","sample_limit":limit,
             "interpretation":"DESCRIPTIVE_ONLY","execution_authorized":False}
 

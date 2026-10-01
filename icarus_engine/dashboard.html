@@ -318,6 +318,11 @@ function assetHead(a) {
     <div class="votes" style="margin-top:10px">${(st.votes||[]).map(v => `<div class="vote ${v.l&&v.s?'ls':v.l?'l':v.s?'s':''}">${v.name}<br><span class="muted">${v.w}</span></div>`).join('')}</div>
     <div class="hud">${tiles.map(([k,v])=>`<div class="tile"><div class="k">${k}</div><div class="v tnum">${esc(v??'—')}</div></div>`).join('')}</div>`;
 }
+function matrixHtml(r) {
+  const rows = r.matrix || [];
+  const body = rows.map(x => '<tr><td>'+esc(String(x.session||'').toUpperCase())+'</td><td>'+esc(x.chart_type||'')+'</td><td class="tnum">'+(x.bars??'—')+'</td><td class="tnum">'+(x.metrics?.total_trades??'—')+'</td><td class="tnum">'+sgn$(x.metrics?.net_profit)+'</td><td class="tnum">'+(x.metrics?.profit_factor==null?'—':Number(x.metrics.profit_factor).toFixed(2))+'</td><td class="tnum">'+fmt$(x.metrics?.max_drawdown)+'</td><td class="tnum">'+fmt$(x.metrics?.expectancy)+'</td><td class="tnum">'+sgn$(x.delta_vs_current?.net_profit)+'</td></tr>').join('');
+  return '<div class="scroll" style="margin-top:10px"><table><thead><tr><th>Session</th><th>Chart</th><th>Bars</th><th>Trades</th><th>Net P&L</th><th>Profit factor</th><th>Max DD</th><th>Expectancy</th><th>Δ net vs current</th></tr></thead><tbody>'+body+'</tbody></table><div class="small muted" style="margin-top:6px">Descriptive comparison only. No variant is selected or ranked automatically. '+esc((r.limitations||[]).join(' '))+'</div></div>';
+}
 function assetHtml(a) {
   return `<section class="card c12" id="assetHead">${assetHead(a)}</section>
   <section class="card c12"><h2>Assurance · shadow only <span class="sub">observational; cannot submit or modify orders</span></h2>
@@ -333,6 +338,7 @@ function assetHtml(a) {
       <div class="tile"><div class="k">Cost stress scenarios</div><div class="v tnum">${a.execution_stress?.scenarios?.length??0}</div></div>
     </div>
     <div class="small muted" style="margin-top:8px">Replay checkpoints compare deterministic gate-state fingerprints across restarts but never restore executable strategy/order state. Counterfactuals score blocked threshold-crossing signals only after future bars arrive. Provider health reports real configured paths; futures with no secondary remain explicitly single-source.</div>
+    ${a.kind==='futures'?`<div class="row"><button class="sm" data-matrix="${a.symbol}">Run RTH/ETH × Real/HA matrix</button><span class="small muted">${SESSION_MATRIX[a.symbol]?.status==='running'?'running…':''}</span></div>${SESSION_MATRIX[a.symbol]?.result?matrixHtml(SESSION_MATRIX[a.symbol].result):''}`:''}
   </section>
   <section class="card c7"><h2>Closed trades · ${a.symbol}</h2><div class="scroll" style="max-height:420px"><table id="dTrades"><thead><tr><th></th><th>Entry</th><th>Signal</th><th>Qty</th><th>Entry px</th><th>Exit</th><th>Exit px</th><th>Exit signal</th><th>P&amp;L</th></tr></thead><tbody></tbody></table></div></section>
   <section class="card c5"><h2>Fills · ${a.symbol}</h2><div class="scroll" style="max-height:420px"><table id="dFills"><thead><tr><th>Time</th><th>Side</th><th>Qty</th><th>Price</th><th>Signal</th><th>P&amp;L</th></tr></thead><tbody></tbody></table></div></section>`;

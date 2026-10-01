@@ -102,3 +102,44 @@ def timeframe_integrity(chart_ts, chains, bucket_start):
     return {"status":"PASS" if not violations else "VIOLATION","checks":checks,
             "violations":violations,"rule":"last_completed <= current_bucket_start",
             "execution_authorized":False}
+
+
+def execution_stress_v2(trades: Iterable[Dict[str,Any]], *, tick_size: float, multiplier: float):
+    """Curated execution-quality shadow scenarios.
+
+    This is deliberately not a fill engine. It scales already-closed P&L for a
+    hypothetical fill ratio and subtracts explicit adverse tick/fee penalties.
+    The result is sensitivity evidence only and cannot mutate broker state.
+    """
+    rows=list(trades)
+    base=sum(float(t.get("profit") or 0.0) for t in rows)
+    scenarios=[
+        ("baseline",1.00,0,0,0.0),
+        ("slip_1t",1.00,1,0,0.0),
+        ("slip_2t",1.00,2,0,0.0),
+        ("slip_4t",1.00,4,0,0.0),
+        ("latency_1t",1.00,0,1,0.0),
+        ("latency_2t",1.00,0,2,0.0),
+        ("fee_plus_1",1.00,0,0,1.0),
+        ("partial_75pct",0.75,0,0,0.0),
+        ("partial_50pct",0.50,0,0,0.0),
+        ("moderate_combined",0.75,1,1,1.0),
+        ("severe_combined",0.50,2,2,2.0),
+    ]
+    out=[]
+    for name,fill_ratio,slip,latency,fee in scenarios:
+        stressed=0.0; contracts=0.0
+        for t in rows:
+            q=abs(float(t.get("qty") or 0.0))*fill_ratio
+            contracts+=q
+            # Base net P&L is scaled by the hypothetical fill fraction; adverse
+            # entry+exit tick and fee penalties are then applied to filled qty.
+            stressed += float(t.get("profit") or 0.0)*fill_ratio
+            stressed -= q*(2.0*(slip+latency)*tick_size*multiplier + 2.0*fee)
+        out.append({"name":name,"fill_ratio":fill_ratio,"extra_slippage_ticks":slip,
+                    "latency_adverse_ticks":latency,"extra_commission_per_contract":fee,
+                    "filled_contract_equivalents":contracts,"netprofit":stressed,
+                    "delta_vs_observed":stressed-base})
+    return {"observed_netprofit":base,"trades":len(rows),"scenarios":out,
+            "model":"CLOSED_TRADE_SENSITIVITY_NOT_FILL_SIMULATION",
+            "execution_authorized":False}

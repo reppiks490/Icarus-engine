@@ -56,3 +56,15 @@ def test_runtime_prefers_private_exact_and_ui_redacts_path():
 def test_raw_private_history_folder_is_gitignored():
     gi=Path(".gitignore").read_text(encoding="utf-8")
     assert "private_history/" in gi
+
+
+def test_tradingview_export_schema_loads_without_volume(tmp_path):
+    from icarus_engine.history_v2 import load_csv
+    p=tmp_path/"CME_MINI_DL_NQ1!, 20.csv"
+    p.write_text(
+        "time,open,high,low,close,RATE ST,Long,Short\n"
+        "1717365600,18590.25,18598.5,18539.25,18577,19000,0,0\n",
+        encoding="utf-8")
+    bars,report=load_csv(str(p),1200,"eth")
+    assert report.rows_read==1 and report.bars_valid==1 and report.rejected==0
+    assert bars[0].ts==1717365600 and bars[0].v==0.0

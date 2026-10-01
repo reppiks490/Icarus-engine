@@ -47,6 +47,7 @@ from .research_extensions import trade_breakdown
 from .bar_cache import BarCache, merge_bars, merge_source_aware
 from .recovery import RecoveryWitness
 from .continuous_history import archive_status as continuous_archive_status
+from .completion_gate import completion_status
 
 
 def _clean(x: Any) -> Any:
@@ -955,6 +956,20 @@ class AssetRunner:
         live_trades = [t for t in self.em.closed if self.live_from_ts and t.exit_ts >= self.live_from_ts]
         wins = sum(1 for t in self.em.closed if t.profit > 0)
         forming = self.chart_agg.forming_bar()
+        warmup_target = getattr(self, "warmup_target_bars", max(5000, int(self.cfg.warmup_bars)))
+        temporal_view = timeframe_integrity(self.bars[-1].ts if self.bars else None, self.chains, self.cal.bucket_start)
+        provider_view = self.provider_health.view(self.spec.feed, "kraken" if self.spec.feed == "coinbase" else None)
+        replay_view = self.replay_ledger.view() if self.replay_ledger is not None else {"mode":"NOT_INITIALIZED","checkpoints":0,"divergences_this_run":0,"restore_enabled":False,"execution_authorized":False}
+        recovery_view = self.recovery_witness.view() if self.recovery_witness is not None else {"status":"NOT_INITIALIZED","state_restore_enabled":False,"execution_authorized":False}
+        continuous_view = continuous_archive_status(self.base_dir, self.symbol) if self.spec.kind == "futures" else {"configured":False,"contract_files":[],"execution_authorized":False}
+        completion_view = completion_status(
+            warmup_loaded=self.bar_index + 1, warmup_target=warmup_target,
+            warmup_gate=getattr(self, "warmup_quality_gate", None),
+            warmup_source=getattr(self, "warmup_source", None),
+            warmup_stitch=getattr(self, "warmup_stitch", None),
+            temporal=temporal_view, replay=replay_view, recovery=recovery_view,
+            provider=provider_view, continuous=continuous_view,
+            kind=self.spec.kind, roll_mode=self.spec.roll)
         return _clean({
             "symbol": self.symbol, "name": self.spec.name, "product": self.spec.ticker, "feed": self.spec.feed, "kind": self.spec.kind,
             "contract": self.live_ticker if self.roller else None, "next_contract": self.roller.next_ticker if self.roller else None,
@@ -972,7 +987,7 @@ class AssetRunner:
             "persistent_bar_cache": self.bar_cache.stats(self.symbol) if self.bar_cache is not None else {"asset":self.symbol,"series":[],"revisions":{"total":0,"price":0,"volume":0},"stores_execution_state":False,"execution_authorized":False},
             "bar_cache_revisions": self.bar_cache.recent_revisions(self.symbol, 20) if self.bar_cache is not None else [],
             "warmup_source": getattr(self, "warmup_source", None), "warmup_quality": getattr(self, "warmup_quality", None),
-            "warmup_target_bars": getattr(self, "warmup_target_bars", max(5000, int(self.cfg.warmup_bars))), "warmup_loaded_bars": self.bar_index + 1,
+            "warmup_target_bars": warmup_target, "warmup_loaded_bars": self.bar_index + 1,
             "warmup_quality_gate": getattr(self, "warmup_quality_gate", None),
             "warmup_shards": getattr(self, "warmup_shards", []), "warmup_stitch": getattr(self, "warmup_stitch", None),
             "warmup_ignored_session_shards": getattr(self, "warmup_ignored_session_shards", []),
@@ -980,16 +995,16 @@ class AssetRunner:
                                  else ("READY" if (self.bar_index + 1) >= self.cfg.warmup_bars else ("DEGRADED" if self.warm else "WARMING"))),
             "decision_attribution": gate_attribution(st),
             "parity": self.parity_monitor.view(), "session_shadow": self.session_shadow.view(),
-            "timeframe_integrity": timeframe_integrity(
-                self.bars[-1].ts if self.bars else None, self.chains, self.cal.bucket_start),
+            "timeframe_integrity": temporal_view,
             "decision_explanation": explain_decision(st), "counterfactuals": self.counterfactuals.view(),
-            "provider_health": self.provider_health.view(self.spec.feed, "kraken" if self.spec.feed == "coinbase" else None),
+            "provider_health": provider_view,
             "decision_trace": self.decision_trace.view(),
             "trade_breakdown": trade_breakdown(self.em.closed, limit=1000),
-            "replay_equivalence": self.replay_ledger.view() if self.replay_ledger is not None else {"mode":"NOT_INITIALIZED","restore_enabled":False,"execution_authorized":False},
-            "restart_recovery": self.recovery_witness.view() if self.recovery_witness is not None else {"status":"NOT_INITIALIZED","state_restore_enabled":False,"execution_authorized":False},
+            "replay_equivalence": replay_view,
+            "restart_recovery": recovery_view,
             "roll_provenance": roll_provenance(self.roller),
-            "continuous_archive": continuous_archive_status(self.base_dir, self.symbol) if self.spec.kind == "futures" else {"configured":False,"contract_files":[],"execution_authorized":False},
+            "continuous_archive": continuous_view,
+            "assurance_completion": completion_view,
             "execution_stress": execution_stress(
                 [{"profit": t.profit, "qty": t.qty} for t in self.em.closed[-200:]],
                 tick_size=self.mintick, multiplier=self.em.contract_size),

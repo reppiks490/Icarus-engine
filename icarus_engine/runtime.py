@@ -262,11 +262,13 @@ class RunnerConfig:
     fixed_pts_scale: Optional[float] = None  # cached replay scale; never fetch a current reference
     mintick: Optional[float] = None          # cached replay tick; avoid product metadata network calls
     scale_known_at: Optional[int] = None    # actual receipt/computation time, never inferred from a price's date
+    base_dir: Optional[str] = None           # repository/runtime root for history and bundled archives
 
 
 class AssetRunner:
     def __init__(self, cfg: RunnerConfig, journal: Journal, feeds: Optional[Dict[str, Any]] = None):
         self.cfg = cfg
+        self.base_dir = os.path.realpath(cfg.base_dir or os.getcwd())
         self.spec = cfg.spec
         self.symbol = self.spec.symbol
         self.journal = journal
@@ -447,12 +449,34 @@ class AssetRunner:
         T_w = self.cal.bucket_start(now - span, 1440)
         self.T_w = T_w
         self.journal.log("INFO", f"[{self.symbol}] warm-up from {time.strftime('%Y-%m-%d %H:%M', time.gmtime(T_w))}Z ({self.cfg.warmup_bars} x {self.chart_minutes}m bars, {self.spec.feed}) mintick={self.mintick} x{self.spec.multiplier} slip={self.spec.slippage_ticks}t chart={self.spec.chart_type} fills={self.spec.fill_on} session={getattr(self.cal, 'session', '24/7')} security={self.spec.security_source}" + (f" contract={self.live_ticker}" if self.roller else ""))
-        hist = os.path.join(os.getcwd(), "history", f"{self.symbol}_{self.chart_minutes}m.csv")
-        if os.path.exists(hist):
-            self._warmup_from_csv(hist, now)                 # TradingView "Export chart data" of THIS chart: exact bars, full history
+        # Prefer an exact operator-supplied chart export.  If none exists, use a
+        # bundled, explicitly-known compatible archive before falling back to the
+        # network feed.  This matters for intraday futures because Yahoo caps 1m/5m
+        # lookback; increasing --warmup alone cannot cross that provider boundary.
+        #
+        # NQ and MNQ share the same Nasdaq-100 futures price path (different
+        # contract multiplier).  The bundled MNQ 20m archive is therefore useful
+        # as a price-history warm-up source for the NQ 20m research/paper engine.
+        # Its provenance remains visible in warmup_source; live execution is not
+        # authorized by choosing this source.
+        exact_hist = os.path.join(self.base_dir,
+                                  "history", f"{self.symbol}_{self.chart_minutes}m.csv")
+        bundled_hist = None
+        if self.symbol == "NQ" and self.chart_minutes == 20:
+            root = self.base_dir
+            candidate = os.path.join(root, "data", "mnq_20m.csv")
+            if os.path.exists(candidate):
+                bundled_hist = candidate
+        hist = exact_hist if os.path.exists(exact_hist) else bundled_hist
+        self.warmup_source = None
+        if hist:
+            self.warmup_source = os.path.relpath(hist, self.base_dir)
+            self._warmup_from_csv(hist, now)
         elif self.spec.feed == "yahoo":
+            self.warmup_source = "yahoo"
             self._warmup_yahoo(T_w, now)
         else:
+            self.warmup_source = self.spec.feed
             self._warmup_coinbase(T_w, now)
         self.live_from_ts = now
         self.warm = True
@@ -800,7 +824,8 @@ class AssetRunner:
             "warm": self.warm, "rewarming": self.rewarming, "paused": self.paused, "errors": self.errors, "last_error": self.last_error,
             "poll_age": (time.time() - self.last_poll_ok) if self.last_poll_ok else None,
             "bar_age": (time.time() - self.last_bar_wall) if self.last_bar_wall else None,
-            "bar_index": self.bar_index, "last_bar_ts": self.bars[-1].ts if self.bars else None,
+            "bar_index": self.bar_index, "warmup_bars_loaded": self.bar_index + 1, "warmup_bars_target": self.cfg.warmup_bars,
+            "warmup_source": getattr(self, "warmup_source", None), "last_bar_ts": self.bars[-1].ts if self.bars else None,
             "market": self.market(),
             "forming": (forming.__dict__ if forming else None),
             "equity": self.em.equity(mark), "capital": self.spec.capital, "netprofit": self.em.netprofit,
@@ -916,7 +941,7 @@ class Portfolio:
                 spec.security_source = meta["security_source"]
         scale = self._ref_price() if (spec.symbol != self.pts_ref_symbol) else 0.0
         cfg = RunnerConfig(spec=spec, inputs=inputs, warmup_bars=self.warmup_bars, sources=sources, profile=self.profile,
-                           preset=self.preset or spec.preset, pts_ref_price=scale)
+                           preset=self.preset or spec.preset, pts_ref_price=scale, base_dir=self.base_dir)
         return AssetRunner(cfg, self.journal, self.feeds)
 
     def add_asset(self, spec: AssetSpec, start: bool = True) -> AssetRunner:

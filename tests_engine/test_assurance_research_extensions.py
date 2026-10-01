@@ -95,3 +95,32 @@ def test_assurance_research_ui_is_wired_and_has_no_order_mutation():
     for forbidden in ("/admin/flatten","/admin/resume","/admin/inputs","/admin/preset","/admin/assets/"):
         assert forbidden not in ui
     assert "never activate parameters, submit orders, or authorize execution" in ui
+
+
+def test_live_replay_parity_job_matches_frozen_terminal_digest(monkeypatch):
+    runner=SimpleNamespace(warm=True,warmup_quality_gate={"status":"READY","reasons":[]})
+    frozen_runner=SimpleNamespace(frozen_terminal_bar_ts=123,frozen_terminal_digest="abc")
+    frozen=SimpleNamespace(runners={"NQ":frozen_runner})
+    port=SimpleNamespace(runners={"NQ":runner})
+    monkeypatch.setattr(comparison_jobs,"freeze_replay_port",lambda p,s:frozen)
+    monkeypatch.setattr(comparison_jobs,"run_backtest",lambda p,s,**kw:{
+        **_result(), "assurance":{"terminal_bar_ts":123,"terminal_decision_digest":"abc","execution_authorized":False}})
+    jid=comparison_jobs.start_live_replay_parity(port,"NQ")
+    for _ in range(100):
+        j=comparison_jobs.get_job(jid)
+        if j["status"]!="running": break
+        time.sleep(.01)
+    assert j["status"]=="done"
+    assert j["result"]["status"]=="MATCH"
+    assert j["result"]["mode"]=="LIVE_VS_REPLAY_PARITY_AUDIT"
+    assert j["result"]["execution_authorized"] is False
+
+
+def test_backtest_and_ui_expose_terminal_parity_surfaces():
+    bt=Path("icarus_engine/backtest.py").read_text(encoding="utf-8")
+    ui=Path("icarus_engine/assurance-ui.js").read_text(encoding="utf-8")
+    server=Path("icarus_engine/server.py").read_text(encoding="utf-8")
+    assert '"terminal_decision_digest"' in bt and "frozen_terminal_digest" in bt
+    assert "/admin/research/live-replay-parity" in server
+    assert "/api/research/live-replay-parity/" in server
+    assert 'data-assurance-job="live-replay-parity"' in ui

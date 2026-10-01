@@ -1,0 +1,31 @@
+{
+  "schema_version": "icarus-mcp-event-v1",
+  "event_id": "20261001T030000Z-warmup-depth-evolution",
+  "at_utc": "2026-10-01T03:00:00Z",
+  "category": "EVOLUTION",
+  "status": "IMPLEMENTED",
+  "severity": "IMPORTANT",
+  "summary": "Raised the default ICARUS warm-up target from 1,200 to 5,000 chart bars, added truthful loaded/target/source telemetry, and wired NQ 20m warm-up to the repository's >10k-bar bundled MNQ 20m archive when no exact operator history export exists.",
+  "surface": "ICARUS warm-up engine and dashboard",
+  "source": "CHATGPT_MCP",
+  "paths": [
+    "icarus_engine/runtime.py",
+    "icarus_engine/cli.py",
+    "icarus_engine/dashboard.html",
+    "tests_engine/test_warmup_depth.py",
+    "data/mnq_20m.csv"
+  ],
+  "evidence": [
+    "default_warmup_target:5000",
+    "bundled_archive:data/mnq_20m.csv:>10000_rows",
+    "dashboard:warmup_bars_loaded+warmup_source",
+    "historical_trade_counter:separated_from_bar_counter"
+  ],
+  "execution_authorized": false,
+  "trading_execution_authorized": false,
+  "notes": [
+    "The previous 'Hist. pieces' tile counted closed historical trade pieces, not historical bars.",
+    "Provider limits can cap network-only history below the requested target; the UI reports actual loaded depth rather than fabricating the target.",
+    "The bundled MNQ archive is used only as NQ 20m price-history warm-up fallback and its source is surfaced to the operator."
+  ]
+}

@@ -1,5 +1,5 @@
 {
-  "schema_version": "restored-five-scheduler-contract-v3",
+  "schema_version": "restored-five-scheduler-contract-v4",
   "timezone": "America/Chicago",
   "exact_active_count": 5,
   "execution_authorized": false,
@@ -64,5 +64,19 @@
     "protected_pre_slot_minutes": 5,
     "action_when_guarded": "READ_ONLY_AUDIT_ONLY",
     "rationale": "Prompt/config changes during an active scheduler invocation can contaminate or interrupt the slot and invalidate it as natural protocol evidence."
-  }
+  },
+  "retired_scheduler_ids": [
+    "6abaf8d75cf48191bc7ce06bc0006f1c"
+  ],
+  "scheduler_rotations": [
+    {
+      "lane": "alpha_synthesis",
+      "old_id": "6abaf8d75cf48191bc7ce06bc0006f1c",
+      "new_id": "6abda2dc3aa881919b80fa89f1c5122e",
+      "rotated_at_utc": "2026-10-01T00:01:32Z",
+      "reason": "Two consecutive clean V5.8 slots (22:25Z and 23:25Z) had scheduler triggers but no canonical GitHub receipt; task-instance corruption/tool-handoff failure suspected.",
+      "old_enabled": false,
+      "new_enabled": true
+    }
+  ]
 }

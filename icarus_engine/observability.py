@@ -132,6 +132,11 @@ class DecisionTrace:
                                   "runup":float(getattr(trade,"runup",0.0)),"drawdown":float(getattr(trade,"drawdown",0.0)),
                                   "bars":int(getattr(trade,"bars",0))})
             break
+    @staticmethod
+    def _finish(groups):
+        for g in groups.values():
+            n=g["pieces"]; g["win_rate"]=g["wins"]/n if n else None; g["avg_bars"]=g["avg_bars"]/n if n else None
+        return groups
     def _regime_stats(self):
         groups={}
         for row in self.rows:
@@ -139,11 +144,35 @@ class DecisionTrace:
             g=groups.setdefault(regime,{"pieces":0,"wins":0,"net_profit":0.0,"avg_bars":0.0})
             for x in row.get("closes") or []:
                 g["pieces"]+=1; g["wins"]+=int(x["profit"]>0); g["net_profit"]+=x["profit"]; g["avg_bars"]+=x["bars"]
+        return self._finish(groups)
+    def _vote_stats(self):
+        """Co-occurrence attribution, not causal decomposition.
+
+        A closed piece contributes to every vote that was active in the entry
+        direction when its parent intent was submitted. The table therefore
+        answers 'which components were present on profitable trades?' without
+        pretending overlapping votes independently caused the P&L.
+        """
+        groups={}
+        for row in self.rows:
+            direction=int(row.get("direction") or 0)
+            votes=(row.get("decision") or {}).get("votes") or []
+            active=[v for v in votes if (direction>0 and v.get("l")) or (direction<0 and v.get("s"))]
+            for v in active:
+                name=str(v.get("name") or "UNNAMED")
+                g=groups.setdefault(name,{"pieces":0,"wins":0,"net_profit":0.0,"avg_bars":0.0,"weight_sum":0.0})
+                for x in row.get("closes") or []:
+                    g["pieces"]+=1; g["wins"]+=int(x["profit"]>0); g["net_profit"]+=x["profit"]; g["avg_bars"]+=x["bars"]
+                    try: g["weight_sum"]+=float(v.get("w") or 0.0)
+                    except (TypeError,ValueError): pass
+        self._finish(groups)
         for g in groups.values():
-            n=g["pieces"]; g["win_rate"]=g["wins"]/n if n else None; g["avg_bars"]=g["avg_bars"]/n if n else None
+            g["avg_weight"]=g.pop("weight_sum")/g["pieces"] if g["pieces"] else None
         return groups
     def view(self,limit=20):
         rows=list(self.rows)[-max(1,int(limit)):]
         pieces=sum(len(r.get("closes") or []) for r in self.rows)
         return {"count":len(self.rows),"closed_pieces":pieces,"recent":rows,"by_regime":self._regime_stats(),
+                "by_vote_cooccurrence":self._vote_stats(),
+                "attribution_caveat":"Vote metrics are co-occurrence attribution; overlapping votes are not independent causal P&L.",
                 "mode":"AUDIT_ONLY","execution_authorized":False}

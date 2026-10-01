@@ -94,11 +94,12 @@ class RestoredFiveLocalShadowTests(unittest.TestCase):
             )
             self.assertEqual(result, output_path)
             artifact = json.loads(output_path.read_text(encoding="utf-8"))
-            self.assertEqual(artifact["schema_version"], "restored-five-local-shadow-v1")
+            self.assertEqual(artifact["schema_version"], "restored-five-local-shadow-v2")
             self.assertFalse(artifact["canonical_state_mutated"])
             self.assertFalse(artifact["execution_authorized"])
             self.assertFalse(artifact["paid_api_call_made"])
             self.assertFalse(artifact["payload"]["execution_authorized"])
+            self.assertTrue(artifact["model_advisory"]["non_authoritative"])
             self.assertEqual(
                 artifact["payload"]["net_new_delta"],
                 "SHADOW_ASSESSMENT_ONLY",

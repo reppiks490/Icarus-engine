@@ -63,7 +63,15 @@
     if (rc?.result) {
       const x = rc.result;
       if (x.status === "NO_BASELINE") out += '<div class="small muted">Regression check: no saved baseline yet.</div>';
-      else if (x.diff) out += `<div class="small ${x.diff.digest_equal ? "pos" : "neg"}">Regression check: <b>${x.diff.digest_equal ? "MATCH" : "CHANGED"}</b> · trades +${x.diff.trades_added || 0}/-${x.diff.trades_removed || 0} · Δ net ${nfmt(x.diff.metrics_delta?.net_profit)}</div>`;
+      else if (x.diff) {
+        const m=x.diff.metrics_delta||{};
+        out += `<details class="group" ${x.diff.digest_equal?'':'open'}><summary>Regression check · <span class="${x.diff.digest_equal?'pos':'neg'}">${x.diff.digest_equal?'MATCH':'CHANGED'}</span></summary>
+          <div class="scroll"><table><thead><tr><th>Bars Δ</th><th>Trades + / -</th><th>Net P&L Δ</th><th>Max DD Δ</th><th>Expectancy Δ</th><th>PF Δ</th></tr></thead><tbody><tr>
+          <td>${nfmt(x.diff.bars_delta)}</td><td>+${x.diff.trades_added||0} / -${x.diff.trades_removed||0}</td><td>${money(m.net_profit)}</td><td>${money(m.max_drawdown)}</td><td>${money(m.expectancy)}</td><td>${nfmt(m.profit_factor)}</td>
+          </tr></tbody></table></div>
+          <div class="small muted">Baseline ${esc((x.diff.baseline_digest||'').slice(0,12))} · current ${esc((x.diff.current_digest||'').slice(0,12))}. Descriptive diff only; ICARUS does not select or activate a configuration from this result.</div>
+        </details>`;
+      }
     }
     return out;
   }
@@ -86,7 +94,9 @@
     } else if (kind === "robustness") {
       path="/admin/research/robustness"; body={asset,fraction:0.10}; prefix="/api/research/robustness/";
     } else if (kind === "regression-baseline" || kind === "regression-check") {
-      path="/admin/research/regression"; body={asset,mode:kind.endsWith("baseline")?"baseline":"check"}; prefix="/api/research/regression/";
+      const baseline=kind.endsWith("baseline");
+      if (baseline && !confirm("Pin the current frozen replay as the explicit regression baseline for "+asset+"? This replaces the prior local baseline but does not change trading behavior.")) return;
+      path="/admin/research/regression"; body={asset,mode:baseline?"baseline":"check",...(baseline?{confirm:true}:{})}; prefix="/api/research/regression/";
     } else return;
     let s = null;
     try { s = await admin(path, body, true); } catch (_) {}
@@ -109,7 +119,7 @@
         <button class="sm" data-assurance-job="regression-baseline">Save regression baseline</button>
         <button class="sm" data-assurance-job="regression-check">Compare to baseline</button>
       </div>
-      <div class="small muted" style="margin:6px 0 10px">Research-only controls. They run isolated replays and never activate parameters, submit orders, or authorize execution.</div>
+      <div class="small muted" style="margin:6px 0 10px">Research-only controls. They run isolated replays and never activate parameters, submit orders, or authorize execution. Saving a regression baseline always requires explicit confirmation.</div>
       ${jobHtml(asset)}
       ${breakdownHtml(a)}`;
   }

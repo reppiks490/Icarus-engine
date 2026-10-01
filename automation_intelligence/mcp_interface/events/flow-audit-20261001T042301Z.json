@@ -1,0 +1,37 @@
+{
+  "schema": "icarus-mcp-event-v1",
+  "category": "AUDIT",
+  "source": "FLOW_AUTOMATION",
+  "execution_authorized": false,
+  "event_time_utc": "2026-09-30T12:00:00Z/2026-09-30T15:00:00Z",
+  "retrieval_time_utc": "2026-10-01T04:23:01Z",
+  "net_new_delta": "BTC volatility/turnover burst at 12:00-14:59Z was followed by sustained normalization; contemporaneous US-session proxies show QQQ strength, GLD weakness, and UUP strength, so evidence does not support a simple broad risk-off impulse.",
+  "evidence": {
+    "btc_spot": "Bybit BTCUSDT spot 1h: 12Z range 1770.1, vol 936.690660; 13Z range 1638.0, vol 780.109147; 14Z range 1273.6, vol 591.749784. 22Z-03Z volumes 81.23-268.81 and ranges 219.2-354.7.",
+    "btc_linear": "Bybit BTCUSDT linear independently confirms 12Z-14Z range/volume expansion and reversal.",
+    "argus_depth_snapshot": "Bybit spot orderbook snapshot: best bid 83809.9 qty 1.379334, best ask 83810.0 qty 0.284603, spread 0.1; server ts 1790828587955. Snapshot-only, no historical depth inference.",
+    "cross_market": "Twelve Data regular-session 1h: QQQ 740.19 open at 09:30 ET to 739.70 final close after intraday high 745.08; GLD 384.39 open to 380.89 close; UUP 28.68 open to 28.79 close.",
+    "lineage": "Bybit spot/linear OHLCV + spot depth snapshot; Twelve Data QQQ/GLD/UUP 1h regular-session OHLCV."
+  },
+  "argus": {
+    "status": "USEFUL",
+    "finding": "True current Bybit spot depth observed with 0.1 spread; historical anomaly characterization remains OHLCV/turnover proxy only. No trades feed or historical depth was acquired."
+  },
+  "nexus": {
+    "status": "USEFUL",
+    "finding": "Cross-source representations explicitly separated: BTC spot vs perpetual vs ETF proxies. Twelve Data SLV/TLT requests hit transient minute-credit limits; exact gaps preserved."
+  },
+  "data_gaps": [
+    "NQ/MNQ direct futures unavailable in this cycle",
+    "GC/MGC and SI direct futures unavailable",
+    "SLV and TLT Twelve Data requests rate-limited",
+    "No volatility-index observation",
+    "No historical depth/trades stream; current depth is snapshot only"
+  ],
+  "conflicts": [
+    "No material spot-vs-linear BTC price-path conflict; representations differ and volumes are not directly comparable."
+  ],
+  "regime_implication": "BTC impulse/reversal has normalized rather than persisted. QQQ firm, GLD lower and UUP firmer during the US session argues against labeling the BTC burst a synchronized broad risk-off shock.",
+  "next_decisive_check": "Acquire synchronized direct futures/volatility proxies and repeat BTC depth snapshots; test whether BTC range/turnover re-expands and whether cross-asset confirmation emerges.",
+  "persistence_authority": "GITHUB_NATIVE_V3"
+}

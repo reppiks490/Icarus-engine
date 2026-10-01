@@ -183,3 +183,43 @@ def start_robustness(port,symbol:str,fields=None,fraction:float=0.10)->str:
         job["finished"]=time.time()
     threading.Thread(target=work,daemon=True,name=f"robustness-{job_id}").start()
     return job_id
+
+
+def start_live_replay_parity(port,symbol:str)->str:
+    """Replay one frozen live snapshot and compare its terminal decision fingerprint."""
+    symbol=str(symbol).upper()
+    if symbol not in port.runners: raise ValueError("unknown asset")
+    src_live=port.runners[symbol]
+    history_assurance=_history_assurance(src_live)
+    if not src_live.warm: raise ValueError("asset is still warming")
+    frozen=freeze_replay_port(port,symbol)
+    src=frozen.runners[symbol]
+    reference_ts=getattr(src,"frozen_terminal_bar_ts",None)
+    reference_digest=getattr(src,"frozen_terminal_digest",None)
+    job_id,job=_new_job(symbol,"live-replay-parity",1)
+    def work():
+        try:
+            replay=run_backtest(frozen,symbol)
+            job["progress"]=1
+            a=replay.get("assurance") or {}
+            replay_ts=a.get("terminal_bar_ts"); replay_digest=a.get("terminal_decision_digest")
+            if reference_ts is None or reference_digest is None:
+                status="NO_REFERENCE"
+            elif replay_ts != reference_ts:
+                status="BAR_MISMATCH"
+            elif replay_digest == reference_digest:
+                status="MATCH"
+            else:
+                status="STATE_DIVERGENCE"
+            job["result"]={"asset":symbol,"status":status,
+                           "reference":{"bar_ts":reference_ts,"digest":reference_digest},
+                           "replay":{"bar_ts":replay_ts,"digest":replay_digest},
+                           "history_assurance":history_assurance,
+                           "mode":"LIVE_VS_REPLAY_PARITY_AUDIT","execution_authorized":False,
+                           "note":"Comparison is against a frozen closed-bar snapshot; it never mutates the live runner."}
+            job["status"]="done"
+        except Exception as ex:
+            job["error"]=f"{type(ex).__name__}: {ex}"; job["status"]="error"
+        job["finished"]=time.time()
+    threading.Thread(target=work,daemon=True,name=f"live-replay-parity-{job_id}").start()
+    return job_id

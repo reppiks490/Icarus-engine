@@ -409,6 +409,7 @@ document.addEventListener('click', async ev => {
   if (b.tagName === 'A') return;
   if (b.dataset.v) { if (b.dataset.v === 'add') { setView('commands'); setTimeout(()=>$('#addSym')?.focus(), 50); } else setView(b.dataset.v); return; }
   if (b.classList.contains('asset')) { setView('asset:' + b.dataset.sym); return; }
+  if (b.dataset.matrix) { await runSessionMatrix(b.dataset.matrix); return; }
   if (b.dataset.cmd) { await runCommand(b.dataset.cmd, b.dataset.a); return; }
   if (b.dataset.run) { const sel = document.querySelector(`select[data-scope="${b.dataset.run}"]`); await runCommand(b.dataset.run, sel ? sel.value : '*'); return; }
   if (b.id === 'inApply') { const vals = inState.edits; if (!Object.keys(vals).length) return toast('nothing edited'); const r = await admin('/admin/inputs', {asset: inState.asset, values: vals, persist: true}); if (r) { inState.edits = {}; setTimeout(()=>loadInputsTab(), 1500); } }
@@ -417,6 +418,18 @@ document.addEventListener('click', async ev => {
   if (b.id === 'inApplyPreset') { await admin('/admin/preset', {asset: inState.asset, preset: $('#inPreset').value || null}); setTimeout(()=>loadInputsTab(), 1500); }
   if (b.id === 'addBtn') { const s = $('#addSym').value.trim(); if (!s) return; await admin('/admin/assets/add', {symbol: s, tf: $('#addTf').value.trim() || undefined, preset: $('#addPreset').value || undefined}); }
 });
+async function runSessionMatrix(asset) {
+  const start = await admin('/admin/research/session-matrix', {asset:asset}, true);
+  if (!start) { toast('could not start session/chart matrix', true); return; }
+  SESSION_MATRIX[asset] = {status:'running', job:start.job}; lastView=null; if (last) render(last); toast('session/chart matrix started');
+  for (let k=0;k<240;k++) {
+    await new Promise(r=>setTimeout(r,500));
+    const j = await authed('/api/research/session-matrix/'+start.job); if (!j) continue;
+    SESSION_MATRIX[asset] = j;
+    if (j.status==='done' || j.status==='error') { lastView=null; if (last) render(last); toast(j.status==='done'?'session/chart matrix complete':(j.error||'matrix failed'), j.status!=='done'); return; }
+  }
+  toast('session/chart matrix still running', true);
+}
 async function runCommand(id, asset) {
   const A = asset && asset !== '*' ? asset : null;
   switch (id) {

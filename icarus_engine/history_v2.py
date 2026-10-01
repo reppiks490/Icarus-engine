@@ -56,8 +56,10 @@ def stitch(paths: Iterable[str], tf_seconds: int, session: str="UNKNOWN"):
         for b in bars: merged[b.ts]=b
     return [merged[k] for k in sorted(merged)], reports
 
-def write_manifest(path: str, reports: List[HistoryReport], loaded: int):
-    payload={"schema_version":"icarus-history-manifest-v1","loaded":loaded,"sources":[r.to_dict() for r in reports]}
+def write_manifest(path: str, reports: List[HistoryReport], loaded: int, extra=None):
+    payload={"schema_version":"icarus-history-manifest-v1","loaded":loaded,"sources":[r.to_dict() for r in reports],
+             "execution_authorized":False}
+    if extra: payload["stitch"]=dict(extra)
     os.makedirs(os.path.dirname(path),exist_ok=True)
     with open(path,"w",encoding="utf-8") as f: json.dump(payload,f,indent=2,sort_keys=True)
     return payload

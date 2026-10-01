@@ -31,6 +31,17 @@
     </details>`;
   }
 
+  function replayCoverageHtml(a) {
+    const r=a?.replay_timeframe_readiness;
+    if (!r) return "";
+    const bad=(r.blocked_minutes||[]).length;
+    const rows=(r.timeframes||[]).map(x=>`<tr><td>${x.minutes}m</td><td class="${x.status==="READY"?"pos":"neg"}">${esc(x.status||"—")}</td><td>${esc((x.raw_source_minutes||[]).map(v=>v+"m").join(", ")||"none")}</td><td>${Number(x.observations||0).toLocaleString()}</td><td>${x.first_ts?dtm(x.first_ts):"—"}</td><td>${x.last_ts?dtm(x.last_ts):"—"}</td><td>${esc((x.reasons||[]).join(", ")||"—")}</td></tr>`).join("");
+    return `<details class="group" ${bad?"open":""}><summary>Replay timeframe data coverage <span class="cnt ${bad?"neg":"pos"}">${esc(r.status||"UNKNOWN")}</span></summary>
+      <div class="scroll"><table><thead><tr><th>Requested TF</th><th>Status</th><th>Raw source TFs</th><th>Observations</th><th>First</th><th>Last</th><th>Reason</th></tr></thead><tbody>${rows}</tbody></table></div>
+      <div class="small ${bad?"neg":"muted"}">${bad?"Research replay/parity is blocked for incomplete requested-timeframe coverage. ":"Requested timeframes are buildable from cached observations. "}A TFChain object alone is not treated as historical evidence. No missing lower-timeframe series is synthesized from coarser bars.</div>
+    </details>`;
+  }
+
   function recoveryHtml(a) {
     const r=a?.restart_recovery;
     if (!r) return "";
@@ -301,6 +312,7 @@
       <div class="small"><b>Warm-up depth:</b> ${Number(a.warmup_loaded_bars??0).toLocaleString()} loaded / ${Number(a.warmup_target_bars??0).toLocaleString()} target · ${a.warmup_quality_gate?.status||"UNKNOWN"}</div>
       ${a.kind==="futures"?`<div class="small muted">Continuous archive input: ${a.continuous_archive?.configured?"configured ("+(a.continuous_archive?.contract_files?.length||0)+" contracts)":"not configured"} · expected under ${esc(a.continuous_archive?.root||"history/contracts/<SYMBOL>")}.</div>`:""}
       ${completionHtml(a)}
+      ${replayCoverageHtml(a)}
       ${jobHtml(asset)}
       ${recoveryHtml(a)}
       ${integrityHtml(a)}

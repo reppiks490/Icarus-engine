@@ -126,3 +126,19 @@ jobs:
         run: |
           python -m icarus export-features --asset micro_futures --bars 3000 --out training.csv
           test -s training.csv
+
+
+  mcp-interface-contract:
+    name: MCP interface provenance contract
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Require same-changeset ICARUS provenance
+        run: python tools/check_mcp_event_contract.py

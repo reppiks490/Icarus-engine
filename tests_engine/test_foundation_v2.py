@@ -65,3 +65,28 @@ def test_history_quality_gate_is_research_only():
     from icarus_engine.history_v2 import HistoryReport, assess_quality
     q=assess_quality(HistoryReport("x",rows_read=100,bars_valid=95,rejected=5),100)
     assert q["status"]=="DEGRADED" and q["execution_authorized"] is False
+
+
+def test_history_discovery_never_mixes_rth_and_eth(tmp_path):
+    from icarus_engine.history_v2 import discover_history_sources
+    h=tmp_path/"history"; h.mkdir()
+    generic=h/"NQ_20m_2019.csv"
+    rth=h/"NQ_20m_rth_2020.csv"
+    eth=h/"NQ_20m_eth_2020.csv"
+    for p in (generic,rth,eth):
+        p.write_text("ts,open,high,low,close,volume\n60,1,2,1,1.5,1\n",encoding="utf-8")
+    dr=discover_history_sources(str(tmp_path),"NQ",20,"rth")
+    de=discover_history_sources(str(tmp_path),"NQ",20,"eth")
+    assert dr["exact"]==[str(rth)]
+    assert de["exact"]==[str(eth)]
+    assert str(eth) in dr["ignored_session_mismatch"]
+    assert str(rth) in de["ignored_session_mismatch"]
+
+def test_history_discovery_falls_back_to_generic_when_session_label_absent(tmp_path):
+    from icarus_engine.history_v2 import discover_history_sources
+    h=tmp_path/"history"; h.mkdir()
+    generic=h/"NQ_20m_2019.csv"
+    generic.write_text("ts,open,high,low,close,volume\n60,1,2,1,1.5,1\n",encoding="utf-8")
+    d=discover_history_sources(str(tmp_path),"NQ",20,"rth")
+    assert d["exact"]==[str(generic)]
+    assert d["requested_session"]=="rth"

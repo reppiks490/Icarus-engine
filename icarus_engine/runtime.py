@@ -392,6 +392,14 @@ class AssetRunner:
         ltf = [self.chains[2].ltf_values(chart.ts, self.chart_minutes, t_close), self.chains[5].ltf_values(chart.ts, self.chart_minutes, t_close)]
         st = self.strat.on_bar(chart, self.bar_index, htf, ltf, time_close=t_close)
         self.state = st
+        # Behavior-neutral assurance: fingerprint the closed-bar decision state and
+        # maintain a shadow RTH/ETH statistic. Neither object can submit orders.
+        self.parity_monitor.observe(chart.ts, gate_attribution(st))
+        try:
+            shadow_rth = get_calendar(self.spec.calendar, self.spec.anchor_et, session="rth", group=self.spec.group).intraday_open(chart.ts) if self.spec.kind == "futures" else True
+        except Exception:
+            shadow_rth = bool(st.get("in_session"))
+        self.session_shadow.observe(chart.c, shadow_rth)
         self.bars.append(chart)
         self.last_bar_wall = time.time()
         self.overlays.append({"ts": chart.ts, "st": st["rate_st_line"], "up": st["rate_uptrend"], "tp1": st["tp1_price"], "tp2": st["tp2_price"],
@@ -840,7 +848,13 @@ class AssetRunner:
             "bar_index": self.bar_index, "warmup_bars_loaded": self.bar_index + 1, "warmup_bars_target": self.cfg.warmup_bars,
             "warmup_source": getattr(self, "warmup_source", None), "warmup_quality": getattr(self, "warmup_quality", None),
             "warmup_readiness": ("READY" if (self.bar_index + 1) >= self.cfg.warmup_bars else ("DEGRADED" if self.warm else "WARMING")),
-            "decision_attribution": gate_attribution(st), "last_bar_ts": self.bars[-1].ts if self.bars else None,
+            "decision_attribution": gate_attribution(st),
+            "parity": self.parity_monitor.view(), "session_shadow": self.session_shadow.view(),
+            "roll_provenance": roll_provenance(self.roller),
+            "execution_stress": execution_stress(
+                [{"profit": t.profit, "qty": t.qty} for t in self.em.closed[-200:]],
+                tick_size=self.mintick, multiplier=self.em.contract_size),
+            "last_bar_ts": self.bars[-1].ts if self.bars else None,
             "market": self.market(),
             "forming": (forming.__dict__ if forming else None),
             "equity": self.em.equity(mark), "capital": self.spec.capital, "netprofit": self.em.netprofit,

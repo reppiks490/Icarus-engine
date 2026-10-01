@@ -90,3 +90,14 @@ def test_history_discovery_falls_back_to_generic_when_session_label_absent(tmp_p
     d=discover_history_sources(str(tmp_path),"NQ",20,"rth")
     assert d["exact"]==[str(generic)]
     assert d["requested_session"]=="rth"
+
+
+def test_runtime_targets_5000_real_warmup_bars_and_deepest_history():
+    text=Path("icarus_engine/runtime.py").read_text(encoding="utf-8")
+    ui=Path("icarus_engine/assurance-ui.js").read_text(encoding="utf-8")
+    assert "self.warmup_target_bars = max(5000" in text
+    assert "selected deepest compatible" in text
+    assert "assess_quality(quality, self.warmup_target_bars)" in text
+    assert '"warmup_loaded_bars": len(self.bars)' in text
+    assert "Warm-up depth:" in ui
+    assert "loaded /" in ui

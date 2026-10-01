@@ -1,0 +1,70 @@
+{
+  "schema": "icarus-mcp-event-v1",
+  "category": "AUDIT",
+  "source": "FLOW_AUTOMATION",
+  "event_time": "2026-10-01T09:00:00Z",
+  "retrieval_time": "2026-10-01T10:25:07Z",
+  "execution_authorized": false,
+  "finding": "BTC 09:00 UTC completed hour normalized after 07:00 impulse: spot range 350.6 vs 893.8 at 07:00, with 391.897 BTC volume; linear range 359.1 vs 931.1, with 2230.514 BTC volume. Spot/linear direction and range regime reconcile.",
+  "regime_implication": "Transient impulse followed by range normalization; no evidence-backed broad cross-market regime transition.",
+  "evidence": {
+    "btc_spot": {
+      "event_time": "2026-10-01T09:00:00Z",
+      "open": 83565.6,
+      "high": 83906.8,
+      "low": 83556.2,
+      "close": 83785.6,
+      "volume_btc": 391.89667,
+      "range_usd": 350.6,
+      "source": "Bybit spot kline"
+    },
+    "btc_linear": {
+      "event_time": "2026-10-01T09:00:00Z",
+      "open": 83528.4,
+      "high": 83869.2,
+      "low": 83510.1,
+      "close": 83743.9,
+      "volume_btc": 2230.514,
+      "range_usd": 359.1,
+      "source": "Bybit linear kline"
+    },
+    "depth_snapshot": {
+      "retrieval_time_source_ms": 1790850307553,
+      "best_bid": 83696.9,
+      "bid_qty_btc": 0.210069,
+      "best_ask": 83697,
+      "ask_qty_btc": 0.916169,
+      "spread_usd": 0.1,
+      "source": "Bybit spot orderbook"
+    },
+    "cross_market_prior_session": {
+      "QQQ": "available",
+      "GLD": "available",
+      "SLV": "available",
+      "UUP": "rate_limited",
+      "TLT": "rate_limited",
+      "source": "Twelve Data 1h"
+    }
+  },
+  "data_gaps": [
+    "Direct NQ/MNQ unavailable this cycle",
+    "Direct GC/MGC unavailable this cycle",
+    "Direct SI unavailable this cycle",
+    "Direct DXY unavailable this cycle",
+    "Volatility-index observation unavailable this cycle",
+    "UUP and TLT rate-limited",
+    "No historical depth/trade sequencing"
+  ],
+  "conflicts": [
+    "Spot 09:00 volume increased versus 08:00 while linear volume decreased; preserved as representation-specific turnover divergence."
+  ],
+  "next_decisive_check": "Test whether subsequent completed BTC hours remain compressed or re-expand, and acquire synchronized direct futures/USD/volatility evidence before cross-market regime promotion.",
+  "argus": {
+    "status": "MATERIAL_DELTA",
+    "finding": "Authenticated Bybit spot depth snapshot showed 83696.9 bid x 0.210069 BTC / 83697.0 ask x 0.916169 BTC, $0.10 displayed spread; snapshot-only semantics, no historical order-flow inference."
+  },
+  "nexus": {
+    "status": "MATERIAL_DELTA",
+    "finding": "Bybit spot and linear 09:00 UTC bars reconcile on range normalization after the 07:00 impulse; representation-specific volume divergence is preserved rather than merged."
+  }
+}

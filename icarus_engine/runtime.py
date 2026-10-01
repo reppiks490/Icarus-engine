@@ -38,7 +38,8 @@ from .strategy.inputs import Inputs, crypto_profile
 from .strategy.meta import load_meta
 from .strategy.pulse import PulseStrategy
 from .strategy.security import TFChain
-from .history_v2 import load_csv as load_history_csv, write_manifest as write_history_manifest, assess_quality
+from .history_v2 import (load_csv as load_history_csv, write_manifest as write_history_manifest, assess_quality,
+                         discover_history_sources, stitch_strict, write_bars_csv)
 from .assurance import gate_attribution
 from .assurance_v3 import ParityMonitor, SessionShadow, execution_stress, roll_provenance
 from .observability import explain_decision, CounterfactualTracker, ProviderHealth, ReplayCheckpointLedger, DecisionTrace
@@ -509,28 +510,51 @@ class AssetRunner:
         # as a price-history warm-up source for the NQ 20m research/paper engine.
         # Its provenance remains visible in warmup_source; live execution is not
         # authorized by choosing this source.
-        exact_hist = os.path.join(self.base_dir,
-                                  "history", f"{self.symbol}_{self.chart_minutes}m.csv")
-        bundled_hist = None
-        if self.symbol == "NQ" and self.chart_minutes == 20:
-            root = self.base_dir
-            candidate = os.path.join(root, "data", "mnq_20m.csv")
-            if os.path.exists(candidate):
-                bundled_hist = candidate
-        hist = exact_hist if os.path.exists(exact_hist) else bundled_hist
+        exact_hist = os.path.join(self.base_dir, "history", f"{self.symbol}_{self.chart_minutes}m.csv")
+        hist = exact_hist if os.path.exists(exact_hist) else None
         self.warmup_source = None
         self.warmup_quality = None
         self.warmup_quality_gate = None
+        self.warmup_shards = []
+        self.warmup_stitch = None
+        source_reports = []
+
+        # Auto-discover compatible history shards only when no canonical export
+        # exists. Overlapping OHLC must agree exactly enough to be deterministic;
+        # conflicting shards are refused rather than silently prioritized.
+        if hist is None:
+            discovered = discover_history_sources(self.base_dir, self.symbol, self.chart_minutes)
+            candidates = discovered["exact"]
+            source_kind = "exact"
+            if not candidates:
+                candidates = discovered["alias"]
+                source_kind = "alias"
+            if candidates:
+                try:
+                    bars, source_reports, stitch_meta = stitch_strict(
+                        candidates, self.chart_minutes * 60, getattr(self.cal, "session", "UNKNOWN"))
+                    if bars:
+                        stitched = os.path.join(self.base_dir, "state", "history", "stitched",
+                                                f"{self.symbol}_{self.chart_minutes}m.csv")
+                        write_bars_csv(stitched, bars)
+                        hist = stitched
+                        self.warmup_shards = [os.path.relpath(p, self.base_dir) for p in candidates]
+                        self.warmup_stitch = dict(stitch_meta, source_kind=source_kind, shards=len(candidates))
+                        self.journal.log("INFO", f"[{self.symbol}] stitched {len(candidates)} {source_kind} history shard(s) into {len(bars)} validated bars")
+                except Exception as ex:
+                    self.warmup_stitch = {"source_kind": source_kind, "shards": len(candidates),
+                                          "status": "CONFLICT_OR_INVALID", "error": str(ex)[:300],
+                                          "execution_authorized": False}
+                    self.journal.log("WARN", f"[{self.symbol}] history shard stitch refused ({ex}); using feed fallback")
+
         if hist:
             self.warmup_source = os.path.relpath(hist, self.base_dir)
-            # Validate the exact source independently before replay.  Replay remains
-            # the existing engine path; this audit sidecar must never change fills.
             try:
                 _, quality = load_history_csv(hist, self.chart_minutes * 60, getattr(self.cal, "session", "UNKNOWN"))
                 self.warmup_quality = quality.to_dict()
                 self.warmup_quality_gate = assess_quality(quality, self.cfg.warmup_bars)
                 manifest = os.path.join(self.base_dir, "state", "history", f"{self.symbol}_{self.chart_minutes}m.json")
-                write_history_manifest(manifest, [quality], quality.bars_valid)
+                write_history_manifest(manifest, source_reports or [quality], quality.bars_valid, self.warmup_stitch)
                 if quality.rejected:
                     self.journal.log("WARN", f"[{self.symbol}] history quality: {quality.rejected} rejected rows, {quality.duplicates} duplicates, {quality.gaps} gaps")
             except Exception as ex:
@@ -924,6 +948,7 @@ class AssetRunner:
             "persistent_bar_cache": self.bar_cache.stats(self.symbol) if self.bar_cache is not None else {"asset":self.symbol,"series":[],"stores_execution_state":False,"execution_authorized":False},
             "warmup_source": getattr(self, "warmup_source", None), "warmup_quality": getattr(self, "warmup_quality", None),
             "warmup_quality_gate": getattr(self, "warmup_quality_gate", None),
+            "warmup_shards": getattr(self, "warmup_shards", []), "warmup_stitch": getattr(self, "warmup_stitch", None),
             "warmup_readiness": ((self.warmup_quality_gate or {}).get("status") if getattr(self, "warmup_quality_gate", None)
                                  else ("READY" if (self.bar_index + 1) >= self.cfg.warmup_bars else ("DEGRADED" if self.warm else "WARMING"))),
             "decision_attribution": gate_attribution(st),

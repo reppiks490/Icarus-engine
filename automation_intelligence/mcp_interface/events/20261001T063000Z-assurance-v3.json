@@ -36,7 +36,8 @@
     "icarus_engine/walkforward_jobs.py",
     "tests_engine/test_continuous_history.py",
     "tests_engine/test_recovery.py",
-    "tests_engine/test_walkforward_jobs.py"
+    "tests_engine/test_walkforward_jobs.py",
+    "icarus_engine/checkpoint.py"
   ],
   "evidence": [
     "parity:canonical-sha256-gate-state",
@@ -80,7 +81,9 @@
     "history-provenance:session-aware-shard-selection+ignored-opposite-session-surfaced",
     "warmup-depth:5000-real-bar-target+deepest-compatible-validated-source-selection",
     "warmup-ui:actual-loaded-vs-target+quality-status",
-    "repository-evidence:data/mnq_20m.csv=15298-valid-source-rows-before-session-filter"
+    "repository-evidence:data/mnq_20m.csv=15298-valid-source-rows-before-session-filter",
+    "checkpoint:atomic-save-supports-bare-filename+execution-authorized-false",
+    "ci-repair:cache-source-refresh+RTH-filter+decision-distance+session-matrix+bundled-history-fallback"
   ],
   "execution_authorized": false,
   "trading_execution_authorized": false

@@ -223,3 +223,53 @@ def start_live_replay_parity(port,symbol:str)->str:
         job["finished"]=time.time()
     threading.Thread(target=work,daemon=True,name=f"live-replay-parity-{job_id}").start()
     return job_id
+
+
+def start_robustness_map(port,symbol:str,x_field:str="shock_z_thresh",y_field:str="pe_thresh",
+                         fraction:float=0.10,steps:int=5)->str:
+    """Two-parameter neighborhood map. Descriptive only; no optimum is selected."""
+    symbol=str(symbol).upper()
+    if symbol not in port.runners: raise ValueError("unknown asset")
+    src=port.runners[symbol]
+    history_assurance=_history_assurance(src)
+    if not src.warm: raise ValueError("asset is still warming")
+    fraction=float(fraction); steps=int(steps)
+    if not 0.0 < fraction <= 0.50: raise ValueError("fraction must be >0 and <=0.50")
+    if steps not in (3,5,7): raise ValueError("steps must be 3, 5 or 7")
+    base_inputs=src.inputs_base.to_dict()
+    for f in (x_field,y_field):
+        if f not in base_inputs or isinstance(base_inputs[f],bool) or not isinstance(base_inputs[f],(int,float)):
+            raise ValueError(f"unsupported robustness-map field: {f}")
+    if x_field==y_field: raise ValueError("robustness-map fields must differ")
+    frozen=freeze_replay_port(port,symbol)
+    offsets=[-fraction + (2*fraction*i/(steps-1)) for i in range(steps)]
+    job_id,job=_new_job(symbol,"robustness-map",steps*steps)
+    def value(center,off):
+        if isinstance(center,int):
+            return max(0,int(round(center*(1.0+off))))
+        return float(center)*(1.0+off)
+    def work():
+        try:
+            cells=[]; n=0
+            for yo in offsets:
+                for xo in offsets:
+                    xv=value(base_inputs[x_field],xo); yv=value(base_inputs[y_field],yo)
+                    cell={"x_offset":xo,"y_offset":yo,"x_value":xv,"y_value":yv}
+                    try:
+                        r=run_backtest(frozen,symbol,inputs={x_field:xv,y_field:yv})
+                        cell["metrics"]=_compact(r)["metrics"]; cell["error"]=None
+                    except Exception as ex:
+                        cell["metrics"]=None; cell["error"]=f"{type(ex).__name__}: {ex}"
+                    cells.append(cell); n+=1; job["progress"]=n
+            job["result"]={"asset":symbol,"x_field":x_field,"y_field":y_field,
+                           "fraction":fraction,"steps":steps,"cells":cells,
+                           "history_assurance":history_assurance,
+                           "interpretation":"DESCRIPTIVE_PARAMETER_NEIGHBORHOOD",
+                           "execution_authorized":False,
+                           "note":"No optimum, winner, ranking or activation is produced; inspect the surface for stability and cliffs."}
+            job["status"]="done"
+        except Exception as ex:
+            job["error"]=f"{type(ex).__name__}: {ex}"; job["status"]="error"
+        job["finished"]=time.time()
+    threading.Thread(target=work,daemon=True,name=f"robustness-map-{job_id}").start()
+    return job_id

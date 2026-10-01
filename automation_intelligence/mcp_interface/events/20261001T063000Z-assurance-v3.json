@@ -1,0 +1,27 @@
+{
+  "schema_version": "icarus-mcp-event-v1",
+  "event_id": "20261001T063000Z-assurance-v3",
+  "at_utc": "2026-10-01T06:30:00Z",
+  "category": "EVOLUTION",
+  "status": "IMPLEMENTED",
+  "severity": "IMPORTANT",
+  "summary": "Wired behavior-neutral closed-bar parity fingerprints, observed-session shadow statistics, explicit futures roll provenance, and closed-trade execution-cost stress into ICARUS runtime and per-asset interface.",
+  "surface": "runtime assurance and ICARUS asset dashboard",
+  "source": "CHATGPT_MCP",
+  "paths": [
+    "icarus_engine/assurance_v3.py",
+    "icarus_engine/runtime.py",
+    "icarus_engine/dashboard.html",
+    "tests_engine/test_assurance_v3.py"
+  ],
+  "evidence": [
+    "parity:canonical-sha256-gate-state",
+    "session:shadow-only-observed-bars",
+    "roll:current+next+expiry+history+rule",
+    "execution-stress:closed-trades-only",
+    "ui:assurance-shadow-only",
+    "tests:no-order-api-in-assurance-module"
+  ],
+  "execution_authorized": false,
+  "trading_execution_authorized": false
+}

@@ -1,0 +1,29 @@
+{
+  "schema_version": "icarus-mcp-event-v1",
+  "event_id": "v3-persistence-race-repair-20261001T020546Z",
+  "at_utc": "2026-10-01T02:05:46Z",
+  "category": "REPAIR",
+  "status": "VERIFIED",
+  "severity": "IMPORTANT",
+  "summary": "Recovered the GitHub-native v3 five-lane persistence batch after a remote main-ref race. Fetch/rebase/retry succeeded, the overdue Macro, Flow, AION, DAEDALUS and OMEGA slots were persisted, bounded backlog drain is enabled, and force-push remains forbidden.",
+  "surface": "ICARUS automation durability / five-lane v3 control plane",
+  "source": "MCP_VERIFIED_GITHUB_EVIDENCE",
+  "branch": "main",
+  "commit": "8a646110a562b3ba96cd85eae7a90bf988de276f",
+  "paths": [
+    "automation_intelligence/omega_stack_native_v3/cutover/acceptance.json",
+    "automation_intelligence/omega_stack_native_v3/lanes/macro/runs/20261001T011200Z/macro-20261001T011200Z-36804184443-1.json",
+    "automation_intelligence/omega_stack_native_v3/lanes/flow/runs/20261001T012400Z/flow-20261001T012400Z-36804184443-1.json",
+    "automation_intelligence/omega_stack_native_v3/lanes/aion/runs/20261001T013600Z/aion-20261001T013600Z-36804184443-1.json",
+    "automation_intelligence/omega_stack_native_v3/lanes/daedalus/runs/20261001T014800Z/daedalus-20261001T014800Z-36804184443-1.json",
+    "automation_intelligence/omega_stack_native_v3/lanes/omega/runs/20261001T020000Z/omega-20261001T020000Z-36804184443-1.json"
+  ],
+  "evidence": [
+    "workflow_run_id:36804184443",
+    "initial_push_result:REMOTE_REF_RACE_REJECTED",
+    "recovery:FETCH_REBASE_RETRY_SUCCEEDED",
+    "result:BATCH_PERSISTED",
+    "latest watchdog revalidation completed successfully on main"
+  ],
+  "execution_authorized": false
+}

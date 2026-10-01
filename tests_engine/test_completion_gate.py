@@ -53,3 +53,9 @@ def test_runtime_and_interface_surface_completion_gate():
     assert '"assurance_completion": completion_view' in rt
     assert "Assurance completion gate" in ui
     assert "READY does not authorize trading" in ui
+
+
+def test_completion_gate_warns_degraded_history_quality():
+    g=_base(warmup_gate={"status":"DEGRADED"})
+    assert g["status"]=="DEGRADED"
+    assert "HISTORY_QUALITY_DEGRADED" in g["warnings"]

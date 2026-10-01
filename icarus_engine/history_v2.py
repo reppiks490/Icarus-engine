@@ -1,6 +1,6 @@
 """Deterministic historical-data validation, stitching and provenance for ICARUS."""
 from __future__ import annotations
-import csv, hashlib, json, os
+import csv, glob, hashlib, json, os, tempfile
 from dataclasses import dataclass, asdict
 from datetime import datetime
 from typing import Iterable, List, Optional
@@ -85,3 +85,56 @@ def assess_quality(report, target_bars: int):
             "bars_valid":valid,"reject_rate":rejected/read,"duplicate_rate":duplicates/read,
             "time_gaps_observed":int(d.get("gaps") or 0),
             "execution_authorized":False}
+
+
+def discover_history_sources(base_dir: str, symbol: str, tf_minutes: int):
+    """Discover operator history shards without treating arbitrary CSVs as market data.
+
+    Exact-symbol files under history/ are preferred. The only cross-symbol alias
+    accepted automatically is MNQ -> NQ at the same timeframe, matching the
+    existing repository fallback policy.
+    """
+    symbol=str(symbol).upper(); tf=int(tf_minutes)
+    exact=sorted(set(glob.glob(os.path.join(base_dir,"history",f"{symbol}_{tf}m*.csv"))))
+    alias=[]
+    if symbol=="NQ":
+        alias=sorted(set(glob.glob(os.path.join(base_dir,"data",f"mnq_{tf}m*.csv"))))
+    return {"exact":exact,"alias":alias,"execution_authorized":False}
+
+def stitch_strict(paths: Iterable[str], tf_seconds: int, session: str="UNKNOWN"):
+    """Merge shards only when overlapping OHLC agrees.
+
+    Returns bars, reports and overlap diagnostics. Conflicting overlapping OHLC
+    raises ValueError rather than silently choosing one provider/export.
+    """
+    merged={}; reports=[]; overlaps=0; conflicts=[]
+    for p in paths:
+        bars,r=load_csv(p,tf_seconds,session); reports.append(r)
+        for b in bars:
+            old=merged.get(b.ts)
+            if old is not None:
+                overlaps+=1
+                if any(abs(float(a)-float(z))>1e-9 for a,z in ((old.o,b.o),(old.h,b.h),(old.l,b.l),(old.c,b.c))):
+                    if len(conflicts)<20:
+                        conflicts.append({"ts":b.ts,"first":[old.o,old.h,old.l,old.c],
+                                          "second":[b.o,b.h,b.l,b.c],"source":os.path.normpath(p)})
+                    continue
+            merged[b.ts]=b
+    if conflicts:
+        raise ValueError(f"history shards contain {len(conflicts)} conflicting OHLC overlap(s); first={conflicts[0]}")
+    bars=[merged[k] for k in sorted(merged)]
+    return bars,reports,{"overlaps":overlaps,"conflicts":0,"execution_authorized":False}
+
+def write_bars_csv(path: str, bars: Iterable[Bar]):
+    """Atomically materialize a validated stitched cache in canonical ICARUS CSV form."""
+    root=os.path.dirname(path); os.makedirs(root,exist_ok=True)
+    fd,tmp=tempfile.mkstemp(prefix=".history-",dir=root,text=True)
+    try:
+        with os.fdopen(fd,"w",encoding="utf-8",newline="") as f:
+            w=csv.writer(f); w.writerow(["ts","open","high","low","close","volume"])
+            for b in bars: w.writerow([int(b.ts),b.o,b.h,b.l,b.c,b.v])
+            f.flush(); os.fsync(f.fileno())
+        os.replace(tmp,path)
+    finally:
+        if os.path.exists(tmp): os.unlink(tmp)
+    return path

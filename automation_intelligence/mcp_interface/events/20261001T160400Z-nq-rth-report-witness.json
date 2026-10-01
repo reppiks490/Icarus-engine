@@ -1,0 +1,29 @@
+{
+  "schema_version": "icarus-mcp-event-v1",
+  "event_id": "20261001T160400Z-nq-rth-report-witness",
+  "at_utc": "2026-10-01T16:04:00Z",
+  "category": "INTEGRATION",
+  "status": "IMPLEMENTED",
+  "severity": "IMPORTANT",
+  "summary": "Reconciled the user's already-supplied long-history NQ RTH evidence. ICARUS now preserves and surfaces the exact 2019→2026 standard and Heikin-Ashi TradingView strategy-report witnesses by SHA-256, while explicitly refusing to treat strategy reports, coarser timeframes, or alternate chart representations as raw 20-minute warm-up bars.",
+  "surface": "ICARUS Assurance interface and private-history provenance",
+  "source": "CHATGPT_MCP",
+  "paths": [
+    "icarus_engine/private_history.py",
+    "icarus_engine/runtime.py",
+    "icarus_engine/assurance-ui.js",
+    "tests_engine/test_private_reference_reports.py",
+    "automation_intelligence/private_history_catalog/nq_rth_reconciliation_20261001.json"
+  ],
+  "evidence": [
+    "standard-rth-report:05cebeb4a44fcad254b6c7ee05d66ef8a81593e5d984cf91b5ee1b1a8dd9aae3+2019-02-07-to-2026-09-29+473-closed-trades+net-56950+intrabar-dd-80846",
+    "ha-rth-report:dc3c1c3b32bc7da97bcbaa5bd207eb1d462d8104cc77b9f4e5cb75eef9425585+2019-02-07-to-2026-09-29+1204-closed-trades+net-967652+intrabar-dd-60844",
+    "archive-scan:multi-level-csv-56-NQ-members+no-2019-raw-20m-RTH-bars",
+    "archive-scan:csv-data-multi-chart-type-matches-NDX-index-not-NQ-futures",
+    "boundary:strategy-report-not-bar-history+warmup_eligible-false+no-coarse-resampling",
+    "ui:long-history-RTH-report-witnesses",
+    "safety:execution_authorized-false+trading-permission-unchanged"
+  ],
+  "execution_authorized": false,
+  "trading_execution_authorized": false
+}

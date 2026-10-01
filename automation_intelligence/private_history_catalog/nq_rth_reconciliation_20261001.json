@@ -1,0 +1,100 @@
+{
+  "schema_version": "icarus-private-history-reconciliation-v1",
+  "generated_at_utc": "2026-10-01T16:03:00Z",
+  "symbol": "NQ",
+  "target_cell": {
+    "timeframe": "20m",
+    "session": "RTH",
+    "price_geometry": "standard"
+  },
+  "conclusion": "The exact long-history RTH strategy report is present and verified from the private intake, but no raw 20-minute RTH bar CSV reaching 2019 was found in the searched Library, connected Drive/Dropbox mounts, ICARUS repositories, or the two archived CSV repositories. Do not substitute report rows or other timeframes for missing raw 20-minute bars.",
+  "verified_private_reports": [
+    {
+      "name": "THE_PULSE_OF_ICARUS_CME_MINI_NQ1!_2026-09-30 3.xlsx",
+      "sha256": "05cebeb4a44fcad254b6c7ee05d66ef8a81593e5d984cf91b5ee1b1a8dd9aae3",
+      "chart_type": "Candles",
+      "session": "RTH",
+      "timeframe": "20m",
+      "trading_range": "Feb 7, 2019 at 08:50 — Sep 29, 2026 at 15:10",
+      "backtesting_range": "Feb 1, 2019 at 08:30 — Sep 29, 2026 at 15:10",
+      "closed_trades": 473,
+      "open_trades": 1,
+      "net_profit_usd": 56950,
+      "percent_profitable": 68.5,
+      "max_drawdown_intrabar_usd": 80846
+    },
+    {
+      "name": "THE_PULSE_OF_ICARUS_CME_MINI_NQ1!_2026-09-30 4.xlsx",
+      "sha256": "dc3c1c3b32bc7da97bcbaa5bd207eb1d462d8104cc77b9f4e5cb75eef9425585",
+      "chart_type": "Heikin Ashi",
+      "session": "RTH",
+      "timeframe": "20m",
+      "trading_range": "Feb 7, 2019 at 08:50 — Sep 29, 2026 at 15:10",
+      "backtesting_range": "Feb 1, 2019 at 08:30 — Sep 29, 2026 at 15:10",
+      "closed_trades": 1204,
+      "open_trades": 0,
+      "net_profit_usd": 967652,
+      "percent_profitable": 92.69,
+      "max_drawdown_intrabar_usd": 60844
+    }
+  ],
+  "raw_history_findings": {
+    "native_library": {
+      "exact_eth_20m_standard": {
+        "rows": 41239,
+        "first_utc": "2024-06-02T22:00:00Z",
+        "last_utc": "2026-09-30T13:20:00Z"
+      },
+      "exact_rth_20m_2019_bar_csv_found": false
+    },
+    "multi_level_csv_scan": {
+      "repository": "reppiks490/multi-level-csv",
+      "source_commit": "ce82124352762c14eb33836a5c894bc3a2a71dfe",
+      "nq_members_scanned": 56,
+      "regular_20m_best_found": {
+        "archive": "Full csv candles only.zip",
+        "member": "Full csv candles only/CME_MINI_DL_NQ1!, 20.csv",
+        "rows": 20183,
+        "first_utc": "2025-07-31T22:00:00Z",
+        "last_utc": "2026-09-21T20:40:00Z",
+        "mode_delta_seconds": 1200
+      },
+      "other_longer_timebars": [
+        {
+          "member": "Full csv candles only/CME_MINI_DL_NQ1!, 120.csv",
+          "rows": 20719,
+          "first_utc": "2020-01-01T23:00:00Z",
+          "last_utc": "2026-09-21T20:00:00Z",
+          "mode_delta_seconds": 7200
+        },
+        {
+          "member": "Csv files for different chart types/CME_MINI_DL_NQ1!, 240.csv",
+          "rows": 21124,
+          "first_utc": "2013-01-02T11:00:00Z",
+          "last_utc": "2026-09-21T22:00:00Z",
+          "mode_delta_seconds": 14400,
+          "identity_caveat": "different-chart-types archive; representation identity remains separate"
+        }
+      ]
+    },
+    "csv_data_multi_chart_type_scan": {
+      "repository": "reppiks490/csv-data-multi-chart-type",
+      "source_commit": "a482e7d1801fa7fa5aec093960097c0051c0403c",
+      "matched_members": 8,
+      "note": "Matches were NASDAQ_DLY_NDX index files, not NQ futures raw bars."
+    },
+    "google_drive": {
+      "raw_rth_20m_2019_bar_csv_found": false
+    },
+    "dropbox": {
+      "raw_rth_20m_2019_bar_csv_found": false
+    }
+  },
+  "safety": {
+    "report_is_not_bar_history": true,
+    "no_resampling_from_coarser_bars": true,
+    "no_fabricated_20m_history": true,
+    "execution_authorized": false,
+    "trading_execution_authorized": false
+  }
+}

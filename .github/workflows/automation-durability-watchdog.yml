@@ -19,68 +19,6 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  reconcile:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out watchdog source from main
-        uses: actions/checkout@v4
-        with:
-          ref: main
-          path: control
-          persist-credentials: false
-
-      - name: Check out authoritative automation state
-        uses: actions/checkout@v4
-        with:
-          ref: automation/omega-native-v2
-          path: state
-          fetch-depth: 0
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Reconcile expected natural receipts
-        run: >-
-          python control/tools/automation_durability_watchdog.py
-          --root state
-          --grace-minutes 12
-          --horizon-hours 48
-
-      - name: Stage only reconciliation artifacts
-        shell: bash
-        run: |
-          set -euo pipefail
-          if [ ! -d state/automation_intelligence/omega_stack_native_v2/reconciliation ]; then
-            echo "WATCHDOG_NO_CHANGE=1" >> "$GITHUB_ENV"
-            exit 0
-          fi
-          git -C state add automation_intelligence/omega_stack_native_v2/reconciliation
-          staged="$(git -C state diff --cached --name-only)"
-          if [ -z "$staged" ]; then
-            echo "WATCHDOG_NO_CHANGE=1" >> "$GITHUB_ENV"
-            exit 0
-          fi
-          invalid="$(printf '%s\n' "$staged" | grep -Ev '^automation_intelligence/omega_stack_native_v2/reconciliation/' || true)"
-          if [ -n "$invalid" ]; then
-            echo "Refusing out-of-namespace paths:" >&2
-            printf '%s\n' "$invalid" >&2
-            exit 1
-          fi
-          echo "WATCHDOG_NO_CHANGE=0" >> "$GITHUB_ENV"
-
-      - name: Commit reconciliation state transitions
-        if: env.WATCHDOG_NO_CHANGE != '1'
-        shell: bash
-        run: |
-          set -euo pipefail
-          git -C state config user.name "github-actions[bot]"
-          git -C state config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git -C state commit -m "automation: watchdog reconciliation $(date -u +%Y%m%dT%H%M%SZ) [skip ci]"
-          git -C state push origin HEAD:automation/omega-native-v2
-
-
   reconcile-v3:
     runs-on: ubuntu-latest
     steps:
@@ -134,5 +72,25 @@ jobs:
           git -C v3state config user.name "github-actions[bot]"
           git -C v3state config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git -C v3state commit -m "automation: v3 watchdog reconciliation $(date -u +%Y%m%dT%H%M%SZ) [skip ci]"
-          git -C v3state pull --rebase origin main
-          git -C v3state push origin HEAD:main
+
+          pushed=0
+          for attempt in 1 2 3 4 5; do
+            git -C v3state fetch origin main
+            if ! git -C v3state rebase origin/main; then
+              git -C v3state rebase --abort || true
+              echo "Rebase conflict while persisting v3 reconciliation; refusing unsafe automatic conflict resolution." >&2
+              exit 1
+            fi
+            if git -C v3state push origin HEAD:main; then
+              pushed=1
+              break
+            fi
+            if [ "$attempt" -lt 5 ]; then
+              sleep $((attempt * 2))
+            fi
+          done
+
+          if [ "$pushed" -ne 1 ]; then
+            echo "Failed to persist v3 reconciliation after 5 optimistic push attempts." >&2
+            exit 1
+          fi

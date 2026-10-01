@@ -1,0 +1,30 @@
+{
+  "schema_version": "icarus-mcp-event-v1",
+  "event_id": "20261001T234200Z-nq-rth-trade-reference",
+  "at_utc": "2026-10-01T23:42:00Z",
+  "category": "INTEGRATION",
+  "status": "IMPLEMENTED",
+  "severity": "IMPORTANT",
+  "summary": "Extracted and preserved descriptive trade-level reference summaries from the already-supplied 2019→2026 NQ 20m RTH TradingView strategy reports. ICARUS Assurance now shows year-by-year and direction-level reference evidence, including the standard-report terminal open trade, without treating strategy reports as raw bars or authorizing execution.",
+  "surface": "ICARUS Assurance interface and private-history reference catalog",
+  "source": "CHATGPT_MCP",
+  "paths": [
+    "icarus_engine/private_history.py",
+    "icarus_engine/assurance-ui.js",
+    "tests_engine/test_private_reference_reports.py",
+    "automation_intelligence/private_history_catalog/nq_20m_rth_trade_reference_summary.json"
+  ],
+  "evidence": [
+    "standard-ledger:474-records+473-closed+1-open+sha256-e74071c5613cfa76849f93ef478c03f205eb82e9ba2e4c2bd73c7a0de871a537",
+    "ha-ledger:1204-records+1204-closed+sha256-0252ecdfd829564c25c363faff3ebbd0103af4cf4f017d660cd6f7106ef20df1",
+    "standard-terminal-open:#474+entry-2023-01-20T09:10+duration-19371-bars+report-pnl-766182",
+    "standard-reconciliation:closed-yearly-net-56954-vs-report-net-56950+4-dollar-open-trade-commission",
+    "yearly-reference:standard-2019-through-2023-closed-trades+ha-2019-through-2026-closed-trades",
+    "ui:yearly+direction+terminal-open-reference-tables",
+    "boundary:strategy-report-not-raw-bar-history+warmup_eligible-false",
+    "safety:execution_authorized-false+trading-permission-unchanged",
+    "latest-head:python-none-fix+trade-reference-derived-from-private-report"
+  ],
+  "execution_authorized": false,
+  "trading_execution_authorized": false
+}

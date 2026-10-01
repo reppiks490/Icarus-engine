@@ -32,6 +32,34 @@ KNOWN_PRIVATE_REPORTS: Dict[str, Dict[str, object]] = {
         "percent_profitable": 68.5,
         "max_drawdown_intrabar_usd": 80846.0,
         "report_rows": 949,
+        "trade_reference": {
+            "records_sha256": "e74071c5613cfa76849f93ef478c03f205eb82e9ba2e4c2bd73c7a0de871a537",
+            "records": 474, "closed": 473, "open": 1,
+            "first_entry_naive": "2019-02-07T08:50",
+            "last_closed_exit_naive": "2023-01-12T12:30",
+            "yearly": {
+                "2019": {"closed":116,"net_pnl_usd":13114.0,"win_rate_pct":67.2414},
+                "2020": {"closed":119,"net_pnl_usd":10564.0,"win_rate_pct":67.2269},
+                "2021": {"closed":128,"net_pnl_usd":20776.0,"win_rate_pct":67.1875},
+                "2022": {"closed":102,"net_pnl_usd":14180.0,"win_rate_pct":72.5490},
+                "2023": {"closed":8,"net_pnl_usd":-1680.0,"win_rate_pct":75.0}
+            },
+            "direction": {
+                "long": {"closed":206,"net_pnl_usd":26506.0,"win_rate_pct":66.9903},
+                "short": {"closed":267,"net_pnl_usd":30448.0,"win_rate_pct":69.6629}
+            },
+            "exit_signal_counts": {"L_SL":60,"L_TP1":73,"L_TP2":73,"Long":4,"S_SL":77,"S_TP1":93,"S_TP2":93},
+            "duration_bars": {"min":0,"median":1,"max":538,"mean":6.4672},
+            "terminal_open_trade": {
+                "trade_number":474,"direction":"long","entry_time_naive":"2023-01-20T09:10",
+                "entry_price":11474.75,"qty":2,"report_net_pnl_usd":766182.0,
+                "favorable_excursion_usd":783626.0,"adverse_excursion_usd":-964.0,
+                "duration_bars":19371,"commission_usd":4.0
+            },
+            "reconciliation_note": "Closed-trade yearly net sums to 56,954 USD while the report top-line net profit is 56,950 USD; the 4 USD difference equals the commission shown on the still-open terminal trade.",
+            "timestamp_semantics": "TradingView spreadsheet serial converted to timezone-naive ISO; timezone intentionally not inferred.",
+            "derived_from_private_report": True
+        },
         "classification": "EXACT_OPERATOR_STRATEGY_REPORT",
     },
     "dc3c1c3b32bc7da97bcbaa5bd207eb1d462d8104cc77b9f4e5cb75eef9425585": {
@@ -50,6 +78,31 @@ KNOWN_PRIVATE_REPORTS: Dict[str, Dict[str, object]] = {
         "percent_profitable": 92.69,
         "max_drawdown_intrabar_usd": 60844.0,
         "report_rows": 2409,
+        "trade_reference": {
+            "records_sha256": "0252ecdfd829564c25c363faff3ebbd0103af4cf4f017d660cd6f7106ef20df1",
+            "records": 1204, "closed": 1204, "open": 0,
+            "first_entry_naive": "2019-02-07T08:50",
+            "last_closed_exit_naive": "2026-09-28T10:10",
+            "yearly": {
+                "2019": {"closed":139,"net_pnl_usd":49460.0,"win_rate_pct":92.0863},
+                "2020": {"closed":157,"net_pnl_usd":107862.0,"win_rate_pct":94.2675},
+                "2021": {"closed":160,"net_pnl_usd":108082.0,"win_rate_pct":92.5},
+                "2022": {"closed":162,"net_pnl_usd":142754.0,"win_rate_pct":97.5309},
+                "2023": {"closed":156,"net_pnl_usd":98896.0,"win_rate_pct":93.5897},
+                "2024": {"closed":135,"net_pnl_usd":116706.0,"win_rate_pct":91.8519},
+                "2025": {"closed":162,"net_pnl_usd":178860.0,"win_rate_pct":90.1235},
+                "2026": {"closed":133,"net_pnl_usd":165032.0,"win_rate_pct":88.7218}
+            },
+            "direction": {
+                "long": {"closed":580,"net_pnl_usd":465002.0,"win_rate_pct":91.7241},
+                "short": {"closed":624,"net_pnl_usd":502650.0,"win_rate_pct":93.5897}
+            },
+            "exit_signal_counts": {"L_SL":30,"L_TP1":274,"L_TP2":274,"Long":8,"S_SL":28,"S_TP1":294,"S_TP2":294,"Short":2},
+            "duration_bars": {"min":0,"median":1.0,"max":353,"mean":3.9626},
+            "terminal_open_trade": None,
+            "timestamp_semantics": "TradingView spreadsheet serial converted to timezone-naive ISO; timezone intentionally not inferred.",
+            "derived_from_private_report": True
+        },
         "classification": "EXACT_OPERATOR_STRATEGY_REPORT",
     },
 }

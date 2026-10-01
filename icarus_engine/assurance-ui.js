@@ -264,6 +264,7 @@
         ${a.continuous_archive?.configured?`<button class="sm" data-assurance-job="continuous-history">Build continuous futures research archive</button>`:''}
       </div>
       <div class="small muted" style="margin:6px 0 10px">Research-only controls. They run isolated replays and never activate parameters, submit orders, or authorize execution. Saving a regression baseline always requires explicit confirmation.</div>
+      <div class="small"><b>Warm-up depth:</b> ${Number(a.warmup_loaded_bars??0).toLocaleString()} loaded / ${Number(a.warmup_target_bars??0).toLocaleString()} target · ${a.warmup_quality_gate?.status||"UNKNOWN"}</div>
       ${a.kind==="futures"?`<div class="small muted">Continuous archive input: ${a.continuous_archive?.configured?"configured ("+(a.continuous_archive?.contract_files?.length||0)+" contracts)":"not configured"} · expected under ${esc(a.continuous_archive?.root||"history/contracts/<SYMBOL>")}.</div>`:""}
       ${jobHtml(asset)}
       ${recoveryHtml(a)}

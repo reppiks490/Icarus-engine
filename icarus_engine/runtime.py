@@ -43,6 +43,7 @@ from .assurance import gate_attribution
 from .assurance_v3 import ParityMonitor, SessionShadow, execution_stress, roll_provenance
 from .observability import explain_decision, CounterfactualTracker, ProviderHealth, ReplayCheckpointLedger, DecisionTrace
 from .research_extensions import trade_breakdown
+from .bar_cache import BarCache, merge_bars
 
 
 def _clean(x: Any) -> Any:
@@ -328,6 +329,7 @@ class AssetRunner:
         secondary = "kraken" if self.spec.feed == "coinbase" else None
         self.provider_health = ProviderHealth([p for p in (self.spec.feed, secondary) if p])
         self.replay_ledger: Optional[ReplayCheckpointLedger] = None
+        self.bar_cache: Optional[BarCache] = None
         self.decision_trace = DecisionTrace()
 
     # ── engine construction (also used by re-warm) ──
@@ -484,6 +486,9 @@ class AssetRunner:
         if self.replay_ledger is None:
             ledger_path = os.path.join(self.base_dir, "state", "replay", f"{self.symbol}_{self.chart_minutes}m.json")
             self.replay_ledger = ReplayCheckpointLedger(ledger_path)
+        if self.bar_cache is None:
+            cache_path = os.path.join(self.base_dir, "state", "cache", "bars.sqlite3")
+            self.bar_cache = BarCache(cache_path)
         span = self.cfg.warmup_bars * self.chart_minutes * 60
         if not self.cal.open_24_7:
             if getattr(self.cal, "session", "eth") == "rth":  # ~20 bars per trading day (09:30-16:15 ET), 5 days a week
@@ -582,8 +587,12 @@ class AssetRunner:
             if key not in cache:
                 cache[key] = cb.candles(self.spec.ticker, g, T_w - depth, T_w)
             self._feed_deep([m], cache[key], g // 60)
-        ones = cb.candles(self.spec.ticker, 60, T_w, now - 60)
-        self.journal.log("INFO", f"[{self.symbol}] {len(ones)} one-minute candles fetched; replaying")
+        fresh_ones = cb.candles(self.spec.ticker, 60, T_w, now - 60)
+        cached_ones = self.bar_cache.load(self.symbol, 1, T_w, now - 60) if self.bar_cache is not None else []
+        ones = merge_bars(cached_ones, fresh_ones)
+        if self.bar_cache is not None:
+            self.bar_cache.put_many(self.symbol, 1, fresh_ones, source=f"{self.spec.feed}:{self.spec.ticker}")
+        self.journal.log("INFO", f"[{self.symbol}] persistent cache {len(cached_ones)} + provider {len(fresh_ones)} one-minute candles => {len(ones)} replay bars")
         for b in ones:
             self.on_sub_bar(b, 1, live=False)
 
@@ -606,9 +615,16 @@ class AssetRunner:
         fives_deep = y.candles(tki, 300, max(T_w - 20 * 86400, now - 59 * 86400), T_w)
         self._feed_deep([m for m in self.chains if 5 <= m < 15 and m % 5 == 0], fives_deep, 5)
         one_from = max(T_w, now - 29 * 86400)
-        fives = y.candles(tki, 300, T_w, one_from) if one_from > T_w else []
-        ones = self._closed_only(y.candles(tki, 60, one_from, now), tki)
-        self.journal.log("INFO", f"[{self.symbol}] deep {len(daily)}d/{len(hourly)}h/{len(q15)}x15m/{len(fives_deep)}x5m; {len(fives)} five-minute + {len(ones)} one-minute sub-bars; replaying")
+        fresh_fives = y.candles(tki, 300, T_w, one_from) if one_from > T_w else []
+        fresh_ones = self._closed_only(y.candles(tki, 60, one_from, now), tki)
+        cached_fives = self.bar_cache.load(self.symbol, 5, T_w, one_from) if self.bar_cache is not None and one_from > T_w else []
+        cached_ones = self.bar_cache.load(self.symbol, 1, one_from, now) if self.bar_cache is not None else []
+        fives = merge_bars(cached_fives, fresh_fives)
+        ones = merge_bars(cached_ones, fresh_ones)
+        if self.bar_cache is not None:
+            self.bar_cache.put_many(self.symbol, 5, fresh_fives, source=f"{self.spec.feed}:{tki}")
+            self.bar_cache.put_many(self.symbol, 1, fresh_ones, source=f"{self.spec.feed}:{tki}")
+        self.journal.log("INFO", f"[{self.symbol}] deep {len(daily)}d/{len(hourly)}h/{len(q15)}x15m/{len(fives_deep)}x5m; cache/provider merged to {len(fives)} five-minute + {len(ones)} one-minute sub-bars; replaying")
         for b in fives:
             self.on_sub_bar(b, 5, live=False)
         for b in ones:
@@ -640,6 +656,8 @@ class AssetRunner:
                 except (TypeError, ValueError):
                     continue
         rows.sort(key=lambda b: b.ts)
+        if self.bar_cache is not None:
+            self.bar_cache.put_many(self.symbol, self.chart_minutes, rows, source=f"csv:{os.path.basename(path)}")
         self.journal.log("INFO", f"[{self.symbol}] history/{os.path.basename(path)}: {len(rows)} chart bars ({time.strftime('%Y-%m-%d', time.gmtime(rows[0].ts)) if rows else '-'} → {time.strftime('%Y-%m-%d', time.gmtime(rows[-1].ts)) if rows else '-'}); chart bars come from TradingView, HTF chains built from them")
         for b in rows:
             self.on_sub_bar(b, self.chart_minutes, live=False)
@@ -650,6 +668,8 @@ class AssetRunner:
                 ones = self.feed.candles(self.spec.ticker, 60, max(tail_from, now - 29 * 86400), now)
                 if self.spec.feed == "yahoo":
                     ones = self._closed_only(ones, self.spec.ticker)
+                if self.bar_cache is not None:
+                    self.bar_cache.put_many(self.symbol, 1, ones, source=f"{self.spec.feed}:{self.spec.ticker}")
                 for b in ones:
                     self.on_sub_bar(b, 1, live=False)
             except Exception as ex:
@@ -765,7 +785,10 @@ class AssetRunner:
         else:
             self.provider_health.ok(self.spec.feed)
         closed_before = feed_now if self.spec.feed == "yahoo" else now - 5      # Coinbase is realtime: a minute is closed 5 s after its end
-        new = [b for b in bars if (self.last_sub_ts is None or b.ts > self.last_sub_ts) and b.ts + 60 <= closed_before]
+        highwater = max(self.last_sub_ts or -1, self.last_raw_sub_ts or -1)
+        new = [b for b in bars if b.ts > highwater and b.ts + 60 <= closed_before]
+        if self.bar_cache is not None:
+            self.bar_cache.put_many(self.symbol, 1, new, source=f"{self.spec.feed}:{self.live_ticker if self.spec.feed == 'yahoo' else self.spec.ticker}")
         for b in new:
             self.on_sub_bar(b, 1, live=True)
         with self.lock:
@@ -898,6 +921,7 @@ class AssetRunner:
             "bar_age": (time.time() - self.last_bar_wall) if self.last_bar_wall else None,
             "bar_index": self.bar_index, "warmup_bars_loaded": self.bar_index + 1, "warmup_bars_target": self.cfg.warmup_bars,
             "raw_subbars_cached": len(self.raw_subbars), "active_session_subbars_cached": len(self.subbars),
+            "persistent_bar_cache": self.bar_cache.stats(self.symbol) if self.bar_cache is not None else {"asset":self.symbol,"series":[],"stores_execution_state":False,"execution_authorized":False},
             "warmup_source": getattr(self, "warmup_source", None), "warmup_quality": getattr(self, "warmup_quality", None),
             "warmup_quality_gate": getattr(self, "warmup_quality_gate", None),
             "warmup_readiness": ((self.warmup_quality_gate or {}).get("status") if getattr(self, "warmup_quality_gate", None)

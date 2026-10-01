@@ -101,3 +101,9 @@ def test_runtime_targets_5000_real_warmup_bars_and_deepest_history():
     assert '"warmup_loaded_bars": len(self.bars)' in text
     assert "Warm-up depth:" in ui
     assert "loaded /" in ui
+
+
+def test_checkpoint_supports_bare_filename(tmp_path,monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    save("checkpoint.json",symbol="NQ",last_bar_ts=1,state={"x":2},provenance={"sha":"b"})
+    assert load("checkpoint.json")["state"]["x"]==2

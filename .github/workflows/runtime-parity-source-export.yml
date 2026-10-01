@@ -1,0 +1,38 @@
+name: runtime-parity-source-export
+
+on:
+  push:
+    branches:
+      - chatgpt/runtime-parity-source-export-20261001
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Package source tree
+        shell: bash
+        run: |
+          python - <<'PY'
+          import os, zipfile
+          root='.'
+          skip={'.git','.pytest_cache','__pycache__','.mypy_cache'}
+          with zipfile.ZipFile('icarus-source.zip','w',zipfile.ZIP_DEFLATED) as z:
+              for dp,dn,fns in os.walk(root):
+                  dn[:] = [d for d in dn if d not in skip]
+                  for fn in fns:
+                      p=os.path.join(dp,fn)
+                      if p.startswith('./.git/'): continue
+                      if p=='./icarus-source.zip': continue
+                      arc=p[2:] if p.startswith('./') else p
+                      z.write(p,arc)
+          print(os.path.getsize('icarus-source.zip'))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: icarus-source
+          path: icarus-source.zip
+          if-no-files-found: error

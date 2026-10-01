@@ -139,3 +139,18 @@ def test_missing_repository_evidence_is_safe(tmp_path: Path) -> None:
     assert status["restored_five"]["present"] is False
     assert status["events"] == []
     assert status["execution_authorized"] is False
+
+
+def test_dashboard_and_server_wire_read_only_mcp_panel() -> None:
+    root = Path(__file__).resolve().parents[1] / "icarus_engine"
+    dashboard = (root / "dashboard.html").read_text(encoding="utf-8")
+    server = (root / "server.py").read_text(encoding="utf-8")
+    ui = (root / "mcp-ui.js").read_text(encoding="utf-8")
+
+    assert '<script src="/mcp-ui.js"></script>' in dashboard
+    assert 'data-v="mcp">MCP / Automation</span>' in dashboard
+    assert "view === 'mcp'" in dashboard
+    assert 'p.path == "/mcp-ui.js"' in server
+    assert 'p.path == "/api/mcp/control"' in server
+    assert "/admin/" not in ui
+    assert "https://" not in ui

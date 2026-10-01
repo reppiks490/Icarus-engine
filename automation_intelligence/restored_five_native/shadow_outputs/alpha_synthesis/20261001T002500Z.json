@@ -1,0 +1,58 @@
+{
+  "api_credential_required": false,
+  "canonical_state_mutated": false,
+  "deterministic_facts": {
+    "execution_authorized": false,
+    "expected_RUN_ID": "alpha-synthesis-20261001T002500Z",
+    "fallback_only": true,
+    "observed_worker_RUN_ID": "alpha-synthesis-20260930T112500Z",
+    "observed_worker_RUN_STATUS": "FINALIZATION_VERIFIED",
+    "run_id_match": false,
+    "slot_status": "FALLBACK_LIVENESS_ONLY",
+    "substantive_work_claimed": false,
+    "worker_receipt_status": "WORKER_RECEIPT_MISSING"
+  },
+  "execution_authorized": false,
+  "inference_backend": "local_gguf",
+  "input_path": "/home/runner/work/Icarus-engine/Icarus-engine/automation_intelligence/restored_five_native/receipts/alpha_synthesis/20261001T002500Z.json",
+  "input_sha256": "10777ab91254e30251041df1fdcb26c0da77b6f5a295f6b0e3b052220828f1d6",
+  "lane": "alpha_synthesis",
+  "llama_cpp_sha256": "98020bb5a2a9e0284110e5c110158e18dca984a547d5afde1631fef0f03dd826",
+  "model": "Qwen/Qwen3-1.7B-GGUF@90862c4:Q8_0",
+  "model_advisory": {
+    "conflicts": [
+      "The observed_worker_RUN_ID is older than the expected_RUN_ID",
+      "run_id_match is false",
+      "slot_status is FALLBACK_LIVENESS_ONLY"
+    ],
+    "data_gaps": [
+      "substantive_work_claimed is false",
+      "worker_receipt_status is WORKER_RECEIPT_MISSING"
+    ],
+    "execution_authorized": false,
+    "non_authoritative": true,
+    "summary": "Fallback-only with run ID mismatch and missing receipts."
+  },
+  "model_sha256": "061b54daade076b5d3362dac252678d17da8c68f07560be70818cace6590cb1a",
+  "observed_at_utc": "2026-10-01T02:28:10Z",
+  "paid_api_call_made": false,
+  "payload": {
+    "conflicts": [
+      "OBSERVED_WORKER_RUN_ID_DIFFERS_FROM_EXPECTED"
+    ],
+    "data_gaps": [
+      "FALLBACK_LIVENESS_ONLY",
+      "WORKER_RECEIPT_NOT_VERIFIED:WORKER_RECEIPT_MISSING",
+      "SUBSTANTIVE_WORK_NOT_PROVEN"
+    ],
+    "execution_authorized": false,
+    "lane": "alpha_synthesis",
+    "net_new_delta": "SHADOW_ASSESSMENT_ONLY",
+    "summary": "Fallback-only durability receipt; worker completion is not verified. Observed RUN_ID differs from expected. Substantive work is not proven by this durability evidence."
+  },
+  "response_id": "local-89834823cdbf63ef25f4c0b3",
+  "response_status": "completed",
+  "run_origin": "GITHUB_NATIVE_LOCAL_GGUF_SHADOW",
+  "schema_version": "restored-five-local-shadow-v2",
+  "substantive_research_source": "DURABLE_REPO_EVIDENCE_ONLY"
+}

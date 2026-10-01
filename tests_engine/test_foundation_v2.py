@@ -98,7 +98,7 @@ def test_runtime_targets_5000_real_warmup_bars_and_deepest_history():
     assert "self.warmup_target_bars = max(5000" in text
     assert "selected deepest compatible" in text
     assert "assess_quality(quality, self.warmup_target_bars)" in text
-    assert '"warmup_loaded_bars": len(self.bars)' in text
+    assert '"warmup_loaded_bars": self.bar_index + 1' in text
     assert "Warm-up depth:" in ui
     assert "loaded /" in ui
 

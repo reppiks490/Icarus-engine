@@ -487,6 +487,62 @@ def monitor_receipt_horizon(
         eligible_slots(now, minute, grace_minutes, monitor_after, horizon_hours),
     )
 
+def recover_stabilization_receipt(
+    repo_root: Path,
+    lane: str,
+    lane_root: str,
+    scheduler_id: str,
+    minute: int,
+    run_prefix: str,
+    grace_minutes: int,
+    monitor_after: datetime | None,
+    now: datetime,
+) -> list[str]:
+    """Persist a truthful durability-only fallback for the latest missed slot.
+
+    This does not claim the ChatGPT worker executed and never fabricates evidence.
+    It is safe only during stabilization, where the worker contract itself performs
+    no substantive research before/after the durability receipt.
+    """
+    slot = expected_slot(now, minute, grace_minutes)
+    if monitor_after is not None and slot < monitor_after:
+        return []
+
+    expected_run_id = f"{run_prefix}-{slot.strftime('%Y%m%dT%H%M%SZ')}"
+    root = repo_root / lane_root
+    finalization_path = root / "finalization_state.json"
+    current = read_json(finalization_path)
+    current_run_id = current.get("RUN_ID")
+
+    if canonical_receipt_valid(current, expected_run_id):
+        return []
+
+    ordering = compare_run_ids(current_run_id, expected_run_id)
+    if ordering == 1:
+        return []
+
+    write_json(
+        finalization_path,
+        {
+            "schema_version": "scheduler-finalization-v5.7",
+            "RUN_ID": expected_run_id,
+            "RUN_STATUS": "RUN_PERSISTED",
+            "completion_semantics": "DURABILITY_RECEIPT_ONLY",
+            "history_mode": "git_commit_finalization",
+            "work_status": "WATCHDOG_FALLBACK_PERSISTED",
+            "receipt_origin": "github_watchdog_stabilization_fallback",
+            "worker_execution_observed": False,
+            "scheduler_id": scheduler_id,
+            "payload": {
+                "result": "SCHEDULER_WORKER_RECEIPT_MISSED",
+                "NEXT": "No substantive evidence was produced; the stabilization slot was durably recovered by the repository watchdog.",
+            },
+            "execution_authorized": False,
+        },
+    )
+    return [str(finalization_path.relative_to(repo_root))]
+
+
 def evidence_deferred_by_receipt(receipt: dict) -> bool:
     payload = receipt.get("payload") if isinstance(receipt.get("payload"), dict) else {}
     next_text = str(payload.get("NEXT", "")).lower()
@@ -664,6 +720,7 @@ def main() -> None:
     parser.add_argument("--evidence-grace-minutes", type=int, default=20)
     parser.add_argument("--monitor-after")
     parser.add_argument("--horizon-hours", type=int, default=48)
+    parser.add_argument("--stabilization-fallback", action="store_true")
     parser.add_argument(
         "--lane",
         action="append",
@@ -710,6 +767,20 @@ def main() -> None:
                     args.horizon_hours,
                 )
             )
+            if args.stabilization_fallback:
+                changed.extend(
+                    recover_stabilization_receipt(
+                        repo_root,
+                        lane,
+                        lane_root,
+                        scheduler_id,
+                        minute,
+                        run_prefix,
+                        args.monitor_grace_minutes,
+                        monitor_after,
+                        now,
+                    )
+                )
             changed.extend(
                 monitor_evidence_horizon(
                     repo_root,

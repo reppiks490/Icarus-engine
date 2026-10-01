@@ -50,3 +50,21 @@ def test_decision_trace_attributes_close_to_regime():
     assert v["closed_pieces"]==1
     assert v["by_regime"]["STRONG"]["net_profit"]==65
     assert v["by_regime"]["STRONG"]["win_rate"]==1
+
+
+def test_decision_trace_vote_attribution_is_cooccurrence_not_causal():
+    from types import SimpleNamespace
+    t=DecisionTrace()
+    p=SimpleNamespace(placed_bar=4,seq=8,id="Long",direction=1,qty=1,limit=None)
+    decision={"status":"CLEAR","blockers":[],"regime":"trend",
+              "votes":[{"name":"A","l":True,"s":False,"w":1.2},{"name":"B","l":True,"s":True,"w":0.8}]}
+    t.capture(100,4,[p],decision,"abc")
+    f=SimpleNamespace(kind="entry",entry_id="Long",ts=120,bar=5,price=100.0,qty=1,side="buy")
+    t.record_fill(f)
+    close=SimpleNamespace(entry_id="Long",entry_ts=120,exit_ts=180,exit_price=101.0,qty=1,profit=20.0,
+                          exit_comment="TP",runup=25.0,drawdown=-5.0,bars=3)
+    t.record_close(close)
+    v=t.view()
+    assert v["by_vote_cooccurrence"]["A"]["net_profit"]==20.0
+    assert v["by_vote_cooccurrence"]["B"]["pieces"]==1
+    assert "co-occurrence" in v["attribution_caveat"].lower()

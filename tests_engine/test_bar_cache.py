@@ -1,5 +1,5 @@
 from pathlib import Path
-from icarus_engine.bar_cache import BarCache, merge_bars
+from icarus_engine.bar_cache import BarCache, merge_bars, merge_source_aware
 from icarus_engine.pine.timeframe import Bar
 
 
@@ -48,3 +48,25 @@ def test_bar_cache_records_provider_revisions(tmp_path):
     rr=c.recent_revisions("NQ")
     assert rr[0]["old_source"]=="provider-a" and rr[0]["new_source"]=="provider-b"
     assert rr[0]["old_close"]==1.5 and rr[0]["new_close"]==1.75
+
+
+def test_bar_cache_protects_cross_contract_timestamp(tmp_path):
+    p=tmp_path/"state"/"cache"/"bars.sqlite3"
+    c=BarCache(str(p))
+    old=Bar(100,100,102,99,101,10)
+    new=Bar(100,110,112,109,111,20)
+    c.put_many("NQ",1,[old],source="yahoo:NQH26.CME")
+    c.put_many("NQ",1,[new],source="yahoo:NQM26.CME")
+    got=c.load("NQ",1,0,200)
+    assert got[0].c==101
+    rec=c.load_records("NQ",1,0,200)
+    merged,protected=merge_source_aware(rec,[new],"yahoo:NQM26.CME")
+    assert protected==1 and merged[0].c==101
+    assert c.stats("NQ")["revisions"]["price"]>=1
+
+def test_same_source_refresh_can_correct_cached_bar(tmp_path):
+    p=tmp_path/"state"/"cache"/"bars.sqlite3"
+    c=BarCache(str(p))
+    c.put_many("NQ",1,[Bar(100,100,102,99,101,10)],source="yahoo:NQH26.CME")
+    c.put_many("NQ",1,[Bar(100,100,103,99,102,11)],source="yahoo:NQH26.CME")
+    assert c.load("NQ",1,0,200)[0].c==102

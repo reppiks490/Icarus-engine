@@ -42,7 +42,7 @@ from .strategy.meta import load_meta
 from .advisory import MAX_BODY_BYTES, strict_json
 from .research_service import ResearchWorkspace
 from .mcp_control import MCPControlPlane
-from .comparison_jobs import start_matrix as start_session_matrix, start_determinism, start_robustness, get_job as get_comparison_job
+from .comparison_jobs import start_matrix as start_session_matrix, start_determinism, start_robustness, start_live_replay_parity, get_job as get_comparison_job
 from .regression_jobs import start as start_regression, get as get_regression
 
 
@@ -178,6 +178,8 @@ def serve(port: Portfolio, http_port: int = 8791, token: str = "icarus", start: 
                         return self._json(200, get_comparison_job(p.path.rsplit("/", 1)[1]))
                     if p.path.startswith("/api/research/robustness/"):
                         return self._json(200, get_comparison_job(p.path.rsplit("/", 1)[1]))
+                    if p.path.startswith("/api/research/live-replay-parity/"):
+                        return self._json(200, get_comparison_job(p.path.rsplit("/", 1)[1]))
                     if p.path.startswith("/api/research/regression/"):
                         return self._json(200, get_regression(p.path.rsplit("/", 1)[1]))
                     if p.path.startswith("/api/research/proposals/"):
@@ -297,6 +299,11 @@ def serve(port: Portfolio, http_port: int = 8791, token: str = "icarus", start: 
                         raise ValueError("robustness requires asset and optional fields/fraction")
                     job_id = start_robustness(port, asset, body.get("fields"), body.get("fraction", 0.10))
                     return self._json(200, {"ok": True, "job": job_id, "note": f"local robustness scan {asset} started", "execution_authorized": False})
+                if p.path == "/admin/research/live-replay-parity":
+                    if set(body) != {"asset"}:
+                        raise ValueError("live/replay parity audit requires asset only")
+                    job_id = start_live_replay_parity(port, asset)
+                    return self._json(200, {"ok": True, "job": job_id, "note": f"live/replay parity audit {asset} started", "execution_authorized": False})
                 if p.path == "/admin/research/regression":
                     if not {"asset","mode"} <= set(body) or set(body) - {"asset","mode","confirm"}:
                         raise ValueError("regression requires asset, mode and optional confirm")

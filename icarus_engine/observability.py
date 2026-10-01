@@ -99,3 +99,29 @@ class ReplayCheckpointLedger:
         return {"checkpoints":len(self.entries),"divergences_this_run":self.divergences,
                 "last_divergence":self.last_divergence,"restore_enabled":False,
                 "mode":"EQUIVALENCE_AUDIT_ONLY","execution_authorized":False}
+
+
+class DecisionTrace:
+    """Bounded causal trace from strategy decision -> pending entry -> fill."""
+    def __init__(self,maxlen=200):
+        self.rows=deque(maxlen=maxlen); self._seen=set()
+    def capture(self,ts:int,bar_index:int,pending_entries,decision:Dict[str,Any],digest:Optional[str]):
+        for p in pending_entries:
+            if getattr(p,"placed_bar",None)!=bar_index: continue
+            seq=int(getattr(p,"seq",-1))
+            if seq in self._seen: continue
+            self._seen.add(seq)
+            self.rows.append({"intent_seq":seq,"decision_ts":int(ts),"decision_bar":int(bar_index),
+                              "entry_id":str(getattr(p,"id","")),"direction":int(getattr(p,"direction",0)),
+                              "qty":int(getattr(p,"qty",0)),"limit":getattr(p,"limit",None),
+                              "decision_digest":digest,"decision":decision,"fill":None})
+    def record_fill(self,fill):
+        if getattr(fill,"kind",None)!="entry": return
+        for row in reversed(self.rows):
+            if row["fill"] is None and row["entry_id"]==getattr(fill,"entry_id",None):
+                row["fill"]={"ts":int(fill.ts),"bar":int(fill.bar),"price":float(fill.price),"qty":int(fill.qty),
+                             "side":str(fill.side)}
+                break
+    def view(self,limit=20):
+        rows=list(self.rows)[-max(1,int(limit)):]
+        return {"count":len(self.rows),"recent":rows,"mode":"AUDIT_ONLY","execution_authorized":False}

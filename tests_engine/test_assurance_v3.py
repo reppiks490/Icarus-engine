@@ -22,3 +22,17 @@ def test_roll_provenance_is_explicit():
     r=ContractRoll("NQ",date(2026,10,1)); v=roll_provenance(r)
     assert v["current"].startswith("NQ") and v["next"].startswith("NQ")
     assert v["rule"]=="last-completed-session-volume" and v["execution_authorized"] is False
+
+def test_runtime_wires_assurance_without_order_authority():
+    from pathlib import Path
+    text=Path("icarus_engine/runtime.py").read_text(encoding="utf-8")
+    for token in ("ParityMonitor()","SessionShadow()","parity_monitor.observe","execution_stress(","roll_provenance("):
+        assert token in text
+    mod=Path("icarus_engine/assurance_v3.py").read_text(encoding="utf-8")
+    assert ".entry(" not in mod and ".exit(" not in mod and ".close(" not in mod
+
+def test_dashboard_labels_assurance_shadow_only():
+    from pathlib import Path
+    text=Path("icarus_engine/dashboard.html").read_text(encoding="utf-8")
+    assert "Assurance · shadow only" in text
+    assert "cannot submit or modify orders" in text

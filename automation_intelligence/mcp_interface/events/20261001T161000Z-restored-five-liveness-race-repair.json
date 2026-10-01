@@ -1,0 +1,24 @@
+{
+  "schema_version": "icarus-mcp-event-v1",
+  "event_id": "20261001T161000Z-restored-five-liveness-race-repair",
+  "at_utc": "2026-10-01T16:10:00Z",
+  "category": "REPAIR",
+  "status": "IMPLEMENTED",
+  "severity": "IMPORTANT",
+  "summary": "Repaired the restored-five native-liveness persistence race observed after PR #34 merged. The workflow now retries fetch/rebase/push up to five times when main moves concurrently, while failing closed on rebase conflicts and preserving immutable receipt-only scope.",
+  "surface": "GitHub-native restored-five liveness persistence and ICARUS MCP control provenance",
+  "source": "CHATGPT_MCP",
+  "paths": [
+    ".github/workflows/restored-five-native-liveness.yml",
+    "tools/test_restored_five_native_liveness.py"
+  ],
+  "evidence": [
+    "failure-run:36889683105+remote-ref-moved-during-push",
+    "repair:five-optimistic-fetch-rebase-push-attempts",
+    "safety:rebase-conflict-aborts+no-force-push+receipt-namespace-only",
+    "test:workflow-static-guard-for-retry-contract",
+    "execution_authorized-false"
+  ],
+  "execution_authorized": false,
+  "trading_execution_authorized": false
+}

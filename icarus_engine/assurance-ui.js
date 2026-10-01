@@ -76,13 +76,15 @@
   }
 
   function historyShardHtml(a) {
-    const used=a?.warmup_shards || [], ignored=a?.warmup_ignored_session_shards || [], stitch=a?.warmup_stitch || null;
-    if (!used.length && !ignored.length && !stitch) return "";
+    const used=a?.warmup_shards || [], ignored=a?.warmup_ignored_session_shards || [], stitch=a?.warmup_stitch || null, priv=a?.warmup_private_history || null;
+    if (!used.length && !ignored.length && !stitch && !priv) return "";
     const status=stitch?.status || (stitch?.conflicts===0 ? "STITCHED" : "—");
+    const privateLine=priv?`<div class="small pos"><b>Private exact source:</b> ${esc(priv.classification||'EXACT_OPERATOR_HISTORY')} · ${esc(priv.display_name||'validated export')} · SHA-256 ${esc((priv.sha256||'').slice(0,16))}… · ${Number(priv.rows||0).toLocaleString()} rows · ${priv.first_ts?dtm(priv.first_ts):'—'} → ${priv.last_ts?dtm(priv.last_ts):'—'}</div>`:'';
     return `<details class="group"><summary>Historical shard provenance <span class="cnt">${used.length} used</span></summary>
       <div class="small"><b>Session:</b> ${esc(a.session_mode||'—')} · <b>status:</b> ${esc(status)} · <b>overlaps:</b> ${stitch?.overlaps??0} · <b>conflicts:</b> ${stitch?.conflicts??0}</div>
+      ${privateLine}
       <div class="small muted" style="margin-top:5px"><b>Used:</b> ${used.length?used.map(esc).join(' · '):'none'}<br><b>Ignored session-mismatch:</b> ${ignored.length?ignored.map(esc).join(' · '):'none'}</div>
-      <div class="small muted">RTH and ETH labelled shards are never silently combined. Conflicting OHLC overlaps are refused rather than arbitrarily selected.</div>
+      <div class="small muted">Raw licensed files remain outside Git. RTH and ETH labelled shards are never silently combined. Conflicting OHLC overlaps are refused rather than arbitrarily selected.</div>
     </details>`;
   }
 

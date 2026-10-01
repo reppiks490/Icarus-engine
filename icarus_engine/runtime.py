@@ -38,7 +38,7 @@ from .strategy.inputs import Inputs, crypto_profile
 from .strategy.meta import load_meta
 from .strategy.pulse import PulseStrategy
 from .strategy.security import TFChain
-from .history_v2 import load_csv as load_history_csv, write_manifest as write_history_manifest
+from .history_v2 import load_csv as load_history_csv, write_manifest as write_history_manifest, assess_quality
 from .assurance import gate_attribution
 from .assurance_v3 import ParityMonitor, SessionShadow, execution_stress, roll_provenance
 from .observability import explain_decision, CounterfactualTracker, ProviderHealth, ReplayCheckpointLedger, DecisionTrace
@@ -515,6 +515,7 @@ class AssetRunner:
         hist = exact_hist if os.path.exists(exact_hist) else bundled_hist
         self.warmup_source = None
         self.warmup_quality = None
+        self.warmup_quality_gate = None
         if hist:
             self.warmup_source = os.path.relpath(hist, self.base_dir)
             # Validate the exact source independently before replay.  Replay remains
@@ -522,6 +523,7 @@ class AssetRunner:
             try:
                 _, quality = load_history_csv(hist, self.chart_minutes * 60, getattr(self.cal, "session", "UNKNOWN"))
                 self.warmup_quality = quality.to_dict()
+                self.warmup_quality_gate = assess_quality(quality, self.cfg.warmup_bars)
                 manifest = os.path.join(self.base_dir, "state", "history", f"{self.symbol}_{self.chart_minutes}m.json")
                 write_history_manifest(manifest, [quality], quality.bars_valid)
                 if quality.rejected:
@@ -897,7 +899,9 @@ class AssetRunner:
             "bar_index": self.bar_index, "warmup_bars_loaded": self.bar_index + 1, "warmup_bars_target": self.cfg.warmup_bars,
             "raw_subbars_cached": len(self.raw_subbars), "active_session_subbars_cached": len(self.subbars),
             "warmup_source": getattr(self, "warmup_source", None), "warmup_quality": getattr(self, "warmup_quality", None),
-            "warmup_readiness": ("READY" if (self.bar_index + 1) >= self.cfg.warmup_bars else ("DEGRADED" if self.warm else "WARMING")),
+            "warmup_quality_gate": getattr(self, "warmup_quality_gate", None),
+            "warmup_readiness": ((self.warmup_quality_gate or {}).get("status") if getattr(self, "warmup_quality_gate", None)
+                                 else ("READY" if (self.bar_index + 1) >= self.cfg.warmup_bars else ("DEGRADED" if self.warm else "WARMING"))),
             "decision_attribution": gate_attribution(st),
             "parity": self.parity_monitor.view(), "session_shadow": self.session_shadow.view(),
             "decision_explanation": explain_decision(st), "counterfactuals": self.counterfactuals.view(),

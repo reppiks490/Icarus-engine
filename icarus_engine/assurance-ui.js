@@ -64,7 +64,7 @@
 
   function shadowDetailHtml(a) {
     let out="";
-    const cf=a?.counterfactuals, es=a?.execution_stress, ph=a?.provider_health, re=a?.replay_equivalence;
+    const cf=a?.counterfactuals, es=a?.execution_stress, ph=a?.provider_health, re=a?.replay_equivalence, cache=a?.persistent_bar_cache;
     if (cf) {
       const rows=Object.entries(cf.horizons||{}).map(([h,x]) =>
         `<tr><td>${esc(h)} bars</td><td>${x.n??0}</td><td>${x.mean_directional_return==null?'—':(Number(x.mean_directional_return)*100).toFixed(3)+'%'}</td><td>${x.positive_rate==null?'—':(Number(x.positive_rate)*100).toFixed(1)+'%'}</td></tr>`).join("");
@@ -77,6 +77,10 @@
     if (ph) {
       const rows=Object.entries(ph.providers||{}).map(([name,x])=>`<tr><td>${esc(name)}</td><td>${x.ok??0}</td><td>${x.fail??0}</td><td>${x.last_ok?new Date(x.last_ok*1000).toLocaleString():'—'}</td><td>${esc(x.last_error||'—')}</td></tr>`).join("");
       out += `<details class="group"><summary>Provider health · ${esc(ph.status||'UNKNOWN')}</summary><div class="scroll"><table><thead><tr><th>Provider</th><th>OK</th><th>Fail</th><th>Last OK</th><th>Last error</th></tr></thead><tbody>${rows}</tbody></table></div><div class="small muted">${ph.failover_configured?'Configured secondary is shown above.':'No secondary provider is configured for this feed.'}</div></details>`;
+    }
+    if (cache) {
+      const rr=cache.revisions||{}, rows=(a?.bar_cache_revisions||[]).map(x=>`<tr><td>${x.sub_minutes}m</td><td>${new Date(x.ts*1000).toLocaleString()}</td><td>${x.price_changed?'price':''}${x.price_changed&&x.volume_changed?' + ':''}${x.volume_changed?'volume':''}</td><td>${nfmt(x.old_close)} → ${nfmt(x.new_close)}</td><td>${esc(x.old_source||'—')} → ${esc(x.new_source||'—')}</td></tr>`).join("");
+      out += `<details class="group"><summary>Persistent bar cache <span class="cnt">${rr.total??0} revision(s)</span></summary><div class="small muted">Cache stores market observations only, never strategy/order/position state. Price revisions: ${rr.price??0} · volume revisions: ${rr.volume??0}.</div>${rows?`<div class="scroll"><table><thead><tr><th>TF</th><th>Bar</th><th>Changed</th><th>Close</th><th>Source</th></tr></thead><tbody>${rows}</tbody></table></div>`:''}</details>`;
     }
     if (re?.last_divergence) {
       out += `<details class="group" open><summary>Replay equivalence divergence</summary><div class="small neg">At ${esc(re.last_divergence.ts)} · expected ${esc((re.last_divergence.expected||'').slice(0,16))} · observed ${esc((re.last_divergence.observed||'').slice(0,16))}</div><div class="small muted">Evidence only. Executable strategy/order state is never restored from this ledger.</div></details>`;

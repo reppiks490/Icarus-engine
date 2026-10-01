@@ -64,7 +64,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          args=(--root . --event-name "$GITHUB_EVENT_NAME" --requested-lane "$REQUESTED_LANE")
+          args=(--root . --event-name "$GITHUB_EVENT_NAME" --requested-lane "$REQUESTED_LANE" --max-pending-slots 5)
           if [ -n "$REQUESTED_SLOT_UTC" ]; then
             args+=(--requested-slot-utc "$REQUESTED_SLOT_UTC")
           fi
@@ -100,8 +100,28 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "automation: github-native-ai ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT} [skip ci]"
-          git pull --rebase origin main
-          git push origin HEAD:main
+
+          pushed=0
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            if ! git rebase origin/main; then
+              git rebase --abort || true
+              echo "Rebase conflict while persisting v3 artifacts; refusing unsafe automatic conflict resolution." >&2
+              exit 1
+            fi
+            if git push origin HEAD:main; then
+              pushed=1
+              break
+            fi
+            if [ "$attempt" -lt 5 ]; then
+              sleep $((attempt * 2))
+            fi
+          done
+
+          if [ "$pushed" -ne 1 ]; then
+            echo "Failed to persist v3 artifacts after 5 optimistic push attempts." >&2
+            exit 1
+          fi
 
       - name: Fail if lane execution failed
         if: steps.lane.outcome == 'failure'

@@ -17,6 +17,13 @@
   const pct = v => v == null ? "—" : (Number(v) * 100).toFixed(1) + "%";
   const money = v => v == null ? "—" : (Number(v) >= 0 ? "+" : "") + Number(v).toLocaleString(undefined,{maximumFractionDigits:2});
 
+  function cacheHtml(a) {
+    const c=a?.persistent_bar_cache;
+    if (!c || !(c.series||[]).length) return '<div class="small muted">Persistent bar cache: empty / not initialized.</div>';
+    const rows=(c.series||[]).map(x => `<tr><td>${x.sub_minutes}m</td><td>${Number(x.bars||0).toLocaleString()}</td><td>${x.first_ts?dtm(x.first_ts):'—'}</td><td>${x.last_ts?dtm(x.last_ts):'—'}</td></tr>`).join("");
+    return `<details class="group"><summary>Persistent warm-up bar cache <span class="cnt">${(c.series||[]).reduce((s,x)=>s+(x.bars||0),0).toLocaleString()}</span></summary><div class="scroll"><table><thead><tr><th>Granularity</th><th>Bars</th><th>First</th><th>Last</th></tr></thead><tbody>${rows}</tbody></table></div><div class="small muted">Market observations only; no strategy, order, position or execution state is stored.</div></details>`;
+  }
+
   function breakdownHtml(a) {
     const b = a?.trade_breakdown;
     if (!b) return "";
@@ -126,6 +133,7 @@
       </div>
       <div class="small muted" style="margin:6px 0 10px">Research-only controls. They run isolated replays and never activate parameters, submit orders, or authorize execution. Saving a regression baseline always requires explicit confirmation.</div>
       ${jobHtml(asset)}
+      ${cacheHtml(a)}
       ${breakdownHtml(a)}`;
     if (host._icarusAssuranceHtml !== html) {
       host._icarusAssuranceHtml = html;

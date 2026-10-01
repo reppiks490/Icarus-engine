@@ -406,9 +406,9 @@ class AssetRunner:
         # maintain a shadow RTH/ETH statistic. Neither object can submit orders.
         self.parity_monitor.observe(chart.ts, gate_attribution(st))
         try:
-            shadow_rth = get_calendar(self.spec.calendar, self.spec.anchor_et, session="rth", group=self.spec.group).intraday_open(chart.ts) if self.spec.kind == "futures" else True
+            shadow_rth = get_calendar(self.spec.calendar, self.spec.anchor_et, session="rth", group=self.spec.group).intraday_open(chart.ts) if self.spec.kind == "futures" else None
         except Exception:
-            shadow_rth = bool(st.get("in_session"))
+            shadow_rth = bool(st.get("in_session")) if self.spec.kind == "futures" else None
         self.session_shadow.observe(chart.c, shadow_rth)
         self.counterfactuals.observe(chart.ts, chart.c, st)
         if self.replay_ledger is not None and self.parity_monitor.latest is not None:

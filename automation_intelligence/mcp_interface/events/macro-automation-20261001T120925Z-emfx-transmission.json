@@ -1,0 +1,68 @@
+{
+  "schema": "icarus-mcp-event-v1",
+  "event_id": "macro-automation-20261001T120925Z-emfx-transmission",
+  "category": "EVOLUTION",
+  "source": "MACRO_AUTOMATION",
+  "observed_at_utc": "2026-10-01T12:09:25Z",
+  "execution_authorized": false,
+  "net_new_delta": "Global duration/energy stress is now visibly transmitting into oil-importing Asian FX: Reuters reports bearish positioning across most emerging Asian currencies, INR at a two-month low, and pressure concentrated in energy importers while KRW/SGD/CNY show relative resilience.",
+  "paths": [
+    "macro/rates",
+    "macro/fx",
+    "macro/commodities",
+    "macro/index-risk",
+    "oracle",
+    "supermesh_x"
+  ],
+  "evidence": [
+    {
+      "type": "SOURCE_CLAIM",
+      "source": "Reuters",
+      "date": "2026-10-01",
+      "url": "https://www.reuters.com/world/asia-pacific/bears-maintain-grip-oil-importing-asian-currencies-crude-prices-bite-2026-10-01/",
+      "finding": "High oil prices and rising U.S. Treasury yields are pressuring oil-importing Asian currencies; bearish positioning is broad but not uniform."
+    },
+    {
+      "type": "FACT",
+      "source": "Reuters",
+      "date": "2026-10-01",
+      "url": "https://www.reuters.com/world/india/rupee-weaken-oil-us-yields-weigh-fading-fed-hike-bets-offer-no-relief-2026-10-01/",
+      "finding": "INR fell 0.5% to 96.3150/USD, a two-month low, as U.S. 10Y reached about 5.34% and Brent crossed $100."
+    },
+    {
+      "type": "FACT",
+      "source": "Reuters",
+      "date": "2026-10-01",
+      "url": "https://www.reuters.com/world/10-year-us-treasury-yield-hits-highest-since-2002-2026-10-01/",
+      "finding": "U.S. 10Y yield reached 5.342%, highest since early 2002."
+    }
+  ],
+  "affected_instruments": [
+    "NQ/MNQ",
+    "DXY/USD",
+    "US10Y/US30Y proxies",
+    "INR/USD",
+    "oil-importing Asian FX",
+    "Brent/WTI",
+    "GC/MGC",
+    "major equity indices"
+  ],
+  "conflicts": [
+    "Softer U.S. inflation/reduced immediate Fed-hike expectations coexist with stronger USD and extreme long yields.",
+    "Asian FX stress is heterogeneous: oil importers weaken while KRW, SGD and CNY show relative resilience."
+  ],
+  "unknown": [
+    "Persistence of the EM-FX transmission after the next U.S. payroll/inflation releases.",
+    "Causal weights among oil, U.S. yields, portfolio outflows and domestic policy responses."
+  ],
+  "confidence": "HIGH on observed cross-asset transmission; MEDIUM on persistence and causal decomposition.",
+  "next_decisive_check": "Test whether oil-importing Asian FX remains under pressure if U.S. 10Y stays above 5% and Brent near/above $100; compare with KRW/SGD/CNY resilience to determine whether the channel is energy-import sensitivity rather than generic USD beta.",
+  "oracle": {
+    "status": "MATERIAL_DELTA",
+    "finding": "Promote energy-import sensitivity × U.S. duration stress as a falsifiable cross-asset transmission hypothesis; do not treat broad USD strength as a uniform FX shock."
+  },
+  "supermesh_x": {
+    "status": "MATERIAL_DELTA",
+    "finding": "Reuters evidence cross-validates rates, oil and Asian-FX transmission while revealing useful heterogeneity; preserve country energy-balance exposure as routing/context metadata rather than collapsing Asian FX into one signal."
+  }
+}

@@ -27,7 +27,8 @@ def completion_status(*, warmup_loaded:int, warmup_target:int, warmup_gate:Dict[
                       warmup_source:str | None, warmup_stitch:Dict[str,Any] | None,
                       temporal:Dict[str,Any] | None, replay:Dict[str,Any] | None,
                       recovery:Dict[str,Any] | None, provider:Dict[str,Any] | None,
-                      continuous:Dict[str,Any] | None, kind:str, roll_mode:str) -> Dict[str,Any]:
+                      continuous:Dict[str,Any] | None, kind:str, roll_mode:str,
+                      replay_timeframes:Dict[str,Any] | None = None) -> Dict[str,Any]:
     checks:List[Dict[str,Any]]=[]
     hard=[]; warnings=[]
 
@@ -51,6 +52,17 @@ def completion_status(*, warmup_loaded:int, warmup_target:int, warmup_gate:Dict[
     if violations: hard.append("TEMPORAL_LOOKAHEAD_EVIDENCE")
     checks.append({"name":"temporal_integrity","status":"BLOCK" if violations else ("PASS" if t.get("status")=="PASS" else "PENDING"),
                    "violations":violations})
+
+    rtf=replay_timeframes or {}
+    rtf_status=str(rtf.get("status") or "NOT_EVALUATED")
+    rtf_blocked=[int(x) for x in (rtf.get("blocked_minutes") or [])]
+    if rtf_status=="BLOCKED":
+        hard.append("REPLAY_TIMEFRAME_COVERAGE_INCOMPLETE")
+    checks.append({"name":"replay_timeframe_coverage",
+                   "status":"BLOCK" if rtf_status=="BLOCKED" else ("PASS" if rtf_status=="READY" else "OPTIONAL"),
+                   "blocked_minutes":rtf_blocked,
+                   "requested_minutes":[int(x) for x in (rtf.get("requested_minutes") or [])],
+                   "window_start":rtf.get("window_start"),"window_end":rtf.get("window_end")})
 
     rp=replay or {}
     div=int(rp.get("divergences_this_run") or 0)

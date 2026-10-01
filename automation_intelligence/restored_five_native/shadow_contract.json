@@ -1,0 +1,25 @@
+{
+  "schema_version": "restored-five-shadow-contract-v2",
+  "execution_authorized": false,
+  "canonical_state_mutation_allowed": false,
+  "authoritative_sources": [
+    "automation_intelligence/restored_five_native/receipts/**",
+    "automation_intelligence/restored_five_native/late_verifications/**",
+    "deterministic_facts"
+  ],
+  "versions": {
+    "restored-five-local-shadow-v1": {
+      "status": "HISTORICAL_COMPATIBILITY",
+      "rule": "deterministic_facts are authoritative; payload summary may be machine-derived, but payload data_gaps/conflicts can contain model prose and MUST NOT be treated as authoritative.",
+      "model_output_authority": false
+    },
+    "restored-five-local-shadow-v2": {
+      "status": "CURRENT",
+      "rule": "payload summary, net_new_delta, data_gaps, conflicts and execution_authorized are machine-derived from durable source facts. Model prose is isolated under model_advisory and is never authoritative.",
+      "model_output_authority": false
+    }
+  },
+  "downstream_rule": "Prefer v2. For v1, use deterministic_facts plus immutable receipt/late-verification evidence and ignore model-derived payload conflicts/gaps for decisions.",
+  "substantive_work_rule": "Shadow artifacts never prove external research, trading edge, or production execution.",
+  "mutation_rule": "Shadow outputs and reconciliations are append-only evidence and may not rewrite worker canonical state."
+}

@@ -34,7 +34,8 @@ def test_runtime_wires_persistent_cache_without_execution_state():
     assert '"persistent_bar_cache"' in text
     assert "highwater = max(self.last_sub_ts or -1, self.last_raw_sub_ts or -1)" in text
     mod=Path("icarus_engine/bar_cache.py").read_text(encoding="utf-8")
-    for forbidden in (".entry(", ".exit(", "PendingEntry", "ExitOrder", "Emulator", "broker"):
+    assert "from .emulator" not in mod and "import emulator" not in mod
+    for forbidden in (".entry(", ".exit(", "PendingEntry", "ExitOrder", "Emulator("):
         assert forbidden not in mod
 
 

@@ -133,7 +133,7 @@
   }
 
   function jobHtml(asset) {
-    const d = jobs[key(asset,"determinism")], p = jobs[key(asset,"live-replay-parity")], r = jobs[key(asset,"robustness")], rm = jobs[key(asset,"robustness-map")],
+    const d = jobs[key(asset,"determinism")], p = jobs[key(asset,"live-replay-parity")], r = jobs[key(asset,"robustness")], rm = jobs[key(asset,"robustness-map")], wf = jobs[key(asset,"walkforward")],
           rb = jobs[key(asset,"regression-baseline")], rc = jobs[key(asset,"regression-check")], ch = jobs[key(asset,"continuous-history")];
     let out = "";
     if (d) {
@@ -171,6 +171,17 @@
         out += `<details class="group"><summary>Parameter neighborhood map · ${esc(rr.x_field)} × ${esc(rr.y_field)} <span class="cnt">${steps}×${steps}</span></summary>
           <div class="small muted">Cells show net P&L only as a descriptive surface. No optimum/winner is selected or activated.</div>
           <div class="scroll"><table><thead><tr><th>${esc(rr.y_field)} ↓ / ${esc(rr.x_field)} →</th>${xs.map(x=>`<th>${nfmt(x)}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div></details>`;
+      }
+    }
+    if (wf) {
+      if (wf.status === "running") out += `<div class="small muted">Walk-forward audit running · ${wf.progress||0}/${wf.total||"?"}</div>`;
+      else if (wf.status === "error") out += `<div class="small neg">Walk-forward audit: ${esc(wf.error||"error")}</div>`;
+      else if (wf.result) {
+        const rr=wf.result, rows=(rr.folds||[]).map(x=>`<tr><td>${x.fold}</td><td>${money(x.train?.net_profit)}</td><td>${money(x.test?.net_profit)}</td><td>${nfmt(x.test?.profit_factor)}</td><td>${money(x.test?.max_drawdown)}</td><td>${nfmt(x.test?.total_trades)}</td></tr>`).join('');
+        out += `<details class="group"><summary>Rolling walk-forward · baseline configuration <span class="cnt">${rr.folds?.length||0} folds</span></summary>
+          <div class="scroll"><table><thead><tr><th>Fold</th><th>Train net</th><th>OOS net</th><th>OOS PF</th><th>OOS max DD</th><th>OOS trades</th></tr></thead><tbody>${rows}</tbody></table></div>
+          <div class="small muted">Positive OOS folds ${rr.stability?.test_net_positive_folds??0}/${rr.folds?.length||0} · OOS net range ${money(rr.stability?.test_net_min)} to ${money(rr.stability?.test_net_max)}. ${esc(rr.note||'')}</div>
+        </details>`;
       }
     }
     if (rb?.result) out += `<div class="small pos">Regression baseline: ${esc(rb.result.status || "saved")} · ${esc(rb.result.path || "")}</div>`;
@@ -216,6 +227,8 @@
       path="/admin/research/live-replay-parity"; body={asset}; prefix="/api/research/live-replay-parity/";
     } else if (kind === "continuous-history") {
       path="/admin/research/continuous-history"; body={asset}; prefix="/api/research/continuous-history/";
+    } else if (kind === "walkforward") {
+      path="/admin/research/walkforward"; body={asset,folds:5,train_fraction:0.50}; prefix="/api/research/walkforward/";
     } else if (kind === "robustness-map") {
       path="/admin/research/robustness-map"; body={asset,x_field:"shock_z_thresh",y_field:"pe_thresh",fraction:0.10,steps:5}; prefix="/api/research/robustness-map/";
     } else if (kind === "robustness") {
@@ -245,6 +258,7 @@
         <button class="sm" data-assurance-job="live-replay-parity">Live ↔ replay parity</button>
         <button class="sm" data-assurance-job="robustness">±10% robustness scan</button>
         <button class="sm" data-assurance-job="robustness-map">2D robustness map</button>
+        <button class="sm" data-assurance-job="walkforward">Rolling walk-forward audit</button>
         <button class="sm" data-assurance-job="regression-baseline">Save regression baseline</button>
         <button class="sm" data-assurance-job="regression-check">Compare to baseline</button>
         ${a.continuous_archive?.configured?`<button class="sm" data-assurance-job="continuous-history">Build continuous futures research archive</button>`:''}

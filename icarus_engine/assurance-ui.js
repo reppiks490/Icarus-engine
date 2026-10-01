@@ -89,7 +89,7 @@
   }
 
   function jobHtml(asset) {
-    const d = jobs[key(asset,"determinism")], r = jobs[key(asset,"robustness")],
+    const d = jobs[key(asset,"determinism")], p = jobs[key(asset,"live-replay-parity")], r = jobs[key(asset,"robustness")],
           rb = jobs[key(asset,"regression-baseline")], rc = jobs[key(asset,"regression-check")];
     let out = "";
     if (d) {
@@ -98,6 +98,14 @@
       else if (d.result) {
         const fd=d.result.first_divergence;
         out += `<div class="small ${d.result.equal ? "pos" : "neg"}">Replay determinism: <b>${d.result.equal ? "MATCH" : "DIVERGENCE"}</b> · ${esc((d.result.first_digest || "").slice(0,12))} / ${esc((d.result.second_digest || "").slice(0,12))}${fd?' · first '+esc(fd.surface)+' @ '+esc(fd.index??'object'):''}</div>`;
+      }
+    }
+    if (p) {
+      if (p.status === "running") out += '<div class="small muted">Live/replay parity audit running…</div>';
+      else if (p.status === "error") out += `<div class="small neg">Live/replay parity: ${esc(p.error || "error")}</div>`;
+      else if (p.result) {
+        const ok=p.result.status==="MATCH";
+        out += `<div class="small ${ok?"pos":p.result.status==="NO_REFERENCE"?"muted":"neg"}">Live/replay parity: <b>${esc(p.result.status)}</b> · live ${esc((p.result.reference?.digest||"—").slice(0,12))} / replay ${esc((p.result.replay?.digest||"—").slice(0,12))}</div>`;
       }
     }
     if (r) {
@@ -143,6 +151,8 @@
     let path, body, prefix;
     if (kind === "determinism") {
       path="/admin/research/determinism"; body={asset}; prefix="/api/research/determinism/";
+    } else if (kind === "live-replay-parity") {
+      path="/admin/research/live-replay-parity"; body={asset}; prefix="/api/research/live-replay-parity/";
     } else if (kind === "robustness") {
       path="/admin/research/robustness"; body={asset,fraction:0.10}; prefix="/api/research/robustness/";
     } else if (kind === "regression-baseline" || kind === "regression-check") {
@@ -167,6 +177,7 @@
     const html=`
       <div class="row" style="gap:6px;flex-wrap:wrap">
         <button class="sm" data-assurance-job="determinism">Replay determinism audit</button>
+        <button class="sm" data-assurance-job="live-replay-parity">Live ↔ replay parity</button>
         <button class="sm" data-assurance-job="robustness">±10% robustness scan</button>
         <button class="sm" data-assurance-job="regression-baseline">Save regression baseline</button>
         <button class="sm" data-assurance-job="regression-check">Compare to baseline</button>

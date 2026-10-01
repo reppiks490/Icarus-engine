@@ -2,21 +2,22 @@
   "schema_version": "icarus-ui-loop-feed-v1",
   "loop_id": "advanced-csv",
   "source_repository": "reppiks490/icarus-csv-evidence-lab",
-  "RUN_ID": "advanced-csv-20261001T161500Z",
+  "RUN_ID": "advanced-csv-20261001T181500Z",
   "RUN_STATUS": "RUN_PERSISTED",
   "scheduler_id": "6abaef9d5c28819190d98a5af7f308b8",
-  "finalization_commit_sha": "70f321345c2eb9392d01d6a82198573a7b4a0c3c",
-  "finalization_state_blob_sha": "d3bffa19c4f3776840cbba8274560380d35be877",
+  "finalization_commit_sha": "cb21c9ca7114e573182ed9a4b01f06e6e0ed6f4f",
+  "finalization_state_blob_sha": "8796b80cda08992c35e8ef933a804054cb10b569",
   "source_verified": true,
+  "worker_execution_observed": false,
+  "receipt_origin": "github_watchdog_stabilization_fallback",
   "execution_authorized": false,
   "signals": {
     "finalization": {
-      "work_status": "BASELINE_PERSISTED",
+      "work_status": "WATCHDOG_FALLBACK_PERSISTED",
       "completion_semantics": "DURABILITY_RECEIPT_ONLY",
       "payload": {
-        "result": "NO_NEW_EVIDENCE_YET",
-        "baseline": "659 physical CSV members; 13,788,256 logical rows; 542 distinct SHA-256 contents; 803 extracted physical files",
-        "NEXT": "Durability proven; substantive CSV evidence remains deferred during stabilization."
+        "result": "SCHEDULER_WORKER_RECEIPT_MISSED",
+        "NEXT": "No substantive evidence was produced; the stabilization slot was durably recovered by the repository watchdog."
       }
     },
     "latest": {

@@ -43,6 +43,7 @@ from .advisory import MAX_BODY_BYTES, strict_json
 from .research_service import ResearchWorkspace
 from .mcp_control import MCPControlPlane
 from .comparison_jobs import start_matrix as start_session_matrix, start_determinism, start_robustness, get_job as get_comparison_job
+from .regression_jobs import start as start_regression, get as get_regression
 
 
 def _no_json_constants(name: str):
@@ -175,6 +176,8 @@ def serve(port: Portfolio, http_port: int = 8791, token: str = "icarus", start: 
                         return self._json(200, get_comparison_job(p.path.rsplit("/", 1)[1]))
                     if p.path.startswith("/api/research/robustness/"):
                         return self._json(200, get_comparison_job(p.path.rsplit("/", 1)[1]))
+                    if p.path.startswith("/api/research/regression/"):
+                        return self._json(200, get_regression(p.path.rsplit("/", 1)[1]))
                     if p.path.startswith("/api/research/proposals/"):
                         return self._json(200, research.ledger.get_proposal(p.path.rsplit("/", 1)[1]))
                 except (ValueError, TypeError, KeyError) as ex:
@@ -292,6 +295,11 @@ def serve(port: Portfolio, http_port: int = 8791, token: str = "icarus", start: 
                         raise ValueError("robustness requires asset and optional fields/fraction")
                     job_id = start_robustness(port, asset, body.get("fields"), body.get("fraction", 0.10))
                     return self._json(200, {"ok": True, "job": job_id, "note": f"local robustness scan {asset} started", "execution_authorized": False})
+                if p.path == "/admin/research/regression":
+                    if set(body) != {"asset","mode"}:
+                        raise ValueError("regression requires asset and mode only")
+                    job_id = start_regression(port, asset, str(body.get("mode","")))
+                    return self._json(200, {"ok": True, "job": job_id, "note": f"regression {body.get('mode')} {asset} started", "execution_authorized": False})
                 if p.path == "/admin/research/adaptation":
                     return self._json(200, research.configure_adaptation(body))
                 if p.path == "/admin/research/source-watch":

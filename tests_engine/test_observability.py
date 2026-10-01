@@ -1,4 +1,4 @@
-from icarus_engine.observability import explain_decision, CounterfactualTracker, ProviderHealth, ReplayCheckpointLedger
+from icarus_engine.observability import explain_decision, CounterfactualTracker, ProviderHealth, ReplayCheckpointLedger, DecisionTrace
 
 def test_decision_explainer_reports_blockers_and_distance():
     v=explain_decision({"in_session":False,"entry_allowed":False,"gate_long":False,"gate_short":True,
@@ -22,3 +22,15 @@ def test_replay_ledger_detects_cross_run_divergence(tmp_path):
     p=tmp_path/"state"/"r.json"; a=ReplayCheckpointLedger(str(p)); assert a.observe(10,"abc"); a.flush()
     b=ReplayCheckpointLedger(str(p)); assert not b.observe(10,"def"); assert b.view()["divergences_this_run"]==1
     assert b.view()["restore_enabled"] is False
+
+
+def test_decision_trace_links_intent_to_fill():
+    from types import SimpleNamespace
+    t=DecisionTrace()
+    p=SimpleNamespace(placed_bar=4,seq=7,id="Long",direction=1,qty=2,limit=None)
+    t.capture(100,4,[p],{"status":"CLEAR","blockers":[]}, "abc")
+    f=SimpleNamespace(kind="entry",entry_id="Long",ts=120,bar=5,price=101.25,qty=2,side="buy")
+    t.record_fill(f)
+    v=t.view()
+    assert v["count"]==1 and v["recent"][0]["fill"]["price"]==101.25
+    assert v["execution_authorized"] is False

@@ -546,11 +546,20 @@ def recover_stabilization_receipt(
 def evidence_deferred_by_receipt(receipt: dict) -> bool:
     payload = receipt.get("payload") if isinstance(receipt.get("payload"), dict) else {}
     next_text = str(payload.get("NEXT", "")).lower()
-    return (
+    worker_stabilization = (
         receipt.get("work_status") == "BASELINE_PERSISTED"
         and payload.get("result") == "NO_NEW_EVIDENCE_YET"
         and "deferred during stabilization" in next_text
-        and receipt.get("execution_authorized") is False
+    )
+    watchdog_fallback = (
+        receipt.get("work_status") == "WATCHDOG_FALLBACK_PERSISTED"
+        and receipt.get("receipt_origin") == "github_watchdog_stabilization_fallback"
+        and receipt.get("worker_execution_observed") is False
+        and payload.get("result") == "SCHEDULER_WORKER_RECEIPT_MISSED"
+    )
+    return (
+        receipt.get("execution_authorized") is False
+        and (worker_stabilization or watchdog_fallback)
     )
 
 

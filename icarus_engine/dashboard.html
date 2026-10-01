@@ -165,6 +165,8 @@ const age = s => s==null ? 'never' : s<60 ? `${Math.round(s)}s` : s<3600 ? `${Ma
 const tip = $('#tip'); const showTip = (h,x,y) => { tip.innerHTML=h; tip.style.display='block'; tip.style.left=(x+14)+'px'; tip.style.top=(y+14)+'px'; }; const hideTip = () => tip.style.display='none';
 let last = null, charts = {}, seenFills = new Set(), first = true, tradesCache = {}, META = null, PRESETS = [], COMMANDS = [], REGISTRY = [];
 const SESSION_MATRIX = {};
+const DETERMINISM = {};
+const ROBUSTNESS = {};
 const params = new URLSearchParams(location.search);
 const solo = !!params.get('asset');
 let view = solo ? 'asset:' + params.get('asset').toUpperCase() : (location.hash.slice(1) || 'overview');

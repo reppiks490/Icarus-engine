@@ -1,0 +1,27 @@
+{
+  "schema_version": "icarus-mcp-event-v1",
+  "event_id": "icarus-mcp-control-panel-integration-20261001T020900Z",
+  "at_utc": "2026-10-01T02:09:00Z",
+  "category": "INTEGRATION",
+  "status": "IMPLEMENTED",
+  "severity": "IMPORTANT",
+  "summary": "Added a real read-only MCP / Automation panel and repository-native change ledger inside the ICARUS trading interface so material MCP repairs, audits, evolutions and integrations are surfaced with their durable evidence.",
+  "surface": "ICARUS dashboard / MCP and automation observability",
+  "source": "MCP",
+  "branch": "chatgpt/icarus-mcp-control-panel-20260930",
+  "commit": null,
+  "paths": [
+    "icarus_engine/mcp_control.py",
+    "icarus_engine/mcp-ui.js",
+    "icarus_engine/server.py",
+    "icarus_engine/dashboard.html",
+    "automation_intelligence/mcp_interface/contract.json",
+    "tests_engine/test_mcp_control.py"
+  ],
+  "evidence": [
+    "automation_intelligence/omega_stack_native_v3/control_plane.json",
+    "automation_intelligence/omega_stack_native_v3/cutover/acceptance.json",
+    "automation_intelligence/restored_five_native/control_plane.json"
+  ],
+  "execution_authorized": false
+}

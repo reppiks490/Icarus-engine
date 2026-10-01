@@ -134,7 +134,7 @@
 
   function jobHtml(asset) {
     const d = jobs[key(asset,"determinism")], p = jobs[key(asset,"live-replay-parity")], r = jobs[key(asset,"robustness")],
-          rb = jobs[key(asset,"regression-baseline")], rc = jobs[key(asset,"regression-check")];
+          rb = jobs[key(asset,"regression-baseline")], rc = jobs[key(asset,"regression-check")], ch = jobs[key(asset,"continuous-history")];
     let out = "";
     if (d) {
       if (d.status === "running") out += '<div class="small muted">Replay determinism audit running…</div>';
@@ -177,6 +177,11 @@
         </details>`;
       }
     }
+    if (ch) {
+      if (ch.status === "running") out += '<div class="small muted">Continuous futures history build running…</div>';
+      else if (ch.status === "error") out += `<div class="small neg">Continuous history build: ${esc(ch.error || "error")}</div>`;
+      else if (ch.result) out += `<div class="small pos">Continuous history build complete · raw ${esc(ch.result.raw_path||"")} · adjusted ${esc(ch.result.adjusted_path||"")} · rolls ${ch.result.meta?.roll_diagnostics?.length??0}</div>`;
+    }
     return out;
   }
 
@@ -197,6 +202,8 @@
       path="/admin/research/determinism"; body={asset}; prefix="/api/research/determinism/";
     } else if (kind === "live-replay-parity") {
       path="/admin/research/live-replay-parity"; body={asset}; prefix="/api/research/live-replay-parity/";
+    } else if (kind === "continuous-history") {
+      path="/admin/research/continuous-history"; body={asset}; prefix="/api/research/continuous-history/";
     } else if (kind === "robustness") {
       path="/admin/research/robustness"; body={asset,fraction:0.10}; prefix="/api/research/robustness/";
     } else if (kind === "regression-baseline" || kind === "regression-check") {
@@ -225,8 +232,10 @@
         <button class="sm" data-assurance-job="robustness">±10% robustness scan</button>
         <button class="sm" data-assurance-job="regression-baseline">Save regression baseline</button>
         <button class="sm" data-assurance-job="regression-check">Compare to baseline</button>
+        ${a.continuous_archive?.configured?`<button class="sm" data-assurance-job="continuous-history">Build continuous futures research archive</button>`:''}
       </div>
       <div class="small muted" style="margin:6px 0 10px">Research-only controls. They run isolated replays and never activate parameters, submit orders, or authorize execution. Saving a regression baseline always requires explicit confirmation.</div>
+      ${a.kind==="futures"?`<div class="small muted">Continuous archive input: ${a.continuous_archive?.configured?"configured ("+(a.continuous_archive?.contract_files?.length||0)+" contracts)":"not configured"} · expected under ${esc(a.continuous_archive?.root||"history/contracts/<SYMBOL>")}.</div>`:""}
       ${jobHtml(asset)}
       ${recoveryHtml(a)}
       ${integrityHtml(a)}

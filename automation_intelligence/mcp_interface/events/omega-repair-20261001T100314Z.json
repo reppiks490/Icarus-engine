@@ -1,0 +1,51 @@
+{
+  "schema": "icarus-mcp-event-v1",
+  "category": "REPAIR",
+  "source": "OMEGA_AUTOMATION",
+  "event_id": "omega-repair-20261001T100314Z",
+  "event_time": "2026-10-01T10:03:14Z",
+  "execution_authorized": false,
+  "net_new_delta": "FLOW_LATE_NATIVE_RECEIPT_RACE_CONFIRMED_AND_RECURRING_ALPHA_SYNTHESIS_GAP_PERSISTS",
+  "evidence": [
+    "commit bdbde685d4c8b3a8bc1500ea8a3a6a6c919c2e52: watchdog adjudicated flow slot 20261001T092400Z missing at 09:44:02Z and created RECOVERY_PENDING_AI",
+    "commit 6bee464550079d6b7dd8ab43b9e61c0ae4f9da75: same flow slot persisted VERIFIED at 09:44:19Z, 17 seconds after adjudication",
+    "commit 856c969552d814c68405163d0637b1d74e36e30a: alpha_synthesis slots 06:25,07:25,08:25,09:25 all recorded missing canonical receipt after grace",
+    "commit a5489cc21009695fea2bb8982c57a466ca5d1c5a: substantive Flow audit found 08:00 BTC range compression after 07:00 impulse; cross-market confirmation unavailable"
+  ],
+  "accepted_findings": [
+    "Flow substantive audit: 08:00 UTC BTC range compressed after 07:00 impulse; state transient/unstable, not durable expansion.",
+    "GitHub-native v3 liveness receipts are valid persistence evidence but not substantive inference.",
+    "Late-arrival reconciliation defect applies to flow as well as previously observed macro."
+  ],
+  "rejected_findings": [
+    "Do not treat deterministic_liveness receipts as analytical findings.",
+    "Do not treat Flow RECOVERY_PENDING_AI for 09:24 as unresolved once the verified native receipt is present.",
+    "Do not promote BTC-only evidence into a cross-market regime call."
+  ],
+  "conflicts": [
+    "Flow watchdog missing/backlog state at 09:44:02Z conflicts temporally with verified same-slot native receipt at 09:44:19Z.",
+    "Flow spot 08:00 volume rose while linear volume fell; retained as representation-specific turnover divergence, not contradiction."
+  ],
+  "blockers": [
+    "alpha_synthesis canonical receipts missing across four consecutive observed hourly slots through 09:25Z.",
+    "Latest AION/Flow GitHub-native outputs are deterministic liveness only; substantive inference not executed.",
+    "Direct NQ/MNQ, GC/MGC, SI, DXY and volatility-index confirmation absent from latest substantive Flow audit."
+  ],
+  "next_highest_value_integration_target": "Make watchdog reconciliation idempotent by lane+slot so late VERIFIED native receipts supersede stale missed/backlog state, then restore alpha_synthesis canonical receipt production and feed fresh substantive specialist evidence into OMEGA without changing GitHub-native v3 authority.",
+  "athena": {
+    "status": "DEGRADED",
+    "finding": "Risk/uncertainty routing remains constrained by stale substantive cross-lane evidence and absent direct futures/volatility confirmation."
+  },
+  "janus": {
+    "status": "ACTIONABLE",
+    "finding": "Same-slot temporal reconciliation proves Flow backlog can become stale 17 seconds after watchdog adjudication; lane+slot supersession is required."
+  },
+  "infrastructure": {
+    "status": "DEGRADED",
+    "finding": "GitHub-native v3 persistence succeeds, but watchdog race plus four consecutive alpha_synthesis missing canonical receipts create observability/recovery debt."
+  },
+  "helios_prime": {
+    "status": "ACTIONABLE",
+    "finding": "Cross-system integration should prioritize late-arrival supersession semantics and restoration of alpha_synthesis before broader regime synthesis."
+  }
+}

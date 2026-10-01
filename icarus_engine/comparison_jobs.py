@@ -41,13 +41,15 @@ def _first_replay_diff(a,b):
 
 def _compact(result):
     s=result["summary"]
+    cfg=result.get("config") or {}
+    repro=cfg.get("reproducibility") or {}
     keys=("total_trades","net_profit","net_profit_pct","percent_profitable","profit_factor",
           "max_drawdown","max_drawdown_pct","expectancy","sharpe","sortino","cagr_pct")
     return {"bars":result.get("bars"),"range":result.get("range"),
-            "config":{k:result["config"].get(k) for k in ("session","chart_type","fill_on","tf","pts_scale","historical_scale_asof_valid")},
+            "config":{k:cfg.get(k) for k in ("session","chart_type","fill_on","tf","pts_scale","historical_scale_asof_valid")},
             "metrics":{k:_all(s,k) for k in keys},
-            "source_scope":((result["config"].get("reproducibility") or {}).get("subbars_scope")),
-            "dataset_digest":((result["config"].get("reproducibility") or {}).get("subbars_sha256"))}
+            "source_scope":repro.get("subbars_scope"),
+            "dataset_digest":repro.get("subbars_sha256")}
 
 def start_matrix(port,symbol:str) -> str:
     symbol=str(symbol).upper()

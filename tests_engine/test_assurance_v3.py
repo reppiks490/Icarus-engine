@@ -1,4 +1,4 @@
-from icarus_engine.assurance_v3 import ParityMonitor, SessionShadow, execution_stress, roll_provenance, timeframe_integrity
+from icarus_engine.assurance_v3 import ParityMonitor, SessionShadow, execution_stress, execution_stress_v2, roll_provenance, timeframe_integrity
 from icarus_engine.contracts import ContractRoll
 from datetime import date
 
@@ -55,3 +55,21 @@ def test_runtime_and_ui_surface_timeframe_integrity():
     ui=Path("icarus_engine/assurance-ui.js").read_text(encoding="utf-8")
     assert '"timeframe_integrity"' in rt
     assert "Multi-timeframe temporal integrity" in ui
+
+
+def test_execution_stress_v2_is_shadow_only_and_includes_partial_latency_cases():
+    r=execution_stress_v2([{"profit":100,"qty":2}],tick_size=.25,multiplier=20)
+    names={x["name"] for x in r["scenarios"]}
+    assert {"baseline","partial_50pct","latency_2t","severe_combined"} <= names
+    assert r["model"]=="CLOSED_TRADE_SENSITIVITY_NOT_FILL_SIMULATION"
+    assert r["execution_authorized"] is False
+    base=next(x for x in r["scenarios"] if x["name"]=="baseline")
+    severe=next(x for x in r["scenarios"] if x["name"]=="severe_combined")
+    assert base["netprofit"]==100 and severe["netprofit"]<base["netprofit"]
+
+def test_assurance_ui_surfaces_execution_v2_and_vote_attribution():
+    from pathlib import Path
+    ui=Path("icarus_engine/assurance-ui.js").read_text(encoding="utf-8")
+    assert "Execution sensitivity v2" in ui
+    assert "Signal-family co-occurrence attribution" in ui
+    assert "does not simulate or place fills" in ui

@@ -295,7 +295,9 @@ class AssetRunner:
         self.last_price: Optional[float] = None
         self.last_price_ts: float = 0.0
         self.last_bar_wall: float = 0.0
-        self.subbars: List[Tuple[Bar, int]] = []            # everything fed since T_w (for fast re-warm)
+        self.subbars: List[Tuple[Bar, int]] = []            # bars accepted by the ACTIVE session (legacy/repro path)
+        self.raw_subbars: List[Tuple[Bar, int]] = []        # all fetched bars before session filtering; enables honest RTH/ETH replays
+        self.last_raw_sub_ts: Optional[int] = None
         self.deep: Dict[int, List[Tuple[Bar, int]]] = {}    # chain minutes → deep history (before T_w)
         self.T_w: Optional[int] = None
         self._build_engine()
@@ -441,11 +443,19 @@ class AssetRunner:
         self.strat.events.clear()
 
     def on_sub_bar(self, b: Bar, sub_minutes: int, live: bool, record: bool = True) -> None:
-        """Feed one sub-bar (1m or 5m) to every chain and the chart aggregator."""
+        """Feed one sub-bar to the configured session while retaining raw history for research.
+
+        raw_subbars is observational/cache state only. The live strategy still sees
+        exactly the bars accepted by self.cal; retaining rejected-session bars makes
+        later RTH/ETH replays possible without refetching or inventing data.
+        """
         with self.lock:
+            if record and (self.last_raw_sub_ts is None or b.ts > self.last_raw_sub_ts):
+                self.raw_subbars.append((b, sub_minutes))
+                self.last_raw_sub_ts = b.ts
             if self.last_sub_ts is not None and b.ts <= self.last_sub_ts:
                 return
-            if not self.cal.is_open(b.ts):                    # bars outside the session (Yahoo sometimes returns them) are ignored
+            if not self.cal.is_open(b.ts):
                 return
             self.last_sub_ts = b.ts
             if record:
@@ -655,7 +665,8 @@ class AssetRunner:
                     if ch:
                         for b, sub in rows:
                             self._push_deep(ch, b, sub)
-                for b, sub in list(self.subbars):
+                replay_rows = list(self.raw_subbars or self.subbars)
+                for b, sub in replay_rows:
                     self.on_sub_bar(b, sub, live=False, record=False)
                 self.journal.log("INFO", f"[{self.symbol}] re-warmed with new inputs: {self.bar_index + 1} chart bars, {len(self.em.closed)} historical trades, net {self.em.netprofit:+.2f}")
                 self.runtime_error = ""
@@ -868,6 +879,7 @@ class AssetRunner:
             "poll_age": (time.time() - self.last_poll_ok) if self.last_poll_ok else None,
             "bar_age": (time.time() - self.last_bar_wall) if self.last_bar_wall else None,
             "bar_index": self.bar_index, "warmup_bars_loaded": self.bar_index + 1, "warmup_bars_target": self.cfg.warmup_bars,
+            "raw_subbars_cached": len(self.raw_subbars), "active_session_subbars_cached": len(self.subbars),
             "warmup_source": getattr(self, "warmup_source", None), "warmup_quality": getattr(self, "warmup_quality", None),
             "warmup_readiness": ("READY" if (self.bar_index + 1) >= self.cfg.warmup_bars else ("DEGRADED" if self.warm else "WARMING")),
             "decision_attribution": gate_attribution(st),

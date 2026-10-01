@@ -18,6 +18,7 @@ from restored_five_durability_watchdog import (
     monitor_missing_evidence,
     monitor_missing_receipt,
     reconcile_lane,
+    recover_stabilization_receipt,
 )
 
 
@@ -452,6 +453,53 @@ class WatchdogTests(unittest.TestCase):
                 datetime(2026, 9, 30, 21, 26, tzinfo=timezone.utc),
             )
             self.assertEqual(changed, [])
+
+
+    def test_recover_stabilization_receipt_writes_truthful_fallback(self):
+        with tempfile.TemporaryDirectory() as td:
+            repo = Path(td)
+            root = repo / "lane"
+            write_json(root / "finalization_state.json", {
+                "schema_version": "scheduler-finalization-v5.7",
+                "RUN_ID": "lane-20260930T200500Z",
+                "RUN_STATUS": "RUN_PERSISTED",
+                "completion_semantics": "DURABILITY_RECEIPT_ONLY",
+                "execution_authorized": False,
+            })
+            changed = recover_stabilization_receipt(
+                repo, "lane", "lane", "sched", 5, "lane", 12,
+                datetime(2026, 9, 30, 21, 0, tzinfo=timezone.utc),
+                datetime(2026, 9, 30, 21, 18, tzinfo=timezone.utc),
+            )
+            self.assertEqual(changed, ["lane/finalization_state.json"])
+            receipt = json.loads((root / "finalization_state.json").read_text())
+            self.assertEqual(receipt["RUN_ID"], "lane-20260930T210500Z")
+            self.assertEqual(receipt["RUN_STATUS"], "RUN_PERSISTED")
+            self.assertEqual(receipt["completion_semantics"], "DURABILITY_RECEIPT_ONLY")
+            self.assertEqual(receipt["work_status"], "WATCHDOG_FALLBACK_PERSISTED")
+            self.assertEqual(receipt["receipt_origin"], "github_watchdog_stabilization_fallback")
+            self.assertFalse(receipt["worker_execution_observed"])
+            self.assertFalse(receipt["execution_authorized"])
+
+    def test_recover_stabilization_receipt_never_regresses_newer_pointer(self):
+        with tempfile.TemporaryDirectory() as td:
+            repo = Path(td)
+            root = repo / "lane"
+            write_json(root / "finalization_state.json", {
+                "schema_version": "scheduler-finalization-v5.7",
+                "RUN_ID": "lane-20260930T220500Z",
+                "RUN_STATUS": "RUN_PERSISTED",
+                "completion_semantics": "DURABILITY_RECEIPT_ONLY",
+                "execution_authorized": False,
+            })
+            changed = recover_stabilization_receipt(
+                repo, "lane", "lane", "sched", 5, "lane", 12,
+                datetime(2026, 9, 30, 21, 0, tzinfo=timezone.utc),
+                datetime(2026, 9, 30, 21, 18, tzinfo=timezone.utc),
+            )
+            self.assertEqual(changed, [])
+            receipt = json.loads((root / "finalization_state.json").read_text())
+            self.assertEqual(receipt["RUN_ID"], "lane-20260930T220500Z")
 
 
 if __name__ == "__main__":

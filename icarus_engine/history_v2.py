@@ -89,19 +89,45 @@ def assess_quality(report, target_bars: int):
             "execution_authorized":False}
 
 
-def discover_history_sources(base_dir: str, symbol: str, tf_minutes: int):
-    """Discover operator history shards without treating arbitrary CSVs as market data.
+def discover_history_sources(base_dir: str, symbol: str, tf_minutes: int, session: str=""):
+    """Discover compatible operator history shards without mixing session regimes.
 
-    Exact-symbol files under history/ are preferred. The only cross-symbol alias
-    accepted automatically is MNQ -> NQ at the same timeframe, matching the
-    existing repository fallback policy.
+    Canonical filenames may carry _rth or _eth after the <SYMBOL>_<TF>m
+    prefix. When labelled files exist, only the requested session is selected.
+    Opposite-session shards are never silently mixed. Generic unlabelled shards
+    remain a fallback when no matching labelled shards exist.
     """
-    symbol=str(symbol).upper(); tf=int(tf_minutes)
-    exact=sorted(set(glob.glob(os.path.join(base_dir,"history",f"{symbol}_{tf}m*.csv"))))
+    symbol=str(symbol).upper(); tf=int(tf_minutes); session=str(session or "").lower()
+    all_exact=sorted(set(glob.glob(os.path.join(base_dir,"history",f"{symbol}_{tf}m*.csv"))))
+
+    def tag(path):
+        stem=os.path.splitext(os.path.basename(path))[0].lower()
+        tail=stem.split(f"{symbol.lower()}_{tf}m",1)[-1]
+        if "rth" in tail: return "rth"
+        if "eth" in tail: return "eth"
+        return "generic"
+
+    tagged={p:tag(p) for p in all_exact}
+    matching=[p for p,t in tagged.items() if t==session] if session in ("rth","eth") else []
+    generic=[p for p,t in tagged.items() if t=="generic"]
+    exact=matching if matching else generic
+    ignored=[p for p in all_exact if p not in exact]
+
     alias=[]
     if symbol=="NQ":
-        alias=sorted(set(glob.glob(os.path.join(base_dir,"data",f"mnq_{tf}m*.csv"))))
-    return {"exact":exact,"alias":alias,"execution_authorized":False}
+        all_alias=sorted(set(glob.glob(os.path.join(base_dir,"data",f"mnq_{tf}m*.csv"))))
+        def alias_tag(path):
+            stem=os.path.splitext(os.path.basename(path))[0].lower()
+            tail=stem.split(f"mnq_{tf}m",1)[-1]
+            if "rth" in tail: return "rth"
+            if "eth" in tail: return "eth"
+            return "generic"
+        at={p:alias_tag(p) for p in all_alias}
+        am=[p for p,t in at.items() if t==session] if session in ("rth","eth") else []
+        ag=[p for p,t in at.items() if t=="generic"]
+        alias=am if am else ag
+    return {"exact":exact,"alias":alias,"ignored_session_mismatch":ignored,
+            "requested_session":session or None,"execution_authorized":False}
 
 def stitch_strict(paths: Iterable[str], tf_seconds: int, session: str="UNKNOWN"):
     """Merge shards only when overlapping OHLC agrees.

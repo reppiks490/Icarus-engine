@@ -43,22 +43,26 @@ class ParityMonitor:
                 "execution_authorized":False}
 
 class SessionShadow:
-    """Track RTH/ETH bar statistics without changing the strategy's configured session."""
+    """Track observed RTH/ETH returns without changing the strategy's configured session."""
     def __init__(self):
-        self.rth_bars=0; self.eth_bars=0; self.rth_return=0.0; self.eth_return=0.0
+        self.rth_bars=0; self.eth_bars=0; self.unclassified_bars=0
+        self.rth_log_return=0.0; self.eth_log_return=0.0
         self._last_rth=None; self._last_eth=None
-    def observe(self, close: float, in_rth: bool):
+    def observe(self, close: float, in_rth):
+        if in_rth is None:
+            self.unclassified_bars+=1
+            return
         if in_rth:
             self.rth_bars+=1
-            if self._last_rth: self.rth_return += close/self._last_rth-1.0
+            if self._last_rth and close>0 and self._last_rth>0: self.rth_log_return += math.log(close/self._last_rth)
             self._last_rth=close
         else:
             self.eth_bars+=1
-            if self._last_eth: self.eth_return += close/self._last_eth-1.0
+            if self._last_eth and close>0 and self._last_eth>0: self.eth_log_return += math.log(close/self._last_eth)
             self._last_eth=close
     def view(self):
-        return {"rth_bars":self.rth_bars,"eth_bars":self.eth_bars,
-                "rth_compound_log_approx":self.rth_return,"eth_compound_log_approx":self.eth_return,
+        return {"rth_bars":self.rth_bars,"eth_bars":self.eth_bars,"unclassified_bars":self.unclassified_bars,
+                "rth_log_return_sum":self.rth_log_return,"eth_log_return_sum":self.eth_log_return,
                 "mode":"SHADOW_ONLY","execution_authorized":False}
 
 def execution_stress(trades: Iterable[Dict[str,Any]], *, tick_size: float, multiplier: float,

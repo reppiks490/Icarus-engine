@@ -41,6 +41,7 @@ from .runtime import Portfolio, _read_json, preset_path
 from .strategy.meta import load_meta
 from .advisory import MAX_BODY_BYTES, strict_json
 from .research_service import ResearchWorkspace
+from .mcp_control import MCPControlPlane
 
 
 def _no_json_constants(name: str):
@@ -72,6 +73,7 @@ def serve(port: Portfolio, http_port: int = 8791, token: str = "icarus", start: 
     html_path = Path(__file__).parent / "dashboard.html"
     meta = load_meta()
     research = ResearchWorkspace(port)
+    mcp_control = MCPControlPlane(port.base_dir)
 
     class H(BaseHTTPRequestHandler):
         server_version = "icarus"
@@ -127,6 +129,8 @@ def serve(port: Portfolio, http_port: int = 8791, token: str = "icarus", start: 
                 return self._send(200, (html_path.parent / "research-ui.js").read_bytes(), "text/javascript")
             if p.path == "/sources-ui.js":
                 return self._send(200, (html_path.parent / "sources-ui.js").read_bytes(), "text/javascript")
+            if p.path == "/mcp-ui.js":
+                return self._send(200, (html_path.parent / "mcp-ui.js").read_bytes(), "text/javascript")
             if p.path in ("/experience-ui.js", "/experience-ui.css"):
                 ctype = "text/javascript" if p.path.endswith(".js") else "text/css"
                 return self._send(200, (html_path.parent / p.path[1:]).read_bytes(), ctype)
@@ -134,6 +138,8 @@ def serve(port: Portfolio, http_port: int = 8791, token: str = "icarus", start: 
                 return self._json(200, {"ok": True, "assets": list(port.order), "warm": all(r.warm for r in port.runners.values()) if port.runners else False})
             if p.path == "/status/public":
                 return self._json(200, port.status())
+            if p.path == "/api/mcp/control":
+                return self._json(200, mcp_control.status(event_limit=self._int(q, "events", 100, 1, 500)))
             if p.path == "/api/input-meta":
                 return self._json(200, meta)
             if p.path.startswith("/api/research"):

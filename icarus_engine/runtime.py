@@ -418,7 +418,9 @@ class AssetRunner:
         self.counterfactuals.observe(chart.ts, chart.c, st)
         trace_decision = dict(explain_decision(st),
                               regime=st.get("rate_regime_str"), regime_score=st.get("rate_regime"),
-                              pulse_state=st.get("pulse_state"), families_l=st.get("families_l"), families_s=st.get("families_s"))
+                              pulse_state=st.get("pulse_state"), families_l=st.get("families_l"), families_s=st.get("families_s"),
+                              votes=[{"name":v.get("name"),"l":bool(v.get("l")),"s":bool(v.get("s")),"w":v.get("w")}
+                                     for v in (st.get("votes") or []) if isinstance(v, dict)])
         self.decision_trace.capture(chart.ts, self.bar_index, list(self.em._pending_entries),
                                     trace_decision, self.parity_monitor.latest.digest if self.parity_monitor.latest else None)
         if self.replay_ledger is not None and self.parity_monitor.latest is not None:

@@ -211,7 +211,7 @@ def main(argv: Optional[list] = None) -> int:
         s.add_argument("--security-source", default=None, choices=["chart", "standard"], help="what the HTF/LTF request.security chains see on a Heikin Ashi chart: chart = HA bars (TradingView, default), standard = real bars")
         s.add_argument("--roll", default=None, choices=["volume", "none"], help="live-feed contract roll for NQ/ES/YM: volume = TradingView's 1! rule (default), none = Yahoo's =F front month")
         s.add_argument("--capital", type=float, default=None, help="override initial capital per asset")
-        s.add_argument("--warmup", type=int, default=1200, help="chart bars of history to replay before going live")
+        s.add_argument("--warmup", type=int, default=5000, help="target chart bars of history to replay before going live (actual depth is reported; provider limits may cap it)")
         s.add_argument("--pts-ref-symbol", default="NQ", help="asset whose price anchors the *_pts inputs (they are NQ points)")
         s.add_argument("--db", default=None, help="journal database (run: icarus_engine.db; backtest/parity: in memory unless given)")
 

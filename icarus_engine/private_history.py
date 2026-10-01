@@ -98,7 +98,7 @@ KNOWN_PRIVATE_REPORTS: Dict[str, Dict[str, object]] = {
             },
             "exit_signal_counts": {"L_SL":30,"L_TP1":274,"L_TP2":274,"Long":8,"S_SL":28,"S_TP1":294,"S_TP2":294,"Short":2},
             "duration_bars": {"min":0,"median":1.0,"max":353,"mean":3.9626},
-            "terminal_open_trade": null,
+            "terminal_open_trade": None,
             "timestamp_semantics": "TradingView spreadsheet serial converted to timezone-naive ISO; timezone intentionally not inferred."
         },
         "classification": "EXACT_OPERATOR_STRATEGY_REPORT",

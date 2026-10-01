@@ -478,7 +478,7 @@ class AssetRunner:
                 self.last_raw_sub_ts = b.ts
             if self.last_sub_ts is not None and b.ts <= self.last_sub_ts:
                 return
-            if not self.cal.is_open(b.ts):
+            if not self.cal.is_open(b.ts) or not self.cal.intraday_open(b.ts):
                 return
             self.last_sub_ts = b.ts
             if record:
@@ -543,6 +543,10 @@ class AssetRunner:
         if discovered["exact"]: source_sets.append(("exact", discovered["exact"]))
         if discovered["alias"]: source_sets.append(("alias", discovered["alias"]))
         if hist is not None: source_sets.append(("canonical", [hist]))
+        # Preserve the bundled NQ/MNQ 20m fallback even when an archive exists
+        # but contains no valid bars; _warmup_from_csv remains the compatibility
+        # path and will report the true loaded count.
+        bundled_hist=os.path.join(self.base_dir,"data","mnq_20m.csv") if self.symbol=="NQ" and self.chart_minutes==20 else None
         best=None
         for source_kind,candidates in source_sets:
             try:
@@ -561,6 +565,9 @@ class AssetRunner:
             self.warmup_stitch=dict(stitch_meta,source_kind=source_kind,shards=len(candidates),
                                     bars=len(bars),target_bars=self.warmup_target_bars)
             self.journal.log("INFO",f"[{self.symbol}] selected deepest compatible {source_kind} history: {len(bars)} validated bars from {len(candidates)} source(s); target {self.warmup_target_bars}")
+
+        elif bundled_hist and os.path.exists(bundled_hist):
+            hist=bundled_hist
 
         if hist:
             self.warmup_source = os.path.relpath(hist, self.base_dir)

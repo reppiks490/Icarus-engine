@@ -594,7 +594,7 @@ def plan_reconciliation(
                     {
                         "schema_version": WATCHDOG_SCHEMA,
                         "kind": "RECOVERY_BACKLOG_ITEM",
-                        "status": "RECOVERY_PENDING_AI",
+                        "status": recovery_status,
                         "lane": slot.lane.name,
                         "expected_automation_id": slot.lane.automation_id,
                         "control_plane_id": config.control_plane_id,
@@ -637,6 +637,22 @@ def plan_v3_reconciliation(
     if grace_minutes < 0:
         raise ValueError("grace_minutes must be non-negative")
     now = now_utc.astimezone(timezone.utc)
+    deterministic_liveness = config.inference_backend == "deterministic_liveness"
+    missing_kind = (
+        "GITHUB_NATIVE_LIVENESS_RECEIPT_MISSING"
+        if deterministic_liveness
+        else "GITHUB_NATIVE_AI_RECEIPT_MISSING"
+    )
+    recovery_status = (
+        "RECOVERY_PENDING_LIVENESS"
+        if deterministic_liveness
+        else "RECOVERY_PENDING_AI"
+    )
+    late_classification = (
+        "LATE_GITHUB_NATIVE_LIVENESS_RECEIPT_AFTER_INCIDENT"
+        if deterministic_liveness
+        else "LATE_GITHUB_NATIVE_AI_RECEIPT_AFTER_INCIDENT"
+    )
     artifacts: list[Artifact] = []
     for slot in iter_v3_expected_slots(config, now, horizon_hours=horizon_hours):
         if now < slot.scheduled_utc + timedelta(minutes=grace_minutes):
@@ -654,7 +670,7 @@ def plan_v3_reconciliation(
                         late_path,
                         {
                             "schema_version": WATCHDOG_SCHEMA,
-                            "classification": "LATE_GITHUB_NATIVE_AI_RECEIPT_AFTER_INCIDENT",
+                            "classification": late_classification,
                             "lane": slot.lane.name,
                             "slot_utc": _utc_z(slot.scheduled_utc),
                             "slot_local": slot.scheduled_local.isoformat(),
@@ -675,7 +691,7 @@ def plan_v3_reconciliation(
                     incident_path,
                     {
                         "schema_version": WATCHDOG_SCHEMA,
-                        "kind": "GITHUB_NATIVE_AI_RECEIPT_MISSING",
+                        "kind": missing_kind,
                         "lane": slot.lane.name,
                         "control_plane_id": config.control_plane_id,
                         "protocol_expected": config.protocol,

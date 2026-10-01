@@ -972,7 +972,7 @@ class AssetRunner:
             "persistent_bar_cache": self.bar_cache.stats(self.symbol) if self.bar_cache is not None else {"asset":self.symbol,"series":[],"revisions":{"total":0,"price":0,"volume":0},"stores_execution_state":False,"execution_authorized":False},
             "bar_cache_revisions": self.bar_cache.recent_revisions(self.symbol, 20) if self.bar_cache is not None else [],
             "warmup_source": getattr(self, "warmup_source", None), "warmup_quality": getattr(self, "warmup_quality", None),
-            "warmup_target_bars": getattr(self, "warmup_target_bars", max(5000, int(self.cfg.warmup_bars))), "warmup_loaded_bars": len(self.bars),
+            "warmup_target_bars": getattr(self, "warmup_target_bars", max(5000, int(self.cfg.warmup_bars))), "warmup_loaded_bars": self.bar_index + 1,
             "warmup_quality_gate": getattr(self, "warmup_quality_gate", None),
             "warmup_shards": getattr(self, "warmup_shards", []), "warmup_stitch": getattr(self, "warmup_stitch", None),
             "warmup_ignored_session_shards": getattr(self, "warmup_ignored_session_shards", []),

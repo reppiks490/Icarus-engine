@@ -314,6 +314,16 @@ function assetHead(a) {
 }
 function assetHtml(a) {
   return `<section class="card c12" id="assetHead">${assetHead(a)}</section>
+  <section class="card c12"><h2>Assurance · shadow only <span class="sub">observational; cannot submit or modify orders</span></h2>
+    <div class="tiles">
+      <div class="tile"><div class="k">Parity samples</div><div class="v tnum">${a.parity?.samples??0}</div></div>
+      <div class="tile" title="${esc(a.parity?.latest?.digest||'')}"><div class="k">State digest</div><div class="v tnum" style="font-size:13px">${esc((a.parity?.latest?.digest||'—').slice(0,12))}</div></div>
+      <div class="tile"><div class="k">Observed RTH / ETH bars</div><div class="v tnum">${a.session_shadow?.rth_bars??0} / ${a.session_shadow?.eth_bars??0}</div></div>
+      <div class="tile"><div class="k">Roll</div><div class="v" style="font-size:13px">${a.roll_provenance?esc(a.roll_provenance.current+' → '+a.roll_provenance.next):'n/a'}</div></div>
+      <div class="tile"><div class="k">Cost stress scenarios</div><div class="v tnum">${a.execution_stress?.scenarios?.length??0}</div></div>
+    </div>
+    <div class="small muted" style="margin-top:8px">Parity fingerprints closed-bar decision gates for replay comparison. Session statistics classify only bars actually observed by this runner; they are not a second trading engine. Cost stress re-prices closed trades under additional slippage/commission without mutating emulator state.</div>
+  </section>
   <section class="card c7"><h2>Closed trades · ${a.symbol}</h2><div class="scroll" style="max-height:420px"><table id="dTrades"><thead><tr><th></th><th>Entry</th><th>Signal</th><th>Qty</th><th>Entry px</th><th>Exit</th><th>Exit px</th><th>Exit signal</th><th>P&amp;L</th></tr></thead><tbody></tbody></table></div></section>
   <section class="card c5"><h2>Fills · ${a.symbol}</h2><div class="scroll" style="max-height:420px"><table id="dFills"><thead><tr><th>Time</th><th>Side</th><th>Qty</th><th>Price</th><th>Signal</th><th>P&amp;L</th></tr></thead><tbody></tbody></table></div></section>`;
 }

@@ -42,6 +42,7 @@ from .history_v2 import load_csv as load_history_csv, write_manifest as write_hi
 from .assurance import gate_attribution
 from .assurance_v3 import ParityMonitor, SessionShadow, execution_stress, roll_provenance
 from .observability import explain_decision, CounterfactualTracker, ProviderHealth, ReplayCheckpointLedger, DecisionTrace
+from .research_extensions import trade_breakdown
 
 
 def _clean(x: Any) -> Any:
@@ -902,6 +903,7 @@ class AssetRunner:
             "decision_explanation": explain_decision(st), "counterfactuals": self.counterfactuals.view(),
             "provider_health": self.provider_health.view(self.spec.feed, "kraken" if self.spec.feed == "coinbase" else None),
             "decision_trace": self.decision_trace.view(),
+            "trade_breakdown": trade_breakdown(self.em.closed, limit=1000),
             "replay_equivalence": self.replay_ledger.view() if self.replay_ledger is not None else {"mode":"NOT_INITIALIZED","restore_enabled":False,"execution_authorized":False},
             "roll_provenance": roll_provenance(self.roller),
             "execution_stress": execution_stress(

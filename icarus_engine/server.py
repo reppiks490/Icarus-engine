@@ -42,7 +42,7 @@ from .strategy.meta import load_meta
 from .advisory import MAX_BODY_BYTES, strict_json
 from .research_service import ResearchWorkspace
 from .mcp_control import MCPControlPlane
-from .comparison_jobs import start_matrix as start_session_matrix, get_job as get_session_matrix
+from .comparison_jobs import start_matrix as start_session_matrix, start_determinism, start_robustness, get_job as get_comparison_job
 
 
 def _no_json_constants(name: str):
@@ -170,7 +170,11 @@ def serve(port: Portfolio, http_port: int = 8791, token: str = "icarus", start: 
                     if p.path.startswith("/api/research/jobs/"):
                         return self._json(200, research.job(p.path.rsplit("/", 1)[1]))
                     if p.path.startswith("/api/research/session-matrix/"):
-                        return self._json(200, get_session_matrix(p.path.rsplit("/", 1)[1]))
+                        return self._json(200, get_comparison_job(p.path.rsplit("/", 1)[1]))
+                    if p.path.startswith("/api/research/determinism/"):
+                        return self._json(200, get_comparison_job(p.path.rsplit("/", 1)[1]))
+                    if p.path.startswith("/api/research/robustness/"):
+                        return self._json(200, get_comparison_job(p.path.rsplit("/", 1)[1]))
                     if p.path.startswith("/api/research/proposals/"):
                         return self._json(200, research.ledger.get_proposal(p.path.rsplit("/", 1)[1]))
                 except (ValueError, TypeError, KeyError) as ex:
@@ -278,6 +282,16 @@ def serve(port: Portfolio, http_port: int = 8791, token: str = "icarus", start: 
                         raise ValueError("session matrix requires asset only")
                     job_id = start_session_matrix(port, asset)
                     return self._json(200, {"ok": True, "job": job_id, "note": f"session/chart matrix {asset} started", "execution_authorized": False})
+                if p.path == "/admin/research/determinism":
+                    if set(body) != {"asset"}:
+                        raise ValueError("determinism audit requires asset only")
+                    job_id = start_determinism(port, asset)
+                    return self._json(200, {"ok": True, "job": job_id, "note": f"determinism audit {asset} started", "execution_authorized": False})
+                if p.path == "/admin/research/robustness":
+                    if not {"asset"} <= set(body) or set(body) - {"asset","fields","fraction"}:
+                        raise ValueError("robustness requires asset and optional fields/fraction")
+                    job_id = start_robustness(port, asset, body.get("fields"), body.get("fraction", 0.10))
+                    return self._json(200, {"ok": True, "job": job_id, "note": f"local robustness scan {asset} started", "execution_authorized": False})
                 if p.path == "/admin/research/adaptation":
                     return self._json(200, research.configure_adaptation(body))
                 if p.path == "/admin/research/source-watch":

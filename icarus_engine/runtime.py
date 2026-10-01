@@ -45,6 +45,7 @@ from .assurance_v3 import ParityMonitor, SessionShadow, execution_stress, execut
 from .observability import explain_decision, CounterfactualTracker, ProviderHealth, ReplayCheckpointLedger, DecisionTrace
 from .research_extensions import trade_breakdown
 from .bar_cache import BarCache, merge_bars
+from .recovery import RecoveryWitness
 
 
 def _clean(x: Any) -> Any:
@@ -331,6 +332,7 @@ class AssetRunner:
         self.provider_health = ProviderHealth([p for p in (self.spec.feed, secondary) if p])
         self.replay_ledger: Optional[ReplayCheckpointLedger] = None
         self.bar_cache: Optional[BarCache] = None
+        self.recovery_witness: Optional[RecoveryWitness] = None
         self.decision_trace = DecisionTrace()
 
     # ── engine construction (also used by re-warm) ──
@@ -423,10 +425,16 @@ class AssetRunner:
                                      for v in (st.get("votes") or []) if isinstance(v, dict)])
         self.decision_trace.capture(chart.ts, self.bar_index, list(self.em._pending_entries),
                                     trace_decision, self.parity_monitor.latest.digest if self.parity_monitor.latest else None)
+        if self.recovery_witness is not None and self.parity_monitor.latest is not None:
+            if live:
+                self.recovery_witness.write_live(chart.ts, self.parity_monitor.latest.digest, self.em)
+            else:
+                self.recovery_witness.observe_replay(chart.ts, self.parity_monitor.latest.digest, self.em)
         if self.replay_ledger is not None and self.parity_monitor.latest is not None:
-            if self.bar_index % 100 == 0 or live:
+            prior_checkpoint = str(int(chart.ts)) in self.replay_ledger.entries
+            if prior_checkpoint or self.bar_index % 100 == 0 or live:
                 self.replay_ledger.observe(chart.ts, self.parity_monitor.latest.digest)
-                if self.bar_index % 500 == 0 or live:
+                if prior_checkpoint or self.bar_index % 500 == 0 or live:
                     self.replay_ledger.flush()
         self.bars.append(chart)
         self.last_bar_wall = time.time()
@@ -492,6 +500,9 @@ class AssetRunner:
         if self.bar_cache is None:
             cache_path = os.path.join(self.base_dir, "state", "cache", "bars.sqlite3")
             self.bar_cache = BarCache(cache_path)
+        if self.recovery_witness is None:
+            recovery_path = os.path.join(self.base_dir, "state", "recovery", f"{self.symbol}_{self.chart_minutes}m.json")
+            self.recovery_witness = RecoveryWitness(recovery_path)
         span = self.cfg.warmup_bars * self.chart_minutes * 60
         if not self.cal.open_24_7:
             if getattr(self.cal, "session", "eth") == "rth":  # ~20 bars per trading day (09:30-16:15 ET), 5 days a week
@@ -966,6 +977,7 @@ class AssetRunner:
             "decision_trace": self.decision_trace.view(),
             "trade_breakdown": trade_breakdown(self.em.closed, limit=1000),
             "replay_equivalence": self.replay_ledger.view() if self.replay_ledger is not None else {"mode":"NOT_INITIALIZED","restore_enabled":False,"execution_authorized":False},
+            "restart_recovery": self.recovery_witness.view() if self.recovery_witness is not None else {"status":"NOT_INITIALIZED","state_restore_enabled":False,"execution_authorized":False},
             "roll_provenance": roll_provenance(self.roller),
             "execution_stress": execution_stress(
                 [{"profit": t.profit, "qty": t.qty} for t in self.em.closed[-200:]],

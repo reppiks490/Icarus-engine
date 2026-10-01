@@ -102,7 +102,7 @@ class ReplayCheckpointLedger:
 
 
 class DecisionTrace:
-    """Bounded causal trace from strategy decision -> pending entry -> fill."""
+    """Bounded causal trace from strategy decision -> pending entry -> fills/closes."""
     def __init__(self,maxlen=200):
         self.rows=deque(maxlen=maxlen); self._seen=set()
     def capture(self,ts:int,bar_index:int,pending_entries,decision:Dict[str,Any],digest:Optional[str]):
@@ -114,7 +114,7 @@ class DecisionTrace:
             self.rows.append({"intent_seq":seq,"decision_ts":int(ts),"decision_bar":int(bar_index),
                               "entry_id":str(getattr(p,"id","")),"direction":int(getattr(p,"direction",0)),
                               "qty":int(getattr(p,"qty",0)),"limit":getattr(p,"limit",None),
-                              "decision_digest":digest,"decision":decision,"fill":None})
+                              "decision_digest":digest,"decision":decision,"fill":None,"closes":[]})
     def record_fill(self,fill):
         if getattr(fill,"kind",None)!="entry": return
         for row in reversed(self.rows):
@@ -122,6 +122,28 @@ class DecisionTrace:
                 row["fill"]={"ts":int(fill.ts),"bar":int(fill.bar),"price":float(fill.price),"qty":int(fill.qty),
                              "side":str(fill.side)}
                 break
+    def record_close(self,trade):
+        for row in reversed(self.rows):
+            f=row.get("fill")
+            if not f or row["entry_id"]!=getattr(trade,"entry_id",None): continue
+            if int(f["ts"])!=int(getattr(trade,"entry_ts",-1)): continue
+            row["closes"].append({"ts":int(trade.exit_ts),"price":float(trade.exit_price),"qty":int(trade.qty),
+                                  "profit":float(trade.profit),"comment":str(trade.exit_comment),
+                                  "runup":float(getattr(trade,"runup",0.0)),"drawdown":float(getattr(trade,"drawdown",0.0)),
+                                  "bars":int(getattr(trade,"bars",0))})
+            break
+    def _regime_stats(self):
+        groups={}
+        for row in self.rows:
+            regime=str((row.get("decision") or {}).get("regime") or "UNKNOWN")
+            g=groups.setdefault(regime,{"pieces":0,"wins":0,"net_profit":0.0,"avg_bars":0.0})
+            for x in row.get("closes") or []:
+                g["pieces"]+=1; g["wins"]+=int(x["profit"]>0); g["net_profit"]+=x["profit"]; g["avg_bars"]+=x["bars"]
+        for g in groups.values():
+            n=g["pieces"]; g["win_rate"]=g["wins"]/n if n else None; g["avg_bars"]=g["avg_bars"]/n if n else None
+        return groups
     def view(self,limit=20):
         rows=list(self.rows)[-max(1,int(limit)):]
-        return {"count":len(self.rows),"recent":rows,"mode":"AUDIT_ONLY","execution_authorized":False}
+        pieces=sum(len(r.get("closes") or []) for r in self.rows)
+        return {"count":len(self.rows),"closed_pieces":pieces,"recent":rows,"by_regime":self._regime_stats(),
+                "mode":"AUDIT_ONLY","execution_authorized":False}

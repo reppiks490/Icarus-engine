@@ -44,6 +44,7 @@ from .research_service import ResearchWorkspace
 from .mcp_control import MCPControlPlane
 from .comparison_jobs import start_matrix as start_session_matrix, start_determinism, start_robustness, start_live_replay_parity, get_job as get_comparison_job
 from .regression_jobs import start as start_regression, get as get_regression
+from .continuous_jobs import start as start_continuous_history, get as get_continuous_history
 
 
 def _no_json_constants(name: str):
@@ -182,6 +183,8 @@ def serve(port: Portfolio, http_port: int = 8791, token: str = "icarus", start: 
                         return self._json(200, get_comparison_job(p.path.rsplit("/", 1)[1]))
                     if p.path.startswith("/api/research/regression/"):
                         return self._json(200, get_regression(p.path.rsplit("/", 1)[1]))
+                    if p.path.startswith("/api/research/continuous-history/"):
+                        return self._json(200, get_continuous_history(p.path.rsplit("/", 1)[1]))
                     if p.path.startswith("/api/research/proposals/"):
                         return self._json(200, research.ledger.get_proposal(p.path.rsplit("/", 1)[1]))
                 except (ValueError, TypeError, KeyError) as ex:
@@ -312,6 +315,11 @@ def serve(port: Portfolio, http_port: int = 8791, token: str = "icarus", start: 
                         return self._json(400, {"detail": "saving a regression baseline requires confirm=true"})
                     job_id = start_regression(port, asset, mode)
                     return self._json(200, {"ok": True, "job": job_id, "note": f"regression {mode} {asset} started", "execution_authorized": False})
+                if p.path == "/admin/research/continuous-history":
+                    if not {"asset"} <= set(body) or set(body) - {"asset","tf_minutes"}:
+                        raise ValueError("continuous history requires asset and optional tf_minutes")
+                    job_id = start_continuous_history(port, asset, body.get("tf_minutes"))
+                    return self._json(200, {"ok": True, "job": job_id, "note": f"continuous-history research build {asset} started", "execution_authorized": False})
                 if p.path == "/admin/research/adaptation":
                     return self._json(200, research.configure_adaptation(body))
                 if p.path == "/admin/research/source-watch":

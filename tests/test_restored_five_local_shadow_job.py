@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+import inspect
 import tempfile
 import unittest
 from pathlib import Path
 
 from tools.restored_five_local_shadow_job import (
     LANES,
+    main,
+    reconcile_all,
     reconcile_late_verifications,
     reconcile_pre_hardening_summaries,
     select_pending,
@@ -177,6 +180,36 @@ class RestoredFiveLocalShadowJobTests(unittest.TestCase):
             self.assertFalse(payload["execution_authorized"])
 
             self.assertEqual(reconcile_pre_hardening_summaries(root), [])
+
+
+    def test_reconcile_all_includes_pre_hardening_and_late_paths(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            slot = "20260930T223500Z"
+            receipt = root / f"automation_intelligence/restored_five_native/receipts/flow_microstructure/{slot}.json"
+            shadow = root / f"automation_intelligence/restored_five_native/shadow_outputs/flow_microstructure/{slot}.json"
+            receipt.parent.mkdir(parents=True, exist_ok=True)
+            shadow.parent.mkdir(parents=True, exist_ok=True)
+            receipt.write_text(
+                '{"slot_status":"WORKER_RECEIPT_VERIFIED","worker_receipt_status":"CHATGPT_CANONICAL_RECEIPT_PRESENT","expected_RUN_ID":"flow-20260930T223500Z","observed_worker_RUN_ID":"flow-20260930T223500Z","substantive_work_claimed":false,"execution_authorized":false}',
+                encoding="utf-8",
+            )
+            shadow.write_text(
+                '{"schema_version":"restored-five-local-shadow-v1","payload":{"summary":"No gaps or conflicts.","data_gaps":["SUBSTANTIVE_WORK_NOT_PROVEN"]}}',
+                encoding="utf-8",
+            )
+            created = reconcile_all(root)
+            self.assertEqual(len(created), 1)
+            payload = __import__("json").loads(created[0].read_text())
+            self.assertEqual(
+                payload["reconciliation_kind"],
+                "PRE_HARDENING_SUMMARY_CORRECTION",
+            )
+
+    def test_main_invokes_unified_reconciliation(self):
+        source = inspect.getsource(main)
+        self.assertIn("reconciled = reconcile_all(root)", source)
+        self.assertNotIn("reconciled = reconcile_late_verifications(root)", source)
 
 
 if __name__ == "__main__":

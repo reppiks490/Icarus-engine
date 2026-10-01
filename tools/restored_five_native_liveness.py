@@ -154,6 +154,14 @@ def worker_receipt_status(
         and obj.get("completion_semantics") == "DURABILITY_RECEIPT_ONLY"
         and obj.get("execution_authorized") is False
     )
+    watchdog_fallback = (
+        valid
+        and obj.get("work_status") == "WATCHDOG_FALLBACK_PERSISTED"
+        and obj.get("receipt_origin") == "github_watchdog_stabilization_fallback"
+        and obj.get("worker_execution_observed") is False
+    )
+    if watchdog_fallback:
+        return "WATCHDOG_FALLBACK_RECEIPT_PRESENT", obj
     return ("CHATGPT_CANONICAL_RECEIPT_PRESENT" if valid else "WORKER_RECEIPT_MISSING"), obj
 
 

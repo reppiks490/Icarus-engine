@@ -594,7 +594,7 @@ def plan_reconciliation(
                     {
                         "schema_version": WATCHDOG_SCHEMA,
                         "kind": "RECOVERY_BACKLOG_ITEM",
-                        "status": recovery_status,
+                        "status": "RECOVERY_PENDING_AI",
                         "lane": slot.lane.name,
                         "expected_automation_id": slot.lane.automation_id,
                         "control_plane_id": config.control_plane_id,
@@ -713,7 +713,7 @@ def plan_v3_reconciliation(
                     {
                         "schema_version": WATCHDOG_SCHEMA,
                         "kind": "RECOVERY_BACKLOG_ITEM",
-                        "status": "RECOVERY_PENDING_AI",
+                        "status": recovery_status,
                         "lane": slot.lane.name,
                         "control_plane_id": config.control_plane_id,
                         "protocol_expected": config.protocol,

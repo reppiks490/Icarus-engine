@@ -9,6 +9,14 @@ MATRIX_JOBS: Dict[str,Dict[str,Any]]={}
 _LOCK=threading.Lock()
 _MAX=12
 
+def _history_assurance(src):
+    gate=getattr(src,"warmup_quality_gate",None) or {}
+    status=str(gate.get("status") or getattr(src,"warmup_readiness","UNKNOWN"))
+    reasons=list(gate.get("reasons") or [])
+    if status=="INVALID":
+        raise ValueError("research replay refused: history quality is INVALID" + (": "+", ".join(reasons) if reasons else ""))
+    return {"status":status,"reasons":reasons,"execution_authorized":False}
+
 def _all(summary,key):
     v=summary.get(key) or {}
     return v.get("all")
@@ -45,6 +53,7 @@ def start_matrix(port,symbol:str) -> str:
     symbol=str(symbol).upper()
     if symbol not in port.runners: raise ValueError("unknown asset")
     src=port.runners[symbol]
+    history_assurance=_history_assurance(src)
     if not src.warm: raise ValueError("asset is still warming")
     if src.spec.kind!="futures": raise ValueError("session matrix currently applies to futures assets")
     frozen=freeze_replay_port(port,symbol)
@@ -71,7 +80,7 @@ def start_matrix(port,symbol:str) -> str:
                 x["delta_vs_current"]={k:(x["metrics"][k]-base[k] if isinstance(x["metrics"].get(k),(int,float)) and isinstance(base.get(k),(int,float)) else None)
                                        for k in ("net_profit","max_drawdown","total_trades","expectancy")}
             job["result"]={"asset":symbol,"current":{"session":current_session,"chart_type":current_chart},
-                           "matrix":rows,"interpretation":"DESCRIPTIVE_ONLY","execution_authorized":False,
+                           "matrix":rows,"history_assurance":history_assurance,"interpretation":"DESCRIPTIVE_ONLY","execution_authorized":False,
                            "limitations":["Comparison uses retained raw cached bars when available.","Native deep HTF seed history may inherit the source runner's originally cached seed scope."]}
             job["status"]="done"
         except Exception as ex:
@@ -104,6 +113,7 @@ def start_determinism(port,symbol:str)->str:
     symbol=str(symbol).upper()
     if symbol not in port.runners: raise ValueError("unknown asset")
     src=port.runners[symbol]
+    history_assurance=_history_assurance(src)
     if not src.warm: raise ValueError("asset is still warming")
     frozen=freeze_replay_port(port,symbol)
     job_id,job=_new_job(symbol,"determinism",2)
@@ -117,6 +127,7 @@ def start_determinism(port,symbol:str)->str:
                            "bars":[a.get("bars"),b.get("bars")],
                            "trade_counts":[_all(a["summary"],"total_trades"),_all(b["summary"],"total_trades")],
                            "first_divergence":None if equal else _first_replay_diff(a,b),
+                           "history_assurance":history_assurance,
                            "mode":"DETERMINISM_AUDIT","execution_authorized":False}
             job["status"]="done"
         except Exception as ex:
@@ -129,6 +140,7 @@ def start_robustness(port,symbol:str,fields=None,fraction:float=0.10)->str:
     symbol=str(symbol).upper()
     if symbol not in port.runners: raise ValueError("unknown asset")
     src=port.runners[symbol]
+    history_assurance=_history_assurance(src)
     if not src.warm: raise ValueError("asset is still warming")
     fraction=float(fraction)
     if not 0.0 < fraction <= 0.50: raise ValueError("fraction must be >0 and <=0.50")
@@ -162,6 +174,7 @@ def start_robustness(port,symbol:str,fields=None,fraction:float=0.10)->str:
                 sensitivity[field]={"net_profit_span":(max(vals)-min(vals) if vals else None),
                                     "max_drawdown_span":(max(dds)-min(dds) if dds else None)}
             job["result"]={"asset":symbol,"fraction":fraction,"baseline":bm,"variants":rows,"sensitivity":sensitivity,
+                           "history_assurance":history_assurance,
                            "interpretation":"DESCRIPTIVE_LOCAL_SENSITIVITY","execution_authorized":False,
                            "note":"One parameter is perturbed at a time; no variant is selected, ranked or activated."}
             job["status"]="done"

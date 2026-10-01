@@ -10,7 +10,7 @@ def source_classification(source: str | None, stitch: Dict[str,Any] | None = Non
     src=str(source or "")
     st=stitch or {}
     kind=str(st.get("source_kind") or "").lower()
-    if kind=="exact":
+    if kind in ("exact","private_exact"):
         cls="EXACT_OPERATOR_HISTORY"
     elif kind=="alias" or "mnq_20m" in src.lower():
         cls="COMPATIBLE_PRICE_PROXY"

@@ -183,6 +183,12 @@ def reconcile_pre_hardening_summaries(root: Path) -> list[Path]:
     return created
 
 
+def reconcile_all(root: Path) -> list[Path]:
+    created = reconcile_late_verifications(root)
+    created.extend(reconcile_pre_hardening_summaries(root))
+    return created
+
+
 def select_pending(root: Path) -> Pending | None:
     batch = select_pending_batch(root, limit=1)
     return batch[0] if batch else None
@@ -197,7 +203,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     root = args.root.resolve()
-    reconciled = reconcile_late_verifications(root)
+    reconciled = reconcile_all(root)
     pending_items = select_pending_batch(root, limit=args.max_items)
     if not pending_items:
         print(json.dumps({

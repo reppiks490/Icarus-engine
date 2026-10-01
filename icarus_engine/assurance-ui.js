@@ -48,6 +48,28 @@
       </details>`;
   }
 
+  function shadowDetailHtml(a) {
+    let out="";
+    const cf=a?.counterfactuals, es=a?.execution_stress, ph=a?.provider_health, re=a?.replay_equivalence;
+    if (cf) {
+      const rows=Object.entries(cf.horizons||{}).map(([h,x]) =>
+        `<tr><td>${esc(h)} bars</td><td>${x.n??0}</td><td>${x.mean_directional_return==null?'—':(Number(x.mean_directional_return)*100).toFixed(3)+'%'}</td><td>${x.positive_rate==null?'—':(Number(x.positive_rate)*100).toFixed(1)+'%'}</td></tr>`).join("");
+      out += `<details class="group"><summary>Blocked-signal counterfactuals <span class="cnt">${cf.completed??0} completed · ${cf.pending??0} pending</span></summary><div class="scroll"><table><thead><tr><th>Horizon</th><th>N</th><th>Mean directional return</th><th>Positive</th></tr></thead><tbody>${rows||'<tr><td colspan="4" class="muted">No completed counterfactuals yet</td></tr>'}</tbody></table></div></details>`;
+    }
+    if (es?.scenarios?.length) {
+      const rows=es.scenarios.map(x=>`<tr><td>${x.extra_slippage_ticks}t</td><td>${money(x.extra_commission_per_contract)}</td><td>${money(x.netprofit)}</td><td>${money(x.delta)}</td></tr>`).join("");
+      out += `<details class="group"><summary>Execution cost stress <span class="cnt">${es.trades??0} closed pieces</span></summary><div class="scroll"><table><thead><tr><th>Extra slip</th><th>Extra fee / contract / side</th><th>Stressed net</th><th>Δ vs observed</th></tr></thead><tbody>${rows}</tbody></table></div><div class="small muted">Closed-trade repricing only; this does not change emulator fills or order behavior.</div></details>`;
+    }
+    if (ph) {
+      const rows=Object.entries(ph.providers||{}).map(([name,x])=>`<tr><td>${esc(name)}</td><td>${x.ok??0}</td><td>${x.fail??0}</td><td>${x.last_ok?new Date(x.last_ok*1000).toLocaleString():'—'}</td><td>${esc(x.last_error||'—')}</td></tr>`).join("");
+      out += `<details class="group"><summary>Provider health · ${esc(ph.status||'UNKNOWN')}</summary><div class="scroll"><table><thead><tr><th>Provider</th><th>OK</th><th>Fail</th><th>Last OK</th><th>Last error</th></tr></thead><tbody>${rows}</tbody></table></div><div class="small muted">${ph.failover_configured?'Configured secondary is shown above.':'No secondary provider is configured for this feed.'}</div></details>`;
+    }
+    if (re?.last_divergence) {
+      out += `<details class="group" open><summary>Replay equivalence divergence</summary><div class="small neg">At ${esc(re.last_divergence.ts)} · expected ${esc((re.last_divergence.expected||'').slice(0,16))} · observed ${esc((re.last_divergence.observed||'').slice(0,16))}</div><div class="small muted">Evidence only. Executable strategy/order state is never restored from this ledger.</div></details>`;
+    }
+    return out;
+  }
+
   function jobHtml(asset) {
     const d = jobs[key(asset,"determinism")], r = jobs[key(asset,"robustness")],
           rb = jobs[key(asset,"regression-baseline")], rc = jobs[key(asset,"regression-check")];

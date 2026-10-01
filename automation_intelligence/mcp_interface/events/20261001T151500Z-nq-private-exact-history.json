@@ -1,0 +1,32 @@
+{
+  "schema_version": "icarus-mcp-event-v1",
+  "event_id": "20261001T151500Z-nq-private-exact-history",
+  "at_utc": "2026-10-01T15:15:00Z",
+  "category": "INTEGRATION",
+  "status": "IMPLEMENTED",
+  "severity": "IMPORTANT",
+  "summary": "Integrated the already-supplied exact NQ 20-minute ETH TradingView exports as hash-validated private history. ICARUS now auto-discovers the licensed standard-OHLC file from private/local common folders, prefers it once target depth is satisfied, materializes only a local stitched cache, surfaces safe provenance in the Assurance UI, and keeps raw licensed payloads out of Git.",
+  "surface": "NQ warm-up history selection, private-history provenance, and ICARUS Assurance interface",
+  "source": "CHATGPT_MCP",
+  "paths": [
+    ".gitignore",
+    "icarus_engine/private_history.py",
+    "icarus_engine/runtime.py",
+    "icarus_engine/completion_gate.py",
+    "icarus_engine/assurance-ui.js",
+    "automation_intelligence/private_history_catalog/nq_20m_eth_20260930.json",
+    "tests_engine/test_private_history.py"
+  ],
+  "evidence": [
+    "exact-standard-sha256:a8141ffa372b4ffaba4d6bf8b8998a489f2daf00bfad5e248bf27132d99f0932",
+    "exact-ha-sha256:4fe26a9b2ee9a5e81c24577f2abd51073e7e944f4f6aa43a77b61095af44e48c",
+    "rows:41239+identical-timestamp-set+2024-06-02T22:00Z-to-2026-09-30T13:20Z",
+    "session:owner-confirmed-ETH-current-window-family",
+    "selection:private-exact-priority-when-warmup-target-satisfied",
+    "privacy:raw-licensed-files-outside-git+local-path-redacted-from-ui",
+    "ha-parity:41238-of-41239-rows-match-transform;single-final-timestamp-mismatch-recorded-without-cause-inference",
+    "safety:execution_authorized-false+trading-permission-unchanged"
+  ],
+  "execution_authorized": false,
+  "trading_execution_authorized": false
+}

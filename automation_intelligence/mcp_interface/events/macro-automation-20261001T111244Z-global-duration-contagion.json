@@ -1,0 +1,65 @@
+{
+  "schema_version": "icarus-mcp-event-v1",
+  "event_id": "macro-automation-20261001T111244Z-global-duration-contagion",
+  "category": "EVOLUTION",
+  "source": "MACRO_AUTOMATION",
+  "observed_at_utc": "2026-10-01T11:12:44Z",
+  "execution_authorized": false,
+  "net_new_delta": "GLOBAL_DURATION_CONTAGION_INTENSIFIED",
+  "finding": "Fresh evidence shows the US duration shock broadening into synchronized sovereign/fiscal stress: US 10Y reached 5.34% (highest since 2002), France 10Y rose to 4.96% after its worst quarter since 1987 with sovereign CDS at its highest since 2013, UK 30Y exceeded 6% for the first time since 1998, and Japan sovereign yields recorded a fifth consecutive quarter of double-digit gains. European STOXX 600 fell 1.2%, indicating spillover beyond rates.",
+  "affected_instruments": [
+    "NQ",
+    "MNQ",
+    "US10Y",
+    "US30Y",
+    "DXY",
+    "GC",
+    "MGC",
+    "SI",
+    "Brent",
+    "WTI",
+    "STOXX600",
+    "French_OAT",
+    "UK_Gilt",
+    "JGB"
+  ],
+  "affected_assumptions": [
+    "US duration stress can be modeled as primarily domestic",
+    "cross-country sovereign-rate correlations remain near prior baselines",
+    "equity-duration beta is stationary",
+    "near-term Fed expectations adequately summarize financial conditions"
+  ],
+  "evidence": [
+    {
+      "source": "Reuters",
+      "date": "2026-10-01",
+      "url": "https://www.reuters.com/business/bonds-teeter-after-us-treasuries-worst-quarter-since-1994-2026-10-01/",
+      "facts": "US 10Y 5.34%; France 10Y 4.96% and worst quarter since 1987; French sovereign CDS highest since 2013; UK 30Y above 6%; Japan fifth consecutive quarter of double-digit sovereign-yield gains; STOXX 600 down 1.2%."
+    },
+    {
+      "source": "Reuters",
+      "date": "2026-10-01",
+      "url": "https://www.reuters.com/world/uk/uk-30-year-gilt-yields-surge-highest-since-1998-2026-10-01/",
+      "facts": "UK 30Y gilt 6.029%, highest since January 1998; UK 10Y 5.510%, highest since July 2007."
+    }
+  ],
+  "conflicts": [
+    "Softer US PCE and reduced immediate Fed-hike expectations have not reversed long-end yield stress.",
+    "Energy prices show mixed marginal signals while sovereign yields continue rising.",
+    "AI-linked equity fundamentals remain supportive in places while sovereign discount rates rise sharply."
+  ],
+  "data_gaps": [
+    "No verified order-book depth, positioning, funding, liquidation, or dealer-balance-sheet data.",
+    "Causal decomposition among fiscal risk, term premium, inflation, supply, growth and forced-position unwinds remains unresolved."
+  ],
+  "confidence": "HIGH on synchronized sovereign-duration stress; MEDIUM on persistence and causal decomposition.",
+  "next_decisive_check": "Test whether US 10Y remains above ~5.3%, France 10Y approaches/holds 5%, UK 30Y remains above 6%, and equity/credit spillover broadens after US payrolls; quantify cross-country rate-correlation and NQ-duration beta breaks.",
+  "oracle": {
+    "status": "MATERIAL_FINDING",
+    "finding": "Promote synchronized global-duration/fiscal stress to an active ICARUS regime hypothesis; the US long-end shock is now visibly propagating through France, the UK and Japan and into European equities."
+  },
+  "supermesh_x": {
+    "status": "MATERIAL_FINDING",
+    "finding": "Reuters cross-market evidence coherently confirms rates contagion across US, French, UK and Japanese sovereign markets without requiring unavailable microstructure fields; preserve separate fiscal, inflation and energy channels rather than collapsing them into one cause."
+  }
+}

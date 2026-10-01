@@ -173,7 +173,7 @@ def test_batch_catchup_returns_oldest_pending_slots_in_order(tmp_path: Path) -> 
     control = replace(
         load_control_plane(Path(".")),
         mode="AUTHORITATIVE",
-        activated_at_utc=datetime(2026, 9, 30, 20, 17, 28, tzinfo=UTC),
+        activated_at_utc=datetime(2026, 10, 1, 1, 0, tzinfo=UTC),
         catchup_horizon_minutes=180,
     )
     omega_dir = (
@@ -206,7 +206,7 @@ def test_batch_catchup_limit_is_bounded(tmp_path: Path) -> None:
     control = replace(
         load_control_plane(Path(".")),
         mode="AUTHORITATIVE",
-        activated_at_utc=datetime(2026, 9, 30, 20, 17, 28, tzinfo=UTC),
+        activated_at_utc=datetime(2026, 10, 1, 1, 0, tzinfo=UTC),
         catchup_horizon_minutes=180,
     )
     slots = select_pending_slots(

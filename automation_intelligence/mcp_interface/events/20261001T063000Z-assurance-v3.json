@@ -5,7 +5,7 @@
   "category": "EVOLUTION",
   "status": "IMPLEMENTED",
   "severity": "IMPORTANT",
-  "summary": "Expanded ICARUS Assurance v3 into a behavior-neutral observability and comparative-research layer: parity fingerprints, persistent replay-equivalence checkpoints, conservative historical quality readiness, raw pre-session retention, RTH/ETH×Real/HA comparison, deterministic replay audits, local parameter-sensitivity scans, explicit replay regression baselines/diffs, provider-health telemetry, decision blockers, counterfactual blocked-signal scoring, decision-to-fill/close regime attribution, trade segmentation, roll provenance, and execution-cost stress, all surfaced in the ICARUS interface.",
+  "summary": "Expanded ICARUS Assurance v3 into a behavior-neutral observability and comparative-research layer: parity fingerprints, persistent replay-equivalence checkpoints, persistent provenance-preserving warm-up bar caching, conservative historical quality readiness, raw pre-session retention, RTH/ETH×Real/HA comparison, deterministic replay audits, local parameter-sensitivity scans, explicit replay regression baselines/diffs, provider-health telemetry, decision blockers, counterfactual blocked-signal scoring, decision-to-fill/close regime attribution, trade segmentation, roll provenance, and execution-cost stress, all surfaced in the ICARUS interface.",
   "surface": "runtime assurance, historical-quality gating, replay regression, comparative research, provider observability, and ICARUS dashboard",
   "source": "CHATGPT_MCP",
   "paths": [
@@ -27,7 +27,9 @@
     "icarus_engine/regression_jobs.py",
     "icarus_engine/assurance-ui.js",
     "tests_engine/test_regression_jobs.py",
-    "tests_engine/test_assurance_research_extensions.py"
+    "tests_engine/test_assurance_research_extensions.py",
+    "icarus_engine/bar_cache.py",
+    "tests_engine/test_bar_cache.py"
   ],
   "evidence": [
     "parity:canonical-sha256-gate-state",
@@ -48,7 +50,9 @@
     "robustness:one-parameter-at-a-time-local-sensitivity-no-ranking",
     "regression:explicit-local-baseline+descriptive-diff",
     "trade-segmentation:direction+entry-hour-CT+holding-duration",
-    "ui:assurance-research-controls+trade-segmentation+regression-status"
+    "ui:assurance-research-controls+trade-segmentation+regression-status",
+    "warmup-cache:persistent-market-bars-only+fresh-provider-wins+no-execution-state",
+    "ui:persistent-cache-granularity+count+first+last"
   ],
   "execution_authorized": false,
   "trading_execution_authorized": false

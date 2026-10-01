@@ -41,7 +41,7 @@ from .strategy.security import TFChain
 from .history_v2 import (load_csv as load_history_csv, write_manifest as write_history_manifest, assess_quality,
                          discover_history_sources, stitch_strict, write_bars_csv)
 from .assurance import gate_attribution
-from .assurance_v3 import ParityMonitor, SessionShadow, execution_stress, roll_provenance, timeframe_integrity
+from .assurance_v3 import ParityMonitor, SessionShadow, execution_stress, execution_stress_v2, roll_provenance, timeframe_integrity
 from .observability import explain_decision, CounterfactualTracker, ProviderHealth, ReplayCheckpointLedger, DecisionTrace
 from .research_extensions import trade_breakdown
 from .bar_cache import BarCache, merge_bars
@@ -968,6 +968,9 @@ class AssetRunner:
             "replay_equivalence": self.replay_ledger.view() if self.replay_ledger is not None else {"mode":"NOT_INITIALIZED","restore_enabled":False,"execution_authorized":False},
             "roll_provenance": roll_provenance(self.roller),
             "execution_stress": execution_stress(
+                [{"profit": t.profit, "qty": t.qty} for t in self.em.closed[-200:]],
+                tick_size=self.mintick, multiplier=self.em.contract_size),
+            "execution_stress_v2": execution_stress_v2(
                 [{"profit": t.profit, "qty": t.qty} for t in self.em.closed[-200:]],
                 tick_size=self.mintick, multiplier=self.em.contract_size),
             "last_bar_ts": self.bars[-1].ts if self.bars else None,

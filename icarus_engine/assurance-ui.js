@@ -17,6 +17,17 @@
   const pct = v => v == null ? "—" : (Number(v) * 100).toFixed(1) + "%";
   const money = v => v == null ? "—" : (Number(v) >= 0 ? "+" : "") + Number(v).toLocaleString(undefined,{maximumFractionDigits:2});
 
+  function historyShardHtml(a) {
+    const used=a?.warmup_shards || [], ignored=a?.warmup_ignored_session_shards || [], stitch=a?.warmup_stitch || null;
+    if (!used.length && !ignored.length && !stitch) return "";
+    const status=stitch?.status || (stitch?.conflicts===0 ? "STITCHED" : "—");
+    return `<details class="group"><summary>Historical shard provenance <span class="cnt">${used.length} used</span></summary>
+      <div class="small"><b>Session:</b> ${esc(a.session_mode||'—')} · <b>status:</b> ${esc(status)} · <b>overlaps:</b> ${stitch?.overlaps??0} · <b>conflicts:</b> ${stitch?.conflicts??0}</div>
+      <div class="small muted" style="margin-top:5px"><b>Used:</b> ${used.length?used.map(esc).join(' · '):'none'}<br><b>Ignored session-mismatch:</b> ${ignored.length?ignored.map(esc).join(' · '):'none'}</div>
+      <div class="small muted">RTH and ETH labelled shards are never silently combined. Conflicting OHLC overlaps are refused rather than arbitrarily selected.</div>
+    </details>`;
+  }
+
   function cacheHtml(a) {
     const c=a?.persistent_bar_cache;
     if (!c || !(c.series||[]).length) return '<div class="small muted">Persistent bar cache: empty / not initialized.</div>';
@@ -158,6 +169,7 @@
       </div>
       <div class="small muted" style="margin:6px 0 10px">Research-only controls. They run isolated replays and never activate parameters, submit orders, or authorize execution. Saving a regression baseline always requires explicit confirmation.</div>
       ${jobHtml(asset)}
+      ${historyShardHtml(a)}
       ${cacheHtml(a)}
       ${breakdownHtml(a)}`;
     if (host._icarusAssuranceHtml !== html) {

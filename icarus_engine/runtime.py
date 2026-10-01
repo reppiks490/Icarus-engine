@@ -517,13 +517,15 @@ class AssetRunner:
         self.warmup_quality_gate = None
         self.warmup_shards = []
         self.warmup_stitch = None
+        self.warmup_ignored_session_shards = []
         source_reports = []
 
         # Auto-discover compatible history shards only when no canonical export
         # exists. Overlapping OHLC must agree exactly enough to be deterministic;
         # conflicting shards are refused rather than silently prioritized.
         if hist is None:
-            discovered = discover_history_sources(self.base_dir, self.symbol, self.chart_minutes)
+            discovered = discover_history_sources(self.base_dir, self.symbol, self.chart_minutes, getattr(self.cal, "session", ""))
+            self.warmup_ignored_session_shards = [os.path.relpath(p, self.base_dir) for p in discovered.get("ignored_session_mismatch", [])]
             candidates = discovered["exact"]
             source_kind = "exact"
             if not candidates:
@@ -949,6 +951,7 @@ class AssetRunner:
             "warmup_source": getattr(self, "warmup_source", None), "warmup_quality": getattr(self, "warmup_quality", None),
             "warmup_quality_gate": getattr(self, "warmup_quality_gate", None),
             "warmup_shards": getattr(self, "warmup_shards", []), "warmup_stitch": getattr(self, "warmup_stitch", None),
+            "warmup_ignored_session_shards": getattr(self, "warmup_ignored_session_shards", []),
             "warmup_readiness": ((self.warmup_quality_gate or {}).get("status") if getattr(self, "warmup_quality_gate", None)
                                  else ("READY" if (self.bar_index + 1) >= self.cfg.warmup_bars else ("DEGRADED" if self.warm else "WARMING"))),
             "decision_attribution": gate_attribution(st),

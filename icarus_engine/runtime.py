@@ -48,7 +48,7 @@ from .bar_cache import BarCache, merge_bars, merge_source_aware
 from .recovery import RecoveryWitness
 from .continuous_history import archive_status as continuous_archive_status
 from .completion_gate import completion_status
-from .private_history import discover_private_history, safe_private_label
+from .private_history import discover_private_history, discover_private_reference_reports, safe_private_label
 
 
 def _clean(x: Any) -> Any:
@@ -536,6 +536,8 @@ class AssetRunner:
         self.warmup_stitch = None
         self.warmup_ignored_session_shards = []
         self.warmup_private_history = None
+        self.private_reference_reports = discover_private_reference_reports(
+            self.symbol, self.chart_minutes, getattr(self.cal, "session", ""), base_dir=self.base_dir)
         source_reports = []
 
         # Discover all compatible sources and choose the deepest validated set.
@@ -1004,6 +1006,7 @@ class AssetRunner:
             "warmup_quality_gate": getattr(self, "warmup_quality_gate", None),
             "warmup_shards": getattr(self, "warmup_shards", []), "warmup_stitch": getattr(self, "warmup_stitch", None),
             "warmup_private_history": getattr(self, "warmup_private_history", None),
+            "private_reference_reports": getattr(self, "private_reference_reports", []),
             "warmup_ignored_session_shards": getattr(self, "warmup_ignored_session_shards", []),
             "warmup_readiness": ((self.warmup_quality_gate or {}).get("status") if getattr(self, "warmup_quality_gate", None)
                                  else ("READY" if (self.bar_index + 1) >= self.cfg.warmup_bars else ("DEGRADED" if self.warm else "WARMING"))),

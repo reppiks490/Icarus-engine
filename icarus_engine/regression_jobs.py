@@ -1,6 +1,7 @@
 """Explicit, read-only replay regression baselines for ICARUS research."""
 from __future__ import annotations
 import json, os, tempfile, threading, time, uuid
+from collections import Counter
 from pathlib import Path
 from typing import Any, Dict
 from .backtest import freeze_replay_port, run_backtest
@@ -21,25 +22,39 @@ def _trade_sig(t):
     return [t.get(k) for k in ("type","entry_ts","entry_px","exit_ts","exit_px","exit_signal","qty","pnl")]
 
 def snapshot(result):
+    cfg=result.get("config",{}) or {}
+    rep=cfg.get("reproducibility") or {}
+    source={"subbars_sha256":rep.get("subbars_sha256"),"deep_sha256":rep.get("deep_sha256"),
+            "subbars_scope":rep.get("subbars_scope"),"subbars_count":rep.get("subbars_count"),
+            "deep_counts":rep.get("deep_counts")}
     return {"schema_version":"icarus-regression-baseline-v1","asset":result.get("asset"),"digest":regression_digest(result),
             "bars":result.get("bars"),"range":result.get("range"),
-            "config":{k:result.get("config",{}).get(k) for k in ("preset","fill_on","chart_type","session","tf","slippage_ticks","commission","pts_scale")},
+            "config":{k:cfg.get(k) for k in ("preset","fill_on","chart_type","session","tf","slippage_ticks","commission","capital","leverage","pts_scale")},
+            "effective_config_sha256":rep.get("effective_config_sha256"),
+            "source":source,
             "metrics":{k:_all(result.get("summary",{}),k) for k in _METRICS},
             "trades":[_trade_sig(t) for t in result.get("trades",[]) if not t.get("open")],
             "execution_authorized":False}
 
 def compare(base,current):
-    b=set(json.dumps(x,separators=(",",":"),sort_keys=False,default=str) for x in base.get("trades",[]))
-    c=set(json.dumps(x,separators=(",",":"),sort_keys=False,default=str) for x in current.get("trades",[]))
+    b=Counter(json.dumps(x,separators=(",",":"),sort_keys=False,default=str) for x in base.get("trades",[]))
+    c=Counter(json.dumps(x,separators=(",",":"),sort_keys=False,default=str) for x in current.get("trades",[]))
     deltas={}
     for k in _METRICS:
         x,y=base.get("metrics",{}).get(k),current.get("metrics",{}).get(k)
         deltas[k]=(y-x) if isinstance(x,(int,float)) and isinstance(y,(int,float)) else None
+    bc=base.get("config") or {}; cc=current.get("config") or {}
+    config_changes={k:{"baseline":bc.get(k),"current":cc.get(k)} for k in sorted(set(bc)|set(cc)) if bc.get(k)!=cc.get(k)}
+    bs=base.get("source") or {}; cs=current.get("source") or {}
+    source_changes={k:{"baseline":bs.get(k),"current":cs.get(k)} for k in sorted(set(bs)|set(cs)) if bs.get(k)!=cs.get(k)}
     return {"digest_equal":base.get("digest")==current.get("digest"),
             "baseline_digest":base.get("digest"),"current_digest":current.get("digest"),
+            "config_equal":not config_changes and base.get("effective_config_sha256")==current.get("effective_config_sha256"),
+            "source_equal":not source_changes,
+            "config_changes":config_changes,"source_changes":source_changes,
             "bars_delta":(current.get("bars") or 0)-(base.get("bars") or 0),
-            "metrics_delta":deltas,"trades_added":len(c-b),"trades_removed":len(b-c),
-            "baseline_trade_count":len(b),"current_trade_count":len(c),
+            "metrics_delta":deltas,"trades_added":sum((c-b).values()),"trades_removed":sum((b-c).values()),
+            "baseline_trade_count":sum(b.values()),"current_trade_count":sum(c.values()),
             "interpretation":"DESCRIPTIVE_REGRESSION_DIFF","execution_authorized":False}
 
 def _path(root,asset):

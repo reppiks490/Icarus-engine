@@ -16,9 +16,11 @@ def _trade_sig(t):
             "entry_ts":int(getattr(t,"entry_ts",0))}
 
 def _pending_sig(p):
+    # placed_bar is intentionally omitted: absolute bar indexes can shift when
+    # deeper history is added before a restart even when market-time state is
+    # equivalent. Identity/direction/qty/limit are the stable order semantics.
     return {"id":str(getattr(p,"id","")),"direction":int(getattr(p,"direction",0)),
-            "qty":int(getattr(p,"qty",0)),"limit":getattr(p,"limit",None),
-            "placed_bar":int(getattr(p,"placed_bar",-1))}
+            "qty":int(getattr(p,"qty",0)),"limit":getattr(p,"limit",None)}
 
 def snapshot(ts:int,digest:str,em) -> Dict[str,Any]:
     return {"bar_ts":int(ts),"decision_digest":str(digest),

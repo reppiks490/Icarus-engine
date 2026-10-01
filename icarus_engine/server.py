@@ -42,6 +42,7 @@ from .strategy.meta import load_meta
 from .advisory import MAX_BODY_BYTES, strict_json
 from .research_service import ResearchWorkspace
 from .mcp_control import MCPControlPlane
+from .comparison_jobs import start_matrix as start_session_matrix, get_job as get_session_matrix
 
 
 def _no_json_constants(name: str):
@@ -168,6 +169,8 @@ def serve(port: Portfolio, http_port: int = 8791, token: str = "icarus", start: 
                             limit=int(q.get("limit", ["100"])[0])))
                     if p.path.startswith("/api/research/jobs/"):
                         return self._json(200, research.job(p.path.rsplit("/", 1)[1]))
+                    if p.path.startswith("/api/research/session-matrix/"):
+                        return self._json(200, get_session_matrix(p.path.rsplit("/", 1)[1]))
                     if p.path.startswith("/api/research/proposals/"):
                         return self._json(200, research.ledger.get_proposal(p.path.rsplit("/", 1)[1]))
                 except (ValueError, TypeError, KeyError) as ex:
@@ -270,6 +273,11 @@ def serve(port: Portfolio, http_port: int = 8791, token: str = "icarus", start: 
             try:
                 if p.path == "/admin/research/studies":
                     return self._json(200, research.start(body))
+                if p.path == "/admin/research/session-matrix":
+                    if set(body) != {"asset"}:
+                        raise ValueError("session matrix requires asset only")
+                    job_id = start_session_matrix(port, asset)
+                    return self._json(200, {"ok": True, "job": job_id, "note": f"session/chart matrix {asset} started", "execution_authorized": False})
                 if p.path == "/admin/research/adaptation":
                     return self._json(200, research.configure_adaptation(body))
                 if p.path == "/admin/research/source-watch":

@@ -41,7 +41,7 @@ from .strategy.security import TFChain
 from .history_v2 import (load_csv as load_history_csv, write_manifest as write_history_manifest, assess_quality,
                          discover_history_sources, stitch_strict, write_bars_csv)
 from .assurance import gate_attribution
-from .assurance_v3 import ParityMonitor, SessionShadow, execution_stress, roll_provenance
+from .assurance_v3 import ParityMonitor, SessionShadow, execution_stress, roll_provenance, timeframe_integrity
 from .observability import explain_decision, CounterfactualTracker, ProviderHealth, ReplayCheckpointLedger, DecisionTrace
 from .research_extensions import trade_breakdown
 from .bar_cache import BarCache, merge_bars
@@ -957,6 +957,8 @@ class AssetRunner:
                                  else ("READY" if (self.bar_index + 1) >= self.cfg.warmup_bars else ("DEGRADED" if self.warm else "WARMING"))),
             "decision_attribution": gate_attribution(st),
             "parity": self.parity_monitor.view(), "session_shadow": self.session_shadow.view(),
+            "timeframe_integrity": timeframe_integrity(
+                self.bars[-1].ts if self.bars else None, self.chains, self.cal.bucket_start),
             "decision_explanation": explain_decision(st), "counterfactuals": self.counterfactuals.view(),
             "provider_health": self.provider_health.view(self.spec.feed, "kraken" if self.spec.feed == "coinbase" else None),
             "decision_trace": self.decision_trace.view(),

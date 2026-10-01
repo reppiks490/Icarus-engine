@@ -46,6 +46,7 @@ from .observability import explain_decision, CounterfactualTracker, ProviderHeal
 from .research_extensions import trade_breakdown
 from .bar_cache import BarCache, merge_bars
 from .recovery import RecoveryWitness
+from .continuous_history import archive_status as continuous_archive_status
 
 
 def _clean(x: Any) -> Any:
@@ -979,6 +980,7 @@ class AssetRunner:
             "replay_equivalence": self.replay_ledger.view() if self.replay_ledger is not None else {"mode":"NOT_INITIALIZED","restore_enabled":False,"execution_authorized":False},
             "restart_recovery": self.recovery_witness.view() if self.recovery_witness is not None else {"status":"NOT_INITIALIZED","state_restore_enabled":False,"execution_authorized":False},
             "roll_provenance": roll_provenance(self.roller),
+            "continuous_archive": continuous_archive_status(self.base_dir, self.symbol) if self.spec.kind == "futures" else {"configured":False,"contract_files":[],"execution_authorized":False},
             "execution_stress": execution_stress(
                 [{"profit": t.profit, "qty": t.qty} for t in self.em.closed[-200:]],
                 tick_size=self.mintick, multiplier=self.em.contract_size),

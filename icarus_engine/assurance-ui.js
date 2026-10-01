@@ -17,6 +17,18 @@
   const pct = v => v == null ? "—" : (Number(v) * 100).toFixed(1) + "%";
   const money = v => v == null ? "—" : (Number(v) >= 0 ? "+" : "") + Number(v).toLocaleString(undefined,{maximumFractionDigits:2});
 
+  function recoveryHtml(a) {
+    const r=a?.restart_recovery;
+    if (!r) return "";
+    const bad=r.status==="DIVERGENCE" || r.status==="REFERENCE_BAR_MISSING";
+    const diff=r.check?.differences || {};
+    return `<details class="group" ${bad?'open':''}><summary>Restart replay recovery <span class="cnt ${bad?'neg':''}">${esc(r.status||'—')}</span></summary>
+      <div class="small ${bad?'neg':'muted'}">Method: ${esc(r.recovery_method||'—')} · executable state restore: ${r.state_restore_enabled?'enabled':'disabled'}</div>
+      ${Object.keys(diff).length?`<div class="scroll"><table><thead><tr><th>Surface</th><th>Expected</th><th>Reconstructed</th></tr></thead><tbody>${Object.entries(diff).map(([k,v])=>`<tr><td>${esc(k)}</td><td><code>${esc(JSON.stringify(v.expected))}</code></td><td><code>${esc(JSON.stringify(v.observed))}</code></td></tr>`).join('')}</tbody></table></div>`:''}
+      <div class="small muted">ICARUS reconstructs state from persisted market observations and checks the prior decision/position/pending snapshot. It does not deserialize executable order objects.</div>
+    </details>`;
+  }
+
   function executionStressHtml(a) {
     const e=a?.execution_stress_v2;
     if (!e || !(e.scenarios||[]).length) return "";
@@ -216,6 +228,7 @@
       </div>
       <div class="small muted" style="margin:6px 0 10px">Research-only controls. They run isolated replays and never activate parameters, submit orders, or authorize execution. Saving a regression baseline always requires explicit confirmation.</div>
       ${jobHtml(asset)}
+      ${recoveryHtml(a)}
       ${integrityHtml(a)}
       ${voteAttributionHtml(a)}
       ${executionStressHtml(a)}

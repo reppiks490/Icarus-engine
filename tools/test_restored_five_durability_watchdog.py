@@ -502,5 +502,34 @@ class WatchdogTests(unittest.TestCase):
             self.assertEqual(receipt["RUN_ID"], "lane-20260930T220500Z")
 
 
+    def test_watchdog_fallback_receipt_intentionally_defers_evidence_alarm(self):
+        with tempfile.TemporaryDirectory() as td:
+            repo = Path(td)
+            root = repo / "lane"
+            expected = "lane-20260930T210500Z"
+            write_json(root / "finalization_state.json", {
+                "schema_version": "scheduler-finalization-v5.7",
+                "RUN_ID": expected,
+                "RUN_STATUS": "RUN_PERSISTED",
+                "completion_semantics": "DURABILITY_RECEIPT_ONLY",
+                "history_mode": "git_commit_finalization",
+                "work_status": "WATCHDOG_FALLBACK_PERSISTED",
+                "receipt_origin": "github_watchdog_stabilization_fallback",
+                "worker_execution_observed": False,
+                "payload": {
+                    "result": "SCHEDULER_WORKER_RECEIPT_MISSED",
+                    "NEXT": "No substantive evidence was produced; the stabilization slot was durably recovered by the repository watchdog."
+                },
+                "execution_authorized": False,
+            })
+            write_json(root / "evidence_state.json", {})
+            changed = monitor_missing_evidence(
+                repo, "lane", "lane", "sched", 5, "lane", 20,
+                datetime(2026, 9, 30, 21, 0, tzinfo=timezone.utc),
+                datetime(2026, 9, 30, 21, 26, tzinfo=timezone.utc),
+            )
+            self.assertEqual(changed, [])
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -64,6 +64,7 @@ def freeze_replay_port(port, symbol: str):
             spec=spec, cfg=cfg, inputs_base=base, inputs=effective,
             mintick=getattr(src, "mintick", spec.mintick), pts_scale=getattr(src, "pts_scale", 1.0),
             deep={m: tuple(rows) for m, rows in src.deep.items()}, subbars=tuple(src.subbars),
+            raw_subbars=tuple(getattr(src, "raw_subbars", ()) or src.subbars),
             T_w=getattr(src, "T_w", None), chains=tuple(getattr(src, "chains", htf | {2, 5})),
             lock=threading.RLock())
     return SimpleNamespace(runners={symbol: frozen}, base_dir=port.base_dir, profile=cfg.profile,
@@ -221,7 +222,8 @@ def run_backtest(port, symbol: str, *, preset: Optional[str] = None, inputs: Opt
             progress(replayed)
     r._on_chart_bar = hooked                                   # type: ignore[assignment]
     # replay the live runner's cached history: deep native bars, then every sub-bar since T_w
-    deep, subs = src.deep, src.subbars
+    deep = src.deep
+    subs = tuple(getattr(src, "raw_subbars", ()) or src.subbars)
     for m, rows in deep.items():
         ch = r.chains.get(m)
         if ch:
@@ -296,7 +298,8 @@ def run_backtest(port, symbol: str, *, preset: Optional[str] = None, inputs: Opt
         "source_config_sha256": _snapshot_hash(source_config), "effective_config_sha256": _snapshot_hash(effective_config),
         "subbars_sha256": _snapshot_hash([(asdict(b), sub) for b, sub in subs]),
         "deep_sha256": _snapshot_hash({m: [(asdict(b), sub) for b, sub in rows] for m, rows in deep.items()}),
-        "subbars_count": len(subs), "deep_counts": {str(m): len(rows) for m, rows in deep.items()},
+        "subbars_count": len(subs), "subbars_scope": "raw_pre_session_filter" if getattr(src, "raw_subbars", ()) else "active_session_only",
+        "deep_counts": {str(m): len(rows) for m, rows in deep.items()},
         "scale_source": "literal points (no reference scaling)" if literal_scale else "frozen source scale",
         "scale_known_at": scale_known_at,
         "historical_scale_asof_valid": historical_scale_asof_valid,

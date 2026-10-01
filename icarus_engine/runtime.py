@@ -38,8 +38,15 @@ from .strategy.inputs import Inputs, crypto_profile
 from .strategy.meta import load_meta
 from .strategy.pulse import PulseStrategy
 from .strategy.security import TFChain
-from .history_v2 import load_csv as load_history_csv, write_manifest as write_history_manifest
+from .history_v2 import (load_csv as load_history_csv, write_manifest as write_history_manifest, assess_quality,
+                         discover_history_sources, stitch_strict, write_bars_csv)
 from .assurance import gate_attribution
+from .assurance_v3 import ParityMonitor, SessionShadow, execution_stress, execution_stress_v2, roll_provenance, timeframe_integrity
+from .observability import explain_decision, CounterfactualTracker, ProviderHealth, ReplayCheckpointLedger, DecisionTrace
+from .research_extensions import trade_breakdown
+from .bar_cache import BarCache, merge_bars, merge_source_aware
+from .recovery import RecoveryWitness
+from .continuous_history import archive_status as continuous_archive_status
 
 
 def _clean(x: Any) -> Any:
@@ -293,7 +300,9 @@ class AssetRunner:
         self.last_price: Optional[float] = None
         self.last_price_ts: float = 0.0
         self.last_bar_wall: float = 0.0
-        self.subbars: List[Tuple[Bar, int]] = []            # everything fed since T_w (for fast re-warm)
+        self.subbars: List[Tuple[Bar, int]] = []            # bars accepted by the ACTIVE session (legacy/repro path)
+        self.raw_subbars: List[Tuple[Bar, int]] = []        # all fetched bars before session filtering; enables honest RTH/ETH replays
+        self.last_raw_sub_ts: Optional[int] = None
         self.deep: Dict[int, List[Tuple[Bar, int]]] = {}    # chain minutes → deep history (before T_w)
         self.T_w: Optional[int] = None
         self._build_engine()
@@ -317,6 +326,15 @@ class AssetRunner:
         self.lock = threading.RLock()
         self.recent_fills: Deque[Dict[str, Any]] = collections.deque(maxlen=300)
         self.recent_events: Deque[Dict[str, Any]] = collections.deque(maxlen=300)
+        self.parity_monitor = ParityMonitor()
+        self.session_shadow = SessionShadow()
+        self.counterfactuals = CounterfactualTracker()
+        secondary = "kraken" if self.spec.feed == "coinbase" else None
+        self.provider_health = ProviderHealth([p for p in (self.spec.feed, secondary) if p])
+        self.replay_ledger: Optional[ReplayCheckpointLedger] = None
+        self.bar_cache: Optional[BarCache] = None
+        self.recovery_witness: Optional[RecoveryWitness] = None
+        self.decision_trace = DecisionTrace()
 
     # ── engine construction (also used by re-warm) ──
     def _build_engine(self) -> None:
@@ -392,12 +410,40 @@ class AssetRunner:
         ltf = [self.chains[2].ltf_values(chart.ts, self.chart_minutes, t_close), self.chains[5].ltf_values(chart.ts, self.chart_minutes, t_close)]
         st = self.strat.on_bar(chart, self.bar_index, htf, ltf, time_close=t_close)
         self.state = st
+        # Behavior-neutral assurance: fingerprint the closed-bar decision state and
+        # maintain a shadow RTH/ETH statistic. Neither object can submit orders.
+        self.parity_monitor.observe(chart.ts, gate_attribution(st))
+        try:
+            shadow_rth = get_calendar(self.spec.calendar, self.spec.anchor_et, session="rth", group=self.spec.group).intraday_open(chart.ts) if self.spec.kind == "futures" else None
+        except Exception:
+            shadow_rth = bool(st.get("in_session")) if self.spec.kind == "futures" else None
+        self.session_shadow.observe(chart.c, shadow_rth)
+        self.counterfactuals.observe(chart.ts, chart.c, st)
+        trace_decision = dict(explain_decision(st),
+                              regime=st.get("rate_regime_str"), regime_score=st.get("rate_regime"),
+                              pulse_state=st.get("pulse_state"), families_l=st.get("families_l"), families_s=st.get("families_s"),
+                              votes=[{"name":v.get("name"),"l":bool(v.get("l")),"s":bool(v.get("s")),"w":v.get("w")}
+                                     for v in (st.get("votes") or []) if isinstance(v, dict)])
+        self.decision_trace.capture(chart.ts, self.bar_index, list(self.em._pending_entries),
+                                    trace_decision, self.parity_monitor.latest.digest if self.parity_monitor.latest else None)
+        if self.recovery_witness is not None and self.parity_monitor.latest is not None:
+            if live:
+                self.recovery_witness.write_live(chart.ts, self.parity_monitor.latest.digest, self.em)
+            else:
+                self.recovery_witness.observe_replay(chart.ts, self.parity_monitor.latest.digest, self.em)
+        if self.replay_ledger is not None and self.parity_monitor.latest is not None:
+            prior_checkpoint = str(int(chart.ts)) in self.replay_ledger.entries
+            if prior_checkpoint or self.bar_index % 100 == 0 or live:
+                self.replay_ledger.observe(chart.ts, self.parity_monitor.latest.digest)
+                if prior_checkpoint or self.bar_index % 500 == 0 or live:
+                    self.replay_ledger.flush()
         self.bars.append(chart)
         self.last_bar_wall = time.time()
         self.overlays.append({"ts": chart.ts, "st": st["rate_st_line"], "up": st["rate_uptrend"], "tp1": st["tp1_price"], "tp2": st["tp2_price"],
                               "sl": st["sl_price"], "vwap": st["vwap"], "kf": st["kf_level"], "pos": st["rate_qty_open"] * (1 if st["rate_pos_long"] else -1),
                               "tide_hi": st["tide_hi"], "tide_lo": st["tide_lo"], "pulse": max(st["pulse_l"], st["pulse_s"]), "real_c": real.c})
         for f in self.em.fills[self._fills_seen:]:
+            self.decision_trace.record_fill(f)
             self.recent_fills.append({"ts": f.ts, "bar": f.bar, "id": f.entry_id, "side": f.side, "qty": f.qty, "price": f.price,
                                       "kind": f.kind, "comment": f.comment, "profit": f.profit, "pos": f.position_after, "live": live})
             if live or not self.rewarming:
@@ -407,6 +453,7 @@ class AssetRunner:
         self._fills_seen = len(self.em.fills)
         for idx in range(self._closed_seen, len(self.em.closed)):
             t = self.em.closed[idx]
+            self.decision_trace.record_close(t)
             if live or not self.rewarming:
                 key = (t.entry_id, t.entry_ts, t.exit_ts, t.exit_comment, t.qty, t.exit_price)
                 piece = sum(1 for u in self.em.closed[:idx] if (u.entry_id, u.entry_ts, u.exit_ts, u.exit_comment, u.qty, u.exit_price) == key)
@@ -419,11 +466,19 @@ class AssetRunner:
         self.strat.events.clear()
 
     def on_sub_bar(self, b: Bar, sub_minutes: int, live: bool, record: bool = True) -> None:
-        """Feed one sub-bar (1m or 5m) to every chain and the chart aggregator."""
+        """Feed one sub-bar to the configured session while retaining raw history for research.
+
+        raw_subbars is observational/cache state only. The live strategy still sees
+        exactly the bars accepted by self.cal; retaining rejected-session bars makes
+        later RTH/ETH replays possible without refetching or inventing data.
+        """
         with self.lock:
+            if record and (self.last_raw_sub_ts is None or b.ts > self.last_raw_sub_ts):
+                self.raw_subbars.append((b, sub_minutes))
+                self.last_raw_sub_ts = b.ts
             if self.last_sub_ts is not None and b.ts <= self.last_sub_ts:
                 return
-            if not self.cal.is_open(b.ts):                    # bars outside the session (Yahoo sometimes returns them) are ignored
+            if not self.cal.is_open(b.ts) or not self.cal.intraday_open(b.ts):
                 return
             self.last_sub_ts = b.ts
             if record:
@@ -440,6 +495,15 @@ class AssetRunner:
     # ── warm-up ──
     def warmup(self, now_ts: Optional[int] = None) -> None:
         now = int(now_ts or time.time())
+        if self.replay_ledger is None:
+            ledger_path = os.path.join(self.base_dir, "state", "replay", f"{self.symbol}_{self.chart_minutes}m.json")
+            self.replay_ledger = ReplayCheckpointLedger(ledger_path)
+        if self.bar_cache is None:
+            cache_path = os.path.join(self.base_dir, "state", "cache", "bars.sqlite3")
+            self.bar_cache = BarCache(cache_path)
+        if self.recovery_witness is None:
+            recovery_path = os.path.join(self.base_dir, "state", "recovery", f"{self.symbol}_{self.chart_minutes}m.json")
+            self.recovery_witness = RecoveryWitness(recovery_path)
         span = self.cfg.warmup_bars * self.chart_minutes * 60
         if not self.cal.open_24_7:
             if getattr(self.cal, "session", "eth") == "rth":  # ~20 bars per trading day (09:30-16:15 ET), 5 days a week
@@ -460,26 +524,59 @@ class AssetRunner:
         # as a price-history warm-up source for the NQ 20m research/paper engine.
         # Its provenance remains visible in warmup_source; live execution is not
         # authorized by choosing this source.
-        exact_hist = os.path.join(self.base_dir,
-                                  "history", f"{self.symbol}_{self.chart_minutes}m.csv")
-        bundled_hist = None
-        if self.symbol == "NQ" and self.chart_minutes == 20:
-            root = self.base_dir
-            candidate = os.path.join(root, "data", "mnq_20m.csv")
-            if os.path.exists(candidate):
-                bundled_hist = candidate
-        hist = exact_hist if os.path.exists(exact_hist) else bundled_hist
+        exact_hist = os.path.join(self.base_dir, "history", f"{self.symbol}_{self.chart_minutes}m.csv")
+        hist = exact_hist if os.path.exists(exact_hist) else None
         self.warmup_source = None
         self.warmup_quality = None
+        self.warmup_quality_gate = None
+        self.warmup_target_bars = max(5000, int(self.cfg.warmup_bars))
+        self.warmup_shards = []
+        self.warmup_stitch = None
+        self.warmup_ignored_session_shards = []
+        source_reports = []
+
+        # Discover all compatible sources and choose the deepest validated set.
+        # This raises the real warm-up depth instead of merely changing the UI.
+        discovered = discover_history_sources(self.base_dir, self.symbol, self.chart_minutes, getattr(self.cal, "session", ""))
+        self.warmup_ignored_session_shards = [os.path.relpath(p, self.base_dir) for p in discovered.get("ignored_session_mismatch", [])]
+        source_sets=[]
+        if discovered["exact"]: source_sets.append(("exact", discovered["exact"]))
+        if discovered["alias"]: source_sets.append(("alias", discovered["alias"]))
+        if hist is not None: source_sets.append(("canonical", [hist]))
+        # Preserve the bundled NQ/MNQ 20m fallback even when an archive exists
+        # but contains no valid bars; _warmup_from_csv remains the compatibility
+        # path and will report the true loaded count.
+        bundled_hist=os.path.join(self.base_dir,"data","mnq_20m.csv") if self.symbol=="NQ" and self.chart_minutes==20 else None
+        best=None
+        for source_kind,candidates in source_sets:
+            try:
+                bars,reports,stitch_meta=stitch_strict(candidates,self.chart_minutes*60,getattr(self.cal,"session","UNKNOWN"))
+                score=(len(bars), 2 if source_kind=="exact" else 1 if source_kind=="canonical" else 0)
+                if bars and (best is None or score>best[0]):
+                    best=(score,source_kind,candidates,bars,reports,stitch_meta)
+            except Exception as ex:
+                self.journal.log("WARN",f"[{self.symbol}] {source_kind} history candidate refused ({ex})")
+        if best is not None:
+            _,source_kind,candidates,bars,source_reports,stitch_meta=best
+            stitched=os.path.join(self.base_dir,"state","history","stitched",f"{self.symbol}_{self.chart_minutes}m.csv")
+            write_bars_csv(stitched,bars)
+            hist=stitched
+            self.warmup_shards=[os.path.relpath(p,self.base_dir) for p in candidates]
+            self.warmup_stitch=dict(stitch_meta,source_kind=source_kind,shards=len(candidates),
+                                    bars=len(bars),target_bars=self.warmup_target_bars)
+            self.journal.log("INFO",f"[{self.symbol}] selected deepest compatible {source_kind} history: {len(bars)} validated bars from {len(candidates)} source(s); target {self.warmup_target_bars}")
+
+        elif bundled_hist and os.path.exists(bundled_hist):
+            hist=bundled_hist
+
         if hist:
             self.warmup_source = os.path.relpath(hist, self.base_dir)
-            # Validate the exact source independently before replay.  Replay remains
-            # the existing engine path; this audit sidecar must never change fills.
             try:
                 _, quality = load_history_csv(hist, self.chart_minutes * 60, getattr(self.cal, "session", "UNKNOWN"))
                 self.warmup_quality = quality.to_dict()
+                self.warmup_quality_gate = assess_quality(quality, self.warmup_target_bars)
                 manifest = os.path.join(self.base_dir, "state", "history", f"{self.symbol}_{self.chart_minutes}m.json")
-                write_history_manifest(manifest, [quality], quality.bars_valid)
+                write_history_manifest(manifest, source_reports or [quality], quality.bars_valid, self.warmup_stitch)
                 if quality.rejected:
                     self.journal.log("WARN", f"[{self.symbol}] history quality: {quality.rejected} rejected rows, {quality.duplicates} duplicates, {quality.gaps} gaps")
             except Exception as ex:
@@ -536,8 +633,13 @@ class AssetRunner:
             if key not in cache:
                 cache[key] = cb.candles(self.spec.ticker, g, T_w - depth, T_w)
             self._feed_deep([m], cache[key], g // 60)
-        ones = cb.candles(self.spec.ticker, 60, T_w, now - 60)
-        self.journal.log("INFO", f"[{self.symbol}] {len(ones)} one-minute candles fetched; replaying")
+        fresh_ones = cb.candles(self.spec.ticker, 60, T_w, now - 60)
+        cb_source=f"{self.spec.feed}:{self.spec.ticker}"
+        cached_records = self.bar_cache.load_records(self.symbol, 1, T_w, now - 60) if self.bar_cache is not None else []
+        ones, protected = merge_source_aware(cached_records, fresh_ones, cb_source)
+        if self.bar_cache is not None:
+            self.bar_cache.put_many(self.symbol, 1, fresh_ones, source=cb_source)
+        self.journal.log("INFO", f"[{self.symbol}] persistent cache {len(cached_records)} + provider {len(fresh_ones)} one-minute candles => {len(ones)} replay bars; {protected} cross-source timestamp(s) protected")
         for b in ones:
             self.on_sub_bar(b, 1, live=False)
 
@@ -560,9 +662,17 @@ class AssetRunner:
         fives_deep = y.candles(tki, 300, max(T_w - 20 * 86400, now - 59 * 86400), T_w)
         self._feed_deep([m for m in self.chains if 5 <= m < 15 and m % 5 == 0], fives_deep, 5)
         one_from = max(T_w, now - 29 * 86400)
-        fives = y.candles(tki, 300, T_w, one_from) if one_from > T_w else []
-        ones = self._closed_only(y.candles(tki, 60, one_from, now), tki)
-        self.journal.log("INFO", f"[{self.symbol}] deep {len(daily)}d/{len(hourly)}h/{len(q15)}x15m/{len(fives_deep)}x5m; {len(fives)} five-minute + {len(ones)} one-minute sub-bars; replaying")
+        fresh_fives = y.candles(tki, 300, T_w, one_from) if one_from > T_w else []
+        fresh_ones = self._closed_only(y.candles(tki, 60, one_from, now), tki)
+        y_source=f"{self.spec.feed}:{tki}"
+        cached_fives = self.bar_cache.load_records(self.symbol, 5, T_w, one_from) if self.bar_cache is not None and one_from > T_w else []
+        cached_ones = self.bar_cache.load_records(self.symbol, 1, one_from, now) if self.bar_cache is not None else []
+        fives, protected_5 = merge_source_aware(cached_fives, fresh_fives, y_source)
+        ones, protected_1 = merge_source_aware(cached_ones, fresh_ones, y_source)
+        if self.bar_cache is not None:
+            self.bar_cache.put_many(self.symbol, 5, fresh_fives, source=y_source)
+            self.bar_cache.put_many(self.symbol, 1, fresh_ones, source=y_source)
+        self.journal.log("INFO", f"[{self.symbol}] deep {len(daily)}d/{len(hourly)}h/{len(q15)}x15m/{len(fives_deep)}x5m; cache/provider merged to {len(fives)} five-minute + {len(ones)} one-minute sub-bars; protected {protected_5+protected_1} cross-contract timestamp(s); replaying")
         for b in fives:
             self.on_sub_bar(b, 5, live=False)
         for b in ones:
@@ -594,6 +704,8 @@ class AssetRunner:
                 except (TypeError, ValueError):
                     continue
         rows.sort(key=lambda b: b.ts)
+        if self.bar_cache is not None:
+            self.bar_cache.put_many(self.symbol, self.chart_minutes, rows, source=f"csv:{os.path.basename(path)}")
         self.journal.log("INFO", f"[{self.symbol}] history/{os.path.basename(path)}: {len(rows)} chart bars ({time.strftime('%Y-%m-%d', time.gmtime(rows[0].ts)) if rows else '-'} → {time.strftime('%Y-%m-%d', time.gmtime(rows[-1].ts)) if rows else '-'}); chart bars come from TradingView, HTF chains built from them")
         for b in rows:
             self.on_sub_bar(b, self.chart_minutes, live=False)
@@ -604,6 +716,8 @@ class AssetRunner:
                 ones = self.feed.candles(self.spec.ticker, 60, max(tail_from, now - 29 * 86400), now)
                 if self.spec.feed == "yahoo":
                     ones = self._closed_only(ones, self.spec.ticker)
+                if self.bar_cache is not None:
+                    self.bar_cache.put_many(self.symbol, 1, ones, source=f"{self.spec.feed}:{self.spec.ticker}")
                 for b in ones:
                     self.on_sub_bar(b, 1, live=False)
             except Exception as ex:
@@ -624,13 +738,21 @@ class AssetRunner:
                 self._build_engine()
                 self.bar_index = -1
                 self.bars.clear(); self.overlays.clear(); self.recent_fills.clear(); self.recent_events.clear()
+                # A re-warm is a fresh deterministic replay. Reset run-local shadow
+                # analytics so counts/traces are not double-counted; keep the
+                # persistent replay ledger to compare the new replay with prior runs.
+                self.parity_monitor = ParityMonitor()
+                self.session_shadow = SessionShadow()
+                self.counterfactuals = CounterfactualTracker()
+                self.decision_trace = DecisionTrace()
                 self._fills_seen = 0; self._closed_seen = 0; self.last_sub_ts = None; self.state = {}
                 for m, rows in self.deep.items():
                     ch = self.chains.get(m)
                     if ch:
                         for b, sub in rows:
                             self._push_deep(ch, b, sub)
-                for b, sub in list(self.subbars):
+                replay_rows = list(self.raw_subbars or self.subbars)
+                for b, sub in replay_rows:
                     self.on_sub_bar(b, sub, live=False, record=False)
                 self.journal.log("INFO", f"[{self.symbol}] re-warmed with new inputs: {self.bar_index + 1} chart bars, {len(self.em.closed)} historical trades, net {self.em.netprofit:+.2f}")
                 self.runtime_error = ""
@@ -698,15 +820,23 @@ class AssetRunner:
             else:
                 bars = self.feed.recent(self.spec.ticker, 60)
         except Exception as ex:
+            self.provider_health.fail(self.spec.feed, ex)
             if self.spec.feed == "coinbase":
                 try:
                     bars = self.kraken.recent(self.spec.ticker, 1)
+                    self.provider_health.ok("kraken")
                 except Exception as ex2:
+                    self.provider_health.fail("kraken", ex2)
                     self._feed_failed(f"{ex} / {ex2}"); return
             else:
                 self._feed_failed(str(ex)); return
+        else:
+            self.provider_health.ok(self.spec.feed)
         closed_before = feed_now if self.spec.feed == "yahoo" else now - 5      # Coinbase is realtime: a minute is closed 5 s after its end
-        new = [b for b in bars if (self.last_sub_ts is None or b.ts > self.last_sub_ts) and b.ts + 60 <= closed_before]
+        highwater = max(self.last_sub_ts or -1, self.last_raw_sub_ts or -1)
+        new = [b for b in bars if b.ts > highwater and b.ts + 60 <= closed_before]
+        if self.bar_cache is not None:
+            self.bar_cache.put_many(self.symbol, 1, new, source=f"{self.spec.feed}:{self.live_ticker if self.spec.feed == 'yahoo' else self.spec.ticker}")
         for b in new:
             self.on_sub_bar(b, 1, live=True)
         with self.lock:
@@ -838,9 +968,35 @@ class AssetRunner:
             "poll_age": (time.time() - self.last_poll_ok) if self.last_poll_ok else None,
             "bar_age": (time.time() - self.last_bar_wall) if self.last_bar_wall else None,
             "bar_index": self.bar_index, "warmup_bars_loaded": self.bar_index + 1, "warmup_bars_target": self.cfg.warmup_bars,
+            "raw_subbars_cached": len(self.raw_subbars), "active_session_subbars_cached": len(self.subbars),
+            "persistent_bar_cache": self.bar_cache.stats(self.symbol) if self.bar_cache is not None else {"asset":self.symbol,"series":[],"revisions":{"total":0,"price":0,"volume":0},"stores_execution_state":False,"execution_authorized":False},
+            "bar_cache_revisions": self.bar_cache.recent_revisions(self.symbol, 20) if self.bar_cache is not None else [],
             "warmup_source": getattr(self, "warmup_source", None), "warmup_quality": getattr(self, "warmup_quality", None),
-            "warmup_readiness": ("READY" if (self.bar_index + 1) >= self.cfg.warmup_bars else ("DEGRADED" if self.warm else "WARMING")),
-            "decision_attribution": gate_attribution(st), "last_bar_ts": self.bars[-1].ts if self.bars else None,
+            "warmup_target_bars": getattr(self, "warmup_target_bars", max(5000, int(self.cfg.warmup_bars))), "warmup_loaded_bars": self.bar_index + 1,
+            "warmup_quality_gate": getattr(self, "warmup_quality_gate", None),
+            "warmup_shards": getattr(self, "warmup_shards", []), "warmup_stitch": getattr(self, "warmup_stitch", None),
+            "warmup_ignored_session_shards": getattr(self, "warmup_ignored_session_shards", []),
+            "warmup_readiness": ((self.warmup_quality_gate or {}).get("status") if getattr(self, "warmup_quality_gate", None)
+                                 else ("READY" if (self.bar_index + 1) >= self.cfg.warmup_bars else ("DEGRADED" if self.warm else "WARMING"))),
+            "decision_attribution": gate_attribution(st),
+            "parity": self.parity_monitor.view(), "session_shadow": self.session_shadow.view(),
+            "timeframe_integrity": timeframe_integrity(
+                self.bars[-1].ts if self.bars else None, self.chains, self.cal.bucket_start),
+            "decision_explanation": explain_decision(st), "counterfactuals": self.counterfactuals.view(),
+            "provider_health": self.provider_health.view(self.spec.feed, "kraken" if self.spec.feed == "coinbase" else None),
+            "decision_trace": self.decision_trace.view(),
+            "trade_breakdown": trade_breakdown(self.em.closed, limit=1000),
+            "replay_equivalence": self.replay_ledger.view() if self.replay_ledger is not None else {"mode":"NOT_INITIALIZED","restore_enabled":False,"execution_authorized":False},
+            "restart_recovery": self.recovery_witness.view() if self.recovery_witness is not None else {"status":"NOT_INITIALIZED","state_restore_enabled":False,"execution_authorized":False},
+            "roll_provenance": roll_provenance(self.roller),
+            "continuous_archive": continuous_archive_status(self.base_dir, self.symbol) if self.spec.kind == "futures" else {"configured":False,"contract_files":[],"execution_authorized":False},
+            "execution_stress": execution_stress(
+                [{"profit": t.profit, "qty": t.qty} for t in self.em.closed[-200:]],
+                tick_size=self.mintick, multiplier=self.em.contract_size),
+            "execution_stress_v2": execution_stress_v2(
+                [{"profit": t.profit, "qty": t.qty} for t in self.em.closed[-200:]],
+                tick_size=self.mintick, multiplier=self.em.contract_size),
+            "last_bar_ts": self.bars[-1].ts if self.bars else None,
             "market": self.market(),
             "forming": (forming.__dict__ if forming else None),
             "equity": self.em.equity(mark), "capital": self.spec.capital, "netprofit": self.em.netprofit,

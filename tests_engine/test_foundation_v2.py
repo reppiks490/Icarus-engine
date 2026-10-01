@@ -39,3 +39,71 @@ def test_dashboard_surfaces_history_quality():
     assert "History readiness" in text
     for field in ("warmup_readiness","bars_valid","duplicates","rejected","gaps"):
         assert field in text
+
+
+def test_history_discovery_and_strict_stitch(tmp_path):
+    from icarus_engine.history_v2 import discover_history_sources, stitch_strict
+    h=tmp_path/"history"; h.mkdir()
+    a=h/"NQ_20m_2019.csv"; b=h/"NQ_20m_2020.csv"
+    a.write_text("ts,open,high,low,close,volume\n60,1,2,1,1.5,1\n120,1.5,2,1,1.8,2\n",encoding="utf-8")
+    b.write_text("ts,open,high,low,close,volume\n120,1.5,2,1,1.8,9\n180,1.8,2.2,1.7,2,3\n",encoding="utf-8")
+    d=discover_history_sources(str(tmp_path),"NQ",20)
+    assert d["exact"]==[str(a),str(b)]
+    bars,reports,meta=stitch_strict(d["exact"],1200)
+    assert len(bars)==3 and len(reports)==2 and meta["overlaps"]==1
+
+def test_strict_stitch_refuses_conflicting_overlap(tmp_path):
+    import pytest
+    from icarus_engine.history_v2 import stitch_strict
+    a=tmp_path/"a.csv"; b=tmp_path/"b.csv"
+    a.write_text("ts,open,high,low,close,volume\n60,1,2,1,1.5,1\n",encoding="utf-8")
+    b.write_text("ts,open,high,low,close,volume\n60,1,3,1,2.5,1\n",encoding="utf-8")
+    with pytest.raises(ValueError,match="conflicting OHLC"):
+        stitch_strict([str(a),str(b)],1200)
+
+def test_history_quality_gate_is_research_only():
+    from icarus_engine.history_v2 import HistoryReport, assess_quality
+    q=assess_quality(HistoryReport("x",rows_read=100,bars_valid=95,rejected=5),100)
+    assert q["status"]=="DEGRADED" and q["execution_authorized"] is False
+
+
+def test_history_discovery_never_mixes_rth_and_eth(tmp_path):
+    from icarus_engine.history_v2 import discover_history_sources
+    h=tmp_path/"history"; h.mkdir()
+    generic=h/"NQ_20m_2019.csv"
+    rth=h/"NQ_20m_rth_2020.csv"
+    eth=h/"NQ_20m_eth_2020.csv"
+    for p in (generic,rth,eth):
+        p.write_text("ts,open,high,low,close,volume\n60,1,2,1,1.5,1\n",encoding="utf-8")
+    dr=discover_history_sources(str(tmp_path),"NQ",20,"rth")
+    de=discover_history_sources(str(tmp_path),"NQ",20,"eth")
+    assert dr["exact"]==[str(rth)]
+    assert de["exact"]==[str(eth)]
+    assert str(eth) in dr["ignored_session_mismatch"]
+    assert str(rth) in de["ignored_session_mismatch"]
+
+def test_history_discovery_falls_back_to_generic_when_session_label_absent(tmp_path):
+    from icarus_engine.history_v2 import discover_history_sources
+    h=tmp_path/"history"; h.mkdir()
+    generic=h/"NQ_20m_2019.csv"
+    generic.write_text("ts,open,high,low,close,volume\n60,1,2,1,1.5,1\n",encoding="utf-8")
+    d=discover_history_sources(str(tmp_path),"NQ",20,"rth")
+    assert d["exact"]==[str(generic)]
+    assert d["requested_session"]=="rth"
+
+
+def test_runtime_targets_5000_real_warmup_bars_and_deepest_history():
+    text=Path("icarus_engine/runtime.py").read_text(encoding="utf-8")
+    ui=Path("icarus_engine/assurance-ui.js").read_text(encoding="utf-8")
+    assert "self.warmup_target_bars = max(5000" in text
+    assert "selected deepest compatible" in text
+    assert "assess_quality(quality, self.warmup_target_bars)" in text
+    assert '"warmup_loaded_bars": self.bar_index + 1' in text
+    assert "Warm-up depth:" in ui
+    assert "loaded /" in ui
+
+
+def test_checkpoint_supports_bare_filename(tmp_path,monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    save("checkpoint.json",symbol="NQ",last_bar_ts=1,state={"x":2},provenance={"sha":"b"})
+    assert load("checkpoint.json")["state"]["x"]==2

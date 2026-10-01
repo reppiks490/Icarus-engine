@@ -42,6 +42,10 @@ from .strategy.meta import load_meta
 from .advisory import MAX_BODY_BYTES, strict_json
 from .research_service import ResearchWorkspace
 from .mcp_control import MCPControlPlane
+from .comparison_jobs import start_matrix as start_session_matrix, start_determinism, start_robustness, start_robustness_map, start_live_replay_parity, get_job as get_comparison_job
+from .regression_jobs import start as start_regression, get as get_regression
+from .continuous_jobs import start as start_continuous_history, get as get_continuous_history
+from .walkforward_jobs import start as start_walkforward, get as get_walkforward
 
 
 def _no_json_constants(name: str):
@@ -131,6 +135,8 @@ def serve(port: Portfolio, http_port: int = 8791, token: str = "icarus", start: 
                 return self._send(200, (html_path.parent / "sources-ui.js").read_bytes(), "text/javascript")
             if p.path == "/mcp-ui.js":
                 return self._send(200, (html_path.parent / "mcp-ui.js").read_bytes(), "text/javascript")
+            if p.path == "/assurance-ui.js":
+                return self._send(200, (html_path.parent / "assurance-ui.js").read_bytes(), "text/javascript")
             if p.path in ("/experience-ui.js", "/experience-ui.css"):
                 ctype = "text/javascript" if p.path.endswith(".js") else "text/css"
                 return self._send(200, (html_path.parent / p.path[1:]).read_bytes(), ctype)
@@ -168,6 +174,22 @@ def serve(port: Portfolio, http_port: int = 8791, token: str = "icarus", start: 
                             limit=int(q.get("limit", ["100"])[0])))
                     if p.path.startswith("/api/research/jobs/"):
                         return self._json(200, research.job(p.path.rsplit("/", 1)[1]))
+                    if p.path.startswith("/api/research/session-matrix/"):
+                        return self._json(200, get_comparison_job(p.path.rsplit("/", 1)[1]))
+                    if p.path.startswith("/api/research/determinism/"):
+                        return self._json(200, get_comparison_job(p.path.rsplit("/", 1)[1]))
+                    if p.path.startswith("/api/research/robustness/"):
+                        return self._json(200, get_comparison_job(p.path.rsplit("/", 1)[1]))
+                    if p.path.startswith("/api/research/robustness-map/"):
+                        return self._json(200, get_comparison_job(p.path.rsplit("/", 1)[1]))
+                    if p.path.startswith("/api/research/live-replay-parity/"):
+                        return self._json(200, get_comparison_job(p.path.rsplit("/", 1)[1]))
+                    if p.path.startswith("/api/research/regression/"):
+                        return self._json(200, get_regression(p.path.rsplit("/", 1)[1]))
+                    if p.path.startswith("/api/research/continuous-history/"):
+                        return self._json(200, get_continuous_history(p.path.rsplit("/", 1)[1]))
+                    if p.path.startswith("/api/research/walkforward/"):
+                        return self._json(200, get_walkforward(p.path.rsplit("/", 1)[1]))
                     if p.path.startswith("/api/research/proposals/"):
                         return self._json(200, research.ledger.get_proposal(p.path.rsplit("/", 1)[1]))
                 except (ValueError, TypeError, KeyError) as ex:
@@ -270,6 +292,51 @@ def serve(port: Portfolio, http_port: int = 8791, token: str = "icarus", start: 
             try:
                 if p.path == "/admin/research/studies":
                     return self._json(200, research.start(body))
+                if p.path == "/admin/research/session-matrix":
+                    if set(body) != {"asset"}:
+                        raise ValueError("session matrix requires asset only")
+                    job_id = start_session_matrix(port, asset)
+                    return self._json(200, {"ok": True, "job": job_id, "note": f"session/chart matrix {asset} started", "execution_authorized": False})
+                if p.path == "/admin/research/determinism":
+                    if set(body) != {"asset"}:
+                        raise ValueError("determinism audit requires asset only")
+                    job_id = start_determinism(port, asset)
+                    return self._json(200, {"ok": True, "job": job_id, "note": f"determinism audit {asset} started", "execution_authorized": False})
+                if p.path == "/admin/research/robustness":
+                    if not {"asset"} <= set(body) or set(body) - {"asset","fields","fraction"}:
+                        raise ValueError("robustness requires asset and optional fields/fraction")
+                    job_id = start_robustness(port, asset, body.get("fields"), body.get("fraction", 0.10))
+                    return self._json(200, {"ok": True, "job": job_id, "note": f"local robustness scan {asset} started", "execution_authorized": False})
+                if p.path == "/admin/research/robustness-map":
+                    if not {"asset"} <= set(body) or set(body) - {"asset","x_field","y_field","fraction","steps"}:
+                        raise ValueError("robustness map requires asset and optional x_field/y_field/fraction/steps")
+                    job_id = start_robustness_map(port, asset, body.get("x_field","shock_z_thresh"),
+                                                  body.get("y_field","pe_thresh"), body.get("fraction",0.10),
+                                                  body.get("steps",5))
+                    return self._json(200, {"ok": True, "job": job_id, "note": f"robustness map {asset} started", "execution_authorized": False})
+                if p.path == "/admin/research/live-replay-parity":
+                    if set(body) != {"asset"}:
+                        raise ValueError("live/replay parity audit requires asset only")
+                    job_id = start_live_replay_parity(port, asset)
+                    return self._json(200, {"ok": True, "job": job_id, "note": f"live/replay parity audit {asset} started", "execution_authorized": False})
+                if p.path == "/admin/research/regression":
+                    if not {"asset","mode"} <= set(body) or set(body) - {"asset","mode","confirm"}:
+                        raise ValueError("regression requires asset, mode and optional confirm")
+                    mode = str(body.get("mode",""))
+                    if mode == "baseline" and body.get("confirm") is not True:
+                        return self._json(400, {"detail": "saving a regression baseline requires confirm=true"})
+                    job_id = start_regression(port, asset, mode)
+                    return self._json(200, {"ok": True, "job": job_id, "note": f"regression {mode} {asset} started", "execution_authorized": False})
+                if p.path == "/admin/research/continuous-history":
+                    if not {"asset"} <= set(body) or set(body) - {"asset","tf_minutes"}:
+                        raise ValueError("continuous history requires asset and optional tf_minutes")
+                    job_id = start_continuous_history(port, asset, body.get("tf_minutes"))
+                    return self._json(200, {"ok": True, "job": job_id, "note": f"continuous-history research build {asset} started", "execution_authorized": False})
+                if p.path == "/admin/research/walkforward":
+                    if not {"asset"} <= set(body) or set(body) - {"asset","folds","train_fraction"}:
+                        raise ValueError("walk-forward requires asset and optional folds/train_fraction")
+                    job_id = start_walkforward(port, asset, body.get("folds",5), body.get("train_fraction",0.50))
+                    return self._json(200, {"ok": True, "job": job_id, "note": f"walk-forward audit {asset} started", "execution_authorized": False})
                 if p.path == "/admin/research/adaptation":
                     return self._json(200, research.configure_adaptation(body))
                 if p.path == "/admin/research/source-watch":

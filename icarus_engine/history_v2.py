@@ -1,6 +1,6 @@
 """Deterministic historical-data validation, stitching and provenance for ICARUS."""
 from __future__ import annotations
-import csv, hashlib, json, os
+import csv, glob, hashlib, json, os, tempfile
 from dataclasses import dataclass, asdict
 from datetime import datetime
 from typing import Iterable, List, Optional
@@ -56,8 +56,113 @@ def stitch(paths: Iterable[str], tf_seconds: int, session: str="UNKNOWN"):
         for b in bars: merged[b.ts]=b
     return [merged[k] for k in sorted(merged)], reports
 
-def write_manifest(path: str, reports: List[HistoryReport], loaded: int):
-    payload={"schema_version":"icarus-history-manifest-v1","loaded":loaded,"sources":[r.to_dict() for r in reports]}
+def write_manifest(path: str, reports: List[HistoryReport], loaded: int, extra=None):
+    payload={"schema_version":"icarus-history-manifest-v1","loaded":loaded,"sources":[r.to_dict() for r in reports],
+             "execution_authorized":False}
+    if extra: payload["stitch"]=dict(extra)
     os.makedirs(os.path.dirname(path),exist_ok=True)
     with open(path,"w",encoding="utf-8") as f: json.dump(payload,f,indent=2,sort_keys=True)
     return payload
+
+
+def assess_quality(report, target_bars: int):
+    """Conservative research-readiness gate; does not authorize or block order execution.
+
+    Gaps are reported but intentionally not failed here because exchange/session
+    closures can create legitimate timestamp gaps. Rejected/duplicate ratios and
+    usable depth are provider-agnostic and safe to gate on.
+    """
+    d=report.to_dict() if hasattr(report,"to_dict") else dict(report or {})
+    read=max(1,int(d.get("rows_read") or 0)); valid=int(d.get("bars_valid") or 0)
+    rejected=int(d.get("rejected") or 0); duplicates=int(d.get("duplicates") or 0)
+    reasons=[]
+    if valid<=0: reasons.append("NO_VALID_BARS")
+    if valid<int(target_bars): reasons.append("BELOW_TARGET_DEPTH")
+    if rejected/read>0.01: reasons.append("REJECT_RATE_GT_1PCT")
+    if duplicates/read>0.01: reasons.append("DUPLICATE_RATE_GT_1PCT")
+    if rejected/read>0.05: status="INVALID"
+    elif not reasons: status="READY"
+    else: status="DEGRADED"
+    return {"status":status,"reasons":reasons,"target_bars":int(target_bars),
+            "bars_valid":valid,"reject_rate":rejected/read,"duplicate_rate":duplicates/read,
+            "time_gaps_observed":int(d.get("gaps") or 0),
+            "execution_authorized":False}
+
+
+def discover_history_sources(base_dir: str, symbol: str, tf_minutes: int, session: str=""):
+    """Discover compatible operator history shards without mixing session regimes.
+
+    Canonical filenames may carry _rth or _eth after the <SYMBOL>_<TF>m
+    prefix. When labelled files exist, only the requested session is selected.
+    Opposite-session shards are never silently mixed. Generic unlabelled shards
+    remain a fallback when no matching labelled shards exist.
+    """
+    symbol=str(symbol).upper(); tf=int(tf_minutes); session=str(session or "").lower()
+    all_exact=sorted(set(glob.glob(os.path.join(base_dir,"history",f"{symbol}_{tf}m*.csv"))))
+
+    def tag(path):
+        stem=os.path.splitext(os.path.basename(path))[0].lower()
+        tail=stem.split(f"{symbol.lower()}_{tf}m",1)[-1]
+        if "rth" in tail: return "rth"
+        if "eth" in tail: return "eth"
+        return "generic"
+
+    tagged={p:tag(p) for p in all_exact}
+    matching=[p for p,t in tagged.items() if t==session] if session in ("rth","eth") else []
+    generic=[p for p,t in tagged.items() if t=="generic"]
+    exact=matching if matching else generic
+    ignored=[p for p in all_exact if p not in exact]
+
+    alias=[]
+    if symbol=="NQ":
+        all_alias=sorted(set(glob.glob(os.path.join(base_dir,"data",f"mnq_{tf}m*.csv"))))
+        def alias_tag(path):
+            stem=os.path.splitext(os.path.basename(path))[0].lower()
+            tail=stem.split(f"mnq_{tf}m",1)[-1]
+            if "rth" in tail: return "rth"
+            if "eth" in tail: return "eth"
+            return "generic"
+        at={p:alias_tag(p) for p in all_alias}
+        am=[p for p,t in at.items() if t==session] if session in ("rth","eth") else []
+        ag=[p for p,t in at.items() if t=="generic"]
+        alias=am if am else ag
+    return {"exact":exact,"alias":alias,"ignored_session_mismatch":ignored,
+            "requested_session":session or None,"execution_authorized":False}
+
+def stitch_strict(paths: Iterable[str], tf_seconds: int, session: str="UNKNOWN"):
+    """Merge shards only when overlapping OHLC agrees.
+
+    Returns bars, reports and overlap diagnostics. Conflicting overlapping OHLC
+    raises ValueError rather than silently choosing one provider/export.
+    """
+    merged={}; reports=[]; overlaps=0; conflicts=[]
+    for p in paths:
+        bars,r=load_csv(p,tf_seconds,session); reports.append(r)
+        for b in bars:
+            old=merged.get(b.ts)
+            if old is not None:
+                overlaps+=1
+                if any(abs(float(a)-float(z))>1e-9 for a,z in ((old.o,b.o),(old.h,b.h),(old.l,b.l),(old.c,b.c))):
+                    if len(conflicts)<20:
+                        conflicts.append({"ts":b.ts,"first":[old.o,old.h,old.l,old.c],
+                                          "second":[b.o,b.h,b.l,b.c],"source":os.path.normpath(p)})
+                    continue
+            merged[b.ts]=b
+    if conflicts:
+        raise ValueError(f"history shards contain {len(conflicts)} conflicting OHLC overlap(s); first={conflicts[0]}")
+    bars=[merged[k] for k in sorted(merged)]
+    return bars,reports,{"overlaps":overlaps,"conflicts":0,"execution_authorized":False}
+
+def write_bars_csv(path: str, bars: Iterable[Bar]):
+    """Atomically materialize a validated stitched cache in canonical ICARUS CSV form."""
+    root=os.path.dirname(path); os.makedirs(root,exist_ok=True)
+    fd,tmp=tempfile.mkstemp(prefix=".history-",dir=root,text=True)
+    try:
+        with os.fdopen(fd,"w",encoding="utf-8",newline="") as f:
+            w=csv.writer(f); w.writerow(["ts","open","high","low","close","volume"])
+            for b in bars: w.writerow([int(b.ts),b.o,b.h,b.l,b.c,b.v])
+            f.flush(); os.fsync(f.fileno())
+        os.replace(tmp,path)
+    finally:
+        if os.path.exists(tmp): os.unlink(tmp)
+    return path

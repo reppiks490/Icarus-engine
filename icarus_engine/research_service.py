@@ -184,9 +184,12 @@ class ResearchWorkspace:
         src = frozen.runners[asset]
         if through is not None:
             src.subbars = tuple((b, m) for b, m in src.subbars if b.ts + m * 60 <= through)
+            if hasattr(src, "raw_subbars"):
+                src.raw_subbars = tuple((b, m) for b, m in src.raw_subbars if b.ts + m * 60 <= through)
             src.deep = {m: tuple((b, sub) for b, sub in rows if b.ts + sub * 60 <= through)
                         for m, rows in src.deep.items()}
         dataset_hash = digest({"subbars": [(asdict(b), m) for b, m in src.subbars],
+                               "raw_subbars": [(asdict(b), m) for b, m in getattr(src, "raw_subbars", ())],
                                "deep": {str(k): [(asdict(b), m) for b, m in rows] for k, rows in src.deep.items()}})
         baseline = {"spec": asdict(src.spec), "base_inputs": src.inputs_base.to_dict(),
                     "replay_config": asdict(src.cfg), "pts_scale": src.pts_scale, "mintick": src.mintick}
@@ -384,10 +387,11 @@ class ResearchWorkspace:
         # holds the store/runner locks and then reads this workspace's study.
         frozen, dataset_hash, baseline_hash, baseline = self.fingerprints(asset, windows.holdout_end)
         src = frozen.runners[asset]
-        if not src.subbars:
+        study_bars = tuple(getattr(src, "raw_subbars", ()) or src.subbars)
+        if not study_bars:
             raise ValueError("asset has no cached bars")
-        earliest = min(b.ts for b, _ in src.subbars)
-        latest = max(b.ts + minutes * 60 for b, minutes in src.subbars)
+        earliest = min(b.ts for b, _ in study_bars)
+        latest = max(b.ts + minutes * 60 for b, minutes in study_bars)
         if windows.train_start < earliest or windows.holdout_end > latest:
             raise ValueError("study windows exceed the frozen cached data range")
         with self._lock:

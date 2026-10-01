@@ -48,6 +48,7 @@ from .bar_cache import BarCache, merge_bars, merge_source_aware
 from .recovery import RecoveryWitness
 from .continuous_history import archive_status as continuous_archive_status
 from .completion_gate import completion_status
+from .private_history import discover_private_history, safe_private_label
 
 
 def _clean(x: Any) -> Any:
@@ -534,6 +535,7 @@ class AssetRunner:
         self.warmup_shards = []
         self.warmup_stitch = None
         self.warmup_ignored_session_shards = []
+        self.warmup_private_history = None
         source_reports = []
 
         # Discover all compatible sources and choose the deepest validated set.
@@ -542,6 +544,10 @@ class AssetRunner:
         self.warmup_ignored_session_shards = [os.path.relpath(p, self.base_dir) for p in discovered.get("ignored_session_mismatch", [])]
         source_sets=[]
         if discovered["exact"]: source_sets.append(("exact", discovered["exact"]))
+        private_exact = discover_private_history(self.symbol, self.chart_minutes, getattr(self.cal, "session", ""),
+                                                 "standard", base_dir=self.base_dir)
+        if private_exact:
+            source_sets.append(("private_exact", [private_exact["path"]]))
         if discovered["alias"]: source_sets.append(("alias", discovered["alias"]))
         if hist is not None: source_sets.append(("canonical", [hist]))
         # Preserve the bundled NQ/MNQ 20m fallback even when an archive exists
@@ -552,7 +558,8 @@ class AssetRunner:
         for source_kind,candidates in source_sets:
             try:
                 bars,reports,stitch_meta=stitch_strict(candidates,self.chart_minutes*60,getattr(self.cal,"session","UNKNOWN"))
-                score=(len(bars), 2 if source_kind=="exact" else 1 if source_kind=="canonical" else 0)
+                priority={"private_exact":4,"exact":3,"canonical":2,"alias":1}.get(source_kind,0)
+                score=(1 if len(bars)>=self.warmup_target_bars else 0, priority, len(bars))
                 if bars and (best is None or score>best[0]):
                     best=(score,source_kind,candidates,bars,reports,stitch_meta)
             except Exception as ex:
@@ -562,7 +569,13 @@ class AssetRunner:
             stitched=os.path.join(self.base_dir,"state","history","stitched",f"{self.symbol}_{self.chart_minutes}m.csv")
             write_bars_csv(stitched,bars)
             hist=stitched
-            self.warmup_shards=[os.path.relpath(p,self.base_dir) for p in candidates]
+            if source_kind=="private_exact" and private_exact:
+                self.warmup_private_history={k:v for k,v in private_exact.items() if k!="path"}
+                self.warmup_shards=[safe_private_label(private_exact)]
+                for rep in source_reports:
+                    rep.source=safe_private_label(private_exact)
+            else:
+                self.warmup_shards=[os.path.relpath(p,self.base_dir) for p in candidates]
             self.warmup_stitch=dict(stitch_meta,source_kind=source_kind,shards=len(candidates),
                                     bars=len(bars),target_bars=self.warmup_target_bars)
             self.journal.log("INFO",f"[{self.symbol}] selected deepest compatible {source_kind} history: {len(bars)} validated bars from {len(candidates)} source(s); target {self.warmup_target_bars}")
@@ -990,6 +1003,7 @@ class AssetRunner:
             "warmup_target_bars": warmup_target, "warmup_loaded_bars": self.bar_index + 1,
             "warmup_quality_gate": getattr(self, "warmup_quality_gate", None),
             "warmup_shards": getattr(self, "warmup_shards", []), "warmup_stitch": getattr(self, "warmup_stitch", None),
+            "warmup_private_history": getattr(self, "warmup_private_history", None),
             "warmup_ignored_session_shards": getattr(self, "warmup_ignored_session_shards", []),
             "warmup_readiness": ((self.warmup_quality_gate or {}).get("status") if getattr(self, "warmup_quality_gate", None)
                                  else ("READY" if (self.bar_index + 1) >= self.cfg.warmup_bars else ("DEGRADED" if self.warm else "WARMING"))),

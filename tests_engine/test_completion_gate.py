@@ -59,3 +59,11 @@ def test_completion_gate_warns_degraded_history_quality():
     g=_base(warmup_gate={"status":"DEGRADED"})
     assert g["status"]=="DEGRADED"
     assert "HISTORY_QUALITY_DEGRADED" in g["warnings"]
+
+
+def test_completion_gate_blocks_incomplete_replay_timeframe_coverage():
+    g=_base(replay_timeframes={"status":"BLOCKED","requested_minutes":[5,15,60],"blocked_minutes":[5,15]})
+    assert g["status"]=="BLOCKED"
+    assert "REPLAY_TIMEFRAME_COVERAGE_INCOMPLETE" in g["hard_blocks"]
+    row=next(x for x in g["checks"] if x["name"]=="replay_timeframe_coverage")
+    assert row["status"]=="BLOCK" and row["blocked_minutes"]==[5,15]

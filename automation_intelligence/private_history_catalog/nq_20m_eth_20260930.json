@@ -1,0 +1,54 @@
+{
+  "schema_version": "icarus-private-history-catalog-v1",
+  "generated_at_utc": "2026-10-01T15:12:00Z",
+  "execution_authorized": false,
+  "trading_execution_authorized": false,
+  "policy": "Raw licensed payloads remain outside Git; only hashes, structural metadata, and validation findings are committed.",
+  "entries": [
+    {
+      "symbol": "NQ",
+      "market_id": "CME_MINI:NQ1!",
+      "timeframe": "20m",
+      "session": "ETH",
+      "price_geometry": "standard",
+      "sha256": "a8141ffa372b4ffaba4d6bf8b8998a489f2daf00bfad5e248bf27132d99f0932",
+      "rows": 41239,
+      "first_ts": 1717365600,
+      "last_ts": 1790774400,
+      "first_utc": "2024-06-02T22:00:00Z",
+      "last_utc": "2026-09-30T13:20:00Z",
+      "runtime_role": "EXACT_OPERATOR_HISTORY"
+    },
+    {
+      "symbol": "NQ",
+      "market_id": "CME_MINI:NQ1!",
+      "timeframe": "20m",
+      "session": "ETH",
+      "price_geometry": "heikin_ashi",
+      "sha256": "4fe26a9b2ee9a5e81c24577f2abd51073e7e944f4f6aa43a77b61095af44e48c",
+      "rows": 41239,
+      "first_ts": 1717365600,
+      "last_ts": 1790774400,
+      "first_utc": "2024-06-02T22:00:00Z",
+      "last_utc": "2026-09-30T13:20:00Z",
+      "runtime_role": "PARITY_EVIDENCE_ONLY"
+    }
+  ],
+  "parity_validation": {
+    "timestamp_alignment": {
+      "aligned_rows": 41239,
+      "total_rows": 41239
+    },
+    "ha_transform": {
+      "method": "HA close=(O+H+L+C)/4; HA open=(prior HA open+prior HA close)/2; high/low envelope; first HA open seeded from supplied HA export",
+      "open_mismatches": 0,
+      "high_mismatches": 1,
+      "low_mismatches": 0,
+      "close_mismatches": 1,
+      "mismatch_rows": 1,
+      "matching_rows": 41238,
+      "mismatch_ts": 1790774400,
+      "note": "The only mismatch is the final timestamp between the two independently downloaded exports. No cause is inferred; runtime warm-up uses the standard OHLC export, not the HA file."
+    }
+  }
+}

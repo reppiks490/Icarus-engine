@@ -318,11 +318,15 @@ function assetHtml(a) {
     <div class="tiles">
       <div class="tile"><div class="k">Parity samples</div><div class="v tnum">${a.parity?.samples??0}</div></div>
       <div class="tile" title="${esc(a.parity?.latest?.digest||'')}"><div class="k">State digest</div><div class="v tnum" style="font-size:13px">${esc((a.parity?.latest?.digest||'—').slice(0,12))}</div></div>
+      <div class="tile"><div class="k">Replay checkpoints</div><div class="v tnum">${a.replay_equivalence?.checkpoints??0}</div><div class="small ${(a.replay_equivalence?.divergences_this_run||0)?'neg':'muted'}">${a.replay_equivalence?.divergences_this_run??0} divergence(s)</div></div>
       <div class="tile"><div class="k">Observed RTH / ETH bars</div><div class="v tnum">${a.session_shadow?.rth_bars??0} / ${a.session_shadow?.eth_bars??0}</div></div>
+      <div class="tile"><div class="k">Provider health</div><div class="v" style="font-size:15px">${esc(a.provider_health?.status||'—')}</div><div class="small muted">${esc(a.provider_health?.primary||'—')}${a.provider_health?.secondary?' → '+esc(a.provider_health.secondary):''}</div></div>
       <div class="tile"><div class="k">Roll</div><div class="v" style="font-size:13px">${a.roll_provenance?esc(a.roll_provenance.current+' → '+a.roll_provenance.next):'n/a'}</div></div>
+      <div class="tile"><div class="k">Decision</div><div class="v" style="font-size:15px">${esc(a.decision_explanation?.status||'—')}</div><div class="small muted">${esc((a.decision_explanation?.blockers||[]).join(', ')||'no explicit blockers')}</div></div>
+      <div class="tile"><div class="k">Blocked-signal study</div><div class="v tnum">${a.counterfactuals?.completed??0}</div><div class="small muted">${a.counterfactuals?.pending??0} pending</div></div>
       <div class="tile"><div class="k">Cost stress scenarios</div><div class="v tnum">${a.execution_stress?.scenarios?.length??0}</div></div>
     </div>
-    <div class="small muted" style="margin-top:8px">Parity fingerprints closed-bar decision gates for replay comparison. Session statistics classify only bars actually observed by this runner; they are not a second trading engine. Cost stress re-prices closed trades under additional slippage/commission without mutating emulator state.</div>
+    <div class="small muted" style="margin-top:8px">Replay checkpoints compare deterministic gate-state fingerprints across restarts but never restore executable strategy/order state. Counterfactuals score blocked threshold-crossing signals only after future bars arrive. Provider health reports real configured paths; futures with no secondary remain explicitly single-source.</div>
   </section>
   <section class="card c7"><h2>Closed trades · ${a.symbol}</h2><div class="scroll" style="max-height:420px"><table id="dTrades"><thead><tr><th></th><th>Entry</th><th>Signal</th><th>Qty</th><th>Entry px</th><th>Exit</th><th>Exit px</th><th>Exit signal</th><th>P&amp;L</th></tr></thead><tbody></tbody></table></div></section>
   <section class="card c5"><h2>Fills · ${a.symbol}</h2><div class="scroll" style="max-height:420px"><table id="dFills"><thead><tr><th>Time</th><th>Side</th><th>Qty</th><th>Price</th><th>Signal</th><th>P&amp;L</th></tr></thead><tbody></tbody></table></div></section>`;

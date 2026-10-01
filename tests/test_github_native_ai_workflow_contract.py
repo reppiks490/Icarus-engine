@@ -46,7 +46,8 @@ def test_workflow_stages_only_v3_namespace_and_never_force_pushes() -> None:
     text = _text()
     assert "git add automation_intelligence/omega_stack_native_v3" in text
     assert "^automation_intelligence/omega_stack_native_v3/" in text
-    assert "git pull --rebase origin main" in text
+    assert "git fetch origin main" in text
+    assert "git rebase origin/main" in text
     assert "git push origin HEAD:main" in text
     assert "git push --force" not in text
     assert "automation_intelligence/omega_stack_native_v2" not in text

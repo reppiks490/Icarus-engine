@@ -44,7 +44,7 @@ from .assurance import gate_attribution
 from .assurance_v3 import ParityMonitor, SessionShadow, execution_stress, execution_stress_v2, roll_provenance, timeframe_integrity
 from .observability import explain_decision, CounterfactualTracker, ProviderHealth, ReplayCheckpointLedger, DecisionTrace
 from .research_extensions import trade_breakdown
-from .bar_cache import BarCache, merge_bars
+from .bar_cache import BarCache, merge_bars, merge_source_aware
 from .recovery import RecoveryWitness
 from .continuous_history import archive_status as continuous_archive_status
 
@@ -628,11 +628,12 @@ class AssetRunner:
                 cache[key] = cb.candles(self.spec.ticker, g, T_w - depth, T_w)
             self._feed_deep([m], cache[key], g // 60)
         fresh_ones = cb.candles(self.spec.ticker, 60, T_w, now - 60)
-        cached_ones = self.bar_cache.load(self.symbol, 1, T_w, now - 60) if self.bar_cache is not None else []
-        ones = merge_bars(cached_ones, fresh_ones)
+        cb_source=f"{self.spec.feed}:{self.spec.ticker}"
+        cached_records = self.bar_cache.load_records(self.symbol, 1, T_w, now - 60) if self.bar_cache is not None else []
+        ones, protected = merge_source_aware(cached_records, fresh_ones, cb_source)
         if self.bar_cache is not None:
-            self.bar_cache.put_many(self.symbol, 1, fresh_ones, source=f"{self.spec.feed}:{self.spec.ticker}")
-        self.journal.log("INFO", f"[{self.symbol}] persistent cache {len(cached_ones)} + provider {len(fresh_ones)} one-minute candles => {len(ones)} replay bars")
+            self.bar_cache.put_many(self.symbol, 1, fresh_ones, source=cb_source)
+        self.journal.log("INFO", f"[{self.symbol}] persistent cache {len(cached_records)} + provider {len(fresh_ones)} one-minute candles => {len(ones)} replay bars; {protected} cross-source timestamp(s) protected")
         for b in ones:
             self.on_sub_bar(b, 1, live=False)
 
@@ -657,14 +658,15 @@ class AssetRunner:
         one_from = max(T_w, now - 29 * 86400)
         fresh_fives = y.candles(tki, 300, T_w, one_from) if one_from > T_w else []
         fresh_ones = self._closed_only(y.candles(tki, 60, one_from, now), tki)
-        cached_fives = self.bar_cache.load(self.symbol, 5, T_w, one_from) if self.bar_cache is not None and one_from > T_w else []
-        cached_ones = self.bar_cache.load(self.symbol, 1, one_from, now) if self.bar_cache is not None else []
-        fives = merge_bars(cached_fives, fresh_fives)
-        ones = merge_bars(cached_ones, fresh_ones)
+        y_source=f"{self.spec.feed}:{tki}"
+        cached_fives = self.bar_cache.load_records(self.symbol, 5, T_w, one_from) if self.bar_cache is not None and one_from > T_w else []
+        cached_ones = self.bar_cache.load_records(self.symbol, 1, one_from, now) if self.bar_cache is not None else []
+        fives, protected_5 = merge_source_aware(cached_fives, fresh_fives, y_source)
+        ones, protected_1 = merge_source_aware(cached_ones, fresh_ones, y_source)
         if self.bar_cache is not None:
-            self.bar_cache.put_many(self.symbol, 5, fresh_fives, source=f"{self.spec.feed}:{tki}")
-            self.bar_cache.put_many(self.symbol, 1, fresh_ones, source=f"{self.spec.feed}:{tki}")
-        self.journal.log("INFO", f"[{self.symbol}] deep {len(daily)}d/{len(hourly)}h/{len(q15)}x15m/{len(fives_deep)}x5m; cache/provider merged to {len(fives)} five-minute + {len(ones)} one-minute sub-bars; replaying")
+            self.bar_cache.put_many(self.symbol, 5, fresh_fives, source=y_source)
+            self.bar_cache.put_many(self.symbol, 1, fresh_ones, source=y_source)
+        self.journal.log("INFO", f"[{self.symbol}] deep {len(daily)}d/{len(hourly)}h/{len(q15)}x15m/{len(fives_deep)}x5m; cache/provider merged to {len(fives)} five-minute + {len(ones)} one-minute sub-bars; protected {protected_5+protected_1} cross-contract timestamp(s); replaying")
         for b in fives:
             self.on_sub_bar(b, 5, live=False)
         for b in ones:

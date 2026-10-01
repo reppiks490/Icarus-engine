@@ -75,7 +75,7 @@ def start_matrix(port,symbol:str) -> str:
                 rows.append({"session":session,"chart_type":chart_type,**_compact(r)})
                 job["progress"]=i
             # No winner/ranking: surface deltas relative to the current asset configuration only.
-            current_session=getattr(src.cal,"session",src.spec.session); current_chart=src.spec.chart_type
+            current_session=getattr(src.cal,"session",getattr(src.spec,"session","eth")); current_chart=getattr(src.spec,"chart_type","real")
             baseline=next((x for x in rows if x["session"]==current_session and x["chart_type"]==current_chart),rows[0])
             base=baseline["metrics"]
             for x in rows:

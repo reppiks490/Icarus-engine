@@ -133,7 +133,7 @@
   }
 
   function jobHtml(asset) {
-    const d = jobs[key(asset,"determinism")], p = jobs[key(asset,"live-replay-parity")], r = jobs[key(asset,"robustness")],
+    const d = jobs[key(asset,"determinism")], p = jobs[key(asset,"live-replay-parity")], r = jobs[key(asset,"robustness")], rm = jobs[key(asset,"robustness-map")],
           rb = jobs[key(asset,"regression-baseline")], rc = jobs[key(asset,"regression-check")], ch = jobs[key(asset,"continuous-history")];
     let out = "";
     if (d) {
@@ -159,6 +159,18 @@
         const rows = Object.entries(r.result.sensitivity || {}).map(([name,x]) =>
           `<tr><td>${esc(name)}</td><td>${nfmt(x.net_profit_span)}</td><td>${nfmt(x.max_drawdown_span)}</td></tr>`).join("");
         out += `<details class="group"><summary>±${Math.round((r.result.fraction || .1)*100)}% local sensitivity</summary><div class="scroll"><table><thead><tr><th>Parameter</th><th>Net P&L span</th><th>Max DD span</th></tr></thead><tbody>${rows}</tbody></table></div><div class="small muted">${esc(r.result.note || "")}</div></details>`;
+      }
+    }
+    if (rm) {
+      if (rm.status === "running") out += `<div class="small muted">Robustness map running · ${rm.progress||0}/${rm.total||"?"}</div>`;
+      else if (rm.status === "error") out += `<div class="small neg">Robustness map: ${esc(rm.error||"error")}</div>`;
+      else if (rm.result) {
+        const rr=rm.result, steps=rr.steps||0, cells=rr.cells||[];
+        const xs=[...new Set(cells.map(x=>x.x_value))], ys=[...new Set(cells.map(x=>x.y_value))];
+        const rows=ys.map(y=>`<tr><th>${nfmt(y)}</th>${xs.map(x=>{const z=cells.find(q=>q.x_value===x&&q.y_value===y);return `<td class="tnum" title="${z?.error?esc(z.error):''}">${z?.metrics?money(z.metrics.net_profit):'err'}</td>`;}).join('')}</tr>`).join('');
+        out += `<details class="group"><summary>Parameter neighborhood map · ${esc(rr.x_field)} × ${esc(rr.y_field)} <span class="cnt">${steps}×${steps}</span></summary>
+          <div class="small muted">Cells show net P&L only as a descriptive surface. No optimum/winner is selected or activated.</div>
+          <div class="scroll"><table><thead><tr><th>${esc(rr.y_field)} ↓ / ${esc(rr.x_field)} →</th>${xs.map(x=>`<th>${nfmt(x)}</th>`).join('')}</tr></thead><tbody>${rows}</tbody></table></div></details>`;
       }
     }
     if (rb?.result) out += `<div class="small pos">Regression baseline: ${esc(rb.result.status || "saved")} · ${esc(rb.result.path || "")}</div>`;
@@ -204,6 +216,8 @@
       path="/admin/research/live-replay-parity"; body={asset}; prefix="/api/research/live-replay-parity/";
     } else if (kind === "continuous-history") {
       path="/admin/research/continuous-history"; body={asset}; prefix="/api/research/continuous-history/";
+    } else if (kind === "robustness-map") {
+      path="/admin/research/robustness-map"; body={asset,x_field:"shock_z_thresh",y_field:"pe_thresh",fraction:0.10,steps:5}; prefix="/api/research/robustness-map/";
     } else if (kind === "robustness") {
       path="/admin/research/robustness"; body={asset,fraction:0.10}; prefix="/api/research/robustness/";
     } else if (kind === "regression-baseline" || kind === "regression-check") {
@@ -230,6 +244,7 @@
         <button class="sm" data-assurance-job="determinism">Replay determinism audit</button>
         <button class="sm" data-assurance-job="live-replay-parity">Live ↔ replay parity</button>
         <button class="sm" data-assurance-job="robustness">±10% robustness scan</button>
+        <button class="sm" data-assurance-job="robustness-map">2D robustness map</button>
         <button class="sm" data-assurance-job="regression-baseline">Save regression baseline</button>
         <button class="sm" data-assurance-job="regression-check">Compare to baseline</button>
         ${a.continuous_archive?.configured?`<button class="sm" data-assurance-job="continuous-history">Build continuous futures research archive</button>`:''}

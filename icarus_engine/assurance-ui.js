@@ -112,7 +112,7 @@
     if (!card) return;
     let host=card.querySelector(".assurance-ext");
     if (!host) { host=document.createElement("div"); host.className="assurance-ext"; host.style.marginTop="12px"; card.appendChild(host); }
-    host.innerHTML=`
+    const html=`
       <div class="row" style="gap:6px;flex-wrap:wrap">
         <button class="sm" data-assurance-job="determinism">Replay determinism audit</button>
         <button class="sm" data-assurance-job="robustness">±10% robustness scan</button>
@@ -122,6 +122,10 @@
       <div class="small muted" style="margin:6px 0 10px">Research-only controls. They run isolated replays and never activate parameters, submit orders, or authorize execution. Saving a regression baseline always requires explicit confirmation.</div>
       ${jobHtml(asset)}
       ${breakdownHtml(a)}`;
+    if (host._icarusAssuranceHtml !== html) {
+      host._icarusAssuranceHtml = html;
+      host.innerHTML = html;
+    }
   }
 
   document.addEventListener("click", ev => {

@@ -254,7 +254,7 @@ class HeikinAshi:
 class RunnerConfig:
     spec: AssetSpec
     inputs: Inputs
-    warmup_bars: int = 1200
+    warmup_bars: int = 5000
     pts_ref_price: float = 0.0        # NQ price used to rescale *_pts inputs to this asset (0 = literal points)
     sources: Optional[List[str]] = None
     profile: str = "nq"
@@ -880,7 +880,7 @@ class AssetRunner:
 # ──────────────────────────────────────────────────────────────────────
 class Portfolio:
     def __init__(self, journal: Journal, base_dir: str, poll_sec: float = 5.0, profile: str = "nq",
-                 preset: Optional[str] = None, warmup_bars: int = 1200, pts_ref_symbol: str = "NQ"):
+                 preset: Optional[str] = None, warmup_bars: int = 5000, pts_ref_symbol: str = "NQ"):
         self.journal = journal
         self.base_dir = base_dir
         self.poll_sec = poll_sec

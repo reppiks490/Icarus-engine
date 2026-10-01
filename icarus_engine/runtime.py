@@ -40,6 +40,8 @@ from .strategy.pulse import PulseStrategy
 from .strategy.security import TFChain
 from .history_v2 import load_csv as load_history_csv, write_manifest as write_history_manifest
 from .assurance import gate_attribution
+from .assurance_v3 import ParityMonitor, SessionShadow, execution_stress, roll_provenance
+from .observability import explain_decision, CounterfactualTracker, ProviderHealth, ReplayCheckpointLedger
 
 
 def _clean(x: Any) -> Any:
@@ -317,6 +319,12 @@ class AssetRunner:
         self.lock = threading.RLock()
         self.recent_fills: Deque[Dict[str, Any]] = collections.deque(maxlen=300)
         self.recent_events: Deque[Dict[str, Any]] = collections.deque(maxlen=300)
+        self.parity_monitor = ParityMonitor()
+        self.session_shadow = SessionShadow()
+        self.counterfactuals = CounterfactualTracker()
+        secondary = "kraken" if self.spec.feed == "coinbase" else None
+        self.provider_health = ProviderHealth([p for p in (self.spec.feed, secondary) if p])
+        self.replay_ledger: Optional[ReplayCheckpointLedger] = None
 
     # ── engine construction (also used by re-warm) ──
     def _build_engine(self) -> None:
@@ -400,6 +408,12 @@ class AssetRunner:
         except Exception:
             shadow_rth = bool(st.get("in_session"))
         self.session_shadow.observe(chart.c, shadow_rth)
+        self.counterfactuals.observe(chart.ts, chart.c, st)
+        if self.replay_ledger is not None and self.parity_monitor.latest is not None:
+            if self.bar_index % 100 == 0 or live:
+                self.replay_ledger.observe(chart.ts, self.parity_monitor.latest.digest)
+                if self.bar_index % 500 == 0 or live:
+                    self.replay_ledger.flush()
         self.bars.append(chart)
         self.last_bar_wall = time.time()
         self.overlays.append({"ts": chart.ts, "st": st["rate_st_line"], "up": st["rate_uptrend"], "tp1": st["tp1_price"], "tp2": st["tp2_price"],
@@ -448,6 +462,9 @@ class AssetRunner:
     # ── warm-up ──
     def warmup(self, now_ts: Optional[int] = None) -> None:
         now = int(now_ts or time.time())
+        if self.replay_ledger is None:
+            ledger_path = os.path.join(self.base_dir, "state", "replay", f"{self.symbol}_{self.chart_minutes}m.json")
+            self.replay_ledger = ReplayCheckpointLedger(ledger_path)
         span = self.cfg.warmup_bars * self.chart_minutes * 60
         if not self.cal.open_24_7:
             if getattr(self.cal, "session", "eth") == "rth":  # ~20 bars per trading day (09:30-16:15 ET), 5 days a week
@@ -706,13 +723,18 @@ class AssetRunner:
             else:
                 bars = self.feed.recent(self.spec.ticker, 60)
         except Exception as ex:
+            self.provider_health.fail(self.spec.feed, ex)
             if self.spec.feed == "coinbase":
                 try:
                     bars = self.kraken.recent(self.spec.ticker, 1)
+                    self.provider_health.ok("kraken")
                 except Exception as ex2:
+                    self.provider_health.fail("kraken", ex2)
                     self._feed_failed(f"{ex} / {ex2}"); return
             else:
                 self._feed_failed(str(ex)); return
+        else:
+            self.provider_health.ok(self.spec.feed)
         closed_before = feed_now if self.spec.feed == "yahoo" else now - 5      # Coinbase is realtime: a minute is closed 5 s after its end
         new = [b for b in bars if (self.last_sub_ts is None or b.ts > self.last_sub_ts) and b.ts + 60 <= closed_before]
         for b in new:
@@ -850,6 +872,9 @@ class AssetRunner:
             "warmup_readiness": ("READY" if (self.bar_index + 1) >= self.cfg.warmup_bars else ("DEGRADED" if self.warm else "WARMING")),
             "decision_attribution": gate_attribution(st),
             "parity": self.parity_monitor.view(), "session_shadow": self.session_shadow.view(),
+            "decision_explanation": explain_decision(st), "counterfactuals": self.counterfactuals.view(),
+            "provider_health": self.provider_health.view(self.spec.feed, "kraken" if self.spec.feed == "coinbase" else None),
+            "replay_equivalence": self.replay_ledger.view() if self.replay_ledger is not None else {"mode":"NOT_INITIALIZED","restore_enabled":False,"execution_authorized":False},
             "roll_provenance": roll_provenance(self.roller),
             "execution_stress": execution_stress(
                 [{"profit": t.profit, "qty": t.qty} for t in self.em.closed[-200:]],

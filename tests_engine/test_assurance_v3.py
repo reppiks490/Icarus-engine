@@ -1,4 +1,4 @@
-from icarus_engine.assurance_v3 import ParityMonitor, SessionShadow, execution_stress, roll_provenance
+from icarus_engine.assurance_v3 import ParityMonitor, SessionShadow, execution_stress, roll_provenance, timeframe_integrity
 from icarus_engine.contracts import ContractRoll
 from datetime import date
 
@@ -36,3 +36,22 @@ def test_dashboard_labels_assurance_shadow_only():
     text=Path("icarus_engine/dashboard.html").read_text(encoding="utf-8")
     assert "Assurance · shadow only" in text
     assert "cannot submit or modify orders" in text
+
+
+def test_timeframe_integrity_flags_future_completed_bucket():
+    class C:
+        def __init__(self,last): self.last=last
+        def state(self): return {"last":self.last,"bars":10}
+    bucket=lambda ts,m: ts-(ts%(m*60))
+    ok=timeframe_integrity(3600,{5:C(3300),60:C(0)},bucket)
+    bad=timeframe_integrity(3600,{5:C(3900)},bucket)
+    assert ok["status"]=="PASS" and ok["violations"]==0
+    assert bad["status"]=="VIOLATION" and bad["violations"]==1
+    assert bad["execution_authorized"] is False
+
+def test_runtime_and_ui_surface_timeframe_integrity():
+    from pathlib import Path
+    rt=Path("icarus_engine/runtime.py").read_text(encoding="utf-8")
+    ui=Path("icarus_engine/assurance-ui.js").read_text(encoding="utf-8")
+    assert '"timeframe_integrity"' in rt
+    assert "Multi-timeframe temporal integrity" in ui

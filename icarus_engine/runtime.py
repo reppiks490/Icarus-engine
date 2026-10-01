@@ -262,13 +262,12 @@ class RunnerConfig:
     fixed_pts_scale: Optional[float] = None  # cached replay scale; never fetch a current reference
     mintick: Optional[float] = None          # cached replay tick; avoid product metadata network calls
     scale_known_at: Optional[int] = None    # actual receipt/computation time, never inferred from a price's date
-    base_dir: Optional[str] = None           # repository/runtime root for history and bundled archives
 
 
 class AssetRunner:
     def __init__(self, cfg: RunnerConfig, journal: Journal, feeds: Optional[Dict[str, Any]] = None):
         self.cfg = cfg
-        self.base_dir = os.path.realpath(cfg.base_dir or os.getcwd())
+        self.base_dir = os.path.realpath(os.getcwd())
         self.spec = cfg.spec
         self.symbol = self.spec.symbol
         self.journal = journal
@@ -941,8 +940,10 @@ class Portfolio:
                 spec.security_source = meta["security_source"]
         scale = self._ref_price() if (spec.symbol != self.pts_ref_symbol) else 0.0
         cfg = RunnerConfig(spec=spec, inputs=inputs, warmup_bars=self.warmup_bars, sources=sources, profile=self.profile,
-                           preset=self.preset or spec.preset, pts_ref_price=scale, base_dir=self.base_dir)
-        return AssetRunner(cfg, self.journal, self.feeds)
+                           preset=self.preset or spec.preset, pts_ref_price=scale)
+        runner = AssetRunner(cfg, self.journal, self.feeds)
+        runner.base_dir = self.base_dir
+        return runner
 
     def add_asset(self, spec: AssetSpec, start: bool = True) -> AssetRunner:
         with self._lock:

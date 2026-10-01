@@ -1,5 +1,5 @@
 {
-  "schema_version": "restored-five-scheduler-contract-v4",
+  "schema_version": "restored-five-scheduler-contract-v5",
   "timezone": "America/Chicago",
   "exact_active_count": 5,
   "execution_authorized": false,
@@ -22,7 +22,7 @@
     },
     {
       "title": "Alpha Synthesis Evolution",
-      "id": "6abda2dc3aa881919b80fa89f1c5122e",
+      "id": "6abaf8d75cf48191bc7ce06bc0006f1c",
       "minute": 25,
       "enabled_expected": true,
       "repo": "reppiks490/Icarus-engine",
@@ -52,7 +52,7 @@
     "6abb102bde94819189bbf57062edcb32",
     "6abb103472608191b72f9eaa522b772b"
   ],
-  "rule": "Scheduler registry is external authority. Worker loops must never mutate scheduler state. Any observed enabled-state, ID, minute, timezone, or task-count drift is an incident and must be repaired by the orchestrator, not by a worker run.",
+  "rule": "Live scheduler registry is external authority. Repo metadata must mirror the currently authoritative five active task IDs; historical rotations remain append-only evidence. Worker loops must never mutate scheduler state.",
   "worker_protocol": "restored-five-protocol-v5.7",
   "canonical_first_file": "finalization_state.json",
   "worker_startup_state_writes": false,
@@ -66,7 +66,7 @@
     "rationale": "Prompt/config changes during an active scheduler invocation can contaminate or interrupt the slot and invalidate it as natural protocol evidence."
   },
   "retired_scheduler_ids": [
-    "6abaf8d75cf48191bc7ce06bc0006f1c"
+    "6abda2dc3aa881919b80fa89f1c5122e"
   ],
   "scheduler_rotations": [
     {
@@ -75,6 +75,15 @@
       "new_id": "6abda2dc3aa881919b80fa89f1c5122e",
       "rotated_at_utc": "2026-10-01T00:01:32Z",
       "reason": "Two consecutive clean V5.8 slots (22:25Z and 23:25Z) had scheduler triggers but no canonical GitHub receipt; task-instance corruption/tool-handoff failure suspected.",
+      "old_enabled": false,
+      "new_enabled": true
+    },
+    {
+      "lane": "alpha_synthesis",
+      "old_id": "6abda2dc3aa881919b80fa89f1c5122e",
+      "new_id": "6abaf8d75cf48191bc7ce06bc0006f1c",
+      "rotated_at_utc": "2026-10-01T18:24:00Z",
+      "reason": "Live scheduler authority reverted to original Alpha task; original task produced verified alpha-synthesis-20261001T182500Z V5.8 durability receipt while temporary replacement remained disabled.",
       "old_enabled": false,
       "new_enabled": true
     }

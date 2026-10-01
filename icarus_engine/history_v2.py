@@ -61,3 +61,27 @@ def write_manifest(path: str, reports: List[HistoryReport], loaded: int):
     os.makedirs(os.path.dirname(path),exist_ok=True)
     with open(path,"w",encoding="utf-8") as f: json.dump(payload,f,indent=2,sort_keys=True)
     return payload
+
+
+def assess_quality(report, target_bars: int):
+    """Conservative research-readiness gate; does not authorize or block order execution.
+
+    Gaps are reported but intentionally not failed here because exchange/session
+    closures can create legitimate timestamp gaps. Rejected/duplicate ratios and
+    usable depth are provider-agnostic and safe to gate on.
+    """
+    d=report.to_dict() if hasattr(report,"to_dict") else dict(report or {})
+    read=max(1,int(d.get("rows_read") or 0)); valid=int(d.get("bars_valid") or 0)
+    rejected=int(d.get("rejected") or 0); duplicates=int(d.get("duplicates") or 0)
+    reasons=[]
+    if valid<=0: reasons.append("NO_VALID_BARS")
+    if valid<int(target_bars): reasons.append("BELOW_TARGET_DEPTH")
+    if rejected/read>0.01: reasons.append("REJECT_RATE_GT_1PCT")
+    if duplicates/read>0.01: reasons.append("DUPLICATE_RATE_GT_1PCT")
+    if rejected/read>0.05: status="INVALID"
+    elif not reasons: status="READY"
+    else: status="DEGRADED"
+    return {"status":status,"reasons":reasons,"target_bars":int(target_bars),
+            "bars_valid":valid,"reject_rate":rejected/read,"duplicate_rate":duplicates/read,
+            "time_gaps_observed":int(d.get("gaps") or 0),
+            "execution_authorized":False}

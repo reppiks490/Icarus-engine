@@ -414,16 +414,13 @@ def test_workflow_contract():
     assert "contents: write" in text
     assert "cancel-in-progress: false" in text
     assert "ref: main" in text
-    assert "path: control" in text
-    assert "ref: automation/omega-native-v2" in text
-    assert "path: state" in text
     assert 'python-version: "3.11"' in text
+    assert "--control-version v3" in text
     assert "--grace-minutes 12" in text
     assert "--horizon-hours 48" in text
-    assert (
-        "git -C state add automation_intelligence/omega_stack_native_v2/reconciliation"
-        in text
-    )
+    assert "ref: automation/omega-native-v2" not in text
+    assert "git -C state" not in text
+    assert "omega_stack_native_v2/reconciliation" not in text
     assert "--force" not in text
     assert "force-with-lease" not in text
     assert "secrets." not in text
@@ -636,8 +633,11 @@ def test_workflow_contract_includes_v3_reconciliation_plane():
     assert "path: v3state" in text
     assert "--control-version v3" in text
     assert "git -C v3state add automation_intelligence/omega_stack_native_v3/reconciliation" in text
-    assert "git -C v3state pull --rebase origin main" in text
+    assert "for attempt in 1 2 3 4 5" in text
+    assert "git -C v3state fetch origin main" in text
+    assert "git -C v3state rebase origin/main" in text
     assert "git -C v3state push origin HEAD:main" in text
+    assert "sleep $((attempt * 2))" in text
     assert "git -C v3state push --force" not in text
 
 

@@ -5,8 +5,8 @@
   "category": "EVOLUTION",
   "status": "IMPLEMENTED",
   "severity": "IMPORTANT",
-  "summary": "Expanded ICARUS Assurance v3 into a behavior-neutral observability and comparative-research layer: parity fingerprints, persistent replay-equivalence checkpoints, raw pre-session bar retention, RTH/ETH×Real/HA comparison jobs, provider-health/failover telemetry, decision blockers, counterfactual blocked-signal scoring, decision-to-fill traces, explicit roll provenance, and execution-cost stress, all surfaced in the ICARUS interface.",
-  "surface": "runtime assurance, cross-session replay research, provider observability, and ICARUS dashboard",
+  "summary": "Expanded ICARUS Assurance v3 into a behavior-neutral observability and comparative-research layer: parity fingerprints, persistent replay-equivalence checkpoints, conservative historical quality readiness, raw pre-session retention, RTH/ETH×Real/HA comparison, deterministic replay audits, local parameter-sensitivity scans, explicit replay regression baselines/diffs, provider-health telemetry, decision blockers, counterfactual blocked-signal scoring, decision-to-fill/close regime attribution, trade segmentation, roll provenance, and execution-cost stress, all surfaced in the ICARUS interface.",
+  "surface": "runtime assurance, historical-quality gating, replay regression, comparative research, provider observability, and ICARUS dashboard",
   "source": "CHATGPT_MCP",
   "paths": [
     "icarus_engine/assurance_v3.py",
@@ -21,7 +21,13 @@
     "tests_engine/test_observability.py",
     "tests_engine/test_session_matrix.py",
     "tools/check_mcp_event_contract.py",
-    ".github/workflows/tests.yml"
+    ".github/workflows/tests.yml",
+    "icarus_engine/history_v2.py",
+    "icarus_engine/research_extensions.py",
+    "icarus_engine/regression_jobs.py",
+    "icarus_engine/assurance-ui.js",
+    "tests_engine/test_regression_jobs.py",
+    "tests_engine/test_assurance_research_extensions.py"
   ],
   "evidence": [
     "parity:canonical-sha256-gate-state",
@@ -36,7 +42,13 @@
     "execution-stress:closed-trades-only",
     "ui:assurance-shadow-only+matrix+decision-trace",
     "ci:mcp-same-changeset-provenance-contract",
-    "tests:no-order-api-in-assurance-module"
+    "tests:no-order-api-in-assurance-module",
+    "history-quality:depth+reject-rate+duplicate-rate+gap-observation",
+    "determinism:isolated-identical-replay-digest-audit",
+    "robustness:one-parameter-at-a-time-local-sensitivity-no-ranking",
+    "regression:explicit-local-baseline+descriptive-diff",
+    "trade-segmentation:direction+entry-hour-CT+holding-duration",
+    "ui:assurance-research-controls+trade-segmentation+regression-status"
   ],
   "execution_authorized": false,
   "trading_execution_authorized": false

@@ -412,8 +412,11 @@ class AssetRunner:
             shadow_rth = bool(st.get("in_session")) if self.spec.kind == "futures" else None
         self.session_shadow.observe(chart.c, shadow_rth)
         self.counterfactuals.observe(chart.ts, chart.c, st)
+        trace_decision = dict(explain_decision(st),
+                              regime=st.get("rate_regime_str"), regime_score=st.get("rate_regime"),
+                              pulse_state=st.get("pulse_state"), families_l=st.get("families_l"), families_s=st.get("families_s"))
         self.decision_trace.capture(chart.ts, self.bar_index, list(self.em._pending_entries),
-                                    explain_decision(st), self.parity_monitor.latest.digest if self.parity_monitor.latest else None)
+                                    trace_decision, self.parity_monitor.latest.digest if self.parity_monitor.latest else None)
         if self.replay_ledger is not None and self.parity_monitor.latest is not None:
             if self.bar_index % 100 == 0 or live:
                 self.replay_ledger.observe(chart.ts, self.parity_monitor.latest.digest)
@@ -435,6 +438,7 @@ class AssetRunner:
         self._fills_seen = len(self.em.fills)
         for idx in range(self._closed_seen, len(self.em.closed)):
             t = self.em.closed[idx]
+            self.decision_trace.record_close(t)
             if live or not self.rewarming:
                 key = (t.entry_id, t.entry_ts, t.exit_ts, t.exit_comment, t.qty, t.exit_price)
                 piece = sum(1 for u in self.em.closed[:idx] if (u.entry_id, u.entry_ts, u.exit_ts, u.exit_comment, u.qty, u.exit_price) == key)
@@ -663,6 +667,13 @@ class AssetRunner:
                 self._build_engine()
                 self.bar_index = -1
                 self.bars.clear(); self.overlays.clear(); self.recent_fills.clear(); self.recent_events.clear()
+                # A re-warm is a fresh deterministic replay. Reset run-local shadow
+                # analytics so counts/traces are not double-counted; keep the
+                # persistent replay ledger to compare the new replay with prior runs.
+                self.parity_monitor = ParityMonitor()
+                self.session_shadow = SessionShadow()
+                self.counterfactuals = CounterfactualTracker()
+                self.decision_trace = DecisionTrace()
                 self._fills_seen = 0; self._closed_seen = 0; self.last_sub_ts = None; self.state = {}
                 for m, rows in self.deep.items():
                     ch = self.chains.get(m)

@@ -1,0 +1,34 @@
+{
+  "schema_version": "icarus-mcp-event-v1",
+  "event_id": "20261001T164900Z-replay-timeframe-readiness-repair",
+  "at_utc": "2026-10-01T16:49:00Z",
+  "category": "REPAIR",
+  "status": "IMPLEMENTED",
+  "severity": "CRITICAL",
+  "summary": "Repaired a replay/parity assurance defect where allocated timeframe chains could be mistaken for populated historical evidence. Research replay now fails closed when the frozen source cannot causally build every requested timeframe across the scored window, and the blocker is surfaced in the ICARUS Assurance interface and completion gate.",
+  "surface": "Backtest/research replay validation, Assurance Completion Gate, and Replay timeframe data coverage panel",
+  "source": "CHATGPT_MCP",
+  "paths": [
+    "icarus_engine/replay_readiness.py",
+    "icarus_engine/backtest.py",
+    "icarus_engine/runtime.py",
+    "icarus_engine/completion_gate.py",
+    "icarus_engine/assurance-ui.js",
+    "tests_engine/test_replay_readiness.py",
+    "tests_engine/test_completion_gate.py",
+    "automation_intelligence/private_history_catalog/nq_replay_timeframe_readiness_20261001.json"
+  ],
+  "evidence": [
+    "exact-NQ-source:41239x20m+a8141ffa372b",
+    "base-replay-readiness:15m+30m-BLOCKED;60m+240m+1440m-READY",
+    "long-report-parity-request:5m+15m-BLOCKED-before-replay",
+    "invalid-pre-repair-diagnostic:174-closed-pieces+net-minus45944-not-performance-evidence",
+    "archive-search:no-true-5m-or-15m-NQ-series;different-chart-types-5.csv-is-1200s-modal-spacing",
+    "full-local-tests_engine:PASS",
+    "ui:Replay-timeframe-data-coverage",
+    "completion-block:REPLAY_TIMEFRAME_COVERAGE_INCOMPLETE",
+    "safety:no-coarse-resampling+execution_authorized-false"
+  ],
+  "execution_authorized": false,
+  "trading_execution_authorized": false
+}

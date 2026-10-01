@@ -30,6 +30,7 @@ from .metrics import PERFORMANCE_ROWS, RISK_ROWS, TRADES_ROWS, Piece, tv_summary
 from .pine.timeframe import Bar, tf_minutes
 from .runtime import AssetRunner, Journal, RunnerConfig, resolve_inputs, validate_values
 from .strategy.inputs import Inputs
+from .replay_readiness import assess_requested_timeframes, blocked_message
 
 JOBS: Dict[str, Dict[str, Any]] = {}
 _JOBS_LOCK = threading.Lock()
@@ -168,10 +169,12 @@ def run_backtest(port, symbol: str, *, preset: Optional[str] = None, inputs: Opt
         meta = {}
         sources = list(src.cfg.sources or []) + ["frozen source inputs"] + (["override"] if vals else [])
     requested = {tf_minutes(getattr(inp, f"htf_tf_{n}")) for n in range(1, 6)}
-    available = set(src.chains) | {m for m, rows in src.deep.items() if rows}
-    missing = requested - available
-    if missing:
-        raise ValueError(f"{src.spec.symbol}: cached history unavailable for requested HTF minutes {sorted(missing)}; fetch compatible history first")
+    frozen_subs = tuple(getattr(src, "raw_subbars", ()) or src.subbars)
+    replay_readiness = assess_requested_timeframes(
+        frozen_subs, src.deep, requested, chart_minutes=tf_minutes(src.spec.chart_tf),
+        window_start=window_start, window_end=window_end, known_timeframes=set(src.chains))
+    if replay_readiness["status"] != "READY":
+        raise ValueError(blocked_message(src.spec.symbol, replay_readiness))
     if meta.get("chart_type") in ("real", "heikin_ashi"):
         spec.chart_type = meta["chart_type"]
     if meta.get("slippage_ticks") is not None:
@@ -305,6 +308,7 @@ def run_backtest(port, symbol: str, *, preset: Optional[str] = None, inputs: Opt
         "deep_sha256": _snapshot_hash({m: [(asdict(b), sub) for b, sub in rows] for m, rows in deep.items()}),
         "subbars_count": len(subs), "subbars_scope": "raw_pre_session_filter" if getattr(src, "raw_subbars", ()) else "active_session_only",
         "deep_counts": {str(m): len(rows) for m, rows in deep.items()},
+        "replay_data_readiness": replay_readiness,
         "scale_source": "literal points (no reference scaling)" if literal_scale else "frozen source scale",
         "scale_known_at": scale_known_at,
         "historical_scale_asof_valid": historical_scale_asof_valid,

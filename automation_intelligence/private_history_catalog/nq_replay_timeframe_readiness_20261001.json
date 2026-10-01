@@ -1,0 +1,73 @@
+{
+  "schema_version": "icarus-replay-timeframe-readiness-v1",
+  "generated_at_utc": "2026-10-01T16:48:00Z",
+  "symbol": "NQ",
+  "finding": "A TFChain object was previously counted as cached-history availability even when no source observations could populate that timeframe. This allowed an invalid parity/research replay to run against a 20m-only source while the strategy requested lower timeframes.",
+  "exact_source": {
+    "sha256": "a8141ffa372b4ffaba4d6bf8b8998a489f2daf00bfad5e248bf27132d99f0932",
+    "timeframe_minutes": 20,
+    "rows": 41239,
+    "first_utc": "2024-06-02T22:00:00Z",
+    "last_utc": "2026-09-30T13:20:00Z",
+    "classification": "EXACT_OPERATOR_HISTORY"
+  },
+  "verified_runtime_readiness": {
+    "base_requested_minutes": [
+      15,
+      30,
+      60,
+      240,
+      1440
+    ],
+    "blocked_minutes": [
+      15,
+      30
+    ],
+    "ready_minutes": [
+      60,
+      240,
+      1440
+    ],
+    "reason": "20m observations can build 60m/240m/daily chains but cannot causally synthesize 15m or 30m bars."
+  },
+  "long_report_parity_request": {
+    "mapped_requested_minutes": [
+      5,
+      15,
+      60,
+      240,
+      1440
+    ],
+    "blocked_minutes": [
+      5,
+      15
+    ],
+    "result_after_repair": "FAIL_CLOSED_BEFORE_REPLAY",
+    "invalid_pre_repair_diagnostic": {
+      "valid_performance_evidence": false,
+      "closed_pieces": 174,
+      "net_profit_usd": -45944,
+      "reason": "Generated while required 5m/15m source coverage was absent; retained only as proof of the repaired false-availability path."
+    }
+  },
+  "searched_existing_sources": {
+    "native_library_5m_or_15m_nq_files_found": false,
+    "multi_level_csv_scan": {
+      "nq_members_scanned": 56,
+      "true_5m_or_15m_history_found": false,
+      "misleading_filename_note": "CME_MINI_DL_NQ1!, 5.csv in the different-chart-types archive has modal spacing 1200 seconds, so it is not a 5-minute clock series."
+    }
+  },
+  "repair": {
+    "rule": "Raw observations can build requested TF m only when sub_minutes <= m and m % sub_minutes == 0, with scored-window coverage checks. Chain allocation alone is never availability evidence.",
+    "completion_gate_block": "REPLAY_TIMEFRAME_COVERAGE_INCOMPLETE",
+    "interface_surface": "Replay timeframe data coverage",
+    "no_coarse_resampling": true,
+    "execution_authorized": false,
+    "trading_execution_authorized": false
+  },
+  "local_validation": {
+    "full_tests_engine": "PASS",
+    "exact_nq_offline_replay": "EXPECTED_BLOCK for 5m/15m report parity request"
+  }
+}

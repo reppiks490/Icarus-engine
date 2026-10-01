@@ -49,6 +49,7 @@ from .recovery import RecoveryWitness
 from .continuous_history import archive_status as continuous_archive_status
 from .completion_gate import completion_status
 from .private_history import discover_private_history, discover_private_reference_reports, safe_private_label
+from .replay_readiness import assess_requested_timeframes
 
 
 def _clean(x: Any) -> Any:
@@ -977,6 +978,10 @@ class AssetRunner:
         replay_view = self.replay_ledger.view() if self.replay_ledger is not None else {"mode":"NOT_INITIALIZED","checkpoints":0,"divergences_this_run":0,"restore_enabled":False,"execution_authorized":False}
         recovery_view = self.recovery_witness.view() if self.recovery_witness is not None else {"status":"NOT_INITIALIZED","state_restore_enabled":False,"execution_authorized":False}
         continuous_view = continuous_archive_status(self.base_dir, self.symbol) if self.spec.kind == "futures" else {"configured":False,"contract_files":[],"execution_authorized":False}
+        replay_tf_view = assess_requested_timeframes(
+            tuple(self.raw_subbars or self.subbars), self.deep,
+            {tf_minutes(getattr(self.inputs, f"htf_tf_{n}")) for n in range(1, 6)},
+            chart_minutes=self.chart_minutes)
         completion_view = completion_status(
             warmup_loaded=self.bar_index + 1, warmup_target=warmup_target,
             warmup_gate=getattr(self, "warmup_quality_gate", None),
@@ -984,7 +989,7 @@ class AssetRunner:
             warmup_stitch=getattr(self, "warmup_stitch", None),
             temporal=temporal_view, replay=replay_view, recovery=recovery_view,
             provider=provider_view, continuous=continuous_view,
-            kind=self.spec.kind, roll_mode=self.spec.roll)
+            kind=self.spec.kind, roll_mode=self.spec.roll, replay_timeframes=replay_tf_view)
         return _clean({
             "symbol": self.symbol, "name": self.spec.name, "product": self.spec.ticker, "feed": self.spec.feed, "kind": self.spec.kind,
             "contract": self.live_ticker if self.roller else None, "next_contract": self.roller.next_ticker if self.roller else None,
@@ -1018,6 +1023,7 @@ class AssetRunner:
             "decision_trace": self.decision_trace.view(),
             "trade_breakdown": trade_breakdown(self.em.closed, limit=1000),
             "replay_equivalence": replay_view,
+            "replay_timeframe_readiness": replay_tf_view,
             "restart_recovery": recovery_view,
             "roll_provenance": roll_provenance(self.roller),
             "continuous_archive": continuous_view,

@@ -3,6 +3,7 @@ from __future__ import annotations
 import threading, time, uuid
 from typing import Any, Dict
 from .backtest import freeze_replay_port, run_backtest
+from .research_extensions import regression_digest, robustness_value
 
 MATRIX_JOBS: Dict[str,Dict[str,Any]]={}
 _LOCK=threading.Lock()
@@ -66,3 +67,86 @@ def get_job(job_id:str):
         j=MATRIX_JOBS.get(str(job_id))
         if not j: raise ValueError("unknown session matrix job")
         return j
+
+
+_DEFAULT_ROBUSTNESS_FIELDS=("rate_min_mult","rate_max_mult","shock_z_thresh","pe_thresh","family_discount","pulse_conf_weight")
+
+def _new_job(symbol,kind,total):
+    job_id=uuid.uuid4().hex[:12]
+    job={"id":job_id,"kind":kind,"asset":symbol,"status":"running","started":time.time(),"progress":0,
+         "total":total,"result":None,"error":None,"execution_authorized":False}
+    with _LOCK:
+        MATRIX_JOBS[job_id]=job
+        if len(MATRIX_JOBS)>_MAX:
+            for k in sorted(MATRIX_JOBS,key=lambda x:MATRIX_JOBS[x]["started"])[:len(MATRIX_JOBS)-_MAX]:
+                MATRIX_JOBS.pop(k,None)
+    return job_id,job
+
+def start_determinism(port,symbol:str)->str:
+    symbol=str(symbol).upper()
+    if symbol not in port.runners: raise ValueError("unknown asset")
+    src=port.runners[symbol]
+    if not src.warm: raise ValueError("asset is still warming")
+    frozen=freeze_replay_port(port,symbol)
+    job_id,job=_new_job(symbol,"determinism",2)
+    def work():
+        try:
+            a=run_backtest(frozen,symbol); job["progress"]=1
+            b=run_backtest(frozen,symbol); job["progress"]=2
+            da,db=regression_digest(a),regression_digest(b)
+            job["result"]={"asset":symbol,"equal":da==db,"first_digest":da,"second_digest":db,
+                           "bars":[a.get("bars"),b.get("bars")],
+                           "trade_counts":[_all(a["summary"],"total_trades"),_all(b["summary"],"total_trades")],
+                           "mode":"DETERMINISM_AUDIT","execution_authorized":False}
+            job["status"]="done"
+        except Exception as ex:
+            job["error"]=f"{type(ex).__name__}: {ex}"; job["status"]="error"
+        job["finished"]=time.time()
+    threading.Thread(target=work,daemon=True,name=f"determinism-{job_id}").start()
+    return job_id
+
+def start_robustness(port,symbol:str,fields=None,fraction:float=0.10)->str:
+    symbol=str(symbol).upper()
+    if symbol not in port.runners: raise ValueError("unknown asset")
+    src=port.runners[symbol]
+    if not src.warm: raise ValueError("asset is still warming")
+    fraction=float(fraction)
+    if not 0.0 < fraction <= 0.50: raise ValueError("fraction must be >0 and <=0.50")
+    frozen=freeze_replay_port(port,symbol)
+    base_inputs=src.inputs_base.to_dict()
+    fields=tuple(fields or _DEFAULT_ROBUSTNESS_FIELDS)
+    if len(fields)>12: raise ValueError("at most 12 robustness fields")
+    bad=[f for f in fields if f not in base_inputs or isinstance(base_inputs[f],bool) or not isinstance(base_inputs[f],(int,float))]
+    if bad: raise ValueError("unsupported robustness fields: "+", ".join(map(str,bad)))
+    job_id,job=_new_job(symbol,"robustness",1+2*len(fields))
+    def work():
+        try:
+            baseline=run_backtest(frozen,symbol); job["progress"]=1
+            bm=_compact(baseline)["metrics"]; rows=[]
+            step=1
+            for field in fields:
+                center=base_inputs[field]
+                for direction,label in ((-1,"lower"),(1,"upper")):
+                    value=robustness_value(center,fraction,direction)
+                    result=run_backtest(frozen,symbol,inputs={field:value}); step+=1; job["progress"]=step
+                    m=_compact(result)["metrics"]
+                    rows.append({"field":field,"variant":label,"center":center,"value":value,"metrics":m,
+                                 "delta_vs_current":{k:(m[k]-bm[k] if isinstance(m.get(k),(int,float)) and isinstance(bm.get(k),(int,float)) else None)
+                                                     for k in ("net_profit","max_drawdown","total_trades","expectancy","profit_factor")}})
+            grouped={}
+            for row in rows: grouped.setdefault(row["field"],[]).append(row)
+            sensitivity={}
+            for field,rr in grouped.items():
+                vals=[x["metrics"].get("net_profit") for x in rr if isinstance(x["metrics"].get("net_profit"),(int,float))]
+                dds=[x["metrics"].get("max_drawdown") for x in rr if isinstance(x["metrics"].get("max_drawdown"),(int,float))]
+                sensitivity[field]={"net_profit_span":(max(vals)-min(vals) if vals else None),
+                                    "max_drawdown_span":(max(dds)-min(dds) if dds else None)}
+            job["result"]={"asset":symbol,"fraction":fraction,"baseline":bm,"variants":rows,"sensitivity":sensitivity,
+                           "interpretation":"DESCRIPTIVE_LOCAL_SENSITIVITY","execution_authorized":False,
+                           "note":"One parameter is perturbed at a time; no variant is selected, ranked or activated."}
+            job["status"]="done"
+        except Exception as ex:
+            job["error"]=f"{type(ex).__name__}: {ex}"; job["status"]="error"
+        job["finished"]=time.time()
+    threading.Thread(target=work,daemon=True,name=f"robustness-{job_id}").start()
+    return job_id

@@ -27,3 +27,15 @@ def test_assurance_finds_first_divergence_and_gate_snapshot():
 def test_research_helpers():
     assert len(walk_forward_slices(100,40,20,20))==2
     assert len(parameter_neighborhood({"a":10.0,"flag":True}))==3
+
+def test_runtime_wires_quality_readiness_and_attribution():
+    text = Path("icarus_engine/runtime.py").read_text(encoding="utf-8")
+    assert "load_history_csv" in text and "write_history_manifest" in text
+    assert '"warmup_quality"' in text and '"warmup_readiness"' in text
+    assert '"decision_attribution"' in text and "gate_attribution(st)" in text
+
+def test_dashboard_surfaces_history_quality():
+    text = Path("icarus_engine/dashboard.html").read_text(encoding="utf-8")
+    assert "History readiness" in text
+    for field in ("warmup_readiness","bars_valid","duplicates","rejected","gaps"):
+        assert field in text

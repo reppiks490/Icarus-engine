@@ -118,26 +118,7 @@ jobs:
           fi
 
           staged="$(git diff --cached --name-only)"
-          invalid="$(printf '%s\n' "$staged" | grep -Ev '^(automation_intelligence/agent_fabric/(robustness_guardian|alpha_synthesis|apex_council)/(startup_state|finalization_state|heartbeat)\.json|automation_intelligence/flow/(startup_state|finalization_state|heartbeat)\.json|automation_intelligence/agent_fabric/(robustness_guardian|alpha_synthesis|apex_council)/watchdog_incidents\.jsonl|automation_intelligence/flow/watchdog_incidents\.jsonl)          if [ -n "$invalid" ]; then
-            echo "Refusing out-of-scope watchdog mutation:" >&2
-            printf '%s\n' "$invalid" >&2
-            exit 1
-          fi
-          echo "WATCHDOG_NO_CHANGE=0" >> "$GITHUB_ENV"
-
-      - name: Commit verified recovery state
-        if: env.WATCHDOG_NO_CHANGE != '1'
-        shell: bash
-        run: |
-          set -euo pipefail
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "automation: restored-five durability recovery $(date -u +%Y%m%dT%H%M%SZ) [skip ci]"
-          # Fail closed on concurrent main movement. Never rebase a recovery
-          # decision computed against an older snapshot; the next watchdog
-          # cycle will recompute from fresh main.
-          git push origin HEAD:main
- || true)"
+          invalid="$(printf '%s\n' "$staged" | grep -Ev '^(automation_intelligence/agent_fabric/(robustness_guardian|alpha_synthesis|apex_council)/(startup_state|finalization_state|heartbeat)\.json|automation_intelligence/flow/(startup_state|finalization_state|heartbeat)\.json|automation_intelligence/agent_fabric/(robustness_guardian|alpha_synthesis|apex_council)/watchdog_incidents\.jsonl|automation_intelligence/flow/watchdog_incidents\.jsonl)$' || true)"
           if [ -n "$invalid" ]; then
             echo "Refusing out-of-scope watchdog mutation:" >&2
             printf '%s\n' "$invalid" >&2

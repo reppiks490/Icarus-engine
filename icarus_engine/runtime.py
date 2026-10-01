@@ -529,46 +529,45 @@ class AssetRunner:
         self.warmup_source = None
         self.warmup_quality = None
         self.warmup_quality_gate = None
+        self.warmup_target_bars = max(5000, int(self.cfg.warmup_bars))
         self.warmup_shards = []
         self.warmup_stitch = None
         self.warmup_ignored_session_shards = []
         source_reports = []
 
-        # Auto-discover compatible history shards only when no canonical export
-        # exists. Overlapping OHLC must agree exactly enough to be deterministic;
-        # conflicting shards are refused rather than silently prioritized.
-        if hist is None:
-            discovered = discover_history_sources(self.base_dir, self.symbol, self.chart_minutes, getattr(self.cal, "session", ""))
-            self.warmup_ignored_session_shards = [os.path.relpath(p, self.base_dir) for p in discovered.get("ignored_session_mismatch", [])]
-            candidates = discovered["exact"]
-            source_kind = "exact"
-            if not candidates:
-                candidates = discovered["alias"]
-                source_kind = "alias"
-            if candidates:
-                try:
-                    bars, source_reports, stitch_meta = stitch_strict(
-                        candidates, self.chart_minutes * 60, getattr(self.cal, "session", "UNKNOWN"))
-                    if bars:
-                        stitched = os.path.join(self.base_dir, "state", "history", "stitched",
-                                                f"{self.symbol}_{self.chart_minutes}m.csv")
-                        write_bars_csv(stitched, bars)
-                        hist = stitched
-                        self.warmup_shards = [os.path.relpath(p, self.base_dir) for p in candidates]
-                        self.warmup_stitch = dict(stitch_meta, source_kind=source_kind, shards=len(candidates))
-                        self.journal.log("INFO", f"[{self.symbol}] stitched {len(candidates)} {source_kind} history shard(s) into {len(bars)} validated bars")
-                except Exception as ex:
-                    self.warmup_stitch = {"source_kind": source_kind, "shards": len(candidates),
-                                          "status": "CONFLICT_OR_INVALID", "error": str(ex)[:300],
-                                          "execution_authorized": False}
-                    self.journal.log("WARN", f"[{self.symbol}] history shard stitch refused ({ex}); using feed fallback")
+        # Discover all compatible sources and choose the deepest validated set.
+        # This raises the real warm-up depth instead of merely changing the UI.
+        discovered = discover_history_sources(self.base_dir, self.symbol, self.chart_minutes, getattr(self.cal, "session", ""))
+        self.warmup_ignored_session_shards = [os.path.relpath(p, self.base_dir) for p in discovered.get("ignored_session_mismatch", [])]
+        source_sets=[]
+        if discovered["exact"]: source_sets.append(("exact", discovered["exact"]))
+        if discovered["alias"]: source_sets.append(("alias", discovered["alias"]))
+        if hist is not None: source_sets.append(("canonical", [hist]))
+        best=None
+        for source_kind,candidates in source_sets:
+            try:
+                bars,reports,stitch_meta=stitch_strict(candidates,self.chart_minutes*60,getattr(self.cal,"session","UNKNOWN"))
+                score=(len(bars), 2 if source_kind=="exact" else 1 if source_kind=="canonical" else 0)
+                if bars and (best is None or score>best[0]):
+                    best=(score,source_kind,candidates,bars,reports,stitch_meta)
+            except Exception as ex:
+                self.journal.log("WARN",f"[{self.symbol}] {source_kind} history candidate refused ({ex})")
+        if best is not None:
+            _,source_kind,candidates,bars,source_reports,stitch_meta=best
+            stitched=os.path.join(self.base_dir,"state","history","stitched",f"{self.symbol}_{self.chart_minutes}m.csv")
+            write_bars_csv(stitched,bars)
+            hist=stitched
+            self.warmup_shards=[os.path.relpath(p,self.base_dir) for p in candidates]
+            self.warmup_stitch=dict(stitch_meta,source_kind=source_kind,shards=len(candidates),
+                                    bars=len(bars),target_bars=self.warmup_target_bars)
+            self.journal.log("INFO",f"[{self.symbol}] selected deepest compatible {source_kind} history: {len(bars)} validated bars from {len(candidates)} source(s); target {self.warmup_target_bars}")
 
         if hist:
             self.warmup_source = os.path.relpath(hist, self.base_dir)
             try:
                 _, quality = load_history_csv(hist, self.chart_minutes * 60, getattr(self.cal, "session", "UNKNOWN"))
                 self.warmup_quality = quality.to_dict()
-                self.warmup_quality_gate = assess_quality(quality, self.cfg.warmup_bars)
+                self.warmup_quality_gate = assess_quality(quality, self.warmup_target_bars)
                 manifest = os.path.join(self.base_dir, "state", "history", f"{self.symbol}_{self.chart_minutes}m.json")
                 write_history_manifest(manifest, source_reports or [quality], quality.bars_valid, self.warmup_stitch)
                 if quality.rejected:
@@ -966,6 +965,7 @@ class AssetRunner:
             "persistent_bar_cache": self.bar_cache.stats(self.symbol) if self.bar_cache is not None else {"asset":self.symbol,"series":[],"revisions":{"total":0,"price":0,"volume":0},"stores_execution_state":False,"execution_authorized":False},
             "bar_cache_revisions": self.bar_cache.recent_revisions(self.symbol, 20) if self.bar_cache is not None else [],
             "warmup_source": getattr(self, "warmup_source", None), "warmup_quality": getattr(self, "warmup_quality", None),
+            "warmup_target_bars": getattr(self, "warmup_target_bars", max(5000, int(self.cfg.warmup_bars))), "warmup_loaded_bars": len(self.bars),
             "warmup_quality_gate": getattr(self, "warmup_quality_gate", None),
             "warmup_shards": getattr(self, "warmup_shards", []), "warmup_stitch": getattr(self, "warmup_stitch", None),
             "warmup_ignored_session_shards": getattr(self, "warmup_ignored_session_shards", []),

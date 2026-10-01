@@ -64,3 +64,18 @@ def test_server_and_dashboard_expose_session_matrix():
     assert "/api/research/session-matrix/" in s
     assert "Run RTH/ETH × Real/HA matrix" in d
     assert "No variant is selected or ranked automatically." in d
+
+
+def test_determinism_locator_finds_first_trade_difference():
+    a={"trades":[{"pnl":1},{"pnl":2}],"equity":[[1,100]],"drawdown":[],"buy_hold":[],"summary":{},"config":{}}
+    b={"trades":[{"pnl":1},{"pnl":3}],"equity":[[1,100]],"drawdown":[],"buy_hold":[],"summary":{},"config":{}}
+    d=comparison_jobs._first_replay_diff(a,b)
+    assert d["surface"]=="trades" and d["index"]==1
+
+def test_invalid_history_refuses_session_matrix():
+    import pytest
+    runner=SimpleNamespace(warm=True,warmup_quality_gate={"status":"INVALID","reasons":["NO_VALID_BARS"]},
+                           spec=SimpleNamespace(kind="futures",chart_type="real"),cal=SimpleNamespace(session="rth"))
+    port=SimpleNamespace(runners={"NQ":runner})
+    with pytest.raises(ValueError,match="history quality is INVALID"):
+        comparison_jobs.start_matrix(port,"NQ")

@@ -1,0 +1,61 @@
+{
+  "schema": "icarus-mcp-event-v1",
+  "category": "AUDIT",
+  "source": "FLOW_AUTOMATION",
+  "event_time": "2026-10-01T08:00:00Z",
+  "retrieval_time": "2026-10-01T09:23:03Z",
+  "execution_authorized": false,
+  "net_new_delta": "BTC 08:00 UTC completed hour failed to sustain the 07:00 volatility impulse: spot range contracted from 893.8 to 434.2 while volume rose from 321.570626 to 1260.790758 BTC; linear range contracted from 931.1 to 433.7 while volume fell from 5946.253 to 3773.417 BTC. Price recovered from the 07:00 selloff rather than extending it.",
+  "evidence": {
+    "bybit_spot_07": {
+      "range": 893.8,
+      "volume": 321.570626,
+      "open": 84123.6,
+      "close": 83412.8
+    },
+    "bybit_spot_08": {
+      "range": 434.2,
+      "volume": 1260.790758,
+      "open": 83412.8,
+      "close": 83565.6
+    },
+    "bybit_linear_07": {
+      "range": 931.1,
+      "volume": 5946.253,
+      "open": 84084.7,
+      "close": 83369.9
+    },
+    "bybit_linear_08": {
+      "range": 433.7,
+      "volume": 3773.417,
+      "open": 83369.9,
+      "close": 83528.4
+    },
+    "depth_snapshot": {
+      "server_ts_ms": 1790846590552,
+      "best_bid": 83727.9,
+      "bid_qty": 0.027153,
+      "best_ask": 83728,
+      "ask_qty": 0.850933,
+      "spread": 0.1
+    }
+  },
+  "argus": {
+    "status": "MATERIAL_DELTA",
+    "finding": "Authenticated Bybit spot depth snapshot shows $0.10 spread at 83,727.9/83,728.0; snapshot-only evidence. No historical order-flow or persistent-liquidity inference."
+  },
+  "nexus": {
+    "status": "MATERIAL_DELTA",
+    "finding": "Bybit spot and linear independently reconcile 08:00 UTC range contraction after the 07:00 impulse; spot volume diverged upward while linear volume declined, so representation-specific turnover must remain separate."
+  },
+  "data_gaps": [
+    "Direct NQ/MNQ, GC/MGC, SI, DXY and volatility-index observations unavailable in this cycle.",
+    "No historical depth/trade sequencing.",
+    "Twelve Data ETF series are prior U.S. session and not synchronous with fresh BTC event."
+  ],
+  "conflicts": [
+    "Spot 08:00 volume increased sharply while linear volume decreased; not treated as contradiction because venue representations and volume units differ."
+  ],
+  "regime_implication": "07:00 BTC impulse was not sustained in range at 08:00; state remains unstable/transient rather than confirmed durable expansion.",
+  "next_decisive_check": "Test the next completed BTC hour for renewed range expansion or continued compression and require synchronized direct futures/USD/volatility confirmation before cross-market promotion."
+}

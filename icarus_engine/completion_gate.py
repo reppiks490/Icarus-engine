@@ -37,7 +37,11 @@ def completion_status(*, warmup_loaded:int, warmup_target:int, warmup_gate:Dict[
     hist_ok=depth_ok and hist_status not in ("INVALID","BLOCKED")
     if hist_status in ("INVALID","BLOCKED"):
         hard.append("HISTORY_INVALID")
-    elif not depth_ok:
+    elif hist_status=="DEGRADED":
+        warnings.append("HISTORY_QUALITY_DEGRADED")
+    elif hist_status=="UNKNOWN":
+        warnings.append("HISTORY_QUALITY_UNKNOWN")
+    if not depth_ok:
         warnings.append("HISTORY_BELOW_TARGET")
     checks.append({"name":"historical_depth","status":"PASS" if hist_ok else ("BLOCK" if hist_status in ("INVALID","BLOCKED") else "WARN"),
                    "loaded":int(warmup_loaded),"target":int(warmup_target),"quality":hist_status})

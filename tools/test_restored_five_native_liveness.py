@@ -199,6 +199,13 @@ class NativeLivenessTests(unittest.TestCase):
             self.assertTrue(late_verification_path(root, lane, slot).exists())
 
 
+    def test_workflow_retries_concurrent_main_pushes(self):
+        workflow = Path(".github/workflows/restored-five-native-liveness.yml").read_text(encoding="utf-8")
+        self.assertIn("for attempt in 1 2 3 4 5; do", workflow)
+        self.assertIn("git fetch origin main", workflow)
+        self.assertIn("git rebase origin/main", workflow)
+        self.assertIn("Failed to persist native-liveness receipts after 5 optimistic push attempts.", workflow)
+
     def test_external_worker_404_equivalent_is_check_unavailable(self):
         lane = Lane(
             name="advanced_csv",

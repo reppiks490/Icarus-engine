@@ -39,3 +39,29 @@ def test_dashboard_surfaces_history_quality():
     assert "History readiness" in text
     for field in ("warmup_readiness","bars_valid","duplicates","rejected","gaps"):
         assert field in text
+
+
+def test_history_discovery_and_strict_stitch(tmp_path):
+    from icarus_engine.history_v2 import discover_history_sources, stitch_strict
+    h=tmp_path/"history"; h.mkdir()
+    a=h/"NQ_20m_2019.csv"; b=h/"NQ_20m_2020.csv"
+    a.write_text("ts,open,high,low,close,volume\n60,1,2,1,1.5,1\n120,1.5,2,1,1.8,2\n",encoding="utf-8")
+    b.write_text("ts,open,high,low,close,volume\n120,1.5,2,1,1.8,9\n180,1.8,2.2,1.7,2,3\n",encoding="utf-8")
+    d=discover_history_sources(str(tmp_path),"NQ",20)
+    assert d["exact"]==[str(a),str(b)]
+    bars,reports,meta=stitch_strict(d["exact"],1200)
+    assert len(bars)==3 and len(reports)==2 and meta["overlaps"]==1
+
+def test_strict_stitch_refuses_conflicting_overlap(tmp_path):
+    import pytest
+    from icarus_engine.history_v2 import stitch_strict
+    a=tmp_path/"a.csv"; b=tmp_path/"b.csv"
+    a.write_text("ts,open,high,low,close,volume\n60,1,2,1,1.5,1\n",encoding="utf-8")
+    b.write_text("ts,open,high,low,close,volume\n60,1,3,1,2.5,1\n",encoding="utf-8")
+    with pytest.raises(ValueError,match="conflicting OHLC"):
+        stitch_strict([str(a),str(b)],1200)
+
+def test_history_quality_gate_is_research_only():
+    from icarus_engine.history_v2 import HistoryReport, assess_quality
+    q=assess_quality(HistoryReport("x",rows_read=100,bars_valid=95,rejected=5),100)
+    assert q["status"]=="DEGRADED" and q["execution_authorized"] is False

@@ -17,7 +17,7 @@ def explain_decision(state: Dict[str,Any]) -> Dict[str,Any]:
     fl=float(state.get("final_l") or 0); fs=float(state.get("final_s") or 0); th=float(state.get("eff_thresh") or 0)
     return {"status":"CLEAR" if not blockers else "BLOCKED","blockers":blockers,
             "long_score":fl,"short_score":fs,"threshold":th,
-            "long_distance":th-fl,"short_distance":th-fs,"execution_authorized":False}
+            "long_distance":round(th-fl,12),"short_distance":round(th-fs,12),"execution_authorized":False}
 
 class CounterfactualTracker:
     """Score blocked threshold-crossing signals at future closes without creating orders."""

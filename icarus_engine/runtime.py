@@ -38,6 +38,8 @@ from .strategy.inputs import Inputs, crypto_profile
 from .strategy.meta import load_meta
 from .strategy.pulse import PulseStrategy
 from .strategy.security import TFChain
+from .history_v2 import load_csv as load_history_csv, write_manifest as write_history_manifest
+from .assurance import gate_attribution
 
 
 def _clean(x: Any) -> Any:
@@ -468,8 +470,20 @@ class AssetRunner:
                 bundled_hist = candidate
         hist = exact_hist if os.path.exists(exact_hist) else bundled_hist
         self.warmup_source = None
+        self.warmup_quality = None
         if hist:
             self.warmup_source = os.path.relpath(hist, self.base_dir)
+            # Validate the exact source independently before replay.  Replay remains
+            # the existing engine path; this audit sidecar must never change fills.
+            try:
+                _, quality = load_history_csv(hist, self.chart_minutes * 60, getattr(self.cal, "session", "UNKNOWN"))
+                self.warmup_quality = quality.to_dict()
+                manifest = os.path.join(self.base_dir, "state", "history", f"{self.symbol}_{self.chart_minutes}m.json")
+                write_history_manifest(manifest, [quality], quality.bars_valid)
+                if quality.rejected:
+                    self.journal.log("WARN", f"[{self.symbol}] history quality: {quality.rejected} rejected rows, {quality.duplicates} duplicates, {quality.gaps} gaps")
+            except Exception as ex:
+                self.journal.log("WARN", f"[{self.symbol}] history validation sidecar unavailable ({ex}); replaying with legacy parser")
             self._warmup_from_csv(hist, now)
         elif self.spec.feed == "yahoo":
             self.warmup_source = "yahoo"
@@ -824,7 +838,9 @@ class AssetRunner:
             "poll_age": (time.time() - self.last_poll_ok) if self.last_poll_ok else None,
             "bar_age": (time.time() - self.last_bar_wall) if self.last_bar_wall else None,
             "bar_index": self.bar_index, "warmup_bars_loaded": self.bar_index + 1, "warmup_bars_target": self.cfg.warmup_bars,
-            "warmup_source": getattr(self, "warmup_source", None), "last_bar_ts": self.bars[-1].ts if self.bars else None,
+            "warmup_source": getattr(self, "warmup_source", None), "warmup_quality": getattr(self, "warmup_quality", None),
+            "warmup_readiness": ("READY" if (self.bar_index + 1) >= self.cfg.warmup_bars else ("DEGRADED" if self.warm else "WARMING")),
+            "decision_attribution": gate_attribution(st), "last_bar_ts": self.bars[-1].ts if self.bars else None,
             "market": self.market(),
             "forming": (forming.__dict__ if forming else None),
             "equity": self.em.equity(mark), "capital": self.spec.capital, "netprofit": self.em.netprofit,

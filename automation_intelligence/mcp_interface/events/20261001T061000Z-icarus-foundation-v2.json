@@ -1,0 +1,31 @@
+{
+  "schema_version": "icarus-mcp-event-v1",
+  "event_id": "20261001T061000Z-icarus-foundation-v2",
+  "at_utc": "2026-10-01T06:10:00Z",
+  "category": "EVOLUTION",
+  "status": "IMPLEMENTED",
+  "severity": "IMPORTANT",
+  "summary": "Added and wired ICARUS Foundation v2 primitives: validated/deduplicated historical provenance manifests, history readiness/quality telemetry in the runtime and dashboard, atomic non-authoritative research checkpoints, deterministic parity/gate attribution, and walk-forward/parameter-neighborhood/counterfactual research bookkeeping.",
+  "surface": "historical data, replay assurance, research infrastructure",
+  "source": "CHATGPT_MCP",
+  "paths": [
+    "icarus_engine/history_v2.py",
+    "icarus_engine/checkpoint.py",
+    "icarus_engine/assurance.py",
+    "icarus_engine/research_lab.py",
+    "tests_engine/test_foundation_v2.py",
+    "icarus_engine/runtime.py",
+    "icarus_engine/dashboard.html"
+  ],
+  "evidence": [
+    "history:OHLC-validation+dedup+gap-accounting+sha256-provenance",
+    "checkpoint:atomic+schema-versioned+execution_authorized=false",
+    "assurance:first-divergence+gate-attribution",
+    "research:walk-forward+parameter-neighborhood+counterfactual-record",
+    "tests:foundation-v2-regressions",
+    "runtime:warmup_quality+warmup_readiness+decision_attribution",
+    "ui:history-readiness+valid+duplicate+rejected+gap-counters"
+  ],
+  "execution_authorized": false,
+  "trading_execution_authorized": false
+}

@@ -41,7 +41,7 @@ from .strategy.security import TFChain
 from .history_v2 import load_csv as load_history_csv, write_manifest as write_history_manifest
 from .assurance import gate_attribution
 from .assurance_v3 import ParityMonitor, SessionShadow, execution_stress, roll_provenance
-from .observability import explain_decision, CounterfactualTracker, ProviderHealth, ReplayCheckpointLedger
+from .observability import explain_decision, CounterfactualTracker, ProviderHealth, ReplayCheckpointLedger, DecisionTrace
 
 
 def _clean(x: Any) -> Any:
@@ -327,6 +327,7 @@ class AssetRunner:
         secondary = "kraken" if self.spec.feed == "coinbase" else None
         self.provider_health = ProviderHealth([p for p in (self.spec.feed, secondary) if p])
         self.replay_ledger: Optional[ReplayCheckpointLedger] = None
+        self.decision_trace = DecisionTrace()
 
     # ── engine construction (also used by re-warm) ──
     def _build_engine(self) -> None:
@@ -411,6 +412,8 @@ class AssetRunner:
             shadow_rth = bool(st.get("in_session")) if self.spec.kind == "futures" else None
         self.session_shadow.observe(chart.c, shadow_rth)
         self.counterfactuals.observe(chart.ts, chart.c, st)
+        self.decision_trace.capture(chart.ts, self.bar_index, list(self.em._pending_entries),
+                                    explain_decision(st), self.parity_monitor.latest.digest if self.parity_monitor.latest else None)
         if self.replay_ledger is not None and self.parity_monitor.latest is not None:
             if self.bar_index % 100 == 0 or live:
                 self.replay_ledger.observe(chart.ts, self.parity_monitor.latest.digest)
@@ -422,6 +425,7 @@ class AssetRunner:
                               "sl": st["sl_price"], "vwap": st["vwap"], "kf": st["kf_level"], "pos": st["rate_qty_open"] * (1 if st["rate_pos_long"] else -1),
                               "tide_hi": st["tide_hi"], "tide_lo": st["tide_lo"], "pulse": max(st["pulse_l"], st["pulse_s"]), "real_c": real.c})
         for f in self.em.fills[self._fills_seen:]:
+            self.decision_trace.record_fill(f)
             self.recent_fills.append({"ts": f.ts, "bar": f.bar, "id": f.entry_id, "side": f.side, "qty": f.qty, "price": f.price,
                                       "kind": f.kind, "comment": f.comment, "profit": f.profit, "pos": f.position_after, "live": live})
             if live or not self.rewarming:
@@ -886,6 +890,7 @@ class AssetRunner:
             "parity": self.parity_monitor.view(), "session_shadow": self.session_shadow.view(),
             "decision_explanation": explain_decision(st), "counterfactuals": self.counterfactuals.view(),
             "provider_health": self.provider_health.view(self.spec.feed, "kraken" if self.spec.feed == "coinbase" else None),
+            "decision_trace": self.decision_trace.view(),
             "replay_equivalence": self.replay_ledger.view() if self.replay_ledger is not None else {"mode":"NOT_INITIALIZED","restore_enabled":False,"execution_authorized":False},
             "roll_provenance": roll_provenance(self.roller),
             "execution_stress": execution_stress(

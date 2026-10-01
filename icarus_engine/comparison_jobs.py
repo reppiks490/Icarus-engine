@@ -13,6 +13,24 @@ def _all(summary,key):
     v=summary.get(key) or {}
     return v.get("all")
 
+def _first_replay_diff(a,b):
+    """Locate the first stable replay surface that differs; descriptive only."""
+    surfaces=("trades","equity","drawdown","buy_hold")
+    for name in surfaces:
+        x=list(a.get(name) or []); y=list(b.get(name) or [])
+        n=min(len(x),len(y))
+        for i in range(n):
+            if x[i] != y[i]:
+                return {"surface":name,"index":i,"first":x[i],"second":y[i]}
+        if len(x)!=len(y):
+            return {"surface":name,"index":n,"first":(x[n] if n<len(x) else None),"second":(y[n] if n<len(y) else None),
+                    "lengths":[len(x),len(y)]}
+    if a.get("summary") != b.get("summary"):
+        return {"surface":"summary","index":None,"first":a.get("summary"),"second":b.get("summary")}
+    if a.get("config") != b.get("config"):
+        return {"surface":"config","index":None,"first":a.get("config"),"second":b.get("config")}
+    return None
+
 def _compact(result):
     s=result["summary"]
     keys=("total_trades","net_profit","net_profit_pct","percent_profitable","profit_factor",
@@ -94,9 +112,11 @@ def start_determinism(port,symbol:str)->str:
             a=run_backtest(frozen,symbol); job["progress"]=1
             b=run_backtest(frozen,symbol); job["progress"]=2
             da,db=regression_digest(a),regression_digest(b)
-            job["result"]={"asset":symbol,"equal":da==db,"first_digest":da,"second_digest":db,
+            equal=da==db
+            job["result"]={"asset":symbol,"equal":equal,"first_digest":da,"second_digest":db,
                            "bars":[a.get("bars"),b.get("bars")],
                            "trade_counts":[_all(a["summary"],"total_trades"),_all(b["summary"],"total_trades")],
+                           "first_divergence":None if equal else _first_replay_diff(a,b),
                            "mode":"DETERMINISM_AUDIT","execution_authorized":False}
             job["status"]="done"
         except Exception as ex:

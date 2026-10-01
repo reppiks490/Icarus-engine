@@ -124,3 +124,34 @@ def test_backtest_and_ui_expose_terminal_parity_surfaces():
     assert "/admin/research/live-replay-parity" in server
     assert "/api/research/live-replay-parity/" in server
     assert 'data-assurance-job="live-replay-parity"' in ui
+
+
+def test_robustness_map_is_descriptive_grid_without_winner(monkeypatch):
+    inputs={"shock_z_thresh":2.0,"pe_thresh":1.0}
+    runner=SimpleNamespace(warm=True,warmup_quality_gate={"status":"READY","reasons":[]},
+                           inputs_base=SimpleNamespace(to_dict=lambda:dict(inputs)))
+    port=SimpleNamespace(runners={"NQ":runner})
+    monkeypatch.setattr(comparison_jobs,"freeze_replay_port",lambda p,s:p)
+    def fake(_p,_s,inputs=None,**kw):
+        bump=sum(float(v) for v in (inputs or {}).values())
+        return _result(net=100+bump,dd=10)
+    monkeypatch.setattr(comparison_jobs,"run_backtest",fake)
+    jid=comparison_jobs.start_robustness_map(port,"NQ","shock_z_thresh","pe_thresh",fraction=.1,steps=3)
+    for _ in range(100):
+        j=comparison_jobs.get_job(jid)
+        if j["status"]!="running": break
+        time.sleep(.01)
+    assert j["status"]=="done"
+    assert len(j["result"]["cells"])==9
+    assert j["result"]["interpretation"]=="DESCRIPTIVE_PARAMETER_NEIGHBORHOOD"
+    assert "winner" not in j["result"] and "optimum" not in j["result"]
+    assert j["result"]["execution_authorized"] is False
+
+
+def test_robustness_map_api_and_ui_are_wired():
+    ui=Path("icarus_engine/assurance-ui.js").read_text(encoding="utf-8")
+    server=Path("icarus_engine/server.py").read_text(encoding="utf-8")
+    assert "/admin/research/robustness-map" in server
+    assert "/api/research/robustness-map/" in server
+    assert 'data-assurance-job="robustness-map"' in ui
+    assert "No optimum/winner is selected or activated." in ui

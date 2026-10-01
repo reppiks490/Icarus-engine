@@ -17,6 +17,17 @@
   const pct = v => v == null ? "—" : (Number(v) * 100).toFixed(1) + "%";
   const money = v => v == null ? "—" : (Number(v) >= 0 ? "+" : "") + Number(v).toLocaleString(undefined,{maximumFractionDigits:2});
 
+  function integrityHtml(a) {
+    const t=a?.timeframe_integrity;
+    if (!t) return "";
+    const bad=(t.checks||[]).filter(x=>x.future_bucket);
+    return `<details class="group"><summary>Multi-timeframe temporal integrity <span class="cnt">${esc(t.status||'—')}</span></summary>
+      <div class="small ${t.violations?'neg':'pos'}">${t.violations||0} future-bucket violation(s) · rule: ${esc(t.rule||'')}</div>
+      <div class="scroll"><table><thead><tr><th>TF</th><th>Completed bucket</th><th>Current bucket</th><th>Bars</th><th>Status</th></tr></thead><tbody>${(t.checks||[]).map(x=>`<tr><td>${x.tf_minutes}m</td><td>${x.last_completed==null?'—':dtm(x.last_completed)}</td><td>${dtm(x.current_bucket)}</td><td>${x.bars??'—'}</td><td class="${x.future_bucket?'neg':'pos'}">${x.future_bucket?'FUTURE':'OK'}</td></tr>`).join('')}</tbody></table></div>
+      ${bad.length?'<div class="small neg">Temporal leakage evidence detected; research outputs should be treated as invalid until resolved.</div>':'<div class="small muted">This is an observational no-lookahead check; it does not alter strategy state.</div>'}
+    </details>`;
+  }
+
   function historyShardHtml(a) {
     const used=a?.warmup_shards || [], ignored=a?.warmup_ignored_session_shards || [], stitch=a?.warmup_stitch || null;
     if (!used.length && !ignored.length && !stitch) return "";
@@ -184,6 +195,7 @@
       </div>
       <div class="small muted" style="margin:6px 0 10px">Research-only controls. They run isolated replays and never activate parameters, submit orders, or authorize execution. Saving a regression baseline always requires explicit confirmation.</div>
       ${jobHtml(asset)}
+      ${integrityHtml(a)}
       ${historyShardHtml(a)}
       ${cacheHtml(a)}
       ${breakdownHtml(a)}`;

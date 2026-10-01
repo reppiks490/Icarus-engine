@@ -45,3 +45,21 @@ def test_async_regression_baseline_and_check(monkeypatch,tmp_path):
         if b["status"]!="running": break
         time.sleep(.01)
     assert b["result"]["status"]=="COMPARED" and b["result"]["diff"]["digest_equal"]
+
+
+def test_regression_reports_source_and_config_compatibility():
+    a=regression_jobs.snapshot(fake_result())
+    changed=fake_result()
+    changed["config"]["session"]="eth"
+    changed["config"]["reproducibility"]["subbars_sha256"]="different"
+    b=regression_jobs.snapshot(changed)
+    d=regression_jobs.compare(a,b)
+    assert d["config_equal"] is False and "session" in d["config_changes"]
+    assert d["source_equal"] is False and "subbars_sha256" in d["source_changes"]
+
+def test_invalid_history_refuses_regression(tmp_path):
+    import pytest
+    runner=SimpleNamespace(warm=True,warmup_quality_gate={"status":"INVALID","reasons":["NO_VALID_BARS"]})
+    port=SimpleNamespace(runners={"NQ":runner},base_dir=str(tmp_path))
+    with pytest.raises(ValueError,match="history quality is INVALID"):
+        regression_jobs.start(port,"NQ","check")

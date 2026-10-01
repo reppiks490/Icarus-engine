@@ -86,3 +86,19 @@ def test_workflow_evaluates_zero_cost_cutover_before_persisting() -> None:
     assert "Evaluate zero-cost cutover" in text
     assert "python -m tools.github_native_liveness_cutover --root ." in text
     assert text.index("Evaluate zero-cost cutover") < text.index("Persist v3 artifacts")
+
+
+def test_workflow_retries_main_push_races_without_force() -> None:
+    text = _text()
+    assert "for attempt in 1 2 3 4 5" in text
+    assert "git fetch origin main" in text
+    assert "git rebase origin/main" in text
+    assert "git push origin HEAD:main" in text
+    assert "sleep $((attempt * 2))" in text
+    assert "git push --force" not in text
+    assert "force-with-lease" not in text
+
+
+def test_workflow_runs_bounded_batch_catchup() -> None:
+    text = _text()
+    assert "--max-pending-slots 5" in text

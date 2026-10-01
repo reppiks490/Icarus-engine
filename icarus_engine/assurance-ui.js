@@ -48,7 +48,10 @@
     if (d) {
       if (d.status === "running") out += '<div class="small muted">Replay determinism audit running…</div>';
       else if (d.status === "error") out += `<div class="small neg">Determinism audit: ${esc(d.error || "error")}</div>`;
-      else if (d.result) out += `<div class="small ${d.result.equal ? "pos" : "neg"}">Replay determinism: <b>${d.result.equal ? "MATCH" : "DIVERGENCE"}</b> · ${esc((d.result.first_digest || "").slice(0,12))} / ${esc((d.result.second_digest || "").slice(0,12))}</div>`;
+      else if (d.result) {
+        const fd=d.result.first_divergence;
+        out += `<div class="small ${d.result.equal ? "pos" : "neg"}">Replay determinism: <b>${d.result.equal ? "MATCH" : "DIVERGENCE"}</b> · ${esc((d.result.first_digest || "").slice(0,12))} / ${esc((d.result.second_digest || "").slice(0,12))}${fd?' · first '+esc(fd.surface)+' @ '+esc(fd.index??'object'):''}</div>`;
+      }
     }
     if (r) {
       if (r.status === "running") out += `<div class="small muted">Robustness scan running · ${r.progress || 0}/${r.total || "?"}</div>`;
@@ -69,7 +72,9 @@
           <div class="scroll"><table><thead><tr><th>Bars Δ</th><th>Trades + / -</th><th>Net P&L Δ</th><th>Max DD Δ</th><th>Expectancy Δ</th><th>PF Δ</th></tr></thead><tbody><tr>
           <td>${nfmt(x.diff.bars_delta)}</td><td>+${x.diff.trades_added||0} / -${x.diff.trades_removed||0}</td><td>${money(m.net_profit)}</td><td>${money(m.max_drawdown)}</td><td>${money(m.expectancy)}</td><td>${nfmt(m.profit_factor)}</td>
           </tr></tbody></table></div>
-          <div class="small muted">Baseline ${esc((x.diff.baseline_digest||'').slice(0,12))} · current ${esc((x.diff.current_digest||'').slice(0,12))}. Descriptive diff only; ICARUS does not select or activate a configuration from this result.</div>
+          <div class="small muted">Baseline ${esc((x.diff.baseline_digest||'').slice(0,12))} · current ${esc((x.diff.current_digest||'').slice(0,12))} · config ${x.diff.config_equal?'same':'changed'} · source ${x.diff.source_equal?'same':'changed'}. Descriptive diff only; ICARUS does not select or activate a configuration from this result.</div>
+          ${Object.keys(x.diff.config_changes||{}).length?`<div class="small muted">Config changes: ${esc(Object.keys(x.diff.config_changes).join(', '))}</div>`:''}
+          ${Object.keys(x.diff.source_changes||{}).length?`<div class="small muted">Source changes: ${esc(Object.keys(x.diff.source_changes).join(', '))}</div>`:''}
         </details>`;
       }
     }

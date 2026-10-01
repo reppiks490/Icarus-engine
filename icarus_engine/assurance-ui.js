@@ -17,6 +17,16 @@
   const pct = v => v == null ? "—" : (Number(v) * 100).toFixed(1) + "%";
   const money = v => v == null ? "—" : (Number(v) >= 0 ? "+" : "") + Number(v).toLocaleString(undefined,{maximumFractionDigits:2});
 
+  function executionStressHtml(a) {
+    const e=a?.execution_stress_v2;
+    if (!e || !(e.scenarios||[]).length) return "";
+    const rows=e.scenarios.map(x => `<tr><td>${esc(x.name)}</td><td>${Math.round((x.fill_ratio||0)*100)}%</td><td>${x.extra_slippage_ticks??0}t</td><td>${x.latency_adverse_ticks??0}t</td><td>${nfmt(x.extra_commission_per_contract)}</td><td>${money(x.netprofit)}</td><td>${money(x.delta_vs_observed)}</td></tr>`).join("");
+    return `<details class="group"><summary>Execution sensitivity v2 <span class="cnt">${e.scenarios.length}</span></summary>
+      <div class="scroll"><table><thead><tr><th>Scenario</th><th>Fill ratio</th><th>Slip</th><th>Latency</th><th>Extra fee</th><th>Net P&L</th><th>Δ observed</th></tr></thead><tbody>${rows}</tbody></table></div>
+      <div class="small muted">${esc(e.model||'Research sensitivity only.')} · Closed-trade sensitivity only; this does not simulate or place fills.</div>
+    </details>`;
+  }
+
   function voteAttributionHtml(a) {
     const d=a?.decision_trace, groups=d?.by_vote_cooccurrence || {};
     const rows=Object.entries(groups).sort((x,y)=>(y[1]?.pieces||0)-(x[1]?.pieces||0)).map(([name,x]) =>
@@ -208,6 +218,7 @@
       ${jobHtml(asset)}
       ${integrityHtml(a)}
       ${voteAttributionHtml(a)}
+      ${executionStressHtml(a)}
       ${historyShardHtml(a)}
       ${cacheHtml(a)}
       ${breakdownHtml(a)}`;

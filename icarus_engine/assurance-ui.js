@@ -17,6 +17,17 @@
   const pct = v => v == null ? "—" : (Number(v) * 100).toFixed(1) + "%";
   const money = v => v == null ? "—" : (Number(v) >= 0 ? "+" : "") + Number(v).toLocaleString(undefined,{maximumFractionDigits:2});
 
+  function voteAttributionHtml(a) {
+    const d=a?.decision_trace, groups=d?.by_vote_cooccurrence || {};
+    const rows=Object.entries(groups).sort((x,y)=>(y[1]?.pieces||0)-(x[1]?.pieces||0)).map(([name,x]) =>
+      `<tr><td>${esc(name)}</td><td>${x.pieces??0}</td><td>${pct(x.win_rate)}</td><td>${money(x.net_profit)}</td><td>${nfmt(x.avg_weight)}</td><td>${nfmt(x.avg_bars)}</td></tr>`).join("");
+    if (!rows) return "";
+    return `<details class="group"><summary>Signal-family co-occurrence attribution <span class="cnt">${Object.keys(groups).length}</span></summary>
+      <div class="scroll"><table><thead><tr><th>Vote/component</th><th>Pieces</th><th>Win rate</th><th>Net P&L</th><th>Avg weight</th><th>Avg bars</th></tr></thead><tbody>${rows}</tbody></table></div>
+      <div class="small muted">${esc(d.attribution_caveat||'Co-occurrence only; overlapping components are not independent causal P&L.')}</div>
+    </details>`;
+  }
+
   function integrityHtml(a) {
     const t=a?.timeframe_integrity;
     if (!t) return "";
@@ -196,6 +207,7 @@
       <div class="small muted" style="margin:6px 0 10px">Research-only controls. They run isolated replays and never activate parameters, submit orders, or authorize execution. Saving a regression baseline always requires explicit confirmation.</div>
       ${jobHtml(asset)}
       ${integrityHtml(a)}
+      ${voteAttributionHtml(a)}
       ${historyShardHtml(a)}
       ${cacheHtml(a)}
       ${breakdownHtml(a)}`;

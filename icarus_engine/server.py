@@ -133,6 +133,8 @@ def serve(port: Portfolio, http_port: int = 8791, token: str = "icarus", start: 
                 return self._send(200, (html_path.parent / "sources-ui.js").read_bytes(), "text/javascript")
             if p.path == "/mcp-ui.js":
                 return self._send(200, (html_path.parent / "mcp-ui.js").read_bytes(), "text/javascript")
+            if p.path == "/assurance-ui.js":
+                return self._send(200, (html_path.parent / "assurance-ui.js").read_bytes(), "text/javascript")
             if p.path in ("/experience-ui.js", "/experience-ui.css"):
                 ctype = "text/javascript" if p.path.endswith(".js") else "text/css"
                 return self._send(200, (html_path.parent / p.path[1:]).read_bytes(), ctype)

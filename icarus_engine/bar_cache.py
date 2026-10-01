@@ -127,10 +127,12 @@ class BarCache:
             return self.con.total_changes-before
 
     def dispose(self):
-        """Release the SQLite handle. Named to avoid confusion with trading close intents."""
+        """Release the SQLite handle. This cache has no trading close semantics."""
         with self._lock:
             try:
-                self.con.__exit__(None, None, None)
+                closer=getattr(self.con,"close",None)
+                if closer is not None:
+                    closer()
             except Exception:
                 pass
 

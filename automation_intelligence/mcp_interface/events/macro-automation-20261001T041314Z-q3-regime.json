@@ -1,0 +1,65 @@
+{
+  "schema": "icarus-mcp-event-v1",
+  "event_id": "macro-automation-20261001T041314Z-q3-regime",
+  "category": "EVOLUTION",
+  "source": "MACRO_AUTOMATION",
+  "execution_authorized": false,
+  "observed_at_utc": "2026-10-01T04:13:14Z",
+  "net_new_delta": "MATERIAL_REGIME_DELTA: Q3 closed with an unusually sharp long-duration yield repricing and >$100 Brent while latest US PCE undershot expectations, creating a rates-energy-policy divergence relevant to ICARUS regime assumptions.",
+  "facts": [
+    "Reuters reported the US 10-year Treasury yield rose 81 bp in Q3, its largest quarterly increase since 2022, reaching a 19-year high.",
+    "Reuters reported August PCE inflation increased less than expected; the headline annual rate was 3.4% versus 3.7% expected.",
+    "Reuters reported Brent November settled at $103.50 on Sep 30, up 14% for September.",
+    "Reuters reported September ADP private payrolls +90,000 versus +70,000 expected; ADP historically does not closely track BLS payrolls."
+  ],
+  "model_inference": [
+    "ICARUS should treat the current state as a conflicted high-long-rate/high-energy regime rather than infer broad easing from one softer inflation print.",
+    "NQ/MNQ duration sensitivity, DXY/rates coupling, and GC/MGC inverse-yield assumptions warrant conditional revalidation."
+  ],
+  "oracle_contribution": "Promote Q3 long-yield/energy divergence to an active falsifiable regime hypothesis; do not silently retune strategy parameters.",
+  "supermesh_x_contribution": "Reuters supplied fresh cross-asset and macro evidence with coherent timestamps; preserve source-specific claims and avoid unavailable order-flow/positioning fields.",
+  "affected": [
+    "NQ",
+    "MNQ",
+    "US Treasury rate proxies",
+    "DXY/USD",
+    "GC",
+    "MGC",
+    "SI",
+    "Brent",
+    "WTI",
+    "major equity indices"
+  ],
+  "conflicts": [
+    "Softer-than-expected PCE and reduced near-term hike expectations conflict with elevated long yields and >$100 Brent.",
+    "Equity resilience conflicts with materially higher discount rates."
+  ],
+  "data_gaps": [
+    "No independently verified tick-level futures/FX snapshot in this cycle.",
+    "No order book, positioning, funding, liquidation, or other microstructure evidence was used."
+  ],
+  "confidence": "HIGH on cross-asset regime evidence; MEDIUM on model-specific consequences.",
+  "next_decisive_check": "Test whether long-end US yields remain structurally elevated while Brent stays near/above $100 through the next BLS employment and inflation releases; quantify NQ conditional beta to long yields and gold sensitivity to yields/USD.",
+  "evidence": [
+    {
+      "source": "Reuters",
+      "date": "2026-09-30",
+      "url": "https://www.reuters.com/markets/europe/global-markets-view-europe-2026-09-30/"
+    },
+    {
+      "source": "Reuters",
+      "date": "2026-09-30",
+      "url": "https://www.reuters.com/markets/us/us-inflation-rises-less-than-expected-august-consumer-spending-surges-2026-09-30/"
+    },
+    {
+      "source": "Reuters",
+      "date": "2026-09-30",
+      "url": "https://www.reuters.com/business/energy/oil-climbs-after-trump-denies-he-is-willing-ease-sanctions-iran-2026-09-30/"
+    },
+    {
+      "source": "Reuters",
+      "date": "2026-09-30",
+      "url": "https://www.reuters.com/business/us-private-payrolls-growth-picks-up-september-adp-says-2026-09-30/"
+    }
+  ]
+}

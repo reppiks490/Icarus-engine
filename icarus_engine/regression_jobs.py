@@ -82,7 +82,11 @@ def start(port,asset,mode):
     asset=str(asset).upper()
     if asset not in port.runners: raise ValueError("unknown asset")
     if mode not in ("baseline","check"): raise ValueError("mode must be baseline or check")
-    if not port.runners[asset].warm: raise ValueError("asset is still warming")
+    src=port.runners[asset]
+    if not src.warm: raise ValueError("asset is still warming")
+    gate=getattr(src,"warmup_quality_gate",None) or {}
+    if gate.get("status")=="INVALID":
+        raise ValueError("regression replay refused: history quality is INVALID" + (": "+", ".join(gate.get("reasons") or []) if gate.get("reasons") else ""))
     frozen=freeze_replay_port(port,asset)
     jid=uuid.uuid4().hex[:12]
     job={"id":jid,"asset":asset,"mode":mode,"status":"running","started":time.time(),"result":None,"error":None,"execution_authorized":False}

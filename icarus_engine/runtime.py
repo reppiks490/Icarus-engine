@@ -559,7 +559,7 @@ class AssetRunner:
             try:
                 bars,reports,stitch_meta=stitch_strict(candidates,self.chart_minutes*60,getattr(self.cal,"session","UNKNOWN"))
                 priority={"private_exact":4,"exact":3,"canonical":2,"alias":1}.get(source_kind,0)
-                score=(len(bars), priority)
+                score=(1 if len(bars)>=self.warmup_target_bars else 0, priority, len(bars))
                 if bars and (best is None or score>best[0]):
                     best=(score,source_kind,candidates,bars,reports,stitch_meta)
             except Exception as ex:

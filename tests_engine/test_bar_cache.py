@@ -36,3 +36,15 @@ def test_runtime_wires_persistent_cache_without_execution_state():
     mod=Path("icarus_engine/bar_cache.py").read_text(encoding="utf-8")
     for forbidden in (".entry(", ".exit(", ".close(", "PendingEntry", "ExitOrder"):
         assert forbidden not in mod
+
+
+def test_bar_cache_records_provider_revisions(tmp_path):
+    p=tmp_path/"state"/"cache"/"bars.sqlite3"
+    c=BarCache(str(p))
+    c.put_many("NQ",1,[Bar(100,1,2,.5,1.5,10)],source="provider-a")
+    c.put_many("NQ",1,[Bar(100,1,2.25,.5,1.75,12)],source="provider-b")
+    s=c.stats("NQ")
+    assert s["revisions"]["total"]==1 and s["revisions"]["price"]==1 and s["revisions"]["volume"]==1
+    rr=c.recent_revisions("NQ")
+    assert rr[0]["old_source"]=="provider-a" and rr[0]["new_source"]=="provider-b"
+    assert rr[0]["old_close"]==1.5 and rr[0]["new_close"]==1.75

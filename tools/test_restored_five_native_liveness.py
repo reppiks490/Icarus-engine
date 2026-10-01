@@ -235,5 +235,50 @@ class NativeLivenessTests(unittest.TestCase):
         self.assertEqual(observed, {})
 
 
+    def test_watchdog_fallback_is_not_counted_as_chatgpt_worker_receipt(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            lane = self.lane()
+            control = self.control()
+            slot = datetime(2026, 9, 30, 22, 5, tzinfo=timezone.utc)
+            finalization = root / lane.worker_root / "finalization_state.json"
+            finalization.parent.mkdir(parents=True, exist_ok=True)
+            finalization.write_text(json.dumps({
+                "schema_version": "scheduler-finalization-v5.7",
+                "RUN_ID": "robustness-guardian-20260930T220500Z",
+                "RUN_STATUS": "RUN_PERSISTED",
+                "completion_semantics": "DURABILITY_RECEIPT_ONLY",
+                "history_mode": "git_commit_finalization",
+                "work_status": "WATCHDOG_FALLBACK_PERSISTED",
+                "receipt_origin": "github_watchdog_stabilization_fallback",
+                "worker_execution_observed": False,
+                "payload": {"result": "SCHEDULER_WORKER_RECEIPT_MISSED"},
+                "execution_authorized": False,
+            }))
+
+            status, observed = worker_receipt_status(root, control, lane, slot)
+            self.assertEqual(status, "WATCHDOG_FALLBACK_RECEIPT_PRESENT")
+            self.assertFalse(observed["worker_execution_observed"])
+
+            out = persist_slot(
+                root, control, lane, slot,
+                datetime(2026, 9, 30, 22, 13, tzinfo=timezone.utc),
+            )
+            self.assertIsNotNone(out)
+            payload = json.loads(out.read_text())
+            self.assertEqual(payload["slot_status"], "FALLBACK_LIVENESS_ONLY")
+            self.assertEqual(
+                payload["worker_receipt_status"],
+                "WATCHDOG_FALLBACK_RECEIPT_PRESENT",
+            )
+            self.assertFalse(payload["substantive_work_claimed"])
+
+            late = persist_late_verification(
+                root, control, lane, slot,
+                datetime(2026, 9, 30, 22, 20, tzinfo=timezone.utc),
+            )
+            self.assertIsNone(late)
+
+
 if __name__ == "__main__":
     unittest.main()

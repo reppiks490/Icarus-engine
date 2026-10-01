@@ -147,6 +147,7 @@ pre.cli { background:var(--surface-2); border:1px solid var(--ring); border-radi
 
 <script src="/research-ui.js"></script>
 <script src="/sources-ui.js"></script>
+<script src="/mcp-ui.js"></script>
 <script src="/experience-ui.js"></script>
 <script>
 const $ = (s, r=document) => r.querySelector(s);
@@ -270,7 +271,7 @@ function tabsHtml(A) {
   const t = [`<span class="tab ${view==='overview'?'active':''}" data-v="overview">Overview</span>`];
   A.forEach(a => { const pos = a.position||0; t.push(`<span class="tab ${view==='asset:'+a.symbol?'active':''}" data-v="asset:${a.symbol}"><span class="dot ${pos>0?'long':pos<0?'short':(a.market&&a.market.open===false?'closed':'')}"></span><b class="s">${a.symbol}</b> <span class="muted small tnum">${px(a.price)}</span></span>`); });
   t.push(`<span class="tab" data-v="add" title="Add an asset">＋</span>`);
-  t.push(`<span class="tab util ${view==='inputs'?'active':''}" data-v="inputs">Inputs</span><span class="tab util ${view==='backtest'?'active':''}" data-v="backtest">Backtest</span>${typeof researchHtml==='function'?`<span class="tab util ${view==='research'?'active':''}" data-v="research">Research</span>`:''}${typeof sourcesHtml==='function'?`<span class="tab util ${view==='sources'?'active':''}" data-v="sources">Financial &amp; data</span>`:''}<span class="tab util ${view==='commands'?'active':''}" data-v="commands">Commands</span><span class="tab util ${view==='log'?'active':''}" data-v="log">Log</span>`);
+  t.push(`<span class="tab util ${view==='inputs'?'active':''}" data-v="inputs">Inputs</span><span class="tab util ${view==='backtest'?'active':''}" data-v="backtest">Backtest</span>${typeof researchHtml==='function'?`<span class="tab util ${view==='research'?'active':''}" data-v="research">Research</span>`:''}${typeof sourcesHtml==='function'?`<span class="tab util ${view==='sources'?'active':''}" data-v="sources">Financial &amp; data</span>`:''}${typeof mcpHtml==='function'?`<span class="tab util ${view==='mcp'?'active':''}" data-v="mcp">MCP / Automation</span>`:''}<span class="tab util ${view==='commands'?'active':''}" data-v="commands">Commands</span><span class="tab util ${view==='log'?'active':''}" data-v="log">Log</span>`);
   return t.join('');
 }
 function overviewHtml(d, A) {
@@ -412,14 +413,14 @@ function palItems(q) {
   const A = (last&&last.assets)||[]; const items = [];
   COMMANDS.forEach(c => { if (c.scope === 'all') items.push({label:c.label, sub:'all assets', id:c.id, a:'*'}); else { if (c.scope.includes('all')) items.push({label:c.label, sub:'all assets', id:c.id, a:'*'}); A.forEach(a => items.push({label:`${c.label} ${a.symbol}`, sub:a.name, id:c.id, a:a.symbol})); } });
   A.forEach(a => items.push({label:`Go to ${a.symbol}`, sub:'asset tab', id:'goto', a:a.symbol}));
-  items.push({label:'Overview', sub:'tab', id:'goto', a:'overview'}, {label:'Inputs tab', sub:'tab', id:'goto', a:'inputs'}, {label:'Commands tab', sub:'tab', id:'goto', a:'commands'}, {label:'Log tab', sub:'tab', id:'goto', a:'log'});
+  items.push({label:'Overview', sub:'tab', id:'goto', a:'overview'}, {label:'Inputs tab', sub:'tab', id:'goto', a:'inputs'}, {label:'MCP / Automation tab', sub:'tab', id:'goto', a:'mcp'}, {label:'Commands tab', sub:'tab', id:'goto', a:'commands'}, {label:'Log tab', sub:'tab', id:'goto', a:'log'});
   const words = q.toLowerCase().split(/\s+/).filter(Boolean);
   return items.filter(it => words.every(w => (it.label+' '+it.sub).toLowerCase().includes(w))).slice(0, 14);
 }
 function renderPal() { const items = palItems($('#palq').value); palSel = Math.min(palSel, Math.max(0, items.length-1)); $('#palList').innerHTML = items.map((it,i)=>`<div class="item ${i===palSel?'sel':''}" data-i="${i}"><b>${esc(it.label)}</b><span class="muted small">${esc(it.sub)}</span><span class="k">${i===palSel?'↵':''}</span></div>`).join('') || '<div class="item muted">no match</div>'; $('#palList')._items = items; }
 function openPal() { $('#pal').classList.add('open'); $('#palq').value=''; palSel=0; renderPal(); setTimeout(()=>$('#palq').focus(), 30); }
 function closePal() { $('#pal').classList.remove('open'); }
-async function palRun(it) { closePal(); if (!it) return; if (it.id === 'goto') { setView(['overview','inputs','commands','log'].includes(it.a) ? it.a : 'asset:'+it.a); return; } await runCommand(it.id, it.a); }
+async function palRun(it) { closePal(); if (!it) return; if (it.id === 'goto') { setView(['overview','inputs','mcp','commands','log'].includes(it.a) ? it.a : 'asset:'+it.a); return; } await runCommand(it.id, it.a); }
 $('#btnPal').onclick = openPal; $('#palq').addEventListener('input', () => { palSel=0; renderPal(); });
 $('#palq').addEventListener('keydown', ev => { const items = $('#palList')._items||[]; if (ev.key==='ArrowDown') { palSel=Math.min(items.length-1, palSel+1); renderPal(); ev.preventDefault(); } else if (ev.key==='ArrowUp') { palSel=Math.max(0, palSel-1); renderPal(); ev.preventDefault(); } else if (ev.key==='Enter') { palRun(items[palSel]); } else if (ev.key==='Escape') closePal(); });
 $('#palList').addEventListener('click', ev => { const it = ev.target.closest('.item'); if (it && it.dataset.i!=null) palRun(($('#palList')._items||[])[+it.dataset.i]); });
@@ -586,6 +587,7 @@ function render(d) {
   else if (view === 'backtest') { if (rebuild) { $('#view').innerHTML = backtestHtml(A); $('#btRun').addEventListener('click', runBacktest); if (BT.res) renderBacktest(); } }
   else if (view === 'research') { if(typeof researchHtml!=='function') $('#view').innerHTML='<section class="card c12">Research requires the updated engine server. The running engine has not been restarted.</section>'; else if (rebuild) { $('#view').innerHTML = researchHtml(A); wireResearch(); } else loadResearch(); }
   else if (view === 'sources') { if(typeof sourcesHtml!=='function') $('#view').innerHTML='<section class="card c12">Financial data requires the updated engine server. The running engine has not been restarted.</section>'; else if (rebuild) { $('#view').innerHTML = sourcesHtml(A); wireSources(); } else loadSources(); }
+  else if (view === 'mcp') { if(typeof mcpHtml!=='function') $('#view').innerHTML='<section class="card c12">MCP / Automation requires the updated engine server. The running engine has not been restarted.</section>'; else if (rebuild) { $('#view').innerHTML = mcpHtml(); wireMcp(); } else loadMcp(); }
   else if (view === 'log') { if (rebuild) $('#view').innerHTML = `<section class="card c12"><h2>Engine log</h2><div class="log" id="log2" style="max-height:80vh"></div></section>`; $('#log2').innerHTML = (d.log||[]).slice().reverse().map(l => `<div class="${l.level}">${tms(l.ts)} ${l.level.padEnd(5)} ${esc(l.msg)}</div>`).join(''); }
   lastView = view; first = false;
   window.IcarusExperience?.update(d, view);

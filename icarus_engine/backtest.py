@@ -66,6 +66,11 @@ def freeze_replay_port(port, symbol: str):
             deep={m: tuple(rows) for m, rows in src.deep.items()}, subbars=tuple(src.subbars),
             raw_subbars=tuple(getattr(src, "raw_subbars", ()) or src.subbars),
             T_w=getattr(src, "T_w", None), chains=tuple(getattr(src, "chains", htf | {2, 5})),
+            frozen_terminal_bar_ts=(src.bars[-1].ts if getattr(src, "bars", None) else None),
+            frozen_terminal_digest=(getattr(getattr(src, "parity_monitor", None), "latest", None).digest
+                                    if getattr(getattr(src, "parity_monitor", None), "latest", None) else None),
+            frozen_decision_attribution=copy.deepcopy(getattr(src, "state", {}) or {}),
+            warmup_quality_gate=copy.deepcopy(getattr(src, "warmup_quality_gate", None)),
             lock=threading.RLock())
     return SimpleNamespace(runners={symbol: frozen}, base_dir=port.base_dir, profile=cfg.profile,
                            feeds={}, preset_for=lambda _: preset, _replay_frozen=True)
@@ -317,6 +322,12 @@ def run_backtest(port, symbol: str, *, preset: Optional[str] = None, inputs: Opt
         },
         "range": {"start": bt_start, "end": bt_end, "first_trade": (pieces[0].entry_ts if pieces else None), "last_trade": (pieces[-1].exit_ts if pieces else None)},
         "summary": summary, "rows": rows, "trades": trades, "equity": eq_curve, "drawdown": dd_curve, "buy_hold": bh_curve,
+        "assurance": {
+            "terminal_bar_ts": (r.bars[-1].ts if r.bars else None),
+            "terminal_decision_digest": (r.parity_monitor.latest.digest if r.parity_monitor.latest else None),
+            "terminal_decision_fields": (r.parity_monitor.latest.fields if r.parity_monitor.latest else 0),
+            "execution_authorized": False,
+        },
         "csv": trades_csv(trades), "sources": sources,
     }
 

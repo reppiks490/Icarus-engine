@@ -72,7 +72,8 @@ class BarCache:
                 VALUES(?,?,?,?,?,?,?,?,?,?)
                 ON CONFLICT(asset,sub_minutes,ts) DO UPDATE SET
                   o=excluded.o,h=excluded.h,l=excluded.l,c=excluded.c,v=excluded.v,
-                  source=excluded.source,retrieved_at=excluded.retrieved_at""",rows)
+                  source=excluded.source,retrieved_at=excluded.retrieved_at
+                WHERE bars.source=excluded.source OR bars.source='' OR excluded.source=''""",rows)
             self.con.commit()
         return len(rows)
 
@@ -83,6 +84,16 @@ class BarCache:
                 WHERE asset=? AND sub_minutes=? AND ts>=? AND ts<=?
                 ORDER BY ts LIMIT ?""",(str(asset).upper(),int(sub_minutes),int(start_ts),int(end_ts),limit)).fetchall()
         return [Bar(int(t),float(o),float(h),float(l),float(c),float(v)) for t,o,h,l,c,v in rows]
+
+    def load_records(self,asset:str,sub_minutes:int,start_ts:int,end_ts:int,limit:int=500000):
+        """Load cached bars with source identity so roll boundaries are not overwritten in memory."""
+        limit=max(1,min(int(limit),1000000))
+        with self._lock:
+            rows=self.con.execute("""SELECT ts,o,h,l,c,v,source FROM bars
+                WHERE asset=? AND sub_minutes=? AND ts>=? AND ts<=?
+                ORDER BY ts LIMIT ?""",(str(asset).upper(),int(sub_minutes),int(start_ts),int(end_ts),limit)).fetchall()
+        return [{"bar":Bar(int(t),float(o),float(h),float(l),float(c),float(v)),"source":str(src or "")}
+                for t,o,h,l,c,v,src in rows]
 
     def stats(self,asset:str):
         asset=str(asset).upper()
@@ -124,3 +135,23 @@ def merge_bars(cached, fresh):
     rows={int(b.ts):b for b in cached}
     for b in fresh: rows[int(b.ts)]=b
     return [rows[k] for k in sorted(rows)]
+
+
+def merge_source_aware(cached_records, fresh, fresh_source:str):
+    """Merge while protecting a cached futures roll segment from another contract.
+
+    A fresh observation may replace a cached timestamp only when source identity
+    matches (or one side is unlabelled). This prevents a current contract's
+    historical fetch from rewriting timestamps that were actually observed from
+    the prior active contract before a roll.
+    """
+    rows={int(r["bar"].ts):(r["bar"],str(r.get("source") or "")) for r in cached_records}
+    src=str(fresh_source or "")
+    protected=0
+    for b in fresh:
+        old=rows.get(int(b.ts))
+        if old is not None and old[1] and src and old[1]!=src:
+            protected+=1
+            continue
+        rows[int(b.ts)]=(b,src)
+    return [rows[k][0] for k in sorted(rows)],protected

@@ -1,0 +1,23 @@
+{
+  "schema_version": "alpha-scheduler-rotation-v1",
+  "lane": "alpha_synthesis",
+  "old_scheduler_id": "6abaf8d75cf48191bc7ce06bc0006f1c",
+  "new_scheduler_id": "6abda2dc3aa881919b80fa89f1c5122e",
+  "rotated_at_utc": "2026-10-01T00:01:32Z",
+  "schedule": "HOURLY_BYMINUTE_25_AMERICA_CHICAGO",
+  "evidence": [
+    {
+      "RUN_ID": "alpha-synthesis-20260930T222500Z",
+      "result": "MISSING_CANONICAL_RECEIPT_AFTER_GRACE"
+    },
+    {
+      "RUN_ID": "alpha-synthesis-20260930T232500Z",
+      "result": "MISSING_CANONICAL_RECEIPT_AFTER_GRACE"
+    }
+  ],
+  "hypothesis": "OLD_TASK_INSTANCE_TOOL_HANDOFF_OR_CONTEXT_CORRUPTION",
+  "old_task_disabled": true,
+  "replacement_task_enabled": true,
+  "execution_authorized": false,
+  "foreign_scheduler_namespaces_mutated": false
+}

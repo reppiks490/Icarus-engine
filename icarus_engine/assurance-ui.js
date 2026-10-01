@@ -17,6 +17,20 @@
   const pct = v => v == null ? "—" : (Number(v) * 100).toFixed(1) + "%";
   const money = v => v == null ? "—" : (Number(v) >= 0 ? "+" : "") + Number(v).toLocaleString(undefined,{maximumFractionDigits:2});
 
+  function completionHtml(a) {
+    const g=a?.assurance_completion;
+    if (!g) return "";
+    const cls=g.status==="READY"?"pos":g.status==="BLOCKED"?"neg":"muted";
+    const rows=(g.checks||[]).map(x=>`<tr><td>${esc(x.name||"")}</td><td class="${x.status==="BLOCK"?"neg":x.status==="PASS"?"pos":"muted"}">${esc(x.status||"")}</td><td><code>${esc(JSON.stringify(Object.fromEntries(Object.entries(x).filter(([k])=>!["name","status","execution_authorized"].includes(k)))))}</code></td></tr>`).join("");
+    return `<details class="group" open><summary>Assurance completion gate <span class="cnt ${cls}">${esc(g.status||"—")}</span></summary>
+      <div class="small ${cls}"><b>${esc(g.status||"—")}</b> · ${esc(g.meaning||"RESEARCH_ASSURANCE_READINESS_ONLY")} · trading permission: ${esc(g.trading_permission||"UNCHANGED")}</div>
+      <div class="small muted">Hard blocks: ${esc((g.hard_blocks||[]).join(", ")||"none")} · warnings: ${esc((g.warnings||[]).join(", ")||"none")}</div>
+      <div class="small muted">History source: ${esc(g.source_quality?.class||"UNKNOWN")}${g.source_quality?.proxy_warning?" · compatible price proxy, not exact contract history":""}</div>
+      <div class="scroll"><table><thead><tr><th>Evidence surface</th><th>Status</th><th>Details</th></tr></thead><tbody>${rows}</tbody></table></div>
+      <div class="small muted">This gate is observational. READY does not authorize trading, deployment, parameter activation, or order submission.</div>
+    </details>`;
+  }
+
   function recoveryHtml(a) {
     const r=a?.restart_recovery;
     if (!r) return "";
@@ -266,6 +280,7 @@
       <div class="small muted" style="margin:6px 0 10px">Research-only controls. They run isolated replays and never activate parameters, submit orders, or authorize execution. Saving a regression baseline always requires explicit confirmation.</div>
       <div class="small"><b>Warm-up depth:</b> ${Number(a.warmup_loaded_bars??0).toLocaleString()} loaded / ${Number(a.warmup_target_bars??0).toLocaleString()} target · ${a.warmup_quality_gate?.status||"UNKNOWN"}</div>
       ${a.kind==="futures"?`<div class="small muted">Continuous archive input: ${a.continuous_archive?.configured?"configured ("+(a.continuous_archive?.contract_files?.length||0)+" contracts)":"not configured"} · expected under ${esc(a.continuous_archive?.root||"history/contracts/<SYMBOL>")}.</div>`:""}
+      ${completionHtml(a)}
       ${jobHtml(asset)}
       ${recoveryHtml(a)}
       ${integrityHtml(a)}

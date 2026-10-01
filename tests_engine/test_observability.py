@@ -34,3 +34,19 @@ def test_decision_trace_links_intent_to_fill():
     v=t.view()
     assert v["count"]==1 and v["recent"][0]["fill"]["price"]==101.25
     assert v["execution_authorized"] is False
+
+
+def test_decision_trace_attributes_close_to_regime():
+    from types import SimpleNamespace
+    t=DecisionTrace()
+    p=SimpleNamespace(placed_bar=4,seq=7,id="Long",direction=1,qty=2,limit=None)
+    t.capture(100,4,[p],{"status":"CLEAR","blockers":[],"regime":"STRONG"}, "abc")
+    f=SimpleNamespace(kind="entry",entry_id="Long",ts=120,bar=5,price=101.25,qty=2,side="buy")
+    t.record_fill(f)
+    closed=SimpleNamespace(entry_id="Long",entry_ts=120,exit_ts=180,exit_price=103,qty=2,profit=65,
+                           exit_comment="L_TP1",runup=80,drawdown=-20,bars=3)
+    t.record_close(closed)
+    v=t.view()
+    assert v["closed_pieces"]==1
+    assert v["by_regime"]["STRONG"]["net_profit"]==65
+    assert v["by_regime"]["STRONG"]["win_rate"]==1

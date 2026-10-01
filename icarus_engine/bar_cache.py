@@ -73,7 +73,8 @@ class BarCache:
                 ON CONFLICT(asset,sub_minutes,ts) DO UPDATE SET
                   o=excluded.o,h=excluded.h,l=excluded.l,c=excluded.c,v=excluded.v,
                   source=excluded.source,retrieved_at=excluded.retrieved_at
-                WHERE bars.source=excluded.source OR bars.source='' OR excluded.source=''""",rows)
+                WHERE bars.source=excluded.source OR bars.source='' OR excluded.source=''
+                   OR (instr(bars.source,':')=0 AND instr(excluded.source,':')=0)""",rows)
             self.con.commit()
         return len(rows)
 
@@ -125,10 +126,13 @@ class BarCache:
             self.con.commit()
             return self.con.total_changes-before
 
-    def close(self):
+    def dispose(self):
+        """Release the SQLite handle. Named to avoid confusion with trading close intents."""
         with self._lock:
-            try: self.con.close()
-            except Exception: pass
+            try:
+                self.con.__exit__(None, None, None)
+            except Exception:
+                pass
 
 def merge_bars(cached, fresh):
     """Chronological dedupe with fresh provider observations winning on timestamp."""

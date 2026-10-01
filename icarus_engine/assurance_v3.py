@@ -84,3 +84,21 @@ def roll_provenance(roller):
     if roller is None: return None
     return {"current":roller.ticker,"next":roller.next_ticker,"expiry":roller.expiry().isoformat(),
             "history":list(roller.history),"rule":"last-completed-session-volume","execution_authorized":False}
+
+
+def timeframe_integrity(chart_ts, chains, bucket_start):
+    """Check that no timeframe chain exposes a completed bucket from the future."""
+    if chart_ts is None:
+        return {"status":"NO_CHART_BAR","checks":[],"violations":0,"execution_authorized":False}
+    checks=[]; violations=0
+    for minutes,ch in sorted(chains.items()):
+        st=ch.state(); last=st.get("last")
+        current_bucket=bucket_start(int(chart_ts),int(minutes))
+        future=bool(last is not None and int(last)>int(current_bucket))
+        violations+=int(future)
+        checks.append({"tf_minutes":int(minutes),"last_completed":last,
+                       "current_bucket":int(current_bucket),"future_bucket":future,
+                       "bars":st.get("bars")})
+    return {"status":"PASS" if not violations else "VIOLATION","checks":checks,
+            "violations":violations,"rule":"last_completed <= current_bucket_start",
+            "execution_authorized":False}

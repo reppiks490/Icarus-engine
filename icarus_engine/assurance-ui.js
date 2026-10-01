@@ -27,7 +27,7 @@
   function breakdownHtml(a) {
     const b = a?.trade_breakdown;
     if (!b) return "";
-    const dir = b.direction || {}, hold = b.holding_bars || {}, hrs = b.entry_hour_ct || {};
+    const dir = b.direction || {}, hold = b.holding_bars || {}, hrs = b.entry_hour_ct || {}, exits=b.exit_reason||{};
     const dirRows = ["long","short"].map(k => {
       const x = dir[k] || {};
       return `<tr><td>${k.toUpperCase()}</td><td>${x.n ?? 0}</td><td>${pct(x.win_rate)}</td><td>${money(x.net)}</td><td>${nfmt(x.profit_factor)}</td></tr>`;
@@ -45,6 +45,9 @@
       </details>
       <details class="group"><summary>Entry-hour segmentation · Chicago time</summary>
         <div class="scroll"><table><thead><tr><th>Hour</th><th>Pieces</th><th>Win rate</th><th>Net P&L</th><th>Profit factor</th></tr></thead><tbody>${hourRows || '<tr><td colspan="5" class="muted">no closed trades yet</td></tr>'}</tbody></table></div>
+      </details>
+      <details class="group"><summary>Exit-signal segmentation</summary>
+        <div class="scroll"><table><thead><tr><th>Exit</th><th>Pieces</th><th>Win rate</th><th>Net P&L</th><th>Mean P&L</th><th>Avg run-up</th><th>Avg drawdown</th></tr></thead><tbody>${Object.entries(exits).map(([k,x])=>`<tr><td>${esc(k)}</td><td>${x.n??0}</td><td>${pct(x.win_rate)}</td><td>${money(x.net)}</td><td>${money(x.mean)}</td><td>${money(x.avg_runup)}</td><td>${money(x.avg_drawdown)}</td></tr>`).join('') || '<tr><td colspan="7" class="muted">no closed trades yet</td></tr>'}</tbody></table></div>
       </details>`;
   }
 

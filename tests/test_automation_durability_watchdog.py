@@ -681,3 +681,82 @@ def test_v3_deterministic_liveness_receipt_is_accepted_truthfully(tmp_path):
 def test_repository_v3_control_plane_uses_zero_cost_backend():
     payload = json.loads((Path(".") / V3_NS / "control_plane.json").read_text(encoding="utf-8"))
     assert payload["inference_backend"] == "deterministic_liveness"
+
+
+def test_v3_liveness_backend_uses_liveness_reconciliation_labels(tmp_path):
+    root = tmp_path / "repo-v3-liveness-labels"
+    write_json(
+        root / V3_NS / "control_plane.json",
+        v3_control_plane(
+            bound_at="2026-09-30T14:00:00Z",
+            inference_backend="deterministic_liveness",
+        ),
+    )
+    cfg = load_v3_watchdog_config(root)
+    arts = plan_v3_reconciliation(
+        root,
+        cfg,
+        datetime(2026, 9, 30, 14, 50, tzinfo=timezone.utc),
+        grace_minutes=12,
+        horizon_hours=1,
+    )
+    aion = [
+        a
+        for a in arts
+        if "/aion/" in a.path.as_posix()
+        and a.payload.get("slot_utc") == "2026-09-30T14:36:00Z"
+    ]
+    incident = next(a for a in aion if "/missed/" in a.path.as_posix())
+    backlog = next(a for a in aion if "/backlog/" in a.path.as_posix())
+
+    assert incident.payload["kind"] == "GITHUB_NATIVE_LIVENESS_RECEIPT_MISSING"
+    assert incident.payload["github_native_receipt_found"] is False
+    assert backlog.payload["kind"] == "RECOVERY_BACKLOG_ITEM"
+    assert backlog.payload["status"] == "RECOVERY_PENDING_LIVENESS"
+    assert incident.payload["execution_authorized"] is False
+    assert backlog.payload["execution_authorized"] is False
+
+
+def test_v3_liveness_late_arrival_uses_liveness_classification(tmp_path):
+    root = tmp_path / "repo-v3-liveness-late"
+    write_json(
+        root / V3_NS / "control_plane.json",
+        v3_control_plane(
+            bound_at="2026-09-30T14:00:00Z",
+            inference_backend="deterministic_liveness",
+        ),
+    )
+    cfg = load_v3_watchdog_config(root)
+    now = datetime(2026, 9, 30, 14, 50, tzinfo=timezone.utc)
+    first = plan_v3_reconciliation(root, cfg, now, grace_minutes=12, horizon_hours=1)
+    written = write_artifacts(root, first)
+    incident = next(p for p in written if "/missed/aion/" in p.as_posix())
+    before = incident.read_bytes()
+
+    slot = v3_slot_for(cfg, "aion", "2026-09-30T14:36:00Z")
+    receipt = valid_v3_receipt(
+        slot,
+        run_origin="GITHUB_NATIVE_LIVENESS",
+        inference_backend="deterministic_liveness",
+        model="none",
+        reasoning_effort="none",
+        response_id=f"deterministic:{slot.slot_id}:late",
+        response_status="not_applicable",
+        DATA_GAPS=["SUBSTANTIVE_AI_INFERENCE_NOT_EXECUTED"],
+    )
+    write_json(
+        root / slot.lane.root / "runs" / slot.slot_id / "aion-late.json",
+        receipt,
+    )
+
+    later = plan_v3_reconciliation(
+        root,
+        cfg,
+        now + timedelta(minutes=5),
+        grace_minutes=12,
+        horizon_hours=1,
+    )
+    late = [a for a in later if "/late_arrival/aion/" in a.path.as_posix()]
+    assert len(late) == 1
+    assert late[0].payload["classification"] == "LATE_GITHUB_NATIVE_LIVENESS_RECEIPT_AFTER_INCIDENT"
+    assert incident.read_bytes() == before

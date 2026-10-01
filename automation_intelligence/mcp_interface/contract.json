@@ -1,0 +1,31 @@
+{
+  "schema_version": "icarus-mcp-interface-contract-v1",
+  "purpose": "Any material MCP-driven repair, audit, evolution, or integration that changes ICARUS behavior, assurance state, automation/control-plane behavior, or operator-relevant evidence must create a repository-native event record that is rendered by the ICARUS MCP / Automation panel.",
+  "material_change_rule": "REQUIRED_IN_SAME_CHANGESET",
+  "event_root": "automation_intelligence/mcp_interface/events",
+  "event_schema": "icarus-mcp-event-v1",
+  "required_categories": [
+    "REPAIR",
+    "AUDIT",
+    "EVOLUTION",
+    "INTEGRATION"
+  ],
+  "required_fields": [
+    "event_id",
+    "at_utc",
+    "category",
+    "status",
+    "severity",
+    "summary",
+    "surface",
+    "source",
+    "paths",
+    "evidence",
+    "execution_authorized"
+  ],
+  "ui_api": "/api/mcp/control",
+  "ui_tab": "MCP / Automation",
+  "source_of_truth": "LOCAL_REPOSITORY_SNAPSHOT",
+  "remote_visibility_rule": "Remote GitHub changes become visible after the ICARUS checkout is synchronized.",
+  "trading_execution_authorized": false
+}

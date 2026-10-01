@@ -1,0 +1,30 @@
+{
+  "schema_version": "icarus-mcp-event-v1",
+  "event_id": "five-lane-run-audit-20261001T020800Z",
+  "at_utc": "2026-10-01T02:08:12Z",
+  "category": "AUDIT",
+  "status": "VERIFIED",
+  "severity": "IMPORTANT",
+  "summary": "Audited the current GitHub-native five-lane control plane after persistence recovery. OMEGA, Macro, Flow, AION and DAEDALUS all have persisted, finalized and valid v3 liveness receipts; the latest durability watchdog completed successfully. The plane remains liveness/persistence only, with substantive AI inference not executed and trading execution unauthorized.",
+  "surface": "ICARUS automation run assurance / five-lane v3",
+  "source": "MCP_VERIFIED_GITHUB_EVIDENCE",
+  "branch": "main",
+  "commit": "06291b14beab0d56c6dca0463b97ab18e00e0306",
+  "paths": [
+    "automation_intelligence/omega_stack_native_v3/control_plane.json",
+    "automation_intelligence/omega_stack_native_v3/cutover/acceptance.json",
+    "automation_intelligence/omega_stack_native_v3/lanes/omega/runs/20261001T020000Z/omega-20261001T020000Z-36804184443-1.json",
+    "automation_intelligence/omega_stack_native_v3/lanes/macro/runs/20261001T011200Z/macro-20261001T011200Z-36804184443-1.json",
+    "automation_intelligence/omega_stack_native_v3/lanes/flow/runs/20261001T012400Z/flow-20261001T012400Z-36804184443-1.json",
+    "automation_intelligence/omega_stack_native_v3/lanes/aion/runs/20261001T013600Z/aion-20261001T013600Z-36804184443-1.json",
+    "automation_intelligence/omega_stack_native_v3/lanes/daedalus/runs/20261001T014800Z/daedalus-20261001T014800Z-36804184443-1.json"
+  ],
+  "evidence": [
+    "v3_health:5/5_verified",
+    "restored-five-durability-watchdog:36804370075:success",
+    "github-native-ai-plane:36804352207:success",
+    "automation-durability-watchdog:36804331393:success",
+    "tests:36804184426:success"
+  ],
+  "execution_authorized": false
+}

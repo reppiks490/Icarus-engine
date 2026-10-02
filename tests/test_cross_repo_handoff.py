@@ -48,3 +48,20 @@ def test_canonical_brain_consumer_contract_is_fail_closed_and_research_only():
     assert semantics["automatic_model_promotion"] is False
     assert semantics["production_decision_authorized"] is False
     assert semantics["automatic_execution_authority"] is False
+
+def test_brain_federation_strictly_enforces_event_contract_with_exact_legacy_exceptions():
+    contract = json.loads(
+        (ROOT / "automation_intelligence" / "mcp_interface" / "icarus_consumer_contract.json")
+        .read_text(encoding="utf-8")
+    )
+    validation = contract["event_validation"]
+    assert validation["required_fields_source"] == (
+        "automation_intelligence/mcp_interface/contract.json#required_fields"
+    )
+    assert validation["strict_v1_required_fields"] is True
+    legacy = validation["legacy_relaxed_blob_shas"]
+    assert len(legacy) == 4
+    assert len(set(legacy)) == len(legacy)
+    assert all(len(value) == 40 for value in legacy)
+    assert all(all(ch in "0123456789abcdef" for ch in value) for value in legacy)
+    assert "No future blob inherits this exception" in validation["legacy_rule"]

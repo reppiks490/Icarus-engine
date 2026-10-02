@@ -14,6 +14,8 @@ on:
       - "icarus_engine/interrepo_bridge.py"
       - "tools/export_peer_intelligence.py"
       - ".github/workflows/interrepo-peer-intelligence.yml"
+  schedule:
+    - cron: "*/10 * * * *"
   workflow_dispatch:
 
 permissions:

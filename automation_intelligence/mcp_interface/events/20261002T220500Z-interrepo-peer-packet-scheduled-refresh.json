@@ -1,0 +1,22 @@
+{
+  "schema": "icarus-mcp-event-v1",
+  "event_id": "interrepo-peer-packet-scheduled-refresh-20261002",
+  "at_utc": "2026-10-02T22:05:00Z",
+  "category": "INTEGRATION",
+  "status": "IMPLEMENTED",
+  "severity": "INFO",
+  "summary": "Refresh the revision-bound Icarus peer intelligence packet every ten minutes so the 30-minute freshness contract remains independent of incidental repository state changes.",
+  "surface": "ICARUS inter-repository intelligence bridge",
+  "source": "CHATGPT_MCP",
+  "paths": [
+    ".github/workflows/interrepo-peer-intelligence.yml",
+    "tests_engine/test_interrepo_bridge.py"
+  ],
+  "evidence": [
+    "peer packet freshness contract max_age_seconds=1800",
+    "scheduled refresh cron=*/10 * * * *",
+    "packet commits remain scoped to automation_intelligence/interrepo/latest.json",
+    "execution_authorized=false"
+  ],
+  "execution_authorized": false
+}

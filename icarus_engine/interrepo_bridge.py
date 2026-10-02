@@ -30,6 +30,11 @@ def _hash(value: Any) -> str:
     return hashlib.sha256(_canonical(value).encode("utf-8")).hexdigest()
 
 
+def _git_blob_sha(data: bytes) -> str:
+    header = f"blob {len(data)}\0".encode("ascii")
+    return hashlib.sha1(header + data).hexdigest()
+
+
 def _read_json(path: Path, *, required: bool = True) -> dict[str, Any] | None:
     if not path.exists():
         if required:
@@ -184,9 +189,14 @@ def _historical_artifact(
         return None
 
     rel = f"{worker_root}/latest.json"
-    latest = _read_json(root / rel, required=False)
+    source_path = root / rel
+    latest = _read_json(source_path, required=False)
     if latest is None:
         return None
+    try:
+        source_artifact_blob_sha = _git_blob_sha(source_path.read_bytes())
+    except OSError as ex:
+        raise ValueError(f"historical latest artifact is unreadable: {rel}") from ex
     _assert_no_execution_authority(latest, f"{name} historical latest")
     core = latest.get("RUN_CORE")
     if isinstance(core, Mapping):
@@ -253,6 +263,7 @@ def _historical_artifact(
         "lane": name,
         "artifact_kind": "HISTORICAL_LATEST",
         "path": rel,
+        "source_artifact_blob_sha": source_artifact_blob_sha,
         "run_id": run_id,
         "run_status": run_status,
         "evidence_status": status,

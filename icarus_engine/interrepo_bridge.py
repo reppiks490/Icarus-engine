@@ -313,6 +313,11 @@ def build_peer_packet(
     fabric = _read_json(root / fabric_path)
     mcp = _read_json(root / mcp_path)
     assert control is not None and fabric is not None and mcp is not None
+    source_contract_blobs = {
+        "control_plane": _git_blob_sha((root / control_path).read_bytes()),
+        "agent_fabric": _git_blob_sha((root / fabric_path).read_bytes()),
+        "mcp_interface": _git_blob_sha((root / mcp_path).read_bytes()),
+    }
 
     _assert_no_execution_authority(control, "control plane")
     _assert_no_execution_authority(fabric, "agent fabric")
@@ -372,6 +377,7 @@ def build_peer_packet(
             "agent_fabric": fabric_path.as_posix(),
             "mcp_interface": mcp_path.as_posix(),
         },
+        "source_contract_blobs": source_contract_blobs,
         "control_plane": {
             "schema_version": control.get("schema_version"),
             "control_plane_id": control.get("control_plane_id"),

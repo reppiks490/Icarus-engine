@@ -1,0 +1,22 @@
+{
+  "schema": "icarus-mcp-event-v1",
+  "event_id": "peer-packet-freshness-contract-20261002",
+  "at_utc": "2026-10-02T21:54:00Z",
+  "category": "INTEGRATION",
+  "status": "IMPLEMENTED",
+  "severity": "INFO",
+  "summary": "Bound the live Icarus peer packet to an explicit 30-minute freshness window with five-minute future-clock tolerance while preserving independent event ingest and observe-only authority.",
+  "surface": "ICARUS inter-repository Adaptive Brain federation",
+  "source": "CHATGPT_MCP",
+  "paths": [
+    "automation_intelligence/mcp_interface/icarus_consumer_contract.json",
+    "tests/test_cross_repo_handoff.py"
+  ],
+  "evidence": [
+    "peer_packet.freshness_required=true",
+    "peer_packet.max_age_seconds=1800",
+    "peer_packet.max_future_skew_seconds=300",
+    "peer_packet.semantics.stale_packet_is_current_state=false"
+  ],
+  "execution_authorized": false
+}

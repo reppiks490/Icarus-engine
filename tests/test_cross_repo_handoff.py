@@ -118,3 +118,17 @@ def test_historical_context_contract_cannot_bypass_foundry_or_evaluator():
     assert truth["historical_context_never_bypasses_evaluator"] is True
     assert truth["historical_context_never_grants_shadow_qualification"] is True
     assert truth["historical_context_never_grants_execution_authority"] is True
+
+def test_brain_federation_peer_packet_has_bounded_freshness():
+    contract = json.loads(
+        (ROOT / "automation_intelligence" / "mcp_interface" / "icarus_consumer_contract.json")
+        .read_text(encoding="utf-8")
+    )
+    peer = contract["peer_packet"]
+    assert peer["freshness_required"] is True
+    assert peer["max_age_seconds"] == 1800
+    assert peer["max_future_skew_seconds"] == 300
+    assert peer["max_age_seconds"] > peer["max_future_skew_seconds"] > 0
+    assert peer["semantics"]["stale_packet_is_current_state"] is False
+    assert peer["required_for_event_ingest"] is False
+    assert peer["authority"] == "OBSERVE"

@@ -1,37 +1,8 @@
-<<<<<<< HEAD
-# STOP — this is the wrong repo
+# Icarus Engine — research satellite
 
-<!-- Grok (xAI) — 2026-09-20. Stub only. -->
-
-You cloned **Icarus-engine**. The plant, FileFeed, Supercharts ingest, and tests live in **[reppiks490/Icarus](https://github.com/reppiks490/Icarus)**.
-
-Do not run pytest here. Do not stay on a `claude/verification-*` branch.
-
-In the **same PowerShell window**:
-
-```powershell
-cd C:\Users\tripl
-git clone https://github.com/reppiks490/Icarus.git
-cd Icarus
-git checkout main
-git pull
-.\start-plant.bat
-```
-
-If `Icarus` is already cloned:
-
-```powershell
-cd C:\Users\tripl\Icarus
-git checkout main
-git pull
-.\start-plant.bat
-```
-
-Leave that window open. TradingView: `NQ1!` → 1 minute → Download chart data. The file is usually `CME_MINI_NQ1!, 1.csv`. Leave it in Downloads or copy it into `Icarus\history\drop\`.
-
-Dashboard: http://127.0.0.1:8791/  token `icarus`.
-=======
-# Icarus Engine
+> **Repository relationship (2026-10-02):** `reppiks490/Icarus` is the canonical ICARUS integration/runtime repository. This repository remains an active research and automation satellite. Evidence may cross into the canonical repository only through revision-pinned, fail-closed handoffs; no cross-repository handoff authorizes live execution.
+>
+> Canonical peer baseline for this collaboration: `2e047d2645a8cbc2ca9f42731d5e4d65b05eee47`. Satellite baseline: `e7a6cba065830189b8cd155e857ab581c87da45d`.
 
 **One intraday system. Four asset classes. No dilution.**
 
@@ -292,4 +263,3 @@ CHANGELOG.md             numbered progression of the system
 ```
 
 See `CHANGELOG.md` for the numbered record of every refinement.
->>>>>>> 824c9a5 (Icarus Engine v1.0.0: unified intraday liquidity-sweep system)

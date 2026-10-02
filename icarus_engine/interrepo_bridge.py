@@ -169,6 +169,103 @@ def _lane_state(
     return base
 
 
+
+def _historical_artifact(
+    root: Path,
+    lane: Mapping[str, Any],
+    *,
+    source_repository: str,
+) -> dict[str, Any] | None:
+    """Extract preserved historical context without treating it as current state."""
+    name = str(lane.get("name") or "").strip()
+    worker_repository = str(lane.get("worker_repository") or source_repository).strip()
+    worker_root = str(lane.get("worker_root") or "").strip()
+    if not name or worker_repository != source_repository or not worker_root:
+        return None
+
+    rel = f"{worker_root}/latest.json"
+    latest = _read_json(root / rel, required=False)
+    if latest is None:
+        return None
+    _assert_no_execution_authority(latest, f"{name} historical latest")
+    core = latest.get("RUN_CORE")
+    if isinstance(core, Mapping):
+        _assert_no_execution_authority(core, f"{name} historical RUN_CORE")
+    else:
+        core = {}
+
+    run_id = latest.get("RUN_ID") or latest.get("run_id")
+    run_status = latest.get("RUN_STATUS") or latest.get("status")
+    findings = core.get("findings") if isinstance(core.get("findings"), list) else []
+    built_changes = core.get("built_changes") if isinstance(core.get("built_changes"), list) else []
+    next_step = core.get("NEXT") if isinstance(core.get("NEXT"), str) else None
+
+    observations = latest.get("observations")
+    if not isinstance(observations, Mapping):
+        observations = {}
+    data_gaps = latest.get("DATA_GAPS")
+    if not isinstance(data_gaps, list):
+        data_gaps = []
+    source_provenance = latest.get("source_provenance")
+    if not isinstance(source_provenance, list):
+        source_provenance = []
+    net_new_delta = latest.get("NET_NEW_DELTA")
+    if not isinstance(net_new_delta, Mapping):
+        net_new_delta = {}
+
+    persisted = str(run_status or "").upper() == "RUN_PERSISTED"
+    if persisted and (findings or built_changes or next_step):
+        status = "HISTORICAL_RESEARCH_EVIDENCE"
+        context_eligible = True
+    elif persisted and (
+        latest.get("COLLECTION_ONLY") is True
+        or observations
+        or source_provenance
+        or net_new_delta
+    ):
+        status = "HISTORICAL_COLLECTION_EVIDENCE"
+        context_eligible = True
+    elif persisted:
+        status = "HISTORICAL_STATE_ONLY"
+        context_eligible = False
+    else:
+        status = "HISTORICAL_UNVERIFIED"
+        context_eligible = False
+
+    summary = {
+        "findings": [str(x) for x in findings],
+        "built_changes": [str(x) for x in built_changes],
+        "next": next_step,
+        "observation_keys": sorted(str(x) for x in observations.keys()),
+        "data_gaps": [str(x) for x in data_gaps],
+        "source_provenance_count": len(source_provenance),
+        "net_new_delta_keys": sorted(str(x) for x in net_new_delta.keys()),
+    }
+    lineage = {
+        "base_main_sha": core.get("base_main_sha"),
+        "final_main_sha": core.get("final_main_sha"),
+        "run_core_sha256": latest.get("RUN_CORE_SHA256"),
+        "history_blob_sha": latest.get("history_blob_sha"),
+        "ledger_blob_sha": latest.get("ledger_blob_sha"),
+        "history_mode": latest.get("history_mode"),
+    }
+    artifact = {
+        "lane": name,
+        "artifact_kind": "HISTORICAL_LATEST",
+        "path": rel,
+        "run_id": run_id,
+        "run_status": run_status,
+        "evidence_status": status,
+        "research_context_eligible": context_eligible,
+        "candidate_evidence_eligible": False,
+        "summary": summary,
+        "lineage": lineage,
+        "execution_authorized": False,
+    }
+    artifact["artifact_id"] = _hash(artifact)
+    return artifact
+
+
 def build_peer_packet(
     base_dir: str | Path,
     *,
@@ -216,6 +313,18 @@ def build_peer_packet(
         if isinstance(lane, Mapping)
     ]
     lanes.sort(key=lambda row: row["name"])
+    historical_artifacts = []
+    for lane in raw_lanes:
+        if not isinstance(lane, Mapping):
+            continue
+        artifact = _historical_artifact(
+            root,
+            lane,
+            source_repository=source_repository,
+        )
+        if artifact is not None:
+            historical_artifacts.append(artifact)
+    historical_artifacts.sort(key=lambda row: (row["lane"], str(row.get("run_id") or "")))
 
     mcp_view = {
         "schema_version": mcp.get("schema_version"),
@@ -244,6 +353,7 @@ def build_peer_packet(
             "catchup_horizon_minutes": control.get("catchup_horizon_minutes"),
         },
         "lanes": lanes,
+        "historical_artifacts": historical_artifacts,
         "mcp_interface": mcp_view,
         "truth_contract": {
             "foreign_repository_state_is_evidence_not_native_truth": True,
@@ -251,6 +361,7 @@ def build_peer_packet(
             "remote_sibling_state_is_never_inferred": True,
             "exact_source_commit_required": True,
             "execution_authority_never_transfers_between_repositories": True,
+            "historical_context_never_bypasses_foundry_or_evaluator": True,
         },
         "execution_authorized": False,
         "production_decision_authorized": False,

@@ -1,0 +1,268 @@
+{
+  "control_plane": {
+    "catchup_horizon_minutes": 180,
+    "control_plane_id": "restored-five-native-liveness-v1",
+    "grace_minutes": 8,
+    "schema_version": "restored-five-native-control-v1",
+    "timezone": "America/Chicago"
+  },
+  "execution_authorized": false,
+  "historical_artifacts": [
+    {
+      "artifact_id": "6d3727ba4b652a22b0394fd03553a6876974e0f241e4d81303c96730696b6b90",
+      "artifact_kind": "HISTORICAL_LATEST",
+      "candidate_evidence_eligible": false,
+      "evidence_status": "HISTORICAL_RESEARCH_EVIDENCE",
+      "execution_authorized": false,
+      "lane": "alpha_synthesis",
+      "lineage": {
+        "base_main_sha": null,
+        "final_main_sha": null,
+        "history_blob_sha": "a77286e0493388fe33cbebe3684770c9dc054454",
+        "history_mode": "ledger_fallback",
+        "ledger_blob_sha": "a77286e0493388fe33cbebe3684770c9dc054454",
+        "run_core_sha256": "323aa5175f900cba4350284028d81716737ec4866f8a9aff47ee27bfb989d2e4"
+      },
+      "path": "automation_intelligence/agent_fabric/alpha_synthesis/latest.json",
+      "research_context_eligible": true,
+      "run_id": "alpha-synthesis-20260929T062500Z",
+      "run_status": "RUN_PERSISTED",
+      "summary": {
+        "built_changes": [],
+        "data_gaps": [],
+        "findings": [
+          "Alpha already scores lower-bound net expectancy, stressed-cost retention, return/drawdown efficiency, tail-risk economics, diversification, capacity utilization, parameter stability and bootstrap sign stability.",
+          "Turnover is transported as a finite non-negative scalar but has no horizon or notional normalization in CandidateEvidence or AdvancedAgentEvidence, so adding it directly to Alpha scoring would be scale-sensitive and economically ambiguous.",
+          "Capacity is represented only as capacity_utilization in [0,1]; the current contract does not bind participation rate, stressed market-impact bps, or a capacity-at-impact threshold.",
+          "The research adapter binds study/dataset/baseline hashes and derives normal/stressed expectancy from qualified fixed-holdout evidence, but turnover and capacity remain caller-supplied advanced evidence rather than derived from an auditable execution-economics model.",
+          "PR #2 remains open and collides with research_service.py; that shared path was not touched."
+        ],
+        "net_new_delta_keys": [],
+        "next": "Define a versioned execution-economics evidence extension before changing Alpha scoring: turnover horizon and notional basis, participation rate, stressed market-impact bps, capacity-at-impact threshold, and monotonicity tests. Keep research_service.py untouched until PR #2 is reconciled.",
+        "observation_keys": [],
+        "source_provenance_count": 0
+      }
+    },
+    {
+      "artifact_id": "cc4eec261a4f5e32040042bbc8fb4948a6b878e91fe80d5c868c638a80608f43",
+      "artifact_kind": "HISTORICAL_LATEST",
+      "candidate_evidence_eligible": false,
+      "evidence_status": "HISTORICAL_RESEARCH_EVIDENCE",
+      "execution_authorized": false,
+      "lane": "apex_council",
+      "lineage": {
+        "base_main_sha": "3ea1962629fed1858c59e29e8951d68a25ca3c57",
+        "final_main_sha": "8263e20dc6e18ca24177627f6b7b9d7333ac98a2",
+        "history_blob_sha": "5150ab3c440c8899868490458015b48fafdaeae6",
+        "history_mode": "ledger_fallback",
+        "ledger_blob_sha": "5150ab3c440c8899868490458015b48fafdaeae6",
+        "run_core_sha256": "360f8646a096e238cb588959058b9e12ac9b2238dc10d2e09f40ec9cd03ca7ea"
+      },
+      "path": "automation_intelligence/agent_fabric/apex_council/latest.json",
+      "research_context_eligible": true,
+      "run_id": "apex-council-20260929T174500Z",
+      "run_status": "RUN_PERSISTED",
+      "summary": {
+        "built_changes": [],
+        "data_gaps": [],
+        "findings": [],
+        "net_new_delta_keys": [],
+        "next": "After PR #2/shared-contract collision is reconciled, use a run-specific branch and RED tests to add explicit auditable specialist dependence/common-provenance semantics that fail closed when missing, preserve specialist-order invariance and every hard veto, and keep execution_authorized=false. Coordinate with Guardian lineage and Alpha execution-economics extensions without merging sibling ownership.",
+        "observation_keys": [],
+        "source_provenance_count": 0
+      }
+    },
+    {
+      "artifact_id": "e2d4712e253fc8e710b81fff4e8b1a4e591a98b9f2a8ed29b73cd86edfdf2d62",
+      "artifact_kind": "HISTORICAL_LATEST",
+      "candidate_evidence_eligible": false,
+      "evidence_status": "HISTORICAL_COLLECTION_EVIDENCE",
+      "execution_authorized": false,
+      "lane": "flow_microstructure",
+      "lineage": {
+        "base_main_sha": null,
+        "final_main_sha": null,
+        "history_blob_sha": "b199dd3212a9dd342582481ad09354479bd17a00",
+        "history_mode": "primary_immutable",
+        "ledger_blob_sha": null,
+        "run_core_sha256": null
+      },
+      "path": "automation_intelligence/flow/latest.json",
+      "research_context_eligible": true,
+      "run_id": "flow-20260929T173500Z",
+      "run_status": "RUN_PERSISTED",
+      "summary": {
+        "built_changes": [],
+        "data_gaps": [
+          "No direct NQ/MNQ, ES/MES, YM/MYM, RTY/M2K order-book/depth/OI/options-positioning snapshot obtained.",
+          "No direct MGC micro-gold order-book snapshot obtained.",
+          "No fresh exchange-native BTC order-book depth snapshot obtained in this invocation."
+        ],
+        "findings": [],
+        "net_new_delta_keys": [
+          "btc",
+          "cross_market",
+          "gold"
+        ],
+        "next": null,
+        "observation_keys": [
+          "BTC_BYBIT_SETTLED",
+          "BTC_FUNDING_PUBLIC",
+          "GC_DEC2026",
+          "GOLD_REUTERS"
+        ],
+        "source_provenance_count": 4
+      }
+    },
+    {
+      "artifact_id": "b037f4a309907f12819483b1c7825832ffeb9fe083d3aa9191cc393cdc43157f",
+      "artifact_kind": "HISTORICAL_LATEST",
+      "candidate_evidence_eligible": false,
+      "evidence_status": "HISTORICAL_RESEARCH_EVIDENCE",
+      "execution_authorized": false,
+      "lane": "robustness_guardian",
+      "lineage": {
+        "base_main_sha": "33c6424b0d5078d28dcf9ab5123364f493da5e7a",
+        "final_main_sha": "33c6424b0d5078d28dcf9ab5123364f493da5e7a",
+        "history_blob_sha": "27771f5a7171cda2ac4f3bc928898522f8625f53",
+        "history_mode": "primary_immutable_file",
+        "ledger_blob_sha": null,
+        "run_core_sha256": "94dc2ce21a02c88fe698aca748e443f8f3520c93706cb60eb1821683de37c211"
+      },
+      "path": "automation_intelligence/agent_fabric/robustness_guardian/latest.json",
+      "research_context_eligible": true,
+      "run_id": "robustness-guardian-20260929T180500Z",
+      "run_status": "RUN_PERSISTED",
+      "summary": {
+        "built_changes": [
+          "No behavioral code change; collision-safe audit cycle only."
+        ],
+        "data_gaps": [],
+        "findings": [
+          "Robustness Guardian fail-closed gates remain present for lookahead/holdout contamination, provenance/PIT coverage, replay determinism, execution-cost and latency stress, perturbation/parameter stability, PBO, OOD stability and bootstrap positivity.",
+          "CandidateEvidence still lacks immutable dataset, split, evaluation-cutoff and protected-final-holdout identities; this remains the highest-value provenance hardening gap.",
+          "PR #2 remains open and overlaps shared research/evaluation surfaces; no shared-contract behavioral edit was attempted."
+        ],
+        "net_new_delta_keys": [],
+        "next": "After PR #2 collision is reconciled, add backward-compatible immutable dataset_id, split_id, evaluation_cutoff_id and protected_final_holdout_id lineage test-first on a run-specific branch; fail closed on missing/inconsistent lineage and merge only after full CI and verified main readback.",
+        "observation_keys": [],
+        "source_provenance_count": 0
+      }
+    }
+  ],
+  "lanes": [
+    {
+      "completion_semantics": null,
+      "evidence_status": "REMOTE_PEER_UNREAD",
+      "execution_authorized": false,
+      "finalization_commit_sha": null,
+      "minute": 15,
+      "name": "advanced_csv",
+      "run_id": null,
+      "run_prefix": "advanced-csv",
+      "run_status": null,
+      "scheduler_id": "6abaef9d5c28819190d98a5af7f308b8",
+      "substantive_research_evidence": false,
+      "title": "Advanced CSV Data Collector",
+      "worker_execution_observed": null,
+      "worker_repository": "reppiks490/icarus-csv-evidence-lab",
+      "worker_root": "automation_intelligence/advanced_csv"
+    },
+    {
+      "completion_semantics": "DURABILITY_RECEIPT_ONLY",
+      "evidence_status": "DURABILITY_ONLY",
+      "execution_authorized": false,
+      "finalization_commit_sha": "ca466b488304f94a2c8de1a145eb21eb94e3469c",
+      "minute": 25,
+      "name": "alpha_synthesis",
+      "run_id": "alpha-synthesis-20261002T202500Z",
+      "run_prefix": "alpha-synthesis",
+      "run_status": "RUN_PERSISTED",
+      "scheduler_id": "6abaf8d75cf48191bc7ce06bc0006f1c",
+      "substantive_research_evidence": false,
+      "title": "Alpha Synthesis Evolution",
+      "worker_execution_observed": false,
+      "worker_repository": "reppiks490/Icarus-engine",
+      "worker_root": "automation_intelligence/agent_fabric/alpha_synthesis"
+    },
+    {
+      "completion_semantics": "DURABILITY_RECEIPT_ONLY",
+      "evidence_status": "DURABILITY_ONLY",
+      "execution_authorized": false,
+      "finalization_commit_sha": "58b48b945e5b137ba3bef91d4cfc3345876fb64e",
+      "minute": 45,
+      "name": "apex_council",
+      "run_id": "apex-council-20261002T194500Z",
+      "run_prefix": "apex-council",
+      "run_status": "RUN_PERSISTED",
+      "scheduler_id": "6ababd570fac81918777c8f809cf67c9",
+      "substantive_research_evidence": false,
+      "title": "Apex Council Evolution",
+      "worker_execution_observed": null,
+      "worker_repository": "reppiks490/Icarus-engine",
+      "worker_root": "automation_intelligence/agent_fabric/apex_council"
+    },
+    {
+      "completion_semantics": "DURABILITY_RECEIPT_ONLY",
+      "evidence_status": "DURABILITY_ONLY",
+      "execution_authorized": false,
+      "finalization_commit_sha": "ca466b488304f94a2c8de1a145eb21eb94e3469c",
+      "minute": 35,
+      "name": "flow_microstructure",
+      "run_id": "flow-20261002T203500Z",
+      "run_prefix": "flow",
+      "run_status": "RUN_PERSISTED",
+      "scheduler_id": "6abaef8effb48191aa5c959455451681",
+      "substantive_research_evidence": false,
+      "title": "Microstructure Sensor Grid",
+      "worker_execution_observed": false,
+      "worker_repository": "reppiks490/Icarus-engine",
+      "worker_root": "automation_intelligence/flow"
+    },
+    {
+      "completion_semantics": "DURABILITY_RECEIPT_ONLY",
+      "evidence_status": "DURABILITY_ONLY",
+      "execution_authorized": false,
+      "finalization_commit_sha": "ca466b488304f94a2c8de1a145eb21eb94e3469c",
+      "minute": 5,
+      "name": "robustness_guardian",
+      "run_id": "robustness-guardian-20261002T200500Z",
+      "run_prefix": "robustness-guardian",
+      "run_status": "RUN_PERSISTED",
+      "scheduler_id": "6abaf924e0248191b8a11bd1d32bf0b7",
+      "substantive_research_evidence": false,
+      "title": "Robustness Guardian Evolution",
+      "worker_execution_observed": false,
+      "worker_repository": "reppiks490/Icarus-engine",
+      "worker_root": "automation_intelligence/agent_fabric/robustness_guardian"
+    }
+  ],
+  "mcp_interface": {
+    "event_root": "automation_intelligence/mcp_interface/events",
+    "schema_version": "icarus-mcp-interface-contract-v1",
+    "source_of_truth": "LOCAL_REPOSITORY_SNAPSHOT",
+    "trading_execution_authorized": false,
+    "ui_api": "/api/mcp/control",
+    "ui_tab": "MCP / Automation"
+  },
+  "observed_at": "2026-10-02T21:00:46Z",
+  "packet_id": "07b92c8b4cc837cb73df64192a2d79ac75ffd651155303f98bfe4c885104b7c9",
+  "peer_write_authorized": false,
+  "production_decision_authorized": false,
+  "schema_version": "icarus-peer-intelligence-packet-v1",
+  "source_commit": "2e334780ada9f3fe4125a7256ee532c3b1f4df55",
+  "source_contracts": {
+    "agent_fabric": "automation_intelligence/agent_fabric/manifest.json",
+    "control_plane": "automation_intelligence/restored_five_native/control_plane.json",
+    "mcp_interface": "automation_intelligence/mcp_interface/contract.json"
+  },
+  "source_repository": "reppiks490/Icarus-engine",
+  "truth_contract": {
+    "durability_receipt_is_not_substantive_worker_evidence": true,
+    "exact_source_commit_required": true,
+    "execution_authority_never_transfers_between_repositories": true,
+    "foreign_repository_state_is_evidence_not_native_truth": true,
+    "historical_context_never_bypasses_foundry_or_evaluator": true,
+    "remote_sibling_state_is_never_inferred": true
+  }
+}

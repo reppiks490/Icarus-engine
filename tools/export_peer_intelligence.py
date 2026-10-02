@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import subprocess
@@ -50,6 +51,115 @@ def verify_packet_source_identity(
     ).hexdigest()
     if claimed != computed:
         raise ValueError("peer packet_id does not match canonical packet content")
+
+
+def _git_show_bytes(root: Path, commit: str, path: str) -> bytes | None:
+    rel = str(path or "").strip().replace("\\", "/").lstrip("/")
+    if not rel or ".." in rel.split("/"):
+        raise ValueError("packet input path is invalid")
+    result = subprocess.run(
+        ["git", "-C", str(root), "show", f"{commit}:{rel}"],
+        check=False,
+        capture_output=True,
+    )
+    if result.returncode != 0:
+        return None
+    return result.stdout
+
+
+def _require_path_matches_commit(root: Path, commit: str, path: str) -> bytes | None:
+    rel = str(path or "").strip().replace("\\", "/").lstrip("/")
+    committed = _git_show_bytes(root, commit, rel)
+    current_path = root / rel
+    current_exists = current_path.is_file()
+    if current_exists:
+        current = current_path.read_bytes()
+        if committed is None:
+            raise ValueError(f"packet input is uncommitted at source revision: {rel}")
+        if current != committed:
+            raise ValueError(f"packet input drift from source revision: {rel}")
+        return current
+    if committed is not None:
+        raise ValueError(f"packet input missing from working tree but present at source revision: {rel}")
+    return None
+
+
+def verify_packet_source_inputs(
+    packet: dict,
+    *,
+    root: Path,
+    expected_head: str,
+) -> None:
+    """Prove every local packet input matches the exact Git revision it claims."""
+    root = root.resolve()
+    verify_packet_source_identity(packet, expected_head=expected_head)
+    head = str(expected_head).strip().lower()
+    source_repository = str(packet.get("source_repository") or "").strip()
+    if source_repository != "reppiks490/Icarus-engine":
+        raise ValueError("peer packet source repository identity mismatch")
+
+    source_contracts = packet.get("source_contracts")
+    if not isinstance(source_contracts, dict) or not source_contracts:
+        raise ValueError("peer packet source contracts are missing")
+    verified_paths: set[str] = set()
+    for path in source_contracts.values():
+        rel = str(path or "").strip()
+        _require_path_matches_commit(root, head, rel)
+        verified_paths.add(rel)
+
+    fabric_path = str(source_contracts.get("agent_fabric") or "")
+    fabric_raw = _require_path_matches_commit(root, head, fabric_path)
+    if fabric_raw is None:
+        raise ValueError("peer packet agent-fabric source contract is missing")
+    fabric = json.loads(fabric_raw.decode("utf-8"))
+    fabric_lanes = fabric.get("lanes") if isinstance(fabric, dict) else {}
+    if not isinstance(fabric_lanes, dict):
+        fabric_lanes = {}
+
+    lanes = packet.get("lanes")
+    if not isinstance(lanes, list):
+        raise ValueError("peer packet lanes are missing")
+    for lane in lanes:
+        if not isinstance(lane, dict):
+            raise ValueError("peer packet lane is not an object")
+        if str(lane.get("worker_repository") or "") != source_repository:
+            continue
+        name = str(lane.get("name") or "").strip()
+        worker_root = str(lane.get("worker_root") or "").strip()
+        fabric_lane = fabric_lanes.get(name)
+        if not isinstance(fabric_lane, dict):
+            fabric_lane = {}
+        heartbeat = str(
+            fabric_lane.get("runtime_status_source")
+            or (f"{worker_root}/heartbeat.json" if worker_root else "")
+        ).strip()
+        finalization = str(
+            fabric_lane.get("finalization_state")
+            or (f"{worker_root}/finalization_state.json" if worker_root else "")
+        ).strip()
+        for rel in (heartbeat, finalization):
+            if not rel or rel in verified_paths:
+                continue
+            _require_path_matches_commit(root, head, rel)
+            verified_paths.add(rel)
+
+    historical = packet.get("historical_artifacts")
+    if not isinstance(historical, list):
+        raise ValueError("peer packet historical artifacts are missing")
+    for artifact in historical:
+        if not isinstance(artifact, dict):
+            raise ValueError("peer historical artifact is not an object")
+        rel = str(artifact.get("path") or "").strip()
+        raw = _require_path_matches_commit(root, head, rel)
+        if raw is None:
+            raise ValueError(f"peer historical artifact source is missing at source revision: {rel}")
+        expected_blob = str(artifact.get("source_artifact_blob_sha") or "").lower()
+        header = f"blob {len(raw)}\0".encode("ascii")
+        actual_blob = hashlib.sha1(header + raw).hexdigest()
+        if expected_blob != actual_blob:
+            raise ValueError(
+                f"peer historical artifact blob does not match source revision: {rel}"
+            )
 
 
 def export_packet(
@@ -110,7 +220,8 @@ def main() -> int:
         output=Path(args.output),
     )
     if args.require_head_match:
-        verify_packet_source_identity(packet, expected_head=_git_head(root.resolve()))
+        head = _git_head(root.resolve())
+        verify_packet_source_inputs(packet, root=root, expected_head=head)
     print(
         json.dumps(
             {

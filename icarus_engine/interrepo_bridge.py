@@ -98,6 +98,10 @@ def _lane_state(
         "run_prefix": lane.get("run_prefix"),
         "worker_repository": worker_repository,
         "worker_root": worker_root or None,
+        "heartbeat_path": None,
+        "heartbeat_blob_sha": None,
+        "finalization_path": None,
+        "finalization_blob_sha": None,
         "run_id": None,
         "run_status": None,
         "finalization_commit_sha": None,
@@ -126,8 +130,20 @@ def _lane_state(
         or (f"{worker_root}/finalization_state.json" if worker_root else "")
     ).strip()
 
+    base["heartbeat_path"] = heartbeat_rel or None
+    base["finalization_path"] = final_rel or None
     heartbeat = _read_json(root / heartbeat_rel, required=False) if heartbeat_rel else None
     finalization = _read_json(root / final_rel, required=False) if final_rel else None
+    if heartbeat is not None:
+        try:
+            base["heartbeat_blob_sha"] = _git_blob_sha((root / heartbeat_rel).read_bytes())
+        except OSError as ex:
+            raise ValueError(f"{name} heartbeat is unreadable") from ex
+    if finalization is not None:
+        try:
+            base["finalization_blob_sha"] = _git_blob_sha((root / final_rel).read_bytes())
+        except OSError as ex:
+            raise ValueError(f"{name} finalization is unreadable") from ex
     if heartbeat is not None:
         _assert_no_execution_authority(heartbeat, f"{name} heartbeat")
     if finalization is not None:

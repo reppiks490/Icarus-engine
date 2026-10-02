@@ -137,11 +137,27 @@ def verify_packet_source_inputs(
             fabric_lane.get("finalization_state")
             or (f"{worker_root}/finalization_state.json" if worker_root else "")
         ).strip()
-        for rel in (heartbeat, finalization):
-            if not rel or rel in verified_paths:
-                continue
-            _require_path_matches_commit(root, head, rel)
-            verified_paths.add(rel)
+        witnesses = (
+            ("heartbeat_path", "heartbeat_blob_sha", heartbeat),
+            ("finalization_path", "finalization_blob_sha", finalization),
+        )
+        for path_key, blob_key, rel in witnesses:
+            expected_path = rel or None
+            if lane.get(path_key) != expected_path:
+                raise ValueError(f"peer lane source path witness mismatch: {name}:{path_key}")
+            raw = None
+            if rel:
+                raw = _require_path_matches_commit(root, head, rel)
+                verified_paths.add(rel)
+            claimed_blob = lane.get(blob_key)
+            if raw is None:
+                if claimed_blob is not None:
+                    raise ValueError(f"peer lane source blob witness mismatch: {name}:{blob_key}")
+            else:
+                header = f"blob {len(raw)}\0".encode("ascii")
+                actual_blob = hashlib.sha1(header + raw).hexdigest()
+                if claimed_blob != actual_blob:
+                    raise ValueError(f"peer lane source blob witness mismatch: {name}:{blob_key}")
 
     historical = packet.get("historical_artifacts")
     if not isinstance(historical, list):

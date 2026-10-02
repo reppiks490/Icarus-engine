@@ -41,11 +41,11 @@ jobs:
       - name: Install peer-export test dependency
         run: python -m pip install pytest
 
+      - name: Refresh main before verification and packet export
+        run: git pull --rebase origin main
+
       - name: Verify peer packet implementation
         run: python -m pytest tests_engine/test_interrepo_bridge.py -q
-
-      - name: Refresh main before packet export
-        run: git pull --rebase origin main
 
       - name: Export revision-bound peer packet
         run: PYTHONPATH=. python tools/export_peer_intelligence.py --root .

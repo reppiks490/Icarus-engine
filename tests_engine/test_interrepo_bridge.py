@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 
 import pytest
 
@@ -274,3 +275,27 @@ def test_historical_artifact_with_execution_authority_is_rejected(tmp_path):
             source_commit="7" * 40,
             observed_at="2026-10-02T15:49:00Z",
         )
+
+def test_peer_export_contract_and_workflow_are_research_only():
+    root = Path(__file__).resolve().parents[1]
+    consumer = json.loads(
+        (root / "automation_intelligence/mcp_interface/icarus_consumer_contract.json")
+        .read_text(encoding="utf-8")
+    )
+    peer = consumer["peer_packet"]
+    assert peer["path"] == "automation_intelligence/interrepo/latest.json"
+    assert peer["schema_version"] == "icarus-peer-intelligence-packet-v1"
+    assert peer["authority"] == "OBSERVE"
+    assert peer["source_commit_required"] is True
+    assert peer["git_blob_verification_required"] is True
+    assert peer["required_for_event_ingest"] is False
+    assert peer["semantics"]["durability_only_is_not_substantive_research_evidence"] is True
+    assert peer["semantics"]["automatic_execution_authority"] is False
+
+    workflow = (
+        root / ".github/workflows/interrepo-peer-intelligence.yml"
+    ).read_text(encoding="utf-8")
+    assert "python tools/export_peer_intelligence.py --root ." in workflow
+    assert "automation_intelligence/interrepo/latest.json" in workflow
+    assert "git add automation_intelligence/interrepo/latest.json" in workflow
+    assert "permissions:\n  contents: write" in workflow

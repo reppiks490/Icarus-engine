@@ -42,5 +42,21 @@
       "e35708b8457531d1f1eceabe3607a1c7bee10f05"
     ],
     "legacy_rule": "Only these exact immutable Git blobs may omit producer-required envelope fields. No future blob inherits this exception."
+  },
+  "peer_packet": {
+    "path": "automation_intelligence/interrepo/latest.json",
+    "schema_version": "icarus-peer-intelligence-packet-v1",
+    "authority": "OBSERVE",
+    "source_commit_required": true,
+    "git_blob_verification_required": true,
+    "required_for_event_ingest": false,
+    "semantics": {
+      "lane_state_is_foreign_evidence": true,
+      "durability_only_is_not_substantive_research_evidence": true,
+      "remote_sibling_state_is_never_inferred": true,
+      "automatic_model_promotion": false,
+      "production_decision_authorized": false,
+      "automatic_execution_authority": false
+    }
   }
 }

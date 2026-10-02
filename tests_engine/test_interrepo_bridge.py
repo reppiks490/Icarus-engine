@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 
 from icarus_engine.interrepo_bridge import build_peer_packet
-from tools.export_peer_intelligence import export_packet
+from tools.export_peer_intelligence import export_packet, verify_packet_source_identity
 
 
 def _write(path, value):
@@ -296,7 +296,7 @@ def test_peer_export_contract_and_workflow_are_research_only():
     workflow = (
         root / ".github/workflows/interrepo-peer-intelligence.yml"
     ).read_text(encoding="utf-8")
-    assert "python tools/export_peer_intelligence.py --root ." in workflow
+    assert "python tools/export_peer_intelligence.py --root . --require-head-match" in workflow
     assert "automation_intelligence/interrepo/latest.json" in workflow
     assert "git add automation_intelligence/interrepo/latest.json" in workflow
     assert "permissions:\n  contents: write" in workflow
@@ -317,3 +317,26 @@ def test_peer_exporter_writes_exact_deterministic_packet(tmp_path):
     assert stored["execution_authorized"] is False
     assert stored["production_decision_authorized"] is False
     assert stored["peer_write_authorized"] is False
+
+def test_peer_exporter_verifies_exact_source_head_and_packet_authority(tmp_path):
+    root = _fixture_root(tmp_path)
+    _path, packet = export_packet(
+        root,
+        source_commit="8" * 40,
+        observed_at="2026-10-02T21:50:00Z",
+        output=Path("automation_intelligence/interrepo/test-source-proof.json"),
+    )
+    verify_packet_source_identity(packet, expected_head="8" * 40)
+
+    with pytest.raises(ValueError, match="source_commit does not match export HEAD"):
+        verify_packet_source_identity(packet, expected_head="9" * 40)
+
+    escalated = dict(packet)
+    escalated["execution_authorized"] = True
+    with pytest.raises(ValueError, match="authority invariant failed"):
+        verify_packet_source_identity(escalated, expected_head="8" * 40)
+
+    tampered = dict(packet)
+    tampered["observed_at"] = "2026-10-02T21:51:00Z"
+    with pytest.raises(ValueError, match="packet_id does not match canonical packet content"):
+        verify_packet_source_identity(tampered, expected_head="8" * 40)

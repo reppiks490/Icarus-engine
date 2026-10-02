@@ -57,11 +57,19 @@
       "automatic_model_promotion": false,
       "production_decision_authorized": false,
       "automatic_execution_authority": false,
-      "stale_packet_is_current_state": false
+      "stale_packet_is_current_state": false,
+      "lane_state_source_blobs_are_revision_bound": true
     },
     "freshness_required": true,
     "max_age_seconds": 1800,
-    "max_future_skew_seconds": 300
+    "max_future_skew_seconds": 300,
+    "lane_source_witnesses_required": true,
+    "lane_source_witness_fields": [
+      "heartbeat_path",
+      "heartbeat_blob_sha",
+      "finalization_path",
+      "finalization_blob_sha"
+    ]
   },
   "historical_context": {
     "mode": "RESEARCH_CONTEXT_ONLY",

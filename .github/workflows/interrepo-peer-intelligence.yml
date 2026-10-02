@@ -48,7 +48,7 @@ jobs:
         run: python -m pytest tests_engine/test_interrepo_bridge.py -q
 
       - name: Export revision-bound peer packet
-        run: PYTHONPATH=. python tools/export_peer_intelligence.py --root .
+        run: PYTHONPATH=. python tools/export_peer_intelligence.py --root . --require-head-match
 
       - name: Stage only the peer packet
         shell: bash

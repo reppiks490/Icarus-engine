@@ -304,6 +304,14 @@ def test_peer_export_contract_and_workflow_are_research_only():
     assert peer["source_commit_required"] is True
     assert peer["git_blob_verification_required"] is True
     assert peer["required_for_event_ingest"] is False
+    assert peer["lane_source_witnesses_required"] is True
+    assert peer["lane_source_witness_fields"] == [
+        "heartbeat_path",
+        "heartbeat_blob_sha",
+        "finalization_path",
+        "finalization_blob_sha",
+    ]
+    assert peer["semantics"]["lane_state_source_blobs_are_revision_bound"] is True
     assert peer["semantics"]["durability_only_is_not_substantive_research_evidence"] is True
     assert peer["semantics"]["automatic_execution_authority"] is False
 

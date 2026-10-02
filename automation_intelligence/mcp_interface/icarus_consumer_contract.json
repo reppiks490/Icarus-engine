@@ -58,7 +58,8 @@
       "production_decision_authorized": false,
       "automatic_execution_authority": false,
       "stale_packet_is_current_state": false,
-      "lane_state_source_blobs_are_revision_bound": true
+      "lane_state_source_blobs_are_revision_bound": true,
+      "source_contract_blobs_are_revision_bound": true
     },
     "freshness_required": true,
     "max_age_seconds": 1800,
@@ -69,6 +70,12 @@
       "heartbeat_blob_sha",
       "finalization_path",
       "finalization_blob_sha"
+    ],
+    "source_contract_blob_witnesses_required": true,
+    "source_contract_blob_witness_keys": [
+      "control_plane",
+      "agent_fabric",
+      "mcp_interface"
     ]
   },
   "historical_context": {

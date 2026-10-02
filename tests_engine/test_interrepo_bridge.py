@@ -299,6 +299,7 @@ def test_peer_export_contract_and_workflow_are_research_only():
     assert "python tools/export_peer_intelligence.py --root . --require-head-match" in workflow
     assert "automation_intelligence/interrepo/latest.json" in workflow
     assert "git add automation_intelligence/interrepo/latest.json" in workflow
+    assert 'cron: "*/10 * * * *"' in workflow
     assert "permissions:\n  contents: write" in workflow
 
 def test_peer_exporter_writes_exact_deterministic_packet(tmp_path):

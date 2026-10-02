@@ -210,6 +210,7 @@ def test_peer_packet_preserves_historical_substantive_research_separately(tmp_pa
     assert row["artifact_kind"] == "HISTORICAL_LATEST"
     assert row["evidence_status"] == "HISTORICAL_RESEARCH_EVIDENCE"
     assert row["run_id"] == "robustness-guardian-20260929T180500Z"
+    assert len(row["source_artifact_blob_sha"]) == 40
     assert row["research_context_eligible"] is True
     assert row["candidate_evidence_eligible"] is False
     assert row["summary"]["findings"] == [
@@ -341,3 +342,42 @@ def test_peer_exporter_verifies_exact_source_head_and_packet_authority(tmp_path)
     tampered["observed_at"] = "2026-10-02T21:51:00Z"
     with pytest.raises(ValueError, match="packet_id does not match canonical packet content"):
         verify_packet_source_identity(tampered, expected_head="8" * 40)
+
+def test_historical_artifact_binds_exact_latest_file_blob(tmp_path):
+    root = _fixture_root(tmp_path)
+    packet = build_peer_packet(
+        root,
+        source_commit="9" * 40,
+        observed_at="2026-10-02T22:20:00Z",
+    )
+    artifact = packet["historical_artifacts"][0]
+    source = (
+        root
+        / "automation_intelligence/agent_fabric/robustness_guardian/latest.json"
+    ).read_bytes()
+    header = f"blob {len(source)}\0".encode("ascii")
+    expected = __import__("hashlib").sha1(header + source).hexdigest()
+    assert artifact["source_artifact_blob_sha"] == expected
+
+    latest_path = root / "automation_intelligence/agent_fabric/robustness_guardian/latest.json"
+    latest = json.loads(latest_path.read_text(encoding="utf-8"))
+    latest["RUN_CORE"]["findings"].append("new historical observation")
+    _write(latest_path, latest)
+    changed = build_peer_packet(
+        root,
+        source_commit="9" * 40,
+        observed_at="2026-10-02T22:20:00Z",
+    )
+    assert changed["historical_artifacts"][0]["source_artifact_blob_sha"] != expected
+    assert changed["historical_artifacts"][0]["artifact_id"] != artifact["artifact_id"]
+
+
+def test_historical_context_contract_requires_exact_artifact_blob_binding():
+    root = Path(__file__).resolve().parents[1]
+    contract = json.loads(
+        (root / "automation_intelligence/mcp_interface/icarus_consumer_contract.json")
+        .read_text(encoding="utf-8")
+    )
+    historical = contract["historical_context"]
+    assert historical["source_artifact_blob_required"] is True
+    assert historical["artifact_id_sha256_required"] is True

@@ -1,0 +1,22 @@
+{
+  "schema": "icarus-mcp-event-v1",
+  "event_id": "peer-lane-source-witnesses-20261002",
+  "at_utc": "2026-10-02T22:51:30Z",
+  "category": "INTEGRATION",
+  "status": "IMPLEMENTED",
+  "severity": "INFO",
+  "summary": "Bind each local peer lane state to exact heartbeat and finalization Git blob witnesses and verify those witnesses against the packet source revision before export.",
+  "surface": "ICARUS inter-repository peer intelligence",
+  "source": "CHATGPT_MCP",
+  "paths": [
+    "icarus_engine/interrepo_bridge.py",
+    "tools/export_peer_intelligence.py",
+    "tests_engine/test_interrepo_bridge.py"
+  ],
+  "evidence": [
+    "peer lane heartbeat_path/heartbeat_blob_sha",
+    "peer lane finalization_path/finalization_blob_sha",
+    "export-time source revision verification"
+  ],
+  "execution_authorized": false
+}

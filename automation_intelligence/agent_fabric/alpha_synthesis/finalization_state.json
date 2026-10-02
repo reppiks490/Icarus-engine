@@ -1,13 +1,16 @@
 {
-  "schema_version": "scheduler-finalization-v5.7",
-  "RUN_ID": "alpha-synthesis-20261002T072500Z",
+  "RUN_ID": "alpha-synthesis-20261002T082500Z",
   "RUN_STATUS": "RUN_PERSISTED",
   "completion_semantics": "DURABILITY_RECEIPT_ONLY",
+  "execution_authorized": false,
   "history_mode": "git_commit_finalization",
-  "work_status": "BASELINE_PERSISTED",
   "payload": {
-    "result": "NO_NEW_EVIDENCE_YET",
-    "NEXT": "Durability proven; substantive evidence remains deferred during stabilization."
+    "NEXT": "No substantive evidence was produced; the stabilization slot was durably recovered by the repository watchdog.",
+    "result": "SCHEDULER_WORKER_RECEIPT_MISSED"
   },
-  "execution_authorized": false
+  "receipt_origin": "github_watchdog_stabilization_fallback",
+  "scheduler_id": "6abaf8d75cf48191bc7ce06bc0006f1c",
+  "schema_version": "scheduler-finalization-v5.7",
+  "work_status": "WATCHDOG_FALLBACK_PERSISTED",
+  "worker_execution_observed": false
 }

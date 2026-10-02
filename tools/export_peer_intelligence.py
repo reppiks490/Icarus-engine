@@ -28,6 +28,30 @@ def _git_head(root: Path) -> str:
     return result.stdout.strip()
 
 
+def verify_packet_source_identity(
+    packet: dict,
+    *,
+    expected_head: str,
+) -> None:
+    """Fail closed unless the packet is bound to the exact source HEAD and zero authority."""
+    head = str(expected_head or "").strip().lower()
+    if len(head) != 40 or any(ch not in "0123456789abcdef" for ch in head):
+        raise ValueError("expected_head must be an exact 40-character Git SHA")
+    if str(packet.get("source_commit") or "").lower() != head:
+        raise ValueError("peer packet source_commit does not match export HEAD")
+    for key in ("execution_authorized", "production_decision_authorized", "peer_write_authorized"):
+        if packet.get(key) is not False:
+            raise ValueError(f"peer packet authority invariant failed: {key}")
+    claimed = str(packet.get("packet_id") or "").lower()
+    unsigned = dict(packet)
+    unsigned.pop("packet_id", None)
+    computed = __import__("hashlib").sha256(
+        json.dumps(unsigned, sort_keys=True, separators=(",", ":"), allow_nan=False).encode("utf-8")
+    ).hexdigest()
+    if claimed != computed:
+        raise ValueError("peer packet_id does not match canonical packet content")
+
+
 def export_packet(
     root: Path,
     *,
@@ -71,14 +95,22 @@ def main() -> int:
     parser.add_argument("--source-commit")
     parser.add_argument("--observed-at")
     parser.add_argument("--output", default=str(DEFAULT_OUTPUT))
+    parser.add_argument(
+        "--require-head-match",
+        action="store_true",
+        help="Require packet source_commit to equal the repository HEAD used for export.",
+    )
     args = parser.parse_args()
 
+    root = Path(args.root)
     path, packet = export_packet(
-        Path(args.root),
+        root,
         source_commit=args.source_commit,
         observed_at=args.observed_at,
         output=Path(args.output),
     )
+    if args.require_head_match:
+        verify_packet_source_identity(packet, expected_head=_git_head(root.resolve()))
     print(
         json.dumps(
             {

@@ -101,10 +101,21 @@ def verify_packet_source_inputs(
     source_contracts = packet.get("source_contracts")
     if not isinstance(source_contracts, dict) or not source_contracts:
         raise ValueError("peer packet source contracts are missing")
+    source_contract_blobs = packet.get("source_contract_blobs")
+    if not isinstance(source_contract_blobs, dict):
+        raise ValueError("peer packet source contract blob witnesses are missing")
+    if set(source_contract_blobs) != set(source_contracts):
+        raise ValueError("peer packet source contract blob witness keys mismatch")
     verified_paths: set[str] = set()
-    for path in source_contracts.values():
+    for key, path in source_contracts.items():
         rel = str(path or "").strip()
-        _require_path_matches_commit(root, head, rel)
+        raw = _require_path_matches_commit(root, head, rel)
+        if raw is None:
+            raise ValueError(f"peer packet source contract missing at source revision: {rel}")
+        header = f"blob {len(raw)}\0".encode("ascii")
+        actual_blob = hashlib.sha1(header + raw).hexdigest()
+        if source_contract_blobs.get(key) != actual_blob:
+            raise ValueError(f"peer packet source contract blob witness mismatch: {key}")
         verified_paths.add(rel)
 
     fabric_path = str(source_contracts.get("agent_fabric") or "")

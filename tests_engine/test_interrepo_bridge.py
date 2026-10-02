@@ -148,6 +148,10 @@ def test_peer_packet_preserves_durability_only_truth(tmp_path):
     assert lane["run_id"] == "robustness-guardian-20261002T150500Z"
     assert lane["finalization_commit_sha"] == "d" * 40
     assert lane["substantive_research_evidence"] is False
+    assert lane["heartbeat_path"].endswith("/heartbeat.json")
+    assert lane["finalization_path"].endswith("/finalization_state.json")
+    assert len(lane["heartbeat_blob_sha"]) == 40
+    assert len(lane["finalization_blob_sha"]) == 40
 
 
 def test_peer_packet_does_not_invent_remote_sibling_state(tmp_path):
@@ -161,6 +165,10 @@ def test_peer_packet_does_not_invent_remote_sibling_state(tmp_path):
     assert lane["evidence_status"] == "REMOTE_PEER_UNREAD"
     assert lane["run_id"] is None
     assert lane["substantive_research_evidence"] is False
+    assert lane["heartbeat_path"] is None
+    assert lane["heartbeat_blob_sha"] is None
+    assert lane["finalization_path"] is None
+    assert lane["finalization_blob_sha"] is None
 
 
 def test_peer_packet_exposes_mcp_contract_without_granting_authority(tmp_path):
@@ -454,3 +462,30 @@ def test_peer_exporter_fails_closed_on_uncommitted_historical_artifact_drift(tmp
     )
     with pytest.raises(ValueError, match="packet input drift from source revision"):
         verify_packet_source_inputs(packet, root=root, expected_head=head)
+
+def test_peer_lane_source_witnesses_change_with_source_bytes(tmp_path):
+    root = _fixture_root(tmp_path)
+    before = build_peer_packet(
+        root,
+        source_commit="a" * 40,
+        observed_at="2026-10-02T22:55:00Z",
+    )
+    lane_before = next(
+        row for row in before["lanes"] if row["name"] == "robustness_guardian"
+    )
+    heartbeat_path = root / lane_before["heartbeat_path"]
+    heartbeat = json.loads(heartbeat_path.read_text(encoding="utf-8"))
+    heartbeat["RUN_ID"] = "robustness-guardian-source-witness-change"
+    _write(heartbeat_path, heartbeat)
+
+    after = build_peer_packet(
+        root,
+        source_commit="a" * 40,
+        observed_at="2026-10-02T22:55:00Z",
+    )
+    lane_after = next(
+        row for row in after["lanes"] if row["name"] == "robustness_guardian"
+    )
+    assert lane_after["heartbeat_path"] == lane_before["heartbeat_path"]
+    assert lane_after["heartbeat_blob_sha"] != lane_before["heartbeat_blob_sha"]
+    assert after["packet_id"] != before["packet_id"]

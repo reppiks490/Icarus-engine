@@ -1,0 +1,19 @@
+{
+  "event_id": "brain-federation-event-corpus-ci-guard-20261002",
+  "at_utc": "2026-10-02T18:47:15Z",
+  "category": "INTEGRATION",
+  "status": "IMPLEMENTED",
+  "severity": "INFO",
+  "summary": "Add a repository-native CI guard that checks every federated automation event against the producer MCP event contract and requires exact Git-blob identity for every legacy exception.",
+  "surface": "ICARUS inter-repository Adaptive Brain federation",
+  "source": "CHATGPT_MCP",
+  "paths": [
+    "tests/test_mcp_federation_event_corpus.py"
+  ],
+  "evidence": [
+    "automation_intelligence/mcp_interface/contract.json",
+    "automation_intelligence/mcp_interface/icarus_consumer_contract.json",
+    "automation_intelligence/mcp_interface/events"
+  ],
+  "execution_authorized": false
+}

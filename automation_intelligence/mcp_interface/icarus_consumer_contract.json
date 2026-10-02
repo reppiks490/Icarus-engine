@@ -31,5 +31,16 @@
     "automatic_execution_authority": false
   },
   "execution_authorized": false,
-  "production_decision_authorized": false
+  "production_decision_authorized": false,
+  "event_validation": {
+    "required_fields_source": "automation_intelligence/mcp_interface/contract.json#required_fields",
+    "strict_v1_required_fields": true,
+    "legacy_relaxed_blob_shas": [
+      "0ac2d6b295d10fa018cec1eda439c069d7d12284",
+      "2ad13f8b7e40bae41bd6e41a634b29543e1590ba",
+      "d18f6afa3273a6993b3fc70ee144ddb497094c13",
+      "e35708b8457531d1f1eceabe3607a1c7bee10f05"
+    ],
+    "legacy_rule": "Only these exact immutable Git blobs may omit producer-required envelope fields. No future blob inherits this exception."
+  }
 }

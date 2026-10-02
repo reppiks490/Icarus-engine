@@ -1,0 +1,49 @@
+{
+  "schema_version": "1.0.0",
+  "handoff_id": "icarus-engine-to-icarus-20261002-cross-repo-federation-v1",
+  "producer": "ChatGPT cross-repo federation",
+  "producer_repository": "reppiks490/Icarus-engine",
+  "producer_revision": "e7a6cba065830189b8cd155e857ab581c87da45d",
+  "target_repository": "reppiks490/Icarus",
+  "target_revision": "2e047d2645a8cbc2ca9f42731d5e4d65b05eee47",
+  "created_at": "2026-10-02T15:35:00Z",
+  "expires_at": null,
+  "artifacts": [
+    {
+      "path": "automation_intelligence/manifest.json",
+      "hash": "git-blob-sha1:8427f29b79918e8441ecd438cee88c086c29919b",
+      "media_type": "application/json"
+    },
+    {
+      "path": "icarus_engine/research_service.py",
+      "hash": "git-blob-sha1:fdd80b298406865d4b575163772152a270321c1a",
+      "media_type": "text/x-python"
+    },
+    {
+      "path": "HANDOFF.md",
+      "hash": "git-blob-sha1:4ced11a437ef6d6ebcd5333a4c0fa29c89fa6f7e",
+      "media_type": "text/markdown"
+    }
+  ],
+  "evidence_ids": [
+    "ICARUS-ENGINE-AUTOMATION-MANIFEST-20261002",
+    "ICARUS-ENGINE-RESEARCH-SERVICE-20261002"
+  ],
+  "claims": [
+    "Icarus-engine supplies research and automation evidence to canonical Icarus through revision-pinned handoffs.",
+    "Cross-repository evidence is advisory/research-only until canonical validation accepts it.",
+    "No handoff, heartbeat, watchdog receipt, or research result authorizes production execution."
+  ],
+  "assumptions": [
+    "Both repositories are evaluated at the revisions pinned in this handoff.",
+    "Git blob identifiers are used as immutable artifact locators inside the pinned producer revision."
+  ],
+  "tests": [],
+  "authority_requested": "RESEARCH",
+  "authority_granted": "RESEARCH",
+  "limitations": [
+    "This handoff does not merge strategy implementations or reconcile conflicting engine semantics.",
+    "This handoff does not establish live-market connectivity or broker authority.",
+    "Any producer or target revision drift requires a new pinned handoff."
+  ]
+}

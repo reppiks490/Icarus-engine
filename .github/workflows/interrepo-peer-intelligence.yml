@@ -48,7 +48,7 @@ jobs:
         run: git pull --rebase origin main
 
       - name: Export revision-bound peer packet
-        run: python tools/export_peer_intelligence.py --root .
+        run: PYTHONPATH=. python tools/export_peer_intelligence.py --root .
 
       - name: Stage only the peer packet
         shell: bash

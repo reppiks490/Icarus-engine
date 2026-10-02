@@ -84,6 +84,30 @@ def _fixture_root(tmp_path):
             "payload": {"result": "SCHEDULER_WORKER_RECEIPT_MISSED"},
         },
     )
+    _write(
+        tmp_path / "automation_intelligence/agent_fabric/robustness_guardian/latest.json",
+        {
+            "schema_version": "agent-fabric-persistence-v3",
+            "agent": "robustness_guardian",
+            "RUN_ID": "robustness-guardian-20260929T180500Z",
+            "RUN_STATUS": "RUN_PERSISTED",
+            "RUN_CORE": {
+                "execution_authorized": False,
+                "base_main_sha": "1" * 40,
+                "final_main_sha": "2" * 40,
+                "findings": [
+                    "Protected holdout lineage is incomplete.",
+                    "Replay determinism remains intact.",
+                ],
+                "built_changes": ["No behavioral code change."],
+                "NEXT": "Bind immutable dataset and holdout identities.",
+            },
+            "RUN_CORE_SHA256": "3" * 64,
+            "history_mode": "primary_immutable_file",
+            "history_blob_sha": "4" * 40,
+            "execution_authorized": False,
+        },
+    )
     return tmp_path
 
 
@@ -169,3 +193,84 @@ def test_packet_id_changes_when_lane_state_changes(tmp_path):
 
     two = build_peer_packet(root, source_commit="1" * 40, observed_at="2026-10-02T15:46:00Z")
     assert one["packet_id"] != two["packet_id"]
+
+
+def test_peer_packet_preserves_historical_substantive_research_separately(tmp_path):
+    packet = build_peer_packet(
+        _fixture_root(tmp_path),
+        source_commit="2" * 40,
+        observed_at="2026-10-02T15:47:00Z",
+    )
+    artifacts = packet["historical_artifacts"]
+    assert len(artifacts) == 1
+    row = artifacts[0]
+    assert row["lane"] == "robustness_guardian"
+    assert row["artifact_kind"] == "HISTORICAL_LATEST"
+    assert row["evidence_status"] == "HISTORICAL_RESEARCH_EVIDENCE"
+    assert row["run_id"] == "robustness-guardian-20260929T180500Z"
+    assert row["research_context_eligible"] is True
+    assert row["candidate_evidence_eligible"] is False
+    assert row["summary"]["findings"] == [
+        "Protected holdout lineage is incomplete.",
+        "Replay determinism remains intact.",
+    ]
+    assert row["summary"]["next"] == "Bind immutable dataset and holdout identities."
+
+
+def test_historical_collection_evidence_is_context_not_candidate_proof(tmp_path):
+    root = _fixture_root(tmp_path)
+    _write(
+        root / "automation_intelligence/flow/latest.json",
+        {
+            "engine": "flow",
+            "schema_version": "microstructure-collection-v4",
+            "RUN_ID": "flow-20260929T173500Z",
+            "RUN_STATUS": "RUN_PERSISTED",
+            "COLLECTION_ONLY": True,
+            "execution_authorized": False,
+            "NET_NEW_DELTA": {"btc": "fresh funding evidence"},
+            "observations": {"BTC": {"funding_percent": 0.003}},
+            "source_provenance": [{"source": "venue", "event_time": "2026-09-29T00:00:00Z"}],
+            "DATA_GAPS": ["No direct NQ depth."],
+            "history_blob_sha": "5" * 40,
+        },
+    )
+    control = json.loads(
+        (root / "automation_intelligence/restored_five_native/control_plane.json").read_text()
+    )
+    control["lanes"].append({
+        "name": "flow_microstructure",
+        "title": "Microstructure Sensor Grid",
+        "minute": 35,
+        "scheduler_id": "flow-1",
+        "worker_root": "automation_intelligence/flow",
+        "run_prefix": "flow",
+    })
+    _write(root / "automation_intelligence/restored_five_native/control_plane.json", control)
+
+    packet = build_peer_packet(
+        root,
+        source_commit="6" * 40,
+        observed_at="2026-10-02T15:48:00Z",
+    )
+    flow = next(x for x in packet["historical_artifacts"] if x["lane"] == "flow_microstructure")
+    assert flow["evidence_status"] == "HISTORICAL_COLLECTION_EVIDENCE"
+    assert flow["research_context_eligible"] is True
+    assert flow["candidate_evidence_eligible"] is False
+    assert flow["summary"]["observation_keys"] == ["BTC"]
+    assert flow["summary"]["data_gaps"] == ["No direct NQ depth."]
+
+
+def test_historical_artifact_with_execution_authority_is_rejected(tmp_path):
+    root = _fixture_root(tmp_path)
+    latest = json.loads(
+        (root / "automation_intelligence/agent_fabric/robustness_guardian/latest.json").read_text()
+    )
+    latest["execution_authorized"] = True
+    _write(root / "automation_intelligence/agent_fabric/robustness_guardian/latest.json", latest)
+    with pytest.raises(ValueError, match="execution_authorized"):
+        build_peer_packet(
+            root,
+            source_commit="7" * 40,
+            observed_at="2026-10-02T15:49:00Z",
+        )

@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 
 from icarus_engine.interrepo_bridge import build_peer_packet
+from tools.export_peer_intelligence import export_packet
 
 
 def _write(path, value):
@@ -299,3 +300,20 @@ def test_peer_export_contract_and_workflow_are_research_only():
     assert "automation_intelligence/interrepo/latest.json" in workflow
     assert "git add automation_intelligence/interrepo/latest.json" in workflow
     assert "permissions:\n  contents: write" in workflow
+
+def test_peer_exporter_writes_exact_deterministic_packet(tmp_path):
+    root = _fixture_root(tmp_path)
+    output = Path("automation_intelligence/interrepo/test-latest.json")
+    path, packet = export_packet(
+        root,
+        source_commit="2" * 40,
+        observed_at="2026-10-02T20:55:00Z",
+        output=output,
+    )
+    assert path == root.resolve() / output
+    stored = json.loads(path.read_text(encoding="utf-8"))
+    assert stored == packet
+    assert stored["source_commit"] == "2" * 40
+    assert stored["execution_authorized"] is False
+    assert stored["production_decision_authorized"] is False
+    assert stored["peer_write_authorized"] is False

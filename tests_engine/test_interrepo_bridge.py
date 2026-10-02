@@ -131,6 +131,12 @@ def test_peer_packet_is_deterministic_research_only_and_provenance_bound(tmp_pat
     assert len(one["packet_id"]) == 64
     assert one["source_repository"] == "reppiks490/Icarus-engine"
     assert one["source_commit"] == "a" * 40
+    assert set(one["source_contract_blobs"]) == {
+        "control_plane",
+        "agent_fabric",
+        "mcp_interface",
+    }
+    assert all(len(value) == 40 for value in one["source_contract_blobs"].values())
     assert one["execution_authorized"] is False
     assert one["production_decision_authorized"] is False
     assert one["peer_write_authorized"] is False
@@ -304,6 +310,13 @@ def test_peer_export_contract_and_workflow_are_research_only():
     assert peer["source_commit_required"] is True
     assert peer["git_blob_verification_required"] is True
     assert peer["required_for_event_ingest"] is False
+    assert peer["source_contract_blob_witnesses_required"] is True
+    assert peer["source_contract_blob_witness_keys"] == [
+        "control_plane",
+        "agent_fabric",
+        "mcp_interface",
+    ]
+    assert peer["semantics"]["source_contract_blobs_are_revision_bound"] is True
     assert peer["lane_source_witnesses_required"] is True
     assert peer["lane_source_witness_fields"] == [
         "heartbeat_path",
@@ -496,4 +509,40 @@ def test_peer_lane_source_witnesses_change_with_source_bytes(tmp_path):
     )
     assert lane_after["heartbeat_path"] == lane_before["heartbeat_path"]
     assert lane_after["heartbeat_blob_sha"] != lane_before["heartbeat_blob_sha"]
+    assert after["packet_id"] != before["packet_id"]
+
+def test_peer_exporter_fails_closed_on_source_contract_blob_witness_substitution(tmp_path):
+    root = _fixture_root(tmp_path)
+    head = _commit_fixture(root)
+    _path, packet = export_packet(
+        root,
+        source_commit=head,
+        observed_at="2026-10-02T23:05:00Z",
+        output=Path("automation_intelligence/interrepo/test-contract-blob-proof.json"),
+    )
+    packet["source_contract_blobs"]["agent_fabric"] = "0" * 40
+    with pytest.raises(ValueError, match="source contract blob witness mismatch"):
+        verify_packet_source_inputs(packet, root=root, expected_head=head)
+
+
+def test_source_contract_blob_witness_changes_with_contract_bytes(tmp_path):
+    root = _fixture_root(tmp_path)
+    before = build_peer_packet(
+        root,
+        source_commit="b" * 40,
+        observed_at="2026-10-02T23:06:00Z",
+    )
+    control_path = root / "automation_intelligence/restored_five_native/control_plane.json"
+    control = json.loads(control_path.read_text(encoding="utf-8"))
+    control["grace_minutes"] = 9
+    _write(control_path, control)
+    after = build_peer_packet(
+        root,
+        source_commit="b" * 40,
+        observed_at="2026-10-02T23:06:00Z",
+    )
+    assert (
+        after["source_contract_blobs"]["control_plane"]
+        != before["source_contract_blobs"]["control_plane"]
+    )
     assert after["packet_id"] != before["packet_id"]

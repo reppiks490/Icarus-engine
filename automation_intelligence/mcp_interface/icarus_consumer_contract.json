@@ -1,0 +1,35 @@
+{
+  "schema_version": "icarus-engine-brain-federation-v1",
+  "producer_repository": "reppiks490/Icarus-engine",
+  "producer_ref": "main",
+  "consumer_repository": "reppiks490/Icarus",
+  "consumer_surface": "Adaptive Brain remote sync",
+  "producer_contract": "automation_intelligence/mcp_interface/contract.json",
+  "producer_contract_schema": "icarus-mcp-interface-contract-v1",
+  "event_root": "automation_intelligence/mcp_interface/events",
+  "event_schema": "icarus-mcp-event-v1",
+  "accepted_sources": [
+    "OMEGA_AUTOMATION",
+    "MACRO_AUTOMATION",
+    "FLOW_AUTOMATION",
+    "AION_AUTOMATION",
+    "DAEDALUS_AUTOMATION"
+  ],
+  "accepted_categories": [
+    "REPAIR",
+    "AUDIT",
+    "EVOLUTION",
+    "INTEGRATION"
+  ],
+  "semantics": {
+    "event_records": "RESEARCH_OBSERVABILITY_ONLY",
+    "durability_receipts_are_substantive_evidence": false,
+    "remote_status_is_production_decision": false,
+    "raw_owner_data_transfer": false,
+    "automatic_model_promotion": false,
+    "production_decision_authorized": false,
+    "automatic_execution_authority": false
+  },
+  "execution_authorized": false,
+  "production_decision_authorized": false
+}

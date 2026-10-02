@@ -24,3 +24,27 @@ def test_readme_has_no_unresolved_merge_markers():
     assert "\n=======\n" not in text
     assert ">>>>>>>" not in text
     assert "reppiks490/Icarus" in text
+
+def test_canonical_brain_consumer_contract_is_fail_closed_and_research_only():
+    contract = json.loads(
+        (ROOT / "automation_intelligence" / "mcp_interface" / "icarus_consumer_contract.json")
+        .read_text(encoding="utf-8")
+    )
+    assert contract["schema_version"] == "icarus-engine-brain-federation-v1"
+    assert contract["producer_repository"] == "reppiks490/Icarus-engine"
+    assert contract["producer_ref"] == "main"
+    assert contract["consumer_repository"] == "reppiks490/Icarus"
+    assert contract["event_root"] == "automation_intelligence/mcp_interface/events"
+    assert contract["event_schema"] == "icarus-mcp-event-v1"
+    assert contract["producer_contract"] == "automation_intelligence/mcp_interface/contract.json"
+    assert contract["producer_contract_schema"] == "icarus-mcp-interface-contract-v1"
+    assert contract["execution_authorized"] is False
+    assert contract["production_decision_authorized"] is False
+    semantics = contract["semantics"]
+    assert semantics["event_records"] == "RESEARCH_OBSERVABILITY_ONLY"
+    assert semantics["durability_receipts_are_substantive_evidence"] is False
+    assert semantics["remote_status_is_production_decision"] is False
+    assert semantics["raw_owner_data_transfer"] is False
+    assert semantics["automatic_model_promotion"] is False
+    assert semantics["production_decision_authorized"] is False
+    assert semantics["automatic_execution_authority"] is False

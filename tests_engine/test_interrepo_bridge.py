@@ -521,6 +521,16 @@ def test_peer_exporter_fails_closed_on_source_contract_blob_witness_substitution
         output=Path("automation_intelligence/interrepo/test-contract-blob-proof.json"),
     )
     packet["source_contract_blobs"]["agent_fabric"] = "0" * 40
+    unsigned = dict(packet)
+    unsigned.pop("packet_id", None)
+    packet["packet_id"] = __import__("hashlib").sha256(
+        json.dumps(
+            unsigned,
+            sort_keys=True,
+            separators=(",", ":"),
+            allow_nan=False,
+        ).encode("utf-8")
+    ).hexdigest()
     with pytest.raises(ValueError, match="source contract blob witness mismatch"):
         verify_packet_source_inputs(packet, root=root, expected_head=head)
 

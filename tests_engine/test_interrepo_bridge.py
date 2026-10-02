@@ -1,12 +1,17 @@
 from __future__ import annotations
 
 import json
+import subprocess
 from pathlib import Path
 
 import pytest
 
 from icarus_engine.interrepo_bridge import build_peer_packet
-from tools.export_peer_intelligence import export_packet, verify_packet_source_identity
+from tools.export_peer_intelligence import (
+    export_packet,
+    verify_packet_source_identity,
+    verify_packet_source_inputs,
+)
 
 
 def _write(path, value):
@@ -381,3 +386,71 @@ def test_historical_context_contract_requires_exact_artifact_blob_binding():
     historical = contract["historical_context"]
     assert historical["source_artifact_blob_required"] is True
     assert historical["artifact_id_sha256_required"] is True
+
+def _commit_fixture(root: Path) -> str:
+    subprocess.run(["git", "init"], cwd=root, check=True, capture_output=True)
+    subprocess.run(["git", "config", "user.email", "tests@example.invalid"], cwd=root, check=True)
+    subprocess.run(["git", "config", "user.name", "ICARUS tests"], cwd=root, check=True)
+    subprocess.run(["git", "add", "."], cwd=root, check=True)
+    subprocess.run(["git", "commit", "-m", "fixture"], cwd=root, check=True, capture_output=True)
+    return subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=root,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
+
+
+def test_peer_exporter_proves_all_local_inputs_match_claimed_source_revision(tmp_path):
+    root = _fixture_root(tmp_path)
+    head = _commit_fixture(root)
+    _path, packet = export_packet(
+        root,
+        source_commit=head,
+        observed_at="2026-10-02T22:45:00Z",
+        output=Path("automation_intelligence/interrepo/test-source-input-proof.json"),
+    )
+    verify_packet_source_inputs(packet, root=root, expected_head=head)
+
+
+def test_peer_exporter_fails_closed_on_uncommitted_lane_input_drift(tmp_path):
+    root = _fixture_root(tmp_path)
+    head = _commit_fixture(root)
+    heartbeat_path = (
+        root
+        / "automation_intelligence/agent_fabric/robustness_guardian/heartbeat.json"
+    )
+    heartbeat = json.loads(heartbeat_path.read_text(encoding="utf-8"))
+    heartbeat["RUN_ID"] = "robustness-guardian-uncommitted-drift"
+    _write(heartbeat_path, heartbeat)
+
+    _path, packet = export_packet(
+        root,
+        source_commit=head,
+        observed_at="2026-10-02T22:46:00Z",
+        output=Path("automation_intelligence/interrepo/test-drift-proof.json"),
+    )
+    with pytest.raises(ValueError, match="packet input drift from source revision"):
+        verify_packet_source_inputs(packet, root=root, expected_head=head)
+
+
+def test_peer_exporter_fails_closed_on_uncommitted_historical_artifact_drift(tmp_path):
+    root = _fixture_root(tmp_path)
+    head = _commit_fixture(root)
+    latest_path = (
+        root
+        / "automation_intelligence/agent_fabric/robustness_guardian/latest.json"
+    )
+    latest = json.loads(latest_path.read_text(encoding="utf-8"))
+    latest["RUN_CORE"]["findings"].append("uncommitted historical drift")
+    _write(latest_path, latest)
+
+    _path, packet = export_packet(
+        root,
+        source_commit=head,
+        observed_at="2026-10-02T22:47:00Z",
+        output=Path("automation_intelligence/interrepo/test-historical-drift-proof.json"),
+    )
+    with pytest.raises(ValueError, match="packet input drift from source revision"):
+        verify_packet_source_inputs(packet, root=root, expected_head=head)

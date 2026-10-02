@@ -1,0 +1,22 @@
+{
+  "event_id": "brain-federation-strict-event-contract-20261002",
+  "at_utc": "2026-10-02T18:41:06Z",
+  "category": "INTEGRATION",
+  "status": "IMPLEMENTED",
+  "severity": "INFO",
+  "summary": "Harden the canonical Icarus Adaptive Brain federation so producer MCP events must satisfy the declared v1 event envelope, except for four exact pre-existing automation blobs admitted by immutable SHA allowlist.",
+  "surface": "ICARUS inter-repository Adaptive Brain federation",
+  "source": "CHATGPT_MCP",
+  "paths": [
+    "automation_intelligence/mcp_interface/icarus_consumer_contract.json",
+    "tests/test_cross_repo_handoff.py"
+  ],
+  "evidence": [
+    "automation_intelligence/mcp_interface/contract.json",
+    "legacy_blob:0ac2d6b295d10fa018cec1eda439c069d7d12284",
+    "legacy_blob:2ad13f8b7e40bae41bd6e41a634b29543e1590ba",
+    "legacy_blob:d18f6afa3273a6993b3fc70ee144ddb497094c13",
+    "legacy_blob:e35708b8457531d1f1eceabe3607a1c7bee10f05"
+  ],
+  "execution_authorized": false
+}

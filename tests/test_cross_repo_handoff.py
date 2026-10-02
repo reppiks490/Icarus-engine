@@ -65,3 +65,56 @@ def test_brain_federation_strictly_enforces_event_contract_with_exact_legacy_exc
     assert all(len(value) == 40 for value in legacy)
     assert all(all(ch in "0123456789abcdef" for ch in value) for value in legacy)
     assert "No future blob inherits this exception" in validation["legacy_rule"]
+
+
+def test_brain_federation_declares_historical_research_context_sources():
+    contract = json.loads(
+        (ROOT / "automation_intelligence" / "mcp_interface" / "icarus_consumer_contract.json")
+        .read_text(encoding="utf-8")
+    )
+    historical = contract["historical_context"]
+    assert historical["mode"] == "RESEARCH_CONTEXT_ONLY"
+    assert historical["direct_candidate_evidence"] is False
+    assert historical["automatic_candidate_creation"] is False
+    assert historical["automatic_model_promotion"] is False
+    assert historical["execution_authorized"] is False
+    assert historical["production_decision_authorized"] is False
+
+    sources = historical["sources"]
+    assert {row["id"] for row in sources} == {
+        "robustness_guardian",
+        "alpha_synthesis",
+        "apex_council",
+        "flow_microstructure",
+    }
+    assert len({row["path"] for row in sources}) == len(sources)
+    assert all((ROOT / row["path"]).is_file() for row in sources)
+    assert all(row["candidate_evidence_eligible"] is False for row in sources)
+    assert all(row["research_context_eligible"] is True for row in sources)
+    assert all(row["execution_authorized"] is False for row in sources)
+    assert {
+        row["evidence_status"] for row in sources
+    } == {
+        "HISTORICAL_RESEARCH_EVIDENCE",
+        "HISTORICAL_COLLECTION_EVIDENCE",
+    }
+    flow = next(row for row in sources if row["id"] == "flow_microstructure")
+    assert flow["evidence_status"] == "HISTORICAL_COLLECTION_EVIDENCE"
+    assert flow["collection_only"] is True
+    for row in sources:
+        if row["id"] != "flow_microstructure":
+            assert row["evidence_status"] == "HISTORICAL_RESEARCH_EVIDENCE"
+
+
+def test_historical_context_contract_cannot_bypass_foundry_or_evaluator():
+    contract = json.loads(
+        (ROOT / "automation_intelligence" / "mcp_interface" / "icarus_consumer_contract.json")
+        .read_text(encoding="utf-8")
+    )
+    historical = contract["historical_context"]
+    truth = historical["truth_contract"]
+    assert truth["foreign_repository_state_is_context_not_native_truth"] is True
+    assert truth["historical_context_never_bypasses_foundry"] is True
+    assert truth["historical_context_never_bypasses_evaluator"] is True
+    assert truth["historical_context_never_grants_shadow_qualification"] is True
+    assert truth["historical_context_never_grants_execution_authority"] is True

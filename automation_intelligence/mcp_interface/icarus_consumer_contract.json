@@ -58,5 +58,101 @@
       "production_decision_authorized": false,
       "automatic_execution_authority": false
     }
+  },
+  "historical_context": {
+    "mode": "RESEARCH_CONTEXT_ONLY",
+    "direct_candidate_evidence": false,
+    "automatic_candidate_creation": false,
+    "automatic_model_promotion": false,
+    "execution_authorized": false,
+    "production_decision_authorized": false,
+    "sources": [
+      {
+        "id": "robustness_guardian",
+        "path": "automation_intelligence/agent_fabric/robustness_guardian/latest.json",
+        "evidence_status": "HISTORICAL_RESEARCH_EVIDENCE",
+        "research_context_eligible": true,
+        "candidate_evidence_eligible": false,
+        "collection_only": false,
+        "summary_fields": [
+          "RUN_CORE.findings",
+          "RUN_CORE.built_changes",
+          "RUN_CORE.unresolved_risks",
+          "RUN_CORE.NEXT",
+          "RUN_CORE.test_state",
+          "RUN_CORE.base_main_sha",
+          "RUN_CORE.final_main_sha",
+          "RUN_CORE_SHA256",
+          "history_blob_sha"
+        ],
+        "execution_authorized": false
+      },
+      {
+        "id": "alpha_synthesis",
+        "path": "automation_intelligence/agent_fabric/alpha_synthesis/latest.json",
+        "evidence_status": "HISTORICAL_RESEARCH_EVIDENCE",
+        "research_context_eligible": true,
+        "candidate_evidence_eligible": false,
+        "collection_only": false,
+        "summary_fields": [
+          "RUN_CORE.evidence_dataset_identity",
+          "RUN_CORE.findings",
+          "RUN_CORE.built_changes",
+          "RUN_CORE.unresolved_risks",
+          "RUN_CORE.NEXT",
+          "RUN_CORE_SHA256",
+          "history_blob_sha",
+          "ledger_blob_sha"
+        ],
+        "execution_authorized": false
+      },
+      {
+        "id": "apex_council",
+        "path": "automation_intelligence/agent_fabric/apex_council/latest.json",
+        "evidence_status": "HISTORICAL_RESEARCH_EVIDENCE",
+        "research_context_eligible": true,
+        "candidate_evidence_eligible": false,
+        "collection_only": false,
+        "summary_fields": [
+          "RUN_CORE.specialist_states_consumed",
+          "RUN_CORE.evidence_contract",
+          "RUN_CORE.decision_contract",
+          "RUN_CORE.disagreements_collisions",
+          "RUN_CORE.built_changes",
+          "RUN_CORE.NEXT",
+          "RUN_CORE.base_main_sha",
+          "RUN_CORE.final_main_sha",
+          "RUN_CORE_SHA256",
+          "history_blob_sha",
+          "ledger_blob_sha"
+        ],
+        "execution_authorized": false
+      },
+      {
+        "id": "flow_microstructure",
+        "path": "automation_intelligence/flow/latest.json",
+        "evidence_status": "HISTORICAL_COLLECTION_EVIDENCE",
+        "research_context_eligible": true,
+        "candidate_evidence_eligible": false,
+        "collection_only": true,
+        "summary_fields": [
+          "NET_NEW_DELTA",
+          "observations",
+          "PROVIDER_CONFLICTS",
+          "DATA_GAPS",
+          "source_provenance",
+          "quality_notes",
+          "history_blob_sha"
+        ],
+        "execution_authorized": false
+      }
+    ],
+    "truth_contract": {
+      "foreign_repository_state_is_context_not_native_truth": true,
+      "historical_context_never_bypasses_foundry": true,
+      "historical_context_never_bypasses_evaluator": true,
+      "historical_context_never_grants_shadow_qualification": true,
+      "historical_context_never_grants_execution_authority": true
+    }
   }
 }

@@ -1,0 +1,26 @@
+{
+  "at_utc": "2026-10-03T19:22:28.618295Z",
+  "category": "REPAIR",
+  "event_id": "20261003T192228Z-peer-background-git",
+  "evidence": [
+    "Two Windows launch-flag regressions failed before the patch and pass afterward.",
+    "Four background tests: three local passes; actual Windows console-API case deferred to hosted Windows.",
+    "Twenty-six watchdog unit tests and three workflow lifecycle tests pass after the patch.",
+    "No Git credential, scheduler, research result or execution-authority change."
+  ],
+  "execution_authorized": false,
+  "paths": [
+    "tools/background_process.py",
+    "tools/export_peer_intelligence.py",
+    "tools/restored_five_durability_watchdog.py",
+    "tools/check_mcp_event_contract.py",
+    "tools/test_peer_background_process.py",
+    ".github/workflows/windows-background-contract.yml"
+  ],
+  "production_decision_authorized": false,
+  "severity": "INFO",
+  "source": "codex/peer-background-git-20261003",
+  "status": "IMPLEMENTED_PENDING_WINDOWS_CI",
+  "summary": "Suppress recurring Windows console creation in noninteractive peer Git probes, history reads and packet export. Local process-boundary regressions and real Git readback pass; hosted Windows and user-PC recurrence remain separate checks.",
+  "surface": "System Intelligence / Peer lane provenance"
+}

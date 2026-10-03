@@ -11,6 +11,10 @@ from tempfile import NamedTemporaryFile
 from typing import Any, Mapping
 
 from icarus_engine.interrepo_bridge import build_peer_packet
+try:
+    from tools.background_process import background_kwargs
+except ModuleNotFoundError:
+    from background_process import background_kwargs
 
 
 DEFAULT_OUTPUT = Path("automation_intelligence/interrepo/latest.json")
@@ -27,6 +31,7 @@ def _git_head(root: Path) -> str:
         check=True,
         capture_output=True,
         text=True,
+        **background_kwargs(),
     )
     return result.stdout.strip()
 
@@ -63,6 +68,7 @@ def _git_show_bytes(root: Path, commit: str, path: str) -> bytes | None:
         ["git", "-C", str(root), "show", f"{commit}:{rel}"],
         check=False,
         capture_output=True,
+        **background_kwargs(),
     )
     if result.returncode != 0:
         return None

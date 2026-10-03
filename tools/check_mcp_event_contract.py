@@ -3,6 +3,10 @@
 from __future__ import annotations
 import json, os, subprocess, sys
 from pathlib import Path
+try:
+    from tools.background_process import background_kwargs
+except ModuleNotFoundError:
+    from background_process import background_kwargs
 
 EVENT_ROOT="automation_intelligence/mcp_interface/events/"
 CRITICAL_PREFIXES=("icarus_engine/","icarus/")
@@ -11,7 +15,7 @@ REQUIRED={"event_id","at_utc","category","status","severity","summary","surface"
 CATEGORIES={"REPAIR","AUDIT","EVOLUTION","INTEGRATION"}
 
 def sh(*args):
-    return subprocess.check_output(args,text=True).strip()
+    return subprocess.check_output(args,text=True,**background_kwargs()).strip()
 
 def base_ref():
     base=os.environ.get("GITHUB_BASE_REF","").strip()

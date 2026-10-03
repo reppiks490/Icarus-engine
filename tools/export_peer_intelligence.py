@@ -219,6 +219,10 @@ def _normalize_canonical_acceptance(path: Path | None) -> dict[str, Any]:
         raise ValueError("canonical ICARUS acceptance repository identity mismatch")
     if payload.get("producer_repository") != "reppiks490/Icarus-engine":
         raise ValueError("canonical ICARUS acceptance producer identity mismatch")
+    if payload.get("validation_contract_version") != 1:
+        raise ValueError("unsupported canonical ICARUS acceptance validation contract")
+    if payload.get("source_receipt_schema") != "icarus-live-bilateral-federation-receipt-v1":
+        raise ValueError("canonical ICARUS acceptance source receipt schema mismatch")
     if payload.get("authority") != "RESEARCH":
         raise ValueError("canonical ICARUS acceptance authority must remain RESEARCH")
     for key in (
@@ -236,6 +240,19 @@ def _normalize_canonical_acceptance(path: Path | None) -> dict[str, Any]:
         raise ValueError("canonical ICARUS acceptance peer packet blob is invalid")
     if not _is_hex(payload.get("peer_source_commit"), 40):
         raise ValueError("canonical ICARUS acceptance peer source commit is invalid")
+    if payload.get("peer_packet_fresh") is not True:
+        raise ValueError("canonical ICARUS acceptance does not attest a fresh peer packet")
+    if payload.get("peer_source_contract_witness_count") != 3:
+        raise ValueError("canonical ICARUS acceptance source-contract witness count is incomplete")
+    lane_count = payload.get("peer_lane_count")
+    lane_witness_count = payload.get("peer_lane_witness_verified_count")
+    lane_binding_count = payload.get("peer_lane_contract_binding_verified_count")
+    if type(lane_count) is not int or lane_count < 1:
+        raise ValueError("canonical ICARUS acceptance peer lane count is invalid")
+    if type(lane_witness_count) is not int or lane_witness_count < 1:
+        raise ValueError("canonical ICARUS acceptance lane witness count is incomplete")
+    if lane_binding_count != lane_count:
+        raise ValueError("canonical ICARUS acceptance lane contract binding is incomplete")
     truth = payload.get("truth_contract")
     if not isinstance(truth, Mapping):
         raise ValueError("canonical ICARUS acceptance truth contract is missing")

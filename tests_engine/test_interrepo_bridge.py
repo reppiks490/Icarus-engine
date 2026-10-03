@@ -332,7 +332,11 @@ def test_peer_export_contract_and_workflow_are_research_only():
     workflow = (
         root / ".github/workflows/interrepo-peer-intelligence.yml"
     ).read_text(encoding="utf-8")
-    assert "python tools/export_peer_intelligence.py --root . --require-head-match" in workflow
+    assert "python tools/export_peer_intelligence.py" in workflow
+    assert "--root ." in workflow
+    assert "--require-head-match" in workflow
+    assert "--canonical-acceptance" in workflow
+    assert "canonical-icarus/automation_intelligence/federation/icarus_engine_acceptance.json" in workflow
     assert "automation_intelligence/interrepo/latest.json" in workflow
     assert "git add automation_intelligence/interrepo/latest.json" in workflow
     assert 'cron: "*/10 * * * *"' in workflow

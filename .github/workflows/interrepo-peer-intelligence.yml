@@ -1,6 +1,13 @@
 name: interrepo-peer-intelligence
 
 on:
+  workflow_run:
+    workflows:
+      - "automation-durability-watchdog"
+      - "restored-five-durability-watchdog"
+      - "restored-five-native-liveness"
+    types: [completed]
+    branches: [main]
   push:
     branches: [main]
     paths:
@@ -27,6 +34,10 @@ concurrency:
 
 jobs:
   export:
+    if: >-
+      github.event_name != 'workflow_run' ||
+      (github.event.workflow_run.conclusion == 'success' &&
+       github.event.workflow_run.event == 'schedule')
     runs-on: ubuntu-latest
     steps:
       - name: Check out main

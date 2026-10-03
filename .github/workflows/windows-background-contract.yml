@@ -1,0 +1,32 @@
+name: peer-background-process-contract
+on:
+  push:
+    paths:
+      - 'tools/background_process.py'
+      - 'tools/export_peer_intelligence.py'
+      - 'tools/restored_five_durability_watchdog.py'
+      - 'tools/check_mcp_event_contract.py'
+      - 'tools/test_peer_background_process.py'
+      - '.github/workflows/windows-background-contract.yml'
+  pull_request:
+    paths:
+      - 'tools/background_process.py'
+      - 'tools/export_peer_intelligence.py'
+      - 'tools/restored_five_durability_watchdog.py'
+      - 'tools/check_mcp_event_contract.py'
+      - 'tools/test_peer_background_process.py'
+      - '.github/workflows/windows-background-contract.yml'
+permissions:
+  contents: read
+jobs:
+  background-processes:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m unittest tools.test_peer_background_process -q

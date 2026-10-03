@@ -4,6 +4,10 @@ import re
 import subprocess
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+try:
+    from tools.background_process import background_kwargs
+except ModuleNotFoundError:
+    from background_process import background_kwargs
 
 RUN_TS_RE = re.compile(r"(\d{8}T\d{6}Z)")
 
@@ -65,7 +69,7 @@ def compare_run_ids(left: str | None, right: str | None) -> int | None:
 
 
 def git(repo_root: Path, *args: str) -> str:
-    return subprocess.check_output(["git", *args], cwd=repo_root, text=True).strip()
+    return subprocess.check_output(["git", *args], cwd=repo_root, text=True, **background_kwargs()).strip()
 
 
 def finalization_identity(repo_root: Path, relpath: str) -> tuple[str, str]:
@@ -255,6 +259,7 @@ def git_json_history(repo_root: Path, relpath: str, max_commits: int = 500) -> l
             cwd=repo_root,
             text=True,
             stderr=subprocess.DEVNULL,
+            **background_kwargs(),
         ).strip()
     except (subprocess.CalledProcessError, FileNotFoundError):
         return []
@@ -267,6 +272,7 @@ def git_json_history(repo_root: Path, relpath: str, max_commits: int = 500) -> l
                 cwd=repo_root,
                 text=True,
                 stderr=subprocess.DEVNULL,
+                **background_kwargs(),
             )
             obj = json.loads(raw)
         except (subprocess.CalledProcessError, FileNotFoundError, json.JSONDecodeError):

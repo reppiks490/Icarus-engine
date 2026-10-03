@@ -335,6 +335,12 @@ def test_peer_export_contract_and_workflow_are_research_only():
     assert "automation_intelligence/interrepo/latest.json" in workflow
     assert "git add automation_intelligence/interrepo/latest.json" in workflow
     assert 'cron: "*/10 * * * *"' in workflow
+    assert "workflow_run:" in workflow
+    assert "automation-durability-watchdog" in workflow
+    assert "restored-five-durability-watchdog" in workflow
+    assert "restored-five-native-liveness" in workflow
+    assert "github.event.workflow_run.conclusion == 'success'" in workflow
+    assert "github.event.workflow_run.event == 'schedule'" in workflow
     assert "permissions:\n  contents: write" in workflow
 
 def test_peer_exporter_writes_exact_deterministic_packet(tmp_path):

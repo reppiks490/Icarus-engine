@@ -1,5 +1,6 @@
 """Verify background Git launches at the production process boundary."""
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -49,9 +50,12 @@ class BackgroundGitTests(unittest.TestCase):
             self.assertEqual(watchdog.git(root, "rev-parse", "HEAD"), commit)
             self.assertEqual(watchdog.git_json_history(root, "receipt.json"), [{"RUN_ID": "fixture"}])
             self.assertEqual(exporter._git_show_bytes(root, commit, "receipt.json"), b'{"RUN_ID":"fixture"}\n')
+            subprocess.run(["git", "-C", str(root), "update-ref", "refs/remotes/origin/fixture-base", commit], check=True)
             script = Path(contract.__file__).resolve()
-            result = subprocess.run([sys.executable, str(script)], cwd=root, capture_output=True, text=True)
+            env = dict(os.environ, GITHUB_BASE_REF="fixture-base")
+            result = subprocess.run([sys.executable, str(script)], cwd=root, capture_output=True, text=True, env=env)
             self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("no critical ICARUS code changes", result.stdout)
             result = subprocess.run([sys.executable, str(Path(watchdog.__file__).resolve()), "--help"], cwd=root, capture_output=True, text=True)
             self.assertEqual(result.returncode, 0, result.stderr)
 

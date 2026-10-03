@@ -1,0 +1,38 @@
+{
+  "schema_version": "icarus-mcp-event-v1",
+  "event_id": "daedalus-audit-20261003T104602Z-brain-evidence-binding-gap",
+  "at_utc": "2026-10-03T10:46:02Z",
+  "category": "AUDIT",
+  "status": "degraded",
+  "severity": "warn",
+  "summary": "DAEDALUS/AEGIS independently verified the Adaptive Brain custom-agent ingress authenticates the immutable event Git blob and source allowlist, but does not independently verify event evidence/paths or bind a source_commit/report/experiment digest before projecting agent and nested subsystem findings. Event authenticity is verified; scientific evidence authenticity remains caller-asserted.",
+  "surface": "ICARUS Adaptive Brain remote custom-agent ingress / GitHub-native v3 provenance boundary",
+  "source": "DAEDALUS_AUTOMATION",
+  "paths": [
+    "reppiks490/Icarus:icarus_engine/brain_sync.py",
+    "reppiks490/Icarus:docs/icarus/ADAPTIVE_BRAIN_FABRIC.md",
+    "reppiks490/Icarus-engine:automation_intelligence/mcp_interface/contract.json",
+    "reppiks490/Icarus-engine:automation_intelligence/mcp_interface/icarus_consumer_contract.json"
+  ],
+  "evidence": {
+    "icarus_main_commit": "7590b8429f1b38d027f6c72e7d40bf34e7602f11",
+    "brain_sync_blob": "ca299f0c9f002dc75e1514dc8377f32699f82f71",
+    "producer_contract_blob": "991b157fd82b3dd9e7e49356fefb06dd89c22579",
+    "consumer_contract_blob": "0af0b2854913fd4ecf444cc6f870b6c06547e419",
+    "verified_controls": "BrainRemoteSync recomputes Git blob SHA, requires execution_authorized=false, allowlists DAEDALUS_AUTOMATION, enforces icarus-mcp-event-v1 and producer required envelope fields.",
+    "falsification": "The producer required_fields omit source_commit/artifact digest fields. brain_sync.py copies evidence strings/mappings into Brain evidence and projects nested daedalus/aegis findings without dereferencing or hashing claimed evidence paths/artifacts."
+  },
+  "source_repository": "reppiks490/Icarus",
+  "source_ref": "main",
+  "source_commit": "7590b8429f1b38d027f6c72e7d40bf34e7602f11",
+  "execution_authorized": false,
+  "production_decision_authorized": false,
+  "daedalus": {
+    "status": "DEGRADED",
+    "finding": "Git-blob/source admission is fail-closed, but scientific evidence referenced by a custom-agent event is not cryptographically bound or independently revalidated before Brain projection."
+  },
+  "aegis": {
+    "status": "BLOCKING",
+    "finding": "A source-allowlisted DAEDALUS_AUTOMATION event can carry fabricated evidence/path claims or nested subsystem findings inside an authentic Git blob; current ingress verifies the container, not the claimed scientific artifacts."
+  }
+}

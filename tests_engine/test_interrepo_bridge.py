@@ -421,6 +421,11 @@ def test_historical_context_contract_requires_exact_artifact_blob_binding():
     historical = contract["historical_context"]
     assert historical["source_artifact_blob_required"] is True
     assert historical["artifact_id_sha256_required"] is True
+    assert historical["packet_projection_verification_required"] is True
+    assert (
+        historical["truth_contract"]["historical_packet_projection_is_source_derived"]
+        is True
+    )
 
 def _commit_fixture(root: Path) -> str:
     subprocess.run(["git", "init"], cwd=root, check=True, capture_output=True)

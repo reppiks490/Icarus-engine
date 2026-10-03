@@ -46,6 +46,14 @@ jobs:
           ref: main
           fetch-depth: 0
 
+      - name: Check out canonical Icarus acknowledgement source
+        uses: actions/checkout@v4
+        with:
+          repository: reppiks490/Icarus
+          ref: main
+          path: canonical-icarus
+          persist-credentials: false
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -61,7 +69,12 @@ jobs:
         run: python -m pytest tests_engine/test_interrepo_bridge.py -q
 
       - name: Export revision-bound peer packet
-        run: PYTHONPATH=. python tools/export_peer_intelligence.py --root . --require-head-match
+        run: >-
+          PYTHONPATH=. python tools/export_peer_intelligence.py
+          --root .
+          --require-head-match
+          --canonical-acceptance
+          canonical-icarus/automation_intelligence/federation/icarus_engine_acceptance.json
 
       - name: Stage only the peer packet
         shell: bash

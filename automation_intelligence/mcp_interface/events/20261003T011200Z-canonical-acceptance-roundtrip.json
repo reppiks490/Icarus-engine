@@ -1,0 +1,24 @@
+{
+  "schema": "icarus-mcp-event-v1",
+  "event_id": "canonical-acceptance-roundtrip-20261003",
+  "at_utc": "2026-10-03T01:12:00Z",
+  "category": "INTEGRATION",
+  "status": "IMPLEMENTED",
+  "severity": "INFO",
+  "summary": "Close the bilateral federation acknowledgement loop by embedding the latest canonical ICARUS research-only acceptance of a prior peer packet into the next Icarus-engine peer packet.",
+  "surface": "ICARUS inter-repository federation roundtrip",
+  "source": "CHATGPT_MCP",
+  "paths": [
+    "tools/export_peer_intelligence.py",
+    ".github/workflows/interrepo-peer-intelligence.yml",
+    "automation_intelligence/mcp_interface/icarus_consumer_contract.json",
+    "tests_engine/test_interrepo_bridge.py"
+  ],
+  "evidence": [
+    "canonical acceptance schema validation",
+    "prior peer packet ID/blob/source commit acknowledgement",
+    "explicit optional lag semantics",
+    "zero execution and production-decision authority"
+  ],
+  "execution_authorized": false
+}

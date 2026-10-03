@@ -177,5 +177,23 @@
     "source_artifact_blob_required": true,
     "artifact_id_sha256_required": true,
     "packet_projection_verification_required": true
+  },
+  "canonical_acceptance": {
+    "repository": "reppiks490/Icarus",
+    "ref": "main",
+    "path": "automation_intelligence/federation/icarus_engine_acceptance.json",
+    "schema_version": "icarus-engine-federation-acceptance-v1",
+    "authority": "RESEARCH",
+    "required_for_export": false,
+    "lag_semantics": "Acknowledgement may refer to the previously published peer packet; it never upgrades the current packet's authority.",
+    "semantics": {
+      "acceptance_is_foreign_evidence_not_native_truth": true,
+      "prior_packet_acknowledgement_is_not_current_packet_qualification": true,
+      "automatic_model_promotion": false,
+      "production_decision_authorized": false,
+      "automatic_execution_authority": false
+    },
+    "execution_authorized": false,
+    "production_decision_authorized": false
   }
 }

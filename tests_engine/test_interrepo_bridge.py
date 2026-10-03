@@ -635,6 +635,13 @@ def test_peer_export_treats_missing_canonical_acceptance_as_optional(tmp_path):
     verify_packet_source_identity(packet, expected_head=head)
 
 
+def test_peer_export_rejects_incomplete_canonical_acceptance_contract(tmp_path):
+    path = tmp_path / "acceptance.json"
+    _write(path, _canonical_acceptance(peer_lane_contract_binding_verified_count=4))
+    with pytest.raises(ValueError, match="lane contract binding is incomplete"):
+        _normalize_canonical_acceptance(path)
+
+
 def test_peer_export_rejects_canonical_acceptance_authority_escalation(tmp_path):
     path = tmp_path / "acceptance.json"
     _write(path, _canonical_acceptance(execution_authorized=True))

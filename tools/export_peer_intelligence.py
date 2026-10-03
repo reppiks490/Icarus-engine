@@ -8,11 +8,13 @@ import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
 from tempfile import NamedTemporaryFile
+from typing import Any, Mapping
 
 from icarus_engine.interrepo_bridge import build_peer_packet
 
 
 DEFAULT_OUTPUT = Path("automation_intelligence/interrepo/latest.json")
+CANONICAL_ACCEPTANCE_SCHEMA = "icarus-engine-federation-acceptance-v1"
 
 
 def _utc_now() -> str:
@@ -189,12 +191,108 @@ def verify_packet_source_inputs(
             )
 
 
+def _is_hex(value: Any, length: int) -> bool:
+    text = str(value or "").strip().lower()
+    return len(text) == length and all(ch in "0123456789abcdef" for ch in text)
+
+
+def _normalize_canonical_acceptance(path: Path | None) -> dict[str, Any]:
+    if path is None or not path.is_file():
+        return {
+            "status": "UNAVAILABLE",
+            "schema_version": CANONICAL_ACCEPTANCE_SCHEMA,
+            "accepted_by_repository": "reppiks490/Icarus",
+            "producer_repository": "reppiks490/Icarus-engine",
+            "authority": "RESEARCH",
+            "required_for_export": False,
+            "execution_authorized": False,
+            "production_decision_authorized": False,
+            "automatic_model_promotion": False,
+        }
+
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(payload, Mapping):
+        raise ValueError("canonical ICARUS acceptance must be a JSON object")
+    if payload.get("schema_version") != CANONICAL_ACCEPTANCE_SCHEMA:
+        raise ValueError("unsupported canonical ICARUS acceptance schema")
+    if payload.get("accepted_by_repository") != "reppiks490/Icarus":
+        raise ValueError("canonical ICARUS acceptance repository identity mismatch")
+    if payload.get("producer_repository") != "reppiks490/Icarus-engine":
+        raise ValueError("canonical ICARUS acceptance producer identity mismatch")
+    if payload.get("authority") != "RESEARCH":
+        raise ValueError("canonical ICARUS acceptance authority must remain RESEARCH")
+    for key in (
+        "execution_authorized",
+        "production_decision_authorized",
+        "automatic_model_promotion",
+    ):
+        if payload.get(key) is not False:
+            raise ValueError(f"canonical ICARUS acceptance attempts authority escalation: {key}")
+    if not _is_hex(payload.get("accepted_by_icarus_commit"), 40):
+        raise ValueError("canonical ICARUS acceptance validator commit is invalid")
+    if not _is_hex(payload.get("peer_packet_id"), 64):
+        raise ValueError("canonical ICARUS acceptance peer packet ID is invalid")
+    if not _is_hex(payload.get("peer_packet_blob_sha"), 40):
+        raise ValueError("canonical ICARUS acceptance peer packet blob is invalid")
+    if not _is_hex(payload.get("peer_source_commit"), 40):
+        raise ValueError("canonical ICARUS acceptance peer source commit is invalid")
+    truth = payload.get("truth_contract")
+    if not isinstance(truth, Mapping):
+        raise ValueError("canonical ICARUS acceptance truth contract is missing")
+    for key in (
+        "foreign_peer_state_is_evidence_not_native_truth",
+        "durability_only_is_not_substantive_research_evidence",
+        "acceptance_is_not_execution_authority",
+        "acceptance_is_not_production_decision_authority",
+        "same_packet_is_idempotent",
+    ):
+        if truth.get(key) is not True:
+            raise ValueError(f"canonical ICARUS acceptance truth invariant failed: {key}")
+
+    return {
+        "status": "VERIFIED_PRIOR_PACKET",
+        "schema_version": CANONICAL_ACCEPTANCE_SCHEMA,
+        "accepted_by_repository": "reppiks490/Icarus",
+        "producer_repository": "reppiks490/Icarus-engine",
+        "accepted_by_icarus_commit": str(payload["accepted_by_icarus_commit"]).lower(),
+        "accepted_peer_packet_id": str(payload["peer_packet_id"]).lower(),
+        "accepted_peer_packet_blob_sha": str(payload["peer_packet_blob_sha"]).lower(),
+        "accepted_peer_source_commit": str(payload["peer_source_commit"]).lower(),
+        "peer_source_commit_relation": payload.get("peer_source_commit_relation"),
+        "peer_source_contract_witness_count": payload.get("peer_source_contract_witness_count"),
+        "peer_lane_count": payload.get("peer_lane_count"),
+        "peer_lane_witness_verified_count": payload.get("peer_lane_witness_verified_count"),
+        "peer_lane_contract_binding_verified_count": payload.get(
+            "peer_lane_contract_binding_verified_count"
+        ),
+        "authority": "RESEARCH",
+        "required_for_export": False,
+        "execution_authorized": False,
+        "production_decision_authorized": False,
+        "automatic_model_promotion": False,
+    }
+
+
+def _rehash_packet(packet: dict[str, Any]) -> None:
+    unsigned = dict(packet)
+    unsigned.pop("packet_id", None)
+    packet["packet_id"] = hashlib.sha256(
+        json.dumps(
+            unsigned,
+            sort_keys=True,
+            separators=(",", ":"),
+            allow_nan=False,
+        ).encode("utf-8")
+    ).hexdigest()
+
+
 def export_packet(
     root: Path,
     *,
     source_commit: str | None = None,
     observed_at: str | None = None,
     output: Path = DEFAULT_OUTPUT,
+    canonical_acceptance: Path | None = None,
 ) -> tuple[Path, dict]:
     root = root.resolve()
     commit = source_commit or _git_head(root)
@@ -205,6 +303,15 @@ def export_packet(
         observed_at=observed,
         source_repository="reppiks490/Icarus-engine",
     )
+    acceptance_path = None
+    if canonical_acceptance is not None:
+        acceptance_path = (
+            canonical_acceptance
+            if canonical_acceptance.is_absolute()
+            else root / canonical_acceptance
+        )
+    packet["canonical_acceptance"] = _normalize_canonical_acceptance(acceptance_path)
+    _rehash_packet(packet)
 
     target = root / output
     target.parent.mkdir(parents=True, exist_ok=True)
@@ -233,6 +340,10 @@ def main() -> int:
     parser.add_argument("--observed-at")
     parser.add_argument("--output", default=str(DEFAULT_OUTPUT))
     parser.add_argument(
+        "--canonical-acceptance",
+        help="Optional canonical Icarus federation acceptance JSON to embed as prior-packet acknowledgement.",
+    )
+    parser.add_argument(
         "--require-head-match",
         action="store_true",
         help="Require packet source_commit to equal the repository HEAD used for export.",
@@ -245,6 +356,9 @@ def main() -> int:
         source_commit=args.source_commit,
         observed_at=args.observed_at,
         output=Path(args.output),
+        canonical_acceptance=(
+            Path(args.canonical_acceptance) if args.canonical_acceptance else None
+        ),
     )
     if args.require_head_match:
         head = _git_head(root.resolve())
@@ -255,6 +369,7 @@ def main() -> int:
                 "path": str(path),
                 "packet_id": packet["packet_id"],
                 "source_commit": packet["source_commit"],
+                "canonical_acceptance_status": packet["canonical_acceptance"]["status"],
                 "execution_authorized": packet["execution_authorized"],
             },
             sort_keys=True,

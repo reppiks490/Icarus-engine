@@ -1,6 +1,7 @@
 {
   "at_utc": "2026-10-03T19:22:28.618295Z",
   "category": "REPAIR",
+  "created_by": "Codex",
   "event_id": "20261003T192228Z-peer-background-git",
   "evidence": [
     "Two Windows launch-flag regressions failed before the patch and pass afterward.",
@@ -9,6 +10,7 @@
     "No Git credential, scheduler, research result or execution-authority change."
   ],
   "execution_authorized": false,
+  "origin": "codex/peer-background-git-20261003",
   "paths": [
     "tools/background_process.py",
     "tools/export_peer_intelligence.py",
@@ -18,9 +20,10 @@
     ".github/workflows/windows-background-contract.yml"
   ],
   "production_decision_authorized": false,
+  "schema_version": "icarus-mcp-event-v1",
   "severity": "INFO",
-  "source": "codex/peer-background-git-20261003",
+  "source": "OMEGA_AUTOMATION",
   "status": "IMPLEMENTED_PENDING_WINDOWS_CI",
-  "summary": "Suppress recurring Windows console creation in noninteractive peer Git probes, history reads and packet export. Local process-boundary regressions and real Git readback pass; hosted Windows and user-PC recurrence remain separate checks.",
+  "summary": "Codex repair of automation-governance Git launches: Suppress recurring Windows console creation in noninteractive peer Git probes, history reads and packet export. Local process-boundary regressions and real Git readback pass; hosted Windows and user-PC recurrence remain separate checks.",
   "surface": "System Intelligence / Peer lane provenance"
 }

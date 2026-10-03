@@ -30,7 +30,9 @@ permissions:
 
 concurrency:
   group: interrepo-peer-intelligence
-  cancel-in-progress: true
+  # Export writes revision-bound receipts; later skipped events must not
+  # interrupt the current writer. Keep one running export and one pending run.
+  cancel-in-progress: false
 
 jobs:
   export:

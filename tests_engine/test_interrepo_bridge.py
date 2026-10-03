@@ -8,6 +8,7 @@ import pytest
 
 from icarus_engine.interrepo_bridge import build_peer_packet
 from tools.export_peer_intelligence import (
+    _normalize_canonical_acceptance,
     export_packet,
     verify_packet_source_identity,
     verify_packet_source_inputs,
@@ -562,3 +563,98 @@ def test_source_contract_blob_witness_changes_with_contract_bytes(tmp_path):
         != before["source_contract_blobs"]["control_plane"]
     )
     assert after["packet_id"] != before["packet_id"]
+
+def _canonical_acceptance(**overrides):
+    payload = {
+        "schema_version": "icarus-engine-federation-acceptance-v1",
+        "validation_contract_version": 1,
+        "source_receipt_schema": "icarus-live-bilateral-federation-receipt-v1",
+        "accepted_by_repository": "reppiks490/Icarus",
+        "producer_repository": "reppiks490/Icarus-engine",
+        "accepted_by_icarus_commit": "1" * 40,
+        "peer_packet_id": "2" * 64,
+        "peer_packet_blob_sha": "3" * 40,
+        "peer_source_commit": "4" * 40,
+        "peer_source_commit_relation": "AHEAD",
+        "peer_packet_fresh": True,
+        "peer_source_contract_witness_count": 3,
+        "peer_lane_count": 5,
+        "peer_lane_witness_verified_count": 4,
+        "peer_lane_contract_binding_verified_count": 5,
+        "authority": "RESEARCH",
+        "execution_authorized": False,
+        "production_decision_authorized": False,
+        "automatic_model_promotion": False,
+        "truth_contract": {
+            "foreign_peer_state_is_evidence_not_native_truth": True,
+            "durability_only_is_not_substantive_research_evidence": True,
+            "acceptance_is_not_execution_authority": True,
+            "acceptance_is_not_production_decision_authority": True,
+            "same_packet_is_idempotent": True,
+        },
+    }
+    payload.update(overrides)
+    return payload
+
+
+def test_peer_export_embeds_verified_prior_canonical_acceptance(tmp_path):
+    root = _fixture_root(tmp_path)
+    head = _commit_fixture(root)
+    acceptance_path = root / "canonical-acceptance.json"
+    _write(acceptance_path, _canonical_acceptance())
+    _path, packet = export_packet(
+        root,
+        source_commit=head,
+        observed_at="2026-10-03T01:10:00Z",
+        output=Path("automation_intelligence/interrepo/test-acceptance.json"),
+        canonical_acceptance=Path("canonical-acceptance.json"),
+    )
+    ack = packet["canonical_acceptance"]
+    assert ack["status"] == "VERIFIED_PRIOR_PACKET"
+    assert ack["accepted_by_repository"] == "reppiks490/Icarus"
+    assert ack["accepted_peer_packet_id"] == "2" * 64
+    assert ack["accepted_peer_source_commit"] == "4" * 40
+    assert ack["required_for_export"] is False
+    assert ack["execution_authorized"] is False
+    verify_packet_source_identity(packet, expected_head=head)
+
+
+def test_peer_export_treats_missing_canonical_acceptance_as_optional(tmp_path):
+    root = _fixture_root(tmp_path)
+    head = _commit_fixture(root)
+    _path, packet = export_packet(
+        root,
+        source_commit=head,
+        observed_at="2026-10-03T01:11:00Z",
+        output=Path("automation_intelligence/interrepo/test-no-acceptance.json"),
+        canonical_acceptance=Path("missing-acceptance.json"),
+    )
+    assert packet["canonical_acceptance"]["status"] == "UNAVAILABLE"
+    assert packet["canonical_acceptance"]["required_for_export"] is False
+    assert packet["canonical_acceptance"]["execution_authorized"] is False
+    verify_packet_source_identity(packet, expected_head=head)
+
+
+def test_peer_export_rejects_canonical_acceptance_authority_escalation(tmp_path):
+    path = tmp_path / "acceptance.json"
+    _write(path, _canonical_acceptance(execution_authorized=True))
+    with pytest.raises(ValueError, match="authority escalation"):
+        _normalize_canonical_acceptance(path)
+
+
+def test_consumer_contract_declares_optional_research_only_canonical_acceptance():
+    root = Path(__file__).resolve().parents[1]
+    contract = json.loads(
+        (root / "automation_intelligence/mcp_interface/icarus_consumer_contract.json")
+        .read_text(encoding="utf-8")
+    )
+    acceptance = contract["canonical_acceptance"]
+    assert acceptance["repository"] == "reppiks490/Icarus"
+    assert acceptance["ref"] == "main"
+    assert acceptance["schema_version"] == "icarus-engine-federation-acceptance-v1"
+    assert acceptance["authority"] == "RESEARCH"
+    assert acceptance["required_for_export"] is False
+    assert acceptance["execution_authorized"] is False
+    assert acceptance["production_decision_authorized"] is False
+    assert acceptance["semantics"]["prior_packet_acknowledgement_is_not_current_packet_qualification"] is True
+    assert acceptance["semantics"]["automatic_execution_authority"] is False

@@ -21,6 +21,11 @@ on:
       - "icarus_engine/interrepo_bridge.py"
       - "tools/export_peer_intelligence.py"
       - ".github/workflows/interrepo-peer-intelligence.yml"
+      # CL 2026-10-04: GitHub fires this repo's 5-10 minute crons only 6-12 times a day,
+      # so cron alone cannot hold the consumer's 1800 s freshness window. Lane pushes are
+      # event-driven and arrive whenever a lane is active, so they refresh the packet too.
+      - "automation_intelligence/mcp_interface/events/**"
+      - "automation_intelligence/mcp_interface/research_runs/**"
   schedule:
     - cron: "*/10 * * * *"
   workflow_dispatch:

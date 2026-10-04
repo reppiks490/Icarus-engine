@@ -1,0 +1,65 @@
+{
+  "schema_version": "icarus-research-run-v1",
+  "run_id": "macro-20261004T121138Z",
+  "lane": "macro",
+  "automation_id": "6ab8174517b48191b67ac472205a28d3",
+  "started_at_utc": "2026-10-04T12:10:15.000Z",
+  "completed_at_utc": "2026-10-04T12:11:38.178Z",
+  "outcome": "NO_MATERIAL_DELTA",
+  "substantive_work_performed": true,
+  "summary": "Fresh review found a source-reported OPEC+ agreement in principle to keep November targets steady. The outcome was already expected before the meeting, remains unconfirmed by an official final communique at retrieval time, and changes neither nominal targets nor observed physical supply. Existing oil/refined-product, Hormuz-operability, and global-rates states remain the controlling macro context; no brain event was created.",
+  "evidence": [
+    {
+      "type": "prior_receipt",
+      "repository": "reppiks490/Icarus-engine",
+      "ref": "main",
+      "path": "automation_intelligence/mcp_interface/research_runs/macro/20261004T071802Z_macro.json",
+      "observed_blob_sha": "6f2ddf9c59e54c3f059b3d9b8702362a7f0571e9"
+    },
+    {
+      "type": "schema_reference",
+      "repository": "reppiks490/Icarus-engine",
+      "ref": "main",
+      "path": "automation_intelligence/mcp_interface/contract.json",
+      "observed_blob_sha": "991b157fd82b3dd9e7e49356fefb06dd89c22579",
+      "finding": "The prior receipt's schema-location blocker is resolved: the producer contract is present at contract.json, not producer_contract.json."
+    },
+    {
+      "type": "public_source",
+      "url": "https://www.reuters.com/business/energy/opec-agrees-principle-keep-november-oil-output-targets-steady-sources-say-2026-10-04/",
+      "source_time_utc": "2026-10-04T10:25:20Z",
+      "finding": "Three sources said OPEC+ agreed in principle to keep November targets steady; no physical production increase or final official communique was established."
+    },
+    {
+      "type": "public_source",
+      "url": "https://www.reuters.com/business/energy/opec-oil-producers-set-keep-output-targets-steady-sunday-meeting-sources-say-2026-09-30/",
+      "finding": "The steady-target outcome was already the reported base expectation before the meeting, reducing surprise and novelty."
+    },
+    {
+      "type": "official_calendar",
+      "url": "https://www.federalreserve.gov/newsevents/2026-october.htm",
+      "finding": "No intervening Federal Reserve policy action occurred; the next FOMC meeting is October 27-28, 2026."
+    },
+    {
+      "type": "durable_state_check",
+      "repository": "reppiks490/Icarus",
+      "ref": "main",
+      "finding": "Current event filenames confirm durable states for Hormuz shipping risk/LNG partial recovery, Russia diesel restriction, China product-export withdrawal, and U.S. labor/rate repricing; no same-event OPEC November-target record was found, but the source-reported policy confirmation did not cross the materiality threshold."
+    }
+  ],
+  "prior_receipt_path": "automation_intelligence/mcp_interface/research_runs/macro/20261004T071802Z_macro.json",
+  "event_paths": [],
+  "blockers": [
+    "OFFICIAL_CONFIRMATION_PENDING: no official final OPEC/OPEC+ communique for the November target decision was available in the sources retrieved.",
+    "MARKET_CONFIRMATION_PENDING: the decision occurred before normal weekly oil/rates/index markets reopened, so no post-decision cross-asset reaction was observable."
+  ],
+  "oracle": {
+    "status": "NO_MATERIAL_DELTA",
+    "finding": "Keeping November targets unchanged confirms the existing physical-supply constraint regime but does not create a new macro state because the decision was expected and does not alter realized barrels."
+  },
+  "supermesh_x": {
+    "status": "NO_MATERIAL_DELTA",
+    "finding": "Reuters supplied timely multi-source reporting, but official final policy text and post-reopen physical/price confirmation remain the decisive next checks; no unsupported state upgrade was made."
+  },
+  "execution_authorized": false
+}

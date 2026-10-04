@@ -1,0 +1,124 @@
+{
+  "schema": "icarus-mcp-event-v1",
+  "schema_version": "icarus-mcp-event-v1",
+  "event_id": "20261004T123814Z-aion-btc-transient-anomaly-state-audit",
+  "at_utc": "2026-10-04T12:38:14.359Z",
+  "recorded_at": "2026-10-04T12:38:14.359Z",
+  "created_at": "2026-10-04T12:38:14.359Z",
+  "category": "AUDIT",
+  "status": "MATERIAL_FINDING",
+  "severity": "MEDIUM",
+  "summary": "The prior one-episode BTC turnover-to-expansion sequence did not persist as a joint range/volume regime. At 09:00 UTC, Bybit spot range was strongly abnormal (robust z +4.3356) while spot volume was not (robust z +0.7005); Bybit linear and Twelve Data corroborated only the range expansion. By 11:00 UTC, Bybit spot range normalized (z -0.0401) and volume was subdued (z -1.695). This supports a transient state sequence, not a learned precursor, directional order-flow mechanism, or persistent liquidity regime.",
+  "surface": [
+    "AION causal market memory",
+    "ASCENSION evidence authority",
+    "PROMETHEUS experiment routing",
+    "BTC/USD anomaly state"
+  ],
+  "source": "AION_AUTOMATION",
+  "source_repository": "reppiks490/Icarus-engine",
+  "source_ref": "main",
+  "source_commit": "f7779835663620f0bb96091721240e588a52026f",
+  "net_new_delta": "THE_OBSERVED_BTC_SEQUENCE_TRANSITIONED_FROM_JOINT_RANGE_VOLUME_EXPANSION_TO_RANGE_ONLY_VOLATILITY_AND_THEN_NORMALIZED; IT_IS_A_TRANSIENT_STATE_HISTORY, NOT A VALIDATED_PRECURSOR_OR_PERSISTENT_REGIME.",
+  "claim_evidence_status": "EVENT_TIME_ORDER_AND_CROSS_PROVIDER_RANGE_CORROBORATION_SUPPORTED / PRECURSOR_CAUSALITY_PERSISTENCE_AND_PREDICTIVE_EDGE_UNVALIDATED",
+  "strongest_quantitative_claim": {
+    "baseline": "preceding 28 completed Bybit spot hourly bars, median/MAD",
+    "joint_expansion_at_0600_utc": {
+      "range_robust_z": 2.7846,
+      "volume_robust_z": 3.2351
+    },
+    "range_only_burst_at_0900_utc": {
+      "range_robust_z": 4.3356,
+      "volume_robust_z": 0.7005,
+      "spot_range_usd": 276.1,
+      "linear_range_usd": 279,
+      "twelve_data_range_usd": 281.21
+    },
+    "normalization_at_1100_utc": {
+      "range_robust_z": -0.0401,
+      "volume_robust_z": -1.695,
+      "spot_range_usd": 114.4
+    },
+    "interpretation": "One realized episode with serially dependent hourly observations; cross-provider agreement covers price range, not authenticated spot turnover, direction, depth, or causality."
+  },
+  "falsification_result": "FALSIFIED_AS_A_PERSISTENT_JOINT_RANGE_VOLUME_REGIME. NOT FALSIFIED_OR_VALIDATED_AS_A_GENERAL_PRECURSOR: one realized sequence cannot establish recurrence, conditional probability, incremental information, or tradable edge.",
+  "estimator_validity": "Robust z-scores are valid descriptive normalizations against the stated rolling sample, but n=28 is small, the bars are serially dependent, and repeated hourly/instrument scanning makes an uncorrected threshold non-calibrated as a discovery probability. The three providers are not three independent outcome samples.",
+  "data_sufficiency": "Sufficient to preserve the observed within-episode state path and cross-provider price-range corroboration. Insufficient for precursor estimation, persistent-regime classification, order-flow attribution, or performance inference.",
+  "multiple_testing_status": "Unresolved. The complete family of scanned hours, instruments, providers, anomaly dimensions, thresholds and post-event horizons was not preregistered or multiplicity-adjusted.",
+  "redundancy_ablation_status": "Cross-provider range agreement reduces representation error for price range, but no ablation establishes incremental information from turnover versus range, price-only baselines, realized volatility, time-of-day effects, or broader crypto beta.",
+  "held_out_oos_status": "No frozen historical episode population, purged temporal validation, untouched chronological OOS block, or performance result exists. Realistic costs are premature because no trading rule is admitted.",
+  "maturity_change": "AION causal-state memory and negative-result preservation increase by adding the later decoupling and normalization states. Model, parameter, anomaly-predictiveness, calibration and performance maturity do not increase. DAEDALUS BLOCKING remains authoritative.",
+  "blockers": [
+    "Only one realized turnover-to-expansion-to-decoupling episode is available; effective sample size for precursor estimation is not established.",
+    "The 28-hour rolling baseline is small and serially dependent.",
+    "Cross-provider evidence corroborates price range but not comparable spot volume, aggressor direction, depth history or liquidity state.",
+    "The complete scan family and selection rule are not preregistered, so multiple-testing status is unresolved.",
+    "No turnover-versus-range ablation, protected OOS validation or realistic-cost performance evidence exists.",
+    "No prior icarus-research-run-v1 receipt for lane aion was discoverable through connected GitHub code or commit search; comparison therefore used the latest durable AION event directly."
+  ],
+  "next_decisive_experiment": "Freeze a historical population of BTC hourly anomaly episodes before inspecting outcomes. Define turnover-only, joint range-volume, range-only and normalized states using versioned thresholds; record every scanned hour, not only alerts. Estimate transition probabilities and dwell times with dependence-aware uncertainty; compare turnover+range against range-only, realized-volatility and time-of-day baselines; correct the complete state x horizon family; reserve the final contiguous episode block untouched. Only a surviving incremental predictive rule proceeds to spread, fees, slippage and latency.",
+  "paths": [
+    "automation_intelligence/mcp_interface/events/20261004T073434Z_aion_duplicate_feature_reproducibility_audit.json",
+    "automation_intelligence/mcp_interface/events/20261004T072119622Z_flow_btc_turnover_to_expansion.json",
+    "automation_intelligence/mcp_interface/events/20261004T122521423Z_flow_btc_range_only_burst_normalization.json",
+    "automation_intelligence/mcp_interface/research_runs/flow/20261004T122603995Z_flow.json",
+    "automation_intelligence/mcp_interface/events/20261004T120631Z_omega_historical_temporal_authority_integration.json",
+    "automation_intelligence/mcp_interface/events/20261004T123814Z_aion_btc_transient_anomaly_state_audit.json"
+  ],
+  "evidence": [
+    {
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/mcp_interface/events/20261004T073434Z_aion_duplicate_feature_reproducibility_audit.json",
+      "revision": "efe31c47580faa6b11a31821f21980c4145e986d",
+      "blob_id": "5205486820b891b1cf812fcf902d79cc3d30df56",
+      "url": "https://github.com/reppiks490/Icarus-engine/commit/efe31c47580faa6b11a31821f21980c4145e986d",
+      "observation": "Latest durable AION event available for before/after comparison; it did not contain this later BTC state history."
+    },
+    {
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/mcp_interface/events/20261004T072119622Z_flow_btc_turnover_to_expansion.json",
+      "revision": "391b434b04a799d41b80e1a003448a0c15e479f8",
+      "blob_id": "8c2960413533b7c12b0525f794251f6ba8cf0bca",
+      "url": "https://github.com/reppiks490/Icarus-engine/commit/391b434b04a799d41b80e1a003448a0c15e479f8",
+      "observation": "06:00 UTC joint range-volume expansion following the 05:00 UTC turnover-only anomaly."
+    },
+    {
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/mcp_interface/events/20261004T122521423Z_flow_btc_range_only_burst_normalization.json",
+      "revision": "f7779835663620f0bb96091721240e588a52026f",
+      "blob_id": "293894bc0cb7983c880f01193aa745d0c88028ff",
+      "url": "https://github.com/reppiks490/Icarus-engine/commit/f7779835663620f0bb96091721240e588a52026f",
+      "observation": "09:00 UTC range-only burst and 11:00 UTC normalization, with forming 12:00 bar excluded."
+    },
+    {
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/mcp_interface/research_runs/flow/20261004T122603995Z_flow.json",
+      "revision": "0298a91f643dfaf04bb1fa805abd26b1a2c4e433",
+      "blob_id": "be105f5a394a169e9a84fb93b80ffd532686fc30",
+      "url": "https://github.com/reppiks490/Icarus-engine/commit/0298a91f643dfaf04bb1fa805abd26b1a2c4e433",
+      "observation": "Exact Flow research receipt with provider query timing and persistence verification."
+    },
+    {
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/mcp_interface/contract.json",
+      "revision": "main",
+      "blob_id": "991b157fd82b3dd9e7e49356fefb06dd89c22579",
+      "url": "https://github.com/reppiks490/Icarus-engine/blob/main/automation_intelligence/mcp_interface/contract.json",
+      "observation": "Producer envelope contract used for this event."
+    }
+  ],
+  "aion": {
+    "status": "MATERIAL_FINDING",
+    "finding": "Preserve 05:00 turnover-only, 06:00 joint expansion, 09:00 range-only burst and 11:00 normalization as distinct immutable states; later normalization must not rewrite the earlier anomaly, and one path must not become a learned transition rule."
+  },
+  "ascension": {
+    "status": "MATERIAL_FINDING",
+    "finding": "Cross-provider range corroboration supports event identity, but the small adaptive baseline, serial dependence, unreported scan family and single episode prevent calibrated confidence, causal authority or performance trust."
+  },
+  "prometheus": {
+    "status": "MATERIAL_FINDING",
+    "finding": "Research priority is now a preregistered anomaly-state transition study with complete alert/non-alert logging, turnover-versus-range ablations and untouched chronological OOS validation; preserve failure of persistence as negative evidence."
+  },
+  "execution_authorized": false,
+  "production_decision_authorized": false
+}

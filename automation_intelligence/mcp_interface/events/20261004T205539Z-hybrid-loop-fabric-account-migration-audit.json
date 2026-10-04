@@ -1,0 +1,214 @@
+{
+  "schema_version": "icarus-hybrid-loop-migration-audit-v1",
+  "event_type": "HYBRID_LOOP_FABRIC_MIGRATION_AUDIT",
+  "fabric_id": "icarus-account-hybrid-loop-fabric-v1",
+  "recorded_at_utc": "2026-10-04T20:55:39Z",
+  "repository": "reppiks490/Icarus-engine",
+  "branch": "main",
+  "observed_main_sha_before_receipt": "e34c1e117406ad8ed44a5278aba5a302282ac9af",
+  "status": "CONFIGURATION_VERIFIED_END_TO_END_RUNTIME_UNVERIFIED",
+  "execution_authorized": false,
+  "github_commits_and_prs": [
+    {
+      "pr": 73,
+      "title": "Hybridize account-wide ChatGPT automation fabric",
+      "merge_commit_sha": "b5ca20effffc0e811f0b1f6ad7097d1317064fe8",
+      "head_sha": "68fbafe57711eba9a49267664d067cc5420c7250",
+      "purpose": "account-wide registry/contract/bridge/tests/prompt snapshots and active-worker cutover"
+    },
+    {
+      "pr": 75,
+      "title": "Repair hybrid dispatcher bootstrap trigger",
+      "merge_commit_sha": "a970387c7abcdd09138f0d4672ef731d9ac44dd8",
+      "head_sha": "698633f8942fa25d2d435e0f5cd45b70100fd0ee",
+      "purpose": "deterministic bootstrap path after standalone workflow had no observed run"
+    },
+    {
+      "pr": 76,
+      "title": "Integrate hybrid dispatch into proven native Actions plane",
+      "merge_commit_sha": "ef22be803e921ea20e0b7468b24471425d8cabf2",
+      "head_sha": "37c2b84579df5ac3cc8178d90673f99bede3a10a",
+      "purpose": "idempotent due-slot scheduling and missed-slot catch-up in already-running github-native-ai-plane"
+    },
+    {
+      "pr": 77,
+      "title": "Make hybrid fallback dispatcher manual-only",
+      "merge_commit_sha": "c2d97ab0efac7f1fd36f4d6e1f477ae05dcbb5e5",
+      "head_sha": "a79e3857fd7f9365339c37e1c978e43201b2120a",
+      "purpose": "remove duplicate automatic dispatch ownership; fallback is manual-only"
+    },
+    {
+      "commit_sha": "e8d6a2c9c016a17282f878a618855829c8b95351",
+      "purpose": "clarify hybrid substantive-request precedence over stabilization-only STOP/already-complete exits"
+    },
+    {
+      "commit_sha": "2b7b2854bca732413a19caf6741a2d6a172d2c38",
+      "purpose": "persist observed dispatcher runtime evidence in registry"
+    }
+  ],
+  "created_or_changed_paths": [
+    "automation_intelligence/hybrid_loop_fabric_v1/registry.json",
+    "automation_intelligence/hybrid_loop_fabric_v1/CONTRACT.md",
+    "automation_intelligence/hybrid_loop_fabric_v1/task_inventory_20261004.json",
+    "automation_intelligence/hybrid_loop_fabric_v1/contracts/active_originals/",
+    "automation_intelligence/hybrid_loop_fabric_v1/contracts/repurposed_slots/",
+    "automation_intelligence/hybrid_loop_fabric_v1/requests/",
+    "automation_intelligence/hybrid_loop_fabric_v1/results/",
+    "automation_intelligence/hybrid_loop_fabric_v1/health/",
+    "tools/hybrid_loop_bridge.py",
+    "tools/test_hybrid_loop_bridge.py",
+    ".github/workflows/github-native-ai-plane.yml",
+    ".github/workflows/chatgpt-hybrid-loop-bridge.yml"
+  ],
+  "active_hybrids": [
+    {
+      "title": "Robustness Guardian Evolution",
+      "automation_id": "6abaf924e0248191b8a11bd1d32bf0b7",
+      "chatgpt_schedule": "hourly :05 America/Chicago",
+      "github_due_minute": ":00",
+      "enabled_at_audit": true
+    },
+    {
+      "title": "Advanced CSV Data Collector",
+      "automation_id": "6abaef9d5c28819190d98a5af7f308b8",
+      "chatgpt_schedule": "hourly :15 America/Chicago",
+      "github_due_minute": ":10",
+      "enabled_at_audit": true
+    },
+    {
+      "title": "Alpha Synthesis Evolution",
+      "automation_id": "6abaf8d75cf48191bc7ce06bc0006f1c",
+      "chatgpt_schedule": "hourly :25 America/Chicago",
+      "github_due_minute": ":20",
+      "enabled_at_audit": true
+    },
+    {
+      "title": "Microstructure Sensor Grid",
+      "automation_id": "6abaef8effb48191aa5c959455451681",
+      "chatgpt_schedule": "hourly :35 America/Chicago",
+      "github_due_minute": ":30",
+      "enabled_at_audit": true
+    }
+  ],
+  "controller": {
+    "title": "Hybrid Scheduler Guard",
+    "automation_id": "6ac2b850145c8191bbadc97c07b167bf",
+    "enabled_at_audit": true,
+    "schedule": "hourly :50 America/Chicago",
+    "responsibility": "re-enable only the four active hybrid workers if disabled and keep Historical Hybrid Executor disabled"
+  },
+  "historical_hybrids": {
+    "exposed_valuable_disabled_count": 20,
+    "repository_only_historical_count": 15,
+    "total_registered_historical_lane_count": 35,
+    "original_paused_tasks_reactivated": 0
+  },
+  "historical_executor": {
+    "title": "Historical Hybrid Executor",
+    "automation_id": "6abda2dc3aa881919b80fa89f1c5122e",
+    "enabled_at_audit": false,
+    "dispatch_mode": "manual historical request only",
+    "source_slot": "disposable duplicate Alpha stabilization task whose prior prompt was snapshotted before repurpose"
+  },
+  "excluded_retired_tasks": [
+    {
+      "automation_id": "6abda2dc3aa881919b80fa89f1c5122e",
+      "prior_title": "Alpha Synthesis Evolution",
+      "reason": "exact duplicate stabilization implementation, no last run, no unique substantive mandate; prompt preserved before repurpose"
+    }
+  ],
+  "github_runtime_evidence": {
+    "native_plane_run": {
+      "workflow": "github-native-ai-plane",
+      "run_id": "37232953658",
+      "event": "push",
+      "conclusion": "success",
+      "completed_at_utc": "2026-10-04T20:40:33Z"
+    },
+    "earlier_fallback_runs_preserved_as_evidence": [
+      {
+        "run_id": "37232665158",
+        "event": "push",
+        "conclusion": "success"
+      },
+      {
+        "run_id": "37232775773",
+        "event": "schedule",
+        "conclusion": "success"
+      }
+    ],
+    "current_scheduled_owner": "github-native-ai-plane",
+    "fallback_workflow_mode": "manual-only"
+  },
+  "backfill_status": {
+    "policy": "OLDEST_UNRESOLVED_FIRST",
+    "hot_scan_limit": 24,
+    "all_request_ids_preserved": true,
+    "fabricated_backfills": 0,
+    "current_immutable_request_count": 12,
+    "current_immutable_result_count": 0,
+    "lane_counts": {
+      "robustness_guardian": {
+        "requests": 3,
+        "results": 0
+      },
+      "advanced_csv": {
+        "requests": 3,
+        "results": 0
+      },
+      "alpha_synthesis": {
+        "requests": 3,
+        "results": 0
+      },
+      "microstructure_sensor_grid": {
+        "requests": 3,
+        "results": 0
+      }
+    },
+    "note": "Earlier duplicate request identities created before single-dispatch ownership repair are preserved immutably rather than deleted."
+  },
+  "persistence_status": {
+    "registry_exists": true,
+    "contract_exists": true,
+    "bridge_exists": true,
+    "tests_exist": true,
+    "native_workflow_exists": true,
+    "fallback_manual_workflow_exists": true,
+    "github_request_creation_observed": true,
+    "github_request_readback_observed": true,
+    "chatgpt_hybrid_result_creation_observed": false,
+    "hybrid_result_exact_readback_observed": false
+  },
+  "scheduled_chatgpt_runtime_diagnostic": {
+    "canary_automation_id": "6ac2bc70499c8191988eb2fd6a0f5a43",
+    "scheduled_local_time": "2026-10-04T15:53:00-05:00",
+    "observed_after_due_time_local": "2026-10-04T15:55:04-05:00",
+    "last_run_time": null,
+    "expected_canary_file": "automation_intelligence/hybrid_loop_fabric_v1/health/scheduled_connector_canary_20261004T205300Z.json",
+    "canary_file_exists": false,
+    "canary_disabled_after_diagnostic": true,
+    "finding": "The one-time ChatGPT automation did not start by the observed post-due check, so GitHub connector access inside that canary was never reached. This proves a scheduled-task execution-surface blocker for the diagnostic, not a GitHub connector failure."
+  },
+  "microstructure_probe_evidence": {
+    "probe_last_run_time_utc": "2026-10-04T20:49:03.245859Z",
+    "hybrid_result_created": false,
+    "domain_finalization_semantics_observed": "DURABILITY_RECEIPT_ONLY",
+    "finding": "The ChatGPT worker can be triggered in some recurring runs, but observed probes did not create a matching hybrid result. No substantive completion is claimed."
+  },
+  "invariants": {
+    "paid_api_requirement_introduced": false,
+    "force_push_added": false,
+    "destructive_repository_operation_added": false,
+    "live_trading_authorized": false,
+    "deployment_authorized": false,
+    "publication_authorized": false,
+    "repository_visibility_changed": false
+  },
+  "end_to_end_verification_status": "CONFIGURATION_VERIFIED / END_TO_END_RUNTIME_UNVERIFIED",
+  "exact_blockers": [
+    "No active ChatGPT hybrid worker has yet persisted and exact-readback-verified a result for any of the 12 durable GitHub requests.",
+    "Microstructure scheduled probes produced no matching hybrid result; the task runtime previously disabled that worker after runs, requiring repair/re-enable.",
+    "A one-time scheduled GitHub-access canary did not start by more than two minutes after its exact due time; therefore connector invocation inside scheduled ChatGPT execution could not be tested.",
+    "The automations control surface exposes task state and last_run_time but no detailed per-run tool/error log, so the precise internal scheduled-worker failure cannot be proven from the available task controls."
+  ]
+}

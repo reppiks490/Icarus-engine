@@ -1,0 +1,507 @@
+{
+ "assets": {
+  "BTCUSDT": {
+   "challengers": [],
+   "champions": [],
+   "diagnostics": {
+    "bh_rejections": 0,
+    "candidates": 492,
+    "forward_sessions": 0,
+    "hold_sessions": 263,
+    "m_eff": 125.0,
+    "metric": "returns",
+    "pbo": 0.3349,
+    "prior_trials": 0,
+    "reached_hold": 0,
+    "spa_p": 0.992,
+    "tune_sessions": 282,
+    "var_sr": 0.01010582
+   },
+   "explorer": {
+    "batch": 24,
+    "best": [
+     {
+      "dsr": 0.0001,
+      "family": "imom",
+      "id": "xc2ab51e4f15",
+      "params": {
+       "base": "open",
+       "cond": "dow_fri",
+       "entry": "15:30",
+       "min_abs": "q50",
+       "regime": "vol_hi",
+       "t1": "11:00"
+      },
+      "status": "REJECTED",
+      "tune_t": 0.624,
+      "tune_trades": 4
+     },
+     {
+      "dsr": 0.0004,
+      "family": "noise",
+      "id": "x0a1339ac576",
+      "params": {
+       "check": 60,
+       "cond": "vix_low",
+       "lookback": 10,
+       "mult": 2.0,
+       "regime": "vol_lo",
+       "trail": "band_vwap"
+      },
+      "status": "REJECTED",
+      "tune_t": 0.453,
+      "tune_trades": 22
+     },
+     {
+      "dsr": 0.0001,
+      "family": "tod",
+      "id": "xbe922174c06",
+      "params": {
+       "cond": "on_wide",
+       "lookback": 60,
+       "regime": "vol_hi",
+       "which": "first"
+      },
+      "status": "REJECTED",
+      "tune_t": 0.145,
+      "tune_trades": 28
+     },
+     {
+      "dsr": 0.0001,
+      "family": "noise",
+      "id": "x7e4fd2c0684",
+      "params": {
+       "check": 15,
+       "cond": "gap_down",
+       "lookback": 14,
+       "mult": 1.5,
+       "regime": "vol_hi",
+       "trail": "band_vwap"
+      },
+      "status": "REJECTED",
+      "tune_t": 0.124,
+      "tune_trades": 9
+     },
+     {
+      "dsr": 0.0001,
+      "family": "gap",
+      "id": "xe03bdd015aa",
+      "params": {
+       "cond": "on_narrow",
+       "exit": "10:00",
+       "mode": "fade",
+       "regime": "vol_lo",
+       "thr": "q50"
+      },
+      "status": "REJECTED",
+      "tune_t": -0.035,
+      "tune_trades": 18
+     }
+    ],
+    "diagnostics": {
+     "bh_rejections": 0,
+     "candidates": 24,
+     "forward_sessions": 0,
+     "hold_sessions": 263,
+     "m_eff": 22.0,
+     "metric": "returns",
+     "pbo": 0.1833,
+     "prior_trials": 125,
+     "reached_hold": 0,
+     "spa_p": 0.989,
+     "tune_sessions": 282,
+     "var_sr": 0.00726591
+    },
+    "explored_before": 0,
+    "promoted": [],
+    "status_counts": {
+     "REJECTED": 24
+    },
+    "version": "cl-x1"
+   },
+   "pulse": null,
+   "sessions": 545,
+   "status": "EVALUATED",
+   "status_counts": {
+    "REJECTED": 492
+   }
+  },
+  "ETHUSDT": {
+   "challengers": [],
+   "champions": [],
+   "diagnostics": {
+    "bh_rejections": 0,
+    "candidates": 492,
+    "forward_sessions": 0,
+    "hold_sessions": 263,
+    "m_eff": 118.0,
+    "metric": "returns",
+    "pbo": 0.2074,
+    "prior_trials": 0,
+    "reached_hold": 0,
+    "spa_p": 0.571,
+    "tune_sessions": 282,
+    "var_sr": 0.01137161
+   },
+   "explorer": {
+    "batch": 24,
+    "best": [
+     {
+      "dsr": 0.0,
+      "family": "noise",
+      "id": "x3b13611ae3b",
+      "params": {
+       "check": 30,
+       "cond": "vix_inverted",
+       "lookback": 30,
+       "mult": 1.25,
+       "regime": "all",
+       "trail": "band"
+      },
+      "status": "REJECTED",
+      "tune_t": 1.499,
+      "tune_trades": 26
+     },
+     {
+      "dsr": 0.0004,
+      "family": "noise",
+      "id": "xe1267981d82",
+      "params": {
+       "check": 15,
+       "cond": "gap_up",
+       "lookback": 10,
+       "mult": 2.0,
+       "regime": "all",
+       "trail": "band"
+      },
+      "status": "REJECTED",
+      "tune_t": 1.465,
+      "tune_trades": 78
+     },
+     {
+      "dsr": 0.0,
+      "family": "sweep",
+      "id": "x80a0f0bcb77",
+      "params": {
+       "cond": "dow_fri",
+       "depth_ticks": 12,
+       "exit": "2R",
+       "level": "pd",
+       "mode": "reverse",
+       "regime": "vol_hi",
+       "window": "day"
+      },
+      "status": "REJECTED",
+      "tune_t": 1.331,
+      "tune_trades": 9
+     },
+     {
+      "dsr": 0.0,
+      "family": "orb",
+      "id": "x45733de7266",
+      "params": {
+       "cond": "vix_high",
+       "entry_mode": "breakout_close",
+       "or_min": 15,
+       "regime": "vol_lo",
+       "side": "long",
+       "stop": "or_opposite",
+       "target": "10R"
+      },
+      "status": "REJECTED",
+      "tune_t": 1.185,
+      "tune_trades": 14
+     },
+     {
+      "dsr": 0.0,
+      "family": "orb",
+      "id": "xa36929a7030",
+      "params": {
+       "cond": "vix_inverted",
+       "entry_mode": "breakout_close",
+       "or_min": 60,
+       "regime": "vol_lo",
+       "side": "both",
+       "stop": "or_opposite",
+       "target": "eod"
+      },
+      "status": "REJECTED",
+      "tune_t": 1.065,
+      "tune_trades": 4
+     }
+    ],
+    "diagnostics": {
+     "bh_rejections": 0,
+     "candidates": 24,
+     "forward_sessions": 0,
+     "hold_sessions": 263,
+     "m_eff": 20.0,
+     "metric": "returns",
+     "pbo": 0.2085,
+     "prior_trials": 118,
+     "reached_hold": 0,
+     "spa_p": 0.62,
+     "tune_sessions": 282,
+     "var_sr": 0.00912003
+    },
+    "explored_before": 0,
+    "promoted": [],
+    "status_counts": {
+     "REJECTED": 24
+    },
+    "version": "cl-x1"
+   },
+   "pulse": null,
+   "sessions": 545,
+   "status": "EVALUATED",
+   "status_counts": {
+    "REJECTED": 492
+   }
+  },
+  "MNQ": {
+   "challengers": [],
+   "champions": [],
+   "diagnostics": {
+    "bh_rejections": 0,
+    "candidates": 492,
+    "forward_sessions": 0,
+    "hold_sessions": 250,
+    "m_eff": 116.0,
+    "metric": "points",
+    "pbo": 0.4588,
+    "prior_trials": 0,
+    "reached_hold": 0,
+    "spa_p": 0.855,
+    "tune_sessions": 264,
+    "var_sr": 0.00334405
+   },
+   "explorer": {
+    "batch": 24,
+    "best": [
+     {
+      "dsr": 0.0575,
+      "family": "gap",
+      "id": "x23aa688cf0c",
+      "params": {
+       "cond": "vix_low",
+       "exit": "10:00",
+       "mode": "fade",
+       "regime": "vol_hi",
+       "thr": "q50"
+      },
+      "status": "REJECTED",
+      "tune_t": 1.689,
+      "tune_trades": 8
+     },
+     {
+      "dsr": 0.0209,
+      "family": "gap",
+      "id": "x485d89f4a22",
+      "params": {
+       "cond": "prev_down",
+       "exit": "12:00",
+       "mode": "fade",
+       "regime": "vol_hi",
+       "thr": "q80"
+      },
+      "status": "REJECTED",
+      "tune_t": 1.665,
+      "tune_trades": 12
+     },
+     {
+      "dsr": 0.0213,
+      "family": "imom",
+      "id": "x65e4ea883d5",
+      "params": {
+       "base": "open",
+       "cond": "none",
+       "entry": "15:00",
+       "min_abs": "q50",
+       "regime": "vol_hi",
+       "t1": "10:30"
+      },
+      "status": "REJECTED",
+      "tune_t": 0.929,
+      "tune_trades": 46
+     },
+     {
+      "dsr": 0.007,
+      "family": "noise",
+      "id": "xfe16f79073b",
+      "params": {
+       "check": 60,
+       "cond": "on_narrow",
+       "lookback": 14,
+       "mult": 1.5,
+       "regime": "vol_hi",
+       "trail": "band_vwap"
+      },
+      "status": "REJECTED",
+      "tune_t": 0.891,
+      "tune_trades": 10
+     },
+     {
+      "dsr": 0.0242,
+      "family": "tod",
+      "id": "x668ed0cf77f",
+      "params": {
+       "cond": "on_wide",
+       "lookback": 20,
+       "regime": "vol_hi",
+       "which": "first"
+      },
+      "status": "REJECTED",
+      "tune_t": 0.876,
+      "tune_trades": 54
+     }
+    ],
+    "diagnostics": {
+     "bh_rejections": 0,
+     "candidates": 24,
+     "forward_sessions": 0,
+     "hold_sessions": 250,
+     "m_eff": 20.0,
+     "metric": "points",
+     "pbo": 0.5988,
+     "prior_trials": 116,
+     "reached_hold": 0,
+     "spa_p": 0.518,
+     "tune_sessions": 264,
+     "var_sr": 0.0043989
+    },
+    "explored_before": 0,
+    "promoted": [],
+    "status_counts": {
+     "REJECTED": 24
+    },
+    "version": "cl-x1"
+   },
+   "pulse": {
+    "preset_source": "presets/NQ-20m-ultracoded.json (RECONSTRUCTED)",
+    "reason": null,
+    "status": null,
+    "strategy": "THE PULSE OF ICARUS v3.1 (repo port)",
+    "totals": {
+     "CANDLES|base": {
+      "net_usd": 33745.7,
+      "trades": 560
+     },
+     "CANDLES|stress": {
+      "net_usd": 24943.4,
+      "trades": 557
+     },
+     "HA_HA_FILLS|base": {
+      "net_usd": 317186.5,
+      "trades": 540
+     },
+     "HA_REAL_FILLS|base": {
+      "net_usd": 11915.0,
+      "trades": 490
+     },
+     "HA_REAL_FILLS|repo_convention": {
+      "net_usd": 11853.0,
+      "trades": 491
+     },
+     "HA_REAL_FILLS|stress": {
+      "net_usd": 4405.0,
+      "trades": 491
+     }
+    },
+    "trials_assumed_for_dsr": 100,
+    "variants": {
+     "CANDLES": {
+      "dsr": 0.1567,
+      "g1_sample": true,
+      "g2_tune_edge": false,
+      "g3_fdr": true,
+      "g4_dsr": false,
+      "g5_hold": false,
+      "g6_stress": false,
+      "g7_stability": false,
+      "hold_net_usd": 5319.0,
+      "hold_net_usd_stress": 6309.0,
+      "hold_p": 0.377572,
+      "hold_t": 0.312,
+      "hold_trades": 259,
+      "psr": 0.9127,
+      "quarters_positive": 0.667,
+      "status": "REJECTED",
+      "tune_net_usd": 28426.7,
+      "tune_t": 1.681,
+      "tune_trade_days": 151,
+      "tune_trades": 301,
+      "variant": "CANDLES"
+     },
+     "HA_HA_FILLS": {
+      "dsr": 1.0,
+      "hold_net_usd": 150309.5,
+      "hold_net_usd_stress": null,
+      "hold_p": 0.0,
+      "hold_t": 8.712,
+      "hold_trades": 250,
+      "psr": 1.0,
+      "quarters_positive": 1.0,
+      "status": "ARTIFACT_REFERENCE",
+      "tune_net_usd": 166877.0,
+      "tune_t": 7.89,
+      "tune_trade_days": 145,
+      "tune_trades": 290,
+      "variant": "HA_HA_FILLS"
+     },
+     "HA_REAL_FILLS": {
+      "dsr": 0.018,
+      "g1_sample": true,
+      "g2_tune_edge": false,
+      "g3_fdr": false,
+      "g4_dsr": false,
+      "g5_hold": false,
+      "g6_stress": false,
+      "g7_stability": false,
+      "hold_net_usd": 6573.5,
+      "hold_net_usd_stress": 3919.5,
+      "hold_p": 0.356995,
+      "hold_t": 0.367,
+      "hold_trades": 233,
+      "psr": 0.6099,
+      "quarters_positive": 0.556,
+      "status": "REJECTED",
+      "tune_net_usd": 5341.5,
+      "tune_t": 0.273,
+      "tune_trade_days": 139,
+      "tune_trades": 257,
+      "variant": "HA_REAL_FILLS"
+     }
+    }
+   },
+   "sessions": 514,
+   "status": "EVALUATED",
+   "status_counts": {
+    "REJECTED": 492
+   }
+  }
+ },
+ "evidence_class": "RESEARCH_ONLY",
+ "execution_authorized": false,
+ "feeds": {
+  "btcusd_cb_5m": "ok",
+  "btcusdt_5m": "ok",
+  "cboe_skew": "ok",
+  "cboe_vix": "ok",
+  "cboe_vix3m": "ok",
+  "cboe_vix9d": "ok",
+  "cboe_vvix": "ok",
+  "cftc_tff_nasdaq": "ok",
+  "ethusdt_5m": "ok",
+  "fred_dff": "ok",
+  "fred_dgs10": "ok",
+  "fred_dgs2": "ok",
+  "fred_t10y2y": "ok",
+  "fred_vixcls": "ok"
+ },
+ "generated_at": "2026-10-04T18:49:05.520906+00:00",
+ "lane": "CL",
+ "production_decision_authorized": false,
+ "run_id": "cl-lab-39c2b68637fd446f",
+ "schema": "cl_lab.ui_feed/1",
+ "ui_state": "RESEARCH ONLY"
+}

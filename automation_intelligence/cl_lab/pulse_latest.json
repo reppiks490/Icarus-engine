@@ -1,0 +1,128 @@
+{
+ "costs": {
+  "base": [
+   0.85,
+   1
+  ],
+  "repo_convention": [
+   0.37,
+   2
+  ],
+  "stress": [
+   1.7,
+   2
+  ]
+ },
+ "execution_authorized": false,
+ "fingerprint": "420ecd46a57d92bd2be79543dd2c3b117d33eb4fd26a549a7be2c240d6c09e2b",
+ "preset": {
+  "htf_tf_5": "W",
+  "point_value": 2.0,
+  "qty_contracts": 10,
+  "sl_pts": 80,
+  "tide_confirm_mode": "Strict",
+  "tp1_pts": 100,
+  "use_kalman": false,
+  "use_session": false
+ },
+ "preset_source": "presets/NQ-20m-ultracoded.json (RECONSTRUCTED)",
+ "repo_convention_ha_real_fills": {
+  "net_usd": 11853.0,
+  "trades": 491
+ },
+ "schema": "cl_lab.pulse/1",
+ "strategy": "THE PULSE OF ICARUS v3.1 (repo port)",
+ "tape": "data/mnq_20m_full.csv",
+ "totals": {
+  "CANDLES|base": {
+   "net_usd": 33745.7,
+   "trades": 560
+  },
+  "CANDLES|stress": {
+   "net_usd": 24943.4,
+   "trades": 557
+  },
+  "HA_HA_FILLS|base": {
+   "net_usd": 317186.5,
+   "trades": 540
+  },
+  "HA_REAL_FILLS|base": {
+   "net_usd": 11915.0,
+   "trades": 490
+  },
+  "HA_REAL_FILLS|repo_convention": {
+   "net_usd": 11853.0,
+   "trades": 491
+  },
+  "HA_REAL_FILLS|stress": {
+   "net_usd": 4405.0,
+   "trades": 491
+  }
+ },
+ "trials_assumed_for_dsr": 100,
+ "var_sr_from_grammar": 0.00334405,
+ "variants": {
+  "CANDLES": {
+   "dsr": 0.1567,
+   "g1_sample": true,
+   "g2_tune_edge": false,
+   "g3_fdr": true,
+   "g4_dsr": false,
+   "g5_hold": false,
+   "g6_stress": false,
+   "g7_stability": false,
+   "hold_net_usd": 5319.0,
+   "hold_net_usd_stress": 6309.0,
+   "hold_p": 0.377572,
+   "hold_t": 0.312,
+   "hold_trades": 259,
+   "psr": 0.9127,
+   "quarters_positive": 0.667,
+   "status": "REJECTED",
+   "tune_net_usd": 28426.7,
+   "tune_t": 1.681,
+   "tune_trade_days": 151,
+   "tune_trades": 301,
+   "variant": "CANDLES"
+  },
+  "HA_HA_FILLS": {
+   "dsr": 1.0,
+   "hold_net_usd": 150309.5,
+   "hold_net_usd_stress": null,
+   "hold_p": 0.0,
+   "hold_t": 8.712,
+   "hold_trades": 250,
+   "psr": 1.0,
+   "quarters_positive": 1.0,
+   "status": "ARTIFACT_REFERENCE",
+   "tune_net_usd": 166877.0,
+   "tune_t": 7.89,
+   "tune_trade_days": 145,
+   "tune_trades": 290,
+   "variant": "HA_HA_FILLS"
+  },
+  "HA_REAL_FILLS": {
+   "dsr": 0.018,
+   "g1_sample": true,
+   "g2_tune_edge": false,
+   "g3_fdr": false,
+   "g4_dsr": false,
+   "g5_hold": false,
+   "g6_stress": false,
+   "g7_stability": false,
+   "hold_net_usd": 6573.5,
+   "hold_net_usd_stress": 3919.5,
+   "hold_p": 0.356995,
+   "hold_t": 0.367,
+   "hold_trades": 233,
+   "psr": 0.6099,
+   "quarters_positive": 0.556,
+   "status": "REJECTED",
+   "tune_net_usd": 5341.5,
+   "tune_t": 0.273,
+   "tune_trade_days": 139,
+   "tune_trades": 257,
+   "variant": "HA_REAL_FILLS"
+  }
+ }
+}

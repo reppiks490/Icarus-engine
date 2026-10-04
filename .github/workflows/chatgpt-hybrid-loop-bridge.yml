@@ -1,0 +1,109 @@
+name: chatgpt-hybrid-loop-bridge
+
+on:
+  schedule:
+    - cron: "0 * * * *"
+    - cron: "12 * * * *"
+    - cron: "24 * * * *"
+    - cron: "36 * * * *"
+    - cron: "48 * * * *"
+  workflow_dispatch:
+    inputs:
+      requested_lane:
+        description: "Lane slug, all_active, or all_registered"
+        required: true
+        type: string
+        default: "all_active"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: chatgpt-hybrid-loop-bridge-${{ github.event.schedule || inputs.requested_lane || 'manual' }}
+  cancel-in-progress: false
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Refresh main
+        shell: bash
+        run: git pull --rebase origin main
+
+      - name: Enqueue durable hybrid request
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          SCHEDULE_EXPR: ${{ github.event.schedule || '' }}
+          REQUESTED_LANE: ${{ inputs.requested_lane || 'all_active' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/hybrid_loop_bridge.py \
+            --repo-root . \
+            --event-name "$EVENT_NAME" \
+            --schedule "$SCHEDULE_EXPR" \
+            --requested-lane "$REQUESTED_LANE" \
+            --workflow-run-id "$GITHUB_RUN_ID" \
+            --workflow-run-attempt "$GITHUB_RUN_ATTEMPT"
+
+      - name: Stage only hybrid bridge runtime state
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add automation_intelligence/hybrid_loop_fabric_v1/requests
+          git add automation_intelligence/hybrid_loop_fabric_v1/health
+          staged="$(git diff --cached --name-only)"
+          if [ -z "$staged" ]; then
+            echo "No hybrid request state changed."
+            exit 0
+          fi
+          invalid="$(printf '%s\n' "$staged" | grep -Ev '^automation_intelligence/hybrid_loop_fabric_v1/(requests|health)/' || true)"
+          if [ -n "$invalid" ]; then
+            echo "Refusing out-of-namespace hybrid mutation:" >&2
+            printf '%s\n' "$invalid" >&2
+            exit 1
+          fi
+
+      - name: Commit and persist hybrid request
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "automation: hybrid loop request ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT} [skip ci]"
+
+          pushed=0
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            if ! git rebase origin/main; then
+              git rebase --abort || true
+              echo "Rebase conflict; refusing unsafe automatic resolution." >&2
+              exit 1
+            fi
+            if git push origin HEAD:main; then
+              pushed=1
+              break
+            fi
+            if [ "$attempt" -lt 5 ]; then
+              sleep $((attempt * 2))
+            fi
+          done
+
+          if [ "$pushed" -ne 1 ]; then
+            echo "Failed to persist hybrid request after 5 optimistic attempts." >&2
+            exit 1
+          fi

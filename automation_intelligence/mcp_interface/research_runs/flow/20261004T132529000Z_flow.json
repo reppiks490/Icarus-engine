@@ -1,0 +1,81 @@
+{
+  "schema_version": "icarus-research-run-v1",
+  "run_id": "flow-20261004T132529000Z",
+  "lane": "flow",
+  "automation_id": "6ab817544e68819197b5db21eb2cbe2b",
+  "started_at_utc": "2026-10-04T13:25:29Z",
+  "completed_at_utc": "2026-10-04T13:27:09.549Z",
+  "outcome": "MATERIAL_DELTA",
+  "substantive_work_performed": true,
+  "summary": "Verified a net-new completed 12:00 UTC BTC range-only volatility burst after the prior 09:00 burst had normalized by 11:00. Bybit spot range robust z was +3.9535 while spot-volume robust z was +0.8481 against the preceding 28 completed hours. Bybit linear and Twelve Data independently corroborated the price range. This strengthens recurrent episodic volatility clustering but does not support abnormal turnover, order-flow direction, persistent liquidity stress, or cross-market causality.",
+  "evidence": [
+    {
+      "type": "prior_receipt",
+      "repository": "reppiks490/Icarus-engine",
+      "ref": "main",
+      "path": "automation_intelligence/mcp_interface/research_runs/flow/20261004T122603995Z_flow.json",
+      "blob_sha": "be105f5a394a169e9a84fb93b80ffd532686fc30"
+    },
+    {
+      "type": "provider_query",
+      "source": "Bybit get_kline",
+      "url": "https://agent.bybit.com/mcp/open?symbol=BTCUSDT&category=spot&source=chatgpt",
+      "representation": "BTCUSDT spot 1h",
+      "event_time": "2026-10-04T12:00:00Z",
+      "retrieval_time_anchor": "2026-10-04T13:26:10.954Z",
+      "result": "Range 293.8 USD; volume 99.304983 BTC; range robust z +3.9535; volume robust z +0.8481 against preceding 28 completed hours."
+    },
+    {
+      "type": "provider_query",
+      "source": "Bybit get_kline",
+      "url": "https://agent.bybit.com/mcp/open?symbol=BTCUSDT&category=linear&source=chatgpt",
+      "representation": "BTCUSDT linear 1h",
+      "event_time": "2026-10-04T12:00:00Z",
+      "retrieval_time_anchor": "2026-10-04T13:26:10.954Z",
+      "result": "Range 302.2 USD; reported volume 1152.478; representation-specific volume not fused."
+    },
+    {
+      "type": "provider_query",
+      "source": "Twelve Data get_time_series",
+      "url": "https://twelvedata.com/",
+      "representation": "BTC/USD 1h",
+      "event_time": "2026-10-04T12:00:00Z",
+      "retrieval_time_anchor": "2026-10-04T13:26:10.954Z",
+      "result": "Range 291.81 USD; forming 13:00 interval excluded."
+    },
+    {
+      "type": "provider_query",
+      "source": "Bybit get_orderbook",
+      "url": "https://www.bybit.com/",
+      "representation": "BTCUSDT spot point-in-time displayed depth",
+      "source_timestamp": "2026-10-04T13:26:10.954Z",
+      "result": "Best bid 85221.4 x 0.975134 BTC; best ask 85221.5 x 0.104597 BTC; displayed spread 0.1 USD; no historical depth inference."
+    },
+    {
+      "type": "contract",
+      "repository": "reppiks490/Icarus-engine",
+      "ref": "main",
+      "path": "automation_intelligence/mcp_interface/contract.json",
+      "blob_sha": "991b157fd82b3dd9e7e49356fefb06dd89c22579"
+    },
+    {
+      "type": "persisted_event",
+      "repository": "reppiks490/Icarus-engine",
+      "ref": "main",
+      "path": "automation_intelligence/mcp_interface/events/20261004T132634353Z_flow_btc_recurrent_range_only_burst.json",
+      "commit_sha": "55b13ee815bd33ef3237873682077ecf60aac410",
+      "blob_sha": "54ded68778a10f1d9c191cea15457cfb83b8a2b3",
+      "verification": "Exact JSON read back from main and matched intended payload."
+    }
+  ],
+  "prior_receipt_path": "automation_intelligence/mcp_interface/research_runs/flow/20261004T122603995Z_flow.json",
+  "event_paths": [
+    "automation_intelligence/mcp_interface/events/20261004T132634353Z_flow_btc_recurrent_range_only_burst.json"
+  ],
+  "blockers": [
+    "K-line and Twelve Data responses exposed event timestamps but no provider-specific retrieval timestamp; retrieval_time_anchor uses the parallel batch's Bybit orderbook server timestamp.",
+    "A single order-book snapshot has no historical depth baseline and cannot establish a liquidity regime or order-flow direction.",
+    "No fresh direct NQ/MNQ, GC/MGC, SI, DXY, Treasury/rate-proxy or volatility-index evidence was acquired in this bounded cycle."
+  ],
+  "execution_authorized": false
+}

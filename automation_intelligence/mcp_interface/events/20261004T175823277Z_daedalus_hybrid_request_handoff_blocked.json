@@ -1,0 +1,66 @@
+{
+  "schema_version": "icarus-mcp-event-v1",
+  "event_id": "20261004T175823277Z-daedalus-hybrid-request-handoff-blocked",
+  "at_utc": "2026-10-04T17:58:23.277Z",
+  "category": "AUDIT",
+  "status": "BLOCKING",
+  "severity": "high",
+  "summary": "The active DAEDALUS hybrid lane cannot obtain a durable work request: registry and contract are present and valid, but both requests/daedalus/latest.json and health/daedalus.json return 404 after the scheduled dispatch window. Without an exact request_id and required_result_path, the ChatGPT worker cannot safely create a hybrid result, leaving GitHub→ChatGPT→GitHub completion blocked.",
+  "surface": "Hybrid Loop Fabric request handoff and durable completion identity",
+  "source": "DAEDALUS_AUTOMATION",
+  "paths": [
+    "automation_intelligence/hybrid_loop_fabric_v1/registry.json",
+    "automation_intelligence/hybrid_loop_fabric_v1/CONTRACT.md",
+    ".github/workflows/chatgpt-hybrid-loop-bridge.yml",
+    "tools/hybrid_loop_bridge.py",
+    "automation_intelligence/hybrid_loop_fabric_v1/requests/daedalus/latest.json",
+    "automation_intelligence/hybrid_loop_fabric_v1/health/daedalus.json"
+  ],
+  "evidence": {
+    "classification": "BLOCKING",
+    "registry": {
+      "blob_sha": "020dddb09b6fdc42980b72b11656d965732c1ef1",
+      "finding": "DAEDALUS is ACTIVE with automation_id 6ab8177918b48191a97e56c44b57d2c5 and scheduled GitHub dispatch minute 48."
+    },
+    "contract": {
+      "blob_sha": "fe25193bf84f91df3352c995824aaeeccc5d7daa",
+      "finding": "The worker must preserve the exact immutable request_id and required_result_path and may not invent missed work."
+    },
+    "workflow": {
+      "blob_sha": "3f5d584e781dd7c1246a238ba9ed9fb665fb99b2",
+      "finding": "The configured schedule includes 48 * * * * and the bridge code is intended to persist request/latest and health records."
+    },
+    "request_pointer": {
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/requests/daedalus/latest.json",
+      "observation": "Direct GitHub fetch returned 404 Not Found."
+    },
+    "lane_health": {
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/health/daedalus.json",
+      "observation": "Direct GitHub fetch returned 404 Not Found."
+    },
+    "corroboration": {
+      "commit_sha": "0e4f35103a243537775bd876d58c77fe91692e8f",
+      "finding": "The immediately preceding AION lane independently recorded the same missing-request class after hybrid installation."
+    },
+    "installation": {
+      "commit_sha": "daa1ba5ffb2d14db2f73afe2b621993d7befa168",
+      "finding": "Installation was explicitly recorded as configured_unverified_runtime; this audit shows the first DAEDALUS handoff remains unavailable."
+    },
+    "uncertainty": "The available connector could not enumerate the workflow-run collection, so the root cause is not proven. The observed failure could be scheduler latency, workflow non-execution, permission failure, or persistence failure."
+  },
+  "required_remediation": [
+    "Verify the chatgpt-hybrid-loop-bridge workflow has an actual scheduled run for the DAEDALUS 48-minute cron and inspect its job conclusion/logs.",
+    "Confirm the workflow can commit both requests/daedalus/<request_id>.json and requests/daedalus/latest.json plus health/daedalus.json to main.",
+    "Re-run the DAEDALUS worker only after exact request identity and required_result_path are fetchable; do not synthesize a result for the missing request."
+  ],
+  "next_independent_verification_target": "Fetch and validate the first immutable DAEDALUS request, then verify a matching result at its exact required_result_path with identical request_id/lane/automation_id.",
+  "daedalus": {
+    "status": "BLOCKING",
+    "finding": "Configured request-generation surfaces are present, but no durable DAEDALUS request or lane-health record is fetchable after the dispatch window."
+  },
+  "aegis": {
+    "status": "BLOCKING",
+    "finding": "Generating a hybrid result without the missing request_id would fabricate durable identity and could falsely mark an unissued request complete; fail-closed behavior is required."
+  },
+  "execution_authorized": false
+}

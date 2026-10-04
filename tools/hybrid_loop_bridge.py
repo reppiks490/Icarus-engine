@@ -11,15 +11,17 @@ from typing import Any
 ROOT = Path("automation_intelligence/hybrid_loop_fabric_v1")
 REGISTRY = ROOT / "registry.json"
 FABRIC_ID = "icarus-account-hybrid-loop-fabric-v1"
+REGISTRY_SCHEMAS = {"icarus-hybrid-loop-registry-v1", "icarus-hybrid-loop-registry-v2"}
 REQUEST_SCHEMA = "icarus-hybrid-work-request-v1"
 RESULT_SCHEMA = "icarus-hybrid-work-result-v1"
+RESULT_OUTCOMES = {"MATERIAL_DELTA", "NO_MATERIAL_DELTA", "BLOCKED"}
 SCHEDULE_TO_LANE = {
-    "0 * * * *": "omega",
-    "12 * * * *": "macro",
-    "24 * * * *": "flow",
-    "36 * * * *": "aion",
-    "48 * * * *": "daedalus",
+    "0 * * * *": "robustness_guardian",
+    "10 * * * *": "advanced_csv",
+    "20 * * * *": "alpha_synthesis",
+    "30 * * * *": "microstructure_sensor_grid",
 }
+HISTORICAL_STATES = {"HISTORICAL_DISABLED", "REPOSITORY_ONLY_HISTORICAL"}
 
 
 def utc_now() -> datetime:
@@ -37,7 +39,7 @@ def compact_stamp(dt: datetime) -> str:
 def load_registry(repo_root: Path) -> dict[str, Any]:
     path = repo_root / REGISTRY
     payload = json.loads(path.read_text(encoding="utf-8"))
-    if payload.get("schema_version") != "icarus-hybrid-loop-registry-v1":
+    if payload.get("schema_version") not in REGISTRY_SCHEMAS:
         raise ValueError("registry schema mismatch")
     if payload.get("fabric_id") != FABRIC_ID:
         raise ValueError("fabric id mismatch")
@@ -62,14 +64,47 @@ def request_dir_for(lane: str) -> Path:
     return ROOT / "requests" / lane
 
 
-def result_valid(repo_root: Path, lane: str, automation_id: str, request_id: str) -> bool:
-    path = repo_root / result_path_for(lane, request_id)
-    if not path.is_file():
-        return False
+def load_json(path: Path) -> dict[str, Any] | None:
     try:
-        payload = json.loads(path.read_text(encoding="utf-8"))
+        value = json.loads(path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
+        return None
+    return value if isinstance(value, dict) else None
+
+
+def result_valid(repo_root: Path, lane: str, automation_id: str, request_id: str) -> bool:
+    payload = load_json(repo_root / result_path_for(lane, request_id))
+    if payload is None:
         return False
+
+    required = {
+        "schema_version",
+        "fabric_id",
+        "request_id",
+        "lane",
+        "automation_id",
+        "started_at_utc",
+        "completed_at_utc",
+        "outcome",
+        "substantive_work_performed",
+        "summary",
+        "evidence",
+        "research_receipt_paths",
+        "event_paths",
+        "blockers",
+        "backfilled_request_ids",
+        "execution_authorized",
+    }
+    if not required.issubset(payload):
+        return False
+    if payload.get("outcome") not in RESULT_OUTCOMES:
+        return False
+    if not isinstance(payload.get("substantive_work_performed"), bool):
+        return False
+    for key in ("evidence", "research_receipt_paths", "event_paths", "blockers", "backfilled_request_ids"):
+        if not isinstance(payload.get(key), list):
+            return False
+
     return (
         payload.get("schema_version") == RESULT_SCHEMA
         and payload.get("fabric_id") == FABRIC_ID
@@ -80,21 +115,25 @@ def result_valid(repo_root: Path, lane: str, automation_id: str, request_id: str
     )
 
 
-def unresolved_requests(repo_root: Path, lane: str, automation_id: str, limit: int = 24) -> list[str]:
+def request_files(repo_root: Path, lane: str) -> list[Path]:
     directory = repo_root / request_dir_for(lane)
     if not directory.is_dir():
         return []
-    files = sorted(
+    return sorted(
         [p for p in directory.glob("*.json") if p.name != "latest.json"],
         key=lambda p: p.name,
     )
+
+
+def unresolved_requests(repo_root: Path, lane: str, automation_id: str, limit: int = 24) -> list[str]:
+    files = request_files(repo_root, lane)
     if limit > 0:
         files = files[-limit:]
+
     unresolved: list[str] = []
     for path in files:
-        try:
-            payload = json.loads(path.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError):
+        payload = load_json(path)
+        if payload is None:
             continue
         request_id = payload.get("request_id")
         if not isinstance(request_id, str):
@@ -118,26 +157,96 @@ def write_json_replace(path: Path, payload: dict[str, Any]) -> None:
     os.replace(tmp, path)
 
 
-def select_lanes(registry: dict[str, Any], event_name: str, schedule: str, requested_lane: str) -> list[str]:
+def lane_state(cfg: dict[str, Any]) -> str:
+    return str(cfg.get("current_state") or cfg.get("state") or "")
+
+
+def select_lanes(
+    registry: dict[str, Any],
+    event_name: str,
+    schedule: str,
+    requested_lane: str,
+) -> list[str]:
     lanes = registry["lanes"]
+
     if event_name == "schedule":
         lane = SCHEDULE_TO_LANE.get(schedule)
         if lane is None:
             raise ValueError(f"unknown schedule expression: {schedule!r}")
-        if lane not in lanes:
+        cfg = lanes.get(lane)
+        if cfg is None:
             raise ValueError(f"scheduled lane absent from registry: {lane}")
-        if lanes[lane].get("state") != "ACTIVE":
+        if lane_state(cfg) != "ACTIVE":
             raise ValueError(f"scheduled lane is not ACTIVE: {lane}")
         return [lane]
 
     requested = requested_lane.strip() or "all_active"
     if requested == "all_active":
-        return [name for name, cfg in lanes.items() if cfg.get("state") == "ACTIVE"]
-    if requested == "all_registered":
-        return list(lanes.keys())
+        return [name for name, cfg in lanes.items() if lane_state(cfg) == "ACTIVE"]
+
+    if requested in {"all_registered", "all_historical"}:
+        raise ValueError("bulk historical dispatch is forbidden; dispatch one historical lane at a time")
+
     if requested not in lanes:
         raise ValueError(f"unknown requested lane: {requested}")
-    return [requested]
+
+    state = lane_state(lanes[requested])
+    if state in HISTORICAL_STATES or state == "ACTIVE":
+        return [requested]
+
+    raise ValueError(f"lane is not dispatchable: {requested}")
+
+
+def build_health(
+    repo_root: Path,
+    lane: str,
+    cfg: dict[str, Any],
+    now: datetime,
+) -> dict[str, Any]:
+    automation_id = str(cfg["automation_id"])
+    unresolved = unresolved_requests(repo_root, lane, automation_id, limit=24)
+    files = request_files(repo_root, lane)
+
+    latest_request_id: str | None = None
+    if files:
+        latest_payload = load_json(files[-1])
+        if latest_payload:
+            latest_request_id = latest_payload.get("request_id")
+
+    if unresolved:
+        status = "BACKLOG" if len(unresolved) > 1 else "PENDING"
+    elif latest_request_id:
+        status = "RESOLVED"
+    else:
+        status = "IDLE"
+
+    return {
+        "schema_version": "icarus-hybrid-loop-health-v1",
+        "fabric_id": FABRIC_ID,
+        "lane": lane,
+        "title": cfg["title"],
+        "automation_id": automation_id,
+        "observed_at_utc": z(now),
+        "latest_request_id": latest_request_id,
+        "oldest_unresolved_request_id": unresolved[0] if unresolved else None,
+        "unresolved_request_ids_hot_window": unresolved,
+        "unresolved_count_hot_window": len(unresolved),
+        "health": status,
+        "github_liveness_receipt_is_not_completion": True,
+        "execution_authorized": False,
+    }
+
+
+def reconcile_lane(
+    repo_root: Path,
+    registry: dict[str, Any],
+    lane: str,
+    now: datetime,
+) -> dict[str, Any]:
+    cfg = registry["lanes"][lane]
+    health = build_health(repo_root, lane, cfg, now)
+    write_json_replace(repo_root / ROOT / "health" / f"{lane}.json", health)
+    return health
 
 
 def enqueue(
@@ -151,6 +260,17 @@ def enqueue(
 ) -> dict[str, Any]:
     cfg = registry["lanes"][lane]
     automation_id = str(cfg["automation_id"])
+    state = lane_state(cfg)
+
+    if event_name == "schedule" and state != "ACTIVE":
+        raise ValueError(f"scheduled dispatch forbidden for non-active lane {lane}")
+
+    request_origin = (
+        "GITHUB_ACTIONS_SCHEDULE"
+        if event_name == "schedule"
+        else "GITHUB_ACTIONS_MANUAL"
+    )
+
     prior_unresolved = unresolved_requests(repo_root, lane, automation_id, limit=24)
 
     base_id = f"{lane}-{compact_stamp(now)}-gh-{workflow_run_id}-{workflow_run_attempt}"
@@ -171,18 +291,15 @@ def enqueue(
         "title": cfg["title"],
         "automation_id": automation_id,
         "project_scope": cfg.get("project_scope"),
-        "lane_state_at_dispatch": cfg.get("state"),
         "requested_at_utc": z(now),
-        "request_origin": "GITHUB_ACTIONS_SCHEDULE" if event_name == "schedule" else "GITHUB_ACTIONS_MANUAL",
+        "request_origin": request_origin,
         "workflow_run_id": workflow_run_id,
         "workflow_run_attempt": workflow_run_attempt,
-        "scheduled_minute_local": registry.get("active_schedule", {}).get("github_dispatch_minutes", {}).get(lane),
         "contract_fingerprint": canonical_sha256(cfg),
         "contract_registry_path": str(REGISTRY),
-        "bridge_contract_path": str(ROOT / "CONTRACT.md"),
         "required_result_path": str(required_result),
         "prior_unresolved_request_ids": prior_unresolved,
-        "backfill_policy": registry.get("active_schedule", {}).get("backfill_policy"),
+        "backfill_policy": registry.get("backfill_policy"),
         "substantive_ai_inference_required": True,
         "github_liveness_receipt_is_not_completion": True,
         "execution_authorized": False,
@@ -190,22 +307,7 @@ def enqueue(
 
     write_json_exclusive(immutable_path, request)
     write_json_replace(repo_root / request_dir_for(lane) / "latest.json", request)
-
-    unresolved_after = prior_unresolved + [request_id]
-    health = {
-        "schema_version": "icarus-hybrid-loop-health-v1",
-        "fabric_id": FABRIC_ID,
-        "lane": lane,
-        "title": cfg["title"],
-        "automation_id": automation_id,
-        "observed_at_utc": z(now),
-        "latest_request_id": request_id,
-        "unresolved_request_ids_hot_window": unresolved_after,
-        "unresolved_count_hot_window": len(unresolved_after),
-        "health": "PENDING" if len(prior_unresolved) == 0 else "BACKLOG",
-        "execution_authorized": False,
-    }
-    write_json_replace(repo_root / ROOT / "health" / f"{lane}.json", health)
+    reconcile_lane(repo_root, registry, lane, now)
     return request
 
 
@@ -217,27 +319,39 @@ def main() -> int:
     parser.add_argument("--requested-lane", default="all_active")
     parser.add_argument("--workflow-run-id", required=True)
     parser.add_argument("--workflow-run-attempt", required=True)
+    parser.add_argument("--reconcile-only", action="store_true")
     args = parser.parse_args()
 
     repo_root = Path(args.repo_root).resolve()
     registry = load_registry(repo_root)
-    selected = select_lanes(registry, args.event_name, args.schedule, args.requested_lane)
+    selected = select_lanes(
+        registry,
+        args.event_name,
+        args.schedule,
+        args.requested_lane,
+    )
     now = utc_now()
 
-    emitted = []
-    for lane in selected:
-        emitted.append(
-            enqueue(
-                repo_root=repo_root,
-                registry=registry,
-                lane=lane,
-                event_name=args.event_name,
-                workflow_run_id=args.workflow_run_id,
-                workflow_run_attempt=args.workflow_run_attempt,
-                now=now,
-            )
-        )
+    if args.reconcile_only:
+        health = [
+            reconcile_lane(repo_root, registry, lane, now)
+            for lane in selected
+        ]
+        print(json.dumps({"fabric_id": FABRIC_ID, "health": health}, indent=2, sort_keys=True))
+        return 0
 
+    emitted = [
+        enqueue(
+            repo_root=repo_root,
+            registry=registry,
+            lane=lane,
+            event_name=args.event_name,
+            workflow_run_id=args.workflow_run_id,
+            workflow_run_attempt=args.workflow_run_attempt,
+            now=now,
+        )
+        for lane in selected
+    ]
     print(json.dumps({"fabric_id": FABRIC_ID, "requests": emitted}, indent=2, sort_keys=True))
     return 0
 

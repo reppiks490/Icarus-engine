@@ -202,6 +202,13 @@ def test_databento_fetch_estimates_cost_before_request(monkeypatch):
     assert len(expensive.timeseries.calls) == 0
 
 
+def test_databento_registry_covers_registered_futures_universe():
+    assert set(registry.DATABENTO_FUTURES_ROOTS) == {
+        "NQ", "MNQ", "ES", "MES", "YM", "MYM", "RTY", "M2K",
+        "GC", "MGC", "SI", "SIL", "PL", "PA", "BTC", "MBT",
+    }
+
+
 def test_databento_registry_is_dormant_without_key(tmp_path, monkeypatch):
     monkeypatch.delenv("DATABENTO_API_KEY", raising=False)
     monkeypatch.setenv("DATABENTO_ROLL_RULE", "v")

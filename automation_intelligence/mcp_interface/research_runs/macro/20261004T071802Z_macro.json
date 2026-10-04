@@ -1,0 +1,76 @@
+{
+  "schema_version": "icarus-research-run-v1",
+  "run_id": "macro-20261004T071802Z",
+  "lane": "macro",
+  "automation_id": "6ab8174517b48191b67ac472205a28d3",
+  "started_at_utc": "2026-10-04T07:16:52Z",
+  "completed_at_utc": "2026-10-04T07:18:02Z",
+  "outcome": "NO_MATERIAL_DELTA",
+  "substantive_work_performed": true,
+  "summary": "Bounded current-source review found no material macro/rates/FX/index/commodity state change newer than the already recorded China refined-product export withdrawal, Russia diesel sanctions-contingent restriction, Hormuz partial-operability/LNG recovery, Iran FX stress, global discount-rate regime, or Saudi attack evidence. No brain event was created.",
+  "evidence": [
+    {
+      "type": "repository_gap",
+      "repository": "reppiks490/Icarus-engine",
+      "ref": "main",
+      "path": "automation_intelligence/mcp_interface/research_runs/macro/",
+      "observed_result": "404 NOT_FOUND at run start; no prior macro research receipt accessible"
+    },
+    {
+      "type": "repository_gap",
+      "repository": "reppiks490/Icarus-engine",
+      "ref": "main",
+      "path": "automation_intelligence/mcp_interface/producer_contract.json",
+      "observed_result": "404 NOT_FOUND"
+    },
+    {
+      "type": "schema_reference",
+      "repository": "reppiks490/Icarus",
+      "ref": "main",
+      "path": "automation_intelligence/mcp_interface/contract.json",
+      "observed_blob_sha": "2af0ee10517ea62e83b84933379cda2b5193e068"
+    },
+    {
+      "type": "prior_durable_event",
+      "repository": "reppiks490/Icarus",
+      "ref": "main",
+      "path": "automation_intelligence/mcp_interface/events/20261004T060816Z_macro_china_refined_product_export_withdrawal.json",
+      "observed_blob_sha": "0d431bc56ac69be94491a156e2c67aa914a52660"
+    },
+    {
+      "type": "public_source",
+      "url": "https://www.reuters.com/business/energy/iraq-says-it-transported-2-million-barrels-crude-through-strait-hormuz-2026-10-03/",
+      "finding": "Previously identified evidence of partial Hormuz operability; not net-new this run"
+    },
+    {
+      "type": "public_source",
+      "url": "https://www.reuters.com/business/energy/fire-smoke-seen-near-aramco-facility-riyadh-witness-says-2026-10-03/",
+      "finding": "Previously identified observed attack without confirmed operational damage; not net-new this run"
+    },
+    {
+      "type": "public_source",
+      "url": "https://www.reuters.com/world/middle-east/iranian-rial-new-low-cenbank-sells-dollars-support-currency-2026-10-03/",
+      "finding": "Previously identified Iran FX stress/intervention state; not net-new this run"
+    },
+    {
+      "type": "public_source",
+      "url": "https://www.iea.org/data-and-statistics/data-tools/2026-energy-crisis-policy-response-tracker",
+      "finding": "Official policy-response tracker last updated 2026-09-09; no newer decisive implementation evidence found"
+    }
+  ],
+  "prior_receipt_path": null,
+  "event_paths": [],
+  "blockers": [
+    "UNVERIFIED_HISTORY: mandated Icarus-engine macro receipt directory was absent at run start",
+    "SCHEMA_LOCATION_MISMATCH: mandated Icarus-engine producer_contract.json was absent; only the separate Icarus repository contract was readable"
+  ],
+  "oracle": {
+    "status": "NO_MATERIAL_DELTA",
+    "finding": "Existing multi-region refined-product stress and countervailing emergency-buffer/partial-Hormuz-operability states remain valid; no evidence justified a new state transition."
+  },
+  "supermesh_x": {
+    "status": "NO_MATERIAL_DELTA",
+    "finding": "Fresh-source routing produced no newer primary or independently corroborated evidence that exceeded the existing durable event set; missing Icarus-engine receipt/schema paths are preserved as provenance gaps."
+  },
+  "execution_authorized": false
+}

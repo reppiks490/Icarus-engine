@@ -1,0 +1,68 @@
+{
+  "schema_version": "icarus-research-run-v1",
+  "run_id": "aion-20261004T174629Z",
+  "lane": "aion",
+  "automation_id": "6abb1618be1c8191943f5d4e2d88978d",
+  "started_at_utc": "2026-10-04T17:45:14Z",
+  "completed_at_utc": "2026-10-04T17:46:29.981Z",
+  "outcome": "BLOCKED",
+  "substantive_work_performed": false,
+  "summary": "The Hybrid Loop Fabric registry and contract were fetched and validated for the AION lane, but the mandatory requests/aion/latest.json pointer returned GitHub 404 on two direct reads. The installed chatgpt-hybrid-loop-bridge workflow reported zero workflow runs, so no immutable request_id, unresolved backlog, or required_result_path exists to process. The worker stopped before substantive AION research rather than inventing a request or misclassifying liveness as cognition.",
+  "evidence": [
+    {
+      "type": "hybrid_registry",
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/registry.json",
+      "observed_blob_sha": "020dddb09b6fdc42980b72b11656d965732c1ef1",
+      "url": "https://github.com/reppiks490/Icarus-engine/blob/main/automation_intelligence/hybrid_loop_fabric_v1/registry.json",
+      "observation": "Lane title, automation_id, fabric_id, active state and execution_authorized=false matched this worker."
+    },
+    {
+      "type": "hybrid_contract",
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/CONTRACT.md",
+      "observed_blob_sha": "fe25193bf84f91df3352c995824aaeeccc5d7daa",
+      "url": "https://github.com/reppiks490/Icarus-engine/blob/main/automation_intelligence/hybrid_loop_fabric_v1/CONTRACT.md",
+      "observation": "Contract requires an exact immutable request_id and required_result_path before a result can be written."
+    },
+    {
+      "type": "missing_request_pointer",
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/requests/aion/latest.json",
+      "url": "https://github.com/reppiks490/Icarus-engine/blob/main/automation_intelligence/hybrid_loop_fabric_v1/requests/aion/latest.json",
+      "observation": "Two direct GitHub reads returned 404 Not Found; no request payload or prior_unresolved_request_ids were available."
+    },
+    {
+      "type": "workflow_state",
+      "repository": "reppiks490/Icarus-engine",
+      "path": ".github/workflows/chatgpt-hybrid-loop-bridge.yml",
+      "observed_blob_sha": "3f5d584e781dd7c1246a238ba9ed9fb665fb99b2",
+      "url": "https://github.com/reppiks490/Icarus-engine/actions/workflows/chatgpt-hybrid-loop-bridge.yml",
+      "observation": "GitHub Actions workflow-runs endpoint returned an empty workflow_runs array; no hybrid request-producing run exists yet."
+    },
+    {
+      "type": "prior_research_receipt",
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/mcp_interface/research_runs/aion/20261004T123846Z.json",
+      "observed_revision": "19667d6da2dc5583262af4d0cb2968859f8d7857",
+      "observed_blob_sha": "dd19229bd85ee1d3c49951181c61362f2b159b34",
+      "url": "https://github.com/reppiks490/Icarus-engine/commit/19667d6da2dc5583262af4d0cb2968859f8d7857",
+      "observation": "Latest accessible substantive AION receipt was read for durable prior-state comparison; no newer AION research commit was found."
+    },
+    {
+      "type": "fabric_installation_commit",
+      "repository": "reppiks490/Icarus-engine",
+      "observed_revision": "daa1ba5ffb2d14db2f73afe2b621993d7befa168",
+      "url": "https://github.com/reppiks490/Icarus-engine/commit/daa1ba5ffb2d14db2f73afe2b621993d7befa168",
+      "observation": "Hybrid installation was recorded before this cycle, but the request-producing workflow had not run."
+    }
+  ],
+  "prior_receipt_path": "automation_intelligence/mcp_interface/research_runs/aion/20261004T123846Z.json",
+  "event_paths": [],
+  "blockers": [
+    "automation_intelligence/hybrid_loop_fabric_v1/requests/aion/latest.json does not exist on main.",
+    "The hybrid bridge workflow has zero runs, so no exact request_id, prior_unresolved_request_ids, or required_result_path can be recovered.",
+    "Without the immutable request identity, creating a hybrid work result would violate the fabric contract and could falsely complete an unissued request."
+  ],
+  "execution_authorized": false
+}

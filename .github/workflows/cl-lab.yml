@@ -1,0 +1,82 @@
+# CL (Claude, Anthropic) — 2026-10-03 — cl-lab: keyless feeds -> pre-registered grammar -> gate stack -> champion registry
+# Writable namespace: automation_intelligence/cl_lab/ only. Raw vendor rows stay in the Actions cache.
+# Research only: execution_authorized=false, production_decision_authorized=false.
+name: cl-lab
+
+on:
+  schedule:
+    - cron: "41 1,13,21 * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "cl_lab/**"
+      - "tests_cl/**"
+      - "data/mnq_5m_full.csv"
+      - ".github/workflows/cl-lab.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cl-lab
+  cancel-in-progress: false
+
+jobs:
+  lab:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install lab dependencies
+        run: python -m pip install "numpy>=1.26,<3" "pandas>=2.2,<3" "scipy>=1.11" pytest
+
+      - name: Lab tests (fail closed - no outputs if causality or statistics tests fail)
+        run: python -m pytest -q tests_cl -p no:cacheprovider
+
+      - name: Restore feed cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .cl_cache
+          key: cl-feeds-${{ github.run_id }}
+          restore-keys: cl-feeds-
+
+      - name: Refresh keyless feeds
+        run: python -m cl_lab.feeds --cache .cl_cache --manifest automation_intelligence/cl_lab/feeds_manifest.json
+
+      - name: Save feed cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .cl_cache
+          key: cl-feeds-${{ github.run_id }}
+
+      - name: Run lab cycle
+        id: lab
+        run: |
+          python -m cl_lab.run --out automation_intelligence/cl_lab --cache .cl_cache | tee lab_result.json
+          echo "run_id=$(python -c "import json;print(json.load(open('lab_result.json'))['run_id'])")" >> "$GITHUB_OUTPUT"
+
+      - name: Commit CL outputs
+        env:
+          RUN_ID: ${{ steps.lab.outputs.run_id }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add automation_intelligence/cl_lab
+          if git diff --cached --quiet; then echo "no CL output changes"; exit 0; fi
+          git commit -m "[CL] cl-lab: ${RUN_ID} [skip ci]"
+          for i in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push origin HEAD:main; then exit 0; fi
+            sleep $((i * 7))
+          done
+          exit 1

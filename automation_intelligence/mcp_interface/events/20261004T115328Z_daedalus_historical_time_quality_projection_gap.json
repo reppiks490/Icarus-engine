@@ -1,0 +1,58 @@
+{
+  "schema_version": "icarus-mcp-event-v1",
+  "event_id": "daedalus-20261004T115328Z-historical-time-quality-projection-gap",
+  "at_utc": "2026-10-04T11:53:28.717Z",
+  "category": "AUDIT",
+  "status": "DEGRADED",
+  "severity": "MEDIUM",
+  "summary": "Historical TradingView experiences remain excluded from model training, but aggregate experience projections drop UNVERIFIED_TIMEZONE and can label the same records MEASURED, weakening downstream temporal-provenance visibility.",
+  "surface": "Historical trade experience aggregation and Learning UI projection",
+  "source": "DAEDALUS_AUTOMATION",
+  "paths": [
+    "reppiks490/Icarus:icarus_engine/learning_fabric.py",
+    "reppiks490/Icarus:icarus_engine/learning-ui.js",
+    "reppiks490/Icarus:tests_engine/test_learning_fabric.py"
+  ],
+  "evidence": [
+    {
+      "repository": "reppiks490/Icarus",
+      "path": "icarus_engine/learning_fabric.py",
+      "blob_sha": "d1b67680237a07cf83ce69661ed4e4a9d1d5a75f",
+      "finding": "Historical CSV/XLSX import writes time_quality=UNVERIFIED_TIMEZONE and diverts requested backfill slots to immutable trade_experience records; experience_summary and historical_artifact_configuration_summary then aggregate timestamps/P&L and emit status=MEASURED by count without carrying or checking time_quality."
+    },
+    {
+      "repository": "reppiks490/Icarus",
+      "path": "icarus_engine/learning-ui.js",
+      "blob_sha": "6dc96d6aa27b1dea6e88a6385f4932019dd3eb48",
+      "finding": "The UI displays aggregate historical P&L, session, state, and MEASURED chips but does not display temporal quality; nearby text correctly says outcome memory is not forecast accuracy and historical evidence is never promoted to runtime configuration."
+    },
+    {
+      "repository": "reppiks490/Icarus",
+      "path": "tests_engine/test_learning_fabric.py",
+      "blob_sha": "1bc4421d2ea328222f4a3e03211ed28c4f10f7f4",
+      "finding": "Regression coverage verifies import report time_quality=UNVERIFIED_TIMEZONE and verifies the same import becomes aggregate experience; it also proves a requested logit backfill returns slot=trade_experience, providing a negative control against direct model training."
+    },
+    {
+      "repository": "reppiks490/Icarus",
+      "path": "tests_engine/test_historical_trade_admission.py",
+      "blob_sha": "fd4a5e15e567657b7c93e07b59e7ffd7322c9d4b",
+      "finding": "Adversarial closure tests defend structural admission but do not establish source-timezone qualification."
+    }
+  ],
+  "daedalus": {
+    "status": "VERIFIED",
+    "finding": "The inspected historical CSV/XLSX path is isolated as descriptive trade_experience memory; requested model slots do not train on these records and historical evidence cannot enter RUNTIME_CLOSURE_CONFIG."
+  },
+  "aegis": {
+    "status": "DEGRADED",
+    "finding": "Temporal uncertainty is stored on individual experiences and import reports but omitted from aggregate API/UI cards, which can show MEASURED plus clock-derived first/last timestamps without an explicit UNVERIFIED_TIMEZONE warning."
+  },
+  "remediation": [
+    "Propagate time_quality and time_interpretation into experience summaries and historical artifact cards.",
+    "Replace generic MEASURED for temporally unqualified historical groups with STRUCTURALLY_MEASURED_TIME_UNQUALIFIED or an equivalent explicit two-axis state.",
+    "Expose counts by time_quality and reject session/regime/time-of-day feature construction unless the group is timezone-qualified.",
+    "Add regression tests proving aggregate and UI projections preserve UNVERIFIED_TIMEZONE."
+  ],
+  "execution_authorized": false,
+  "production_decision_authorized": false
+}

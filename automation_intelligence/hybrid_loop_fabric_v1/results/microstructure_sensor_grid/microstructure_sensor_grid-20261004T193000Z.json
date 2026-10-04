@@ -1,0 +1,45 @@
+{
+  "schema_version": "icarus-hybrid-work-result-v1",
+  "fabric_id": "icarus-account-hybrid-loop-fabric-v1",
+  "request_id": "microstructure_sensor_grid-20261004T193000Z",
+  "lane": "microstructure_sensor_grid",
+  "automation_id": "6abaef8effb48191aa5c959455451681",
+  "started_at_utc": "2026-10-04T21:38:32Z",
+  "completed_at_utc": "2026-10-04T21:38:32Z",
+  "outcome": "BLOCKED",
+  "substantive_work_performed": false,
+  "summary": "Recovered request was created after its 2026-10-04T19:30:00Z due slot. Point-in-time microstructure/order-book observations for that missed slot cannot be truthfully reconstructed, so no synthetic market evidence was created.",
+  "evidence": [
+    {
+      "type": "hybrid_request",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/requests/microstructure_sensor_grid/microstructure_sensor_grid-20261004T193000Z.json",
+      "due_slot_utc": "2026-10-04T19:30:00Z",
+      "requested_at_utc": "2026-10-04T20:40:29Z",
+      "workflow_run_id": "37232953658",
+      "workflow_run_attempt": "1"
+    },
+    {
+      "type": "durability_receipt",
+      "path": "automation_intelligence/flow/finalization_state.json",
+      "run_id": "flow-20261004T203500Z",
+      "commit_sha": "0a6440c9eadcea46d33b41a9fb443fc964359582",
+      "blob_sha": "f788a2b238723a68dd2e5dec55afaee68d71c323"
+    },
+    {
+      "type": "heartbeat_binding",
+      "path": "automation_intelligence/flow/heartbeat.json",
+      "run_id": "flow-20261004T203500Z",
+      "finalization_commit_sha": "0a6440c9eadcea46d33b41a9fb443fc964359582",
+      "finalization_state_blob_sha": "f788a2b238723a68dd2e5dec55afaee68d71c323"
+    }
+  ],
+  "research_receipt_paths": [],
+  "event_paths": [],
+  "blockers": [
+    "The request's due slot predates request creation by 70 minutes 29 seconds; historical point-in-time depth/trade/quote state for that missed observation cannot be manufactured under the fabric contract."
+  ],
+  "backfilled_request_ids": [
+    "microstructure_sensor_grid-20261004T193000Z"
+  ],
+  "execution_authorized": false
+}

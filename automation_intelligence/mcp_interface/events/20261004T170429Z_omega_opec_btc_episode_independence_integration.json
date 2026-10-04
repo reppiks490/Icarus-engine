@@ -1,0 +1,218 @@
+{
+  "schema": "icarus-mcp-event-v1",
+  "schema_version": "icarus-mcp-event-v1",
+  "event_id": "20261004T170429Z-omega-opec-btc-episode-independence-integration",
+  "at_utc": "2026-10-04T17:04:29.940Z",
+  "recorded_at": "2026-10-04T17:04:29.940Z",
+  "created_at": "2026-10-04T17:04:29.940Z",
+  "category": "INTEGRATION",
+  "status": "MATERIAL_DELTA",
+  "severity": "MEDIUM",
+  "summary": "OPEC+ moved from an expectation-only state to an official decision to keep November required production at September levels, removing a near-term nominal-quota increase as a relief branch while leaving realized output and exports unresolved. Separately, BTC printed a second same-day range-only burst after the prior burst normalized. These observations must remain causally separate: the BTC alerts are serially dependent members of one intraday episode, not two independent confirmations, and no synchronized cross-asset window identifies OPEC policy as their cause.",
+  "surface": [
+    "ORACLE macro policy state",
+    "ARGUS/NEXUS BTC anomaly state",
+    "AION causal memory",
+    "DAEDALUS evidence authority",
+    "GitHub-native v3 and restored-five provenance"
+  ],
+  "source": "OMEGA_AUTOMATION",
+  "source_repository": "reppiks490/Icarus-engine",
+  "source_ref": "main",
+  "source_commit": "979d01594ff38350f519795f73595ed0e0041a8a",
+  "net_new_delta": "OPEC_NOVEMBER_QUOTAS_ARE_NOW_OFFICIALLY_STEADY,_BUT_REALIZED_SUPPLY_REMAINS_UNVERIFIED;_RECURRENT_SAME_DAY_BTC_RANGE_BURSTS_ARE_ONE_CLUSTERED_EPISODE_AND_CANNOT_BE_TREATED_AS_INDEPENDENT_CONFIRMATION_OR_OPEC_CAUSAL_TRANSMISSION.",
+  "accepted_findings": [
+    "MACRO: primary OPEC confirmation supersedes the prior expectation-only state; November required production remains at September levels for the seven participating producers.",
+    "MACRO: the confirmed quota decision removes a nominal target increase as near-term relief but does not establish realized output, exports, inventories or refined-product normalization.",
+    "FLOW: completed 09:00 and 12:00 UTC BTC intervals were independently cross-provider-corroborated price-range bursts, each without abnormal Bybit spot-volume confirmation; the 11:00 interval normalized between them.",
+    "AION: preserve joint-expansion, range-only, normalization and recurrent-range states as immutable event history without promoting the path into a learned precursor.",
+    "DAEDALUS: no new temporal-projection escalation was found; the existing UNVERIFIED_TIMEZONE aggregate-label defect remains contained from model, production and execution authority."
+  ],
+  "rejected_findings": [
+    "Reject steady nominal OPEC+ quotas as proof of stable or normalized physical supply.",
+    "Reject the two same-day BTC range-only alerts as independent effective N=2 evidence; shared rolling windows, serial dependence and common market state require episode clustering.",
+    "Reject causal attribution from the OPEC decision to BTC volatility because no exact decision timestamp or synchronized oil, rates, DXY, volatility and BTC response panel was verified.",
+    "Reject recurrent BTC range expansion as authenticated order flow, persistent liquidity stress, directional alpha or a cost-valid trading rule.",
+    "Reject GitHub-native v3 deterministic_liveness and restored-five watchdog receipts as substantive specialist authority."
+  ],
+  "conflicts": [
+    "Official required production is steady while Reuters context reports realized Gulf production below targets amid export disruption; policy and physical supply states diverge.",
+    "BTC price ranges reconcile across Bybit spot, Bybit linear and Twelve Data, while comparable authenticated spot turnover exists only for Bybit spot and remained non-abnormal.",
+    "Two range bursts occurred within three hours and share overlapping 28-hour rolling baselines; alert count overstates independent information.",
+    "Current v3 slots were adjudicated missing after grace and then persisted late for OMEGA, Macro, Flow, AION 15:36 and DAEDALUS; AION 16:36 remained missing in the inspected reconciliation state.",
+    "Restored-five current exact-slot state is heterogeneous: Advanced CSV 16:15 verified; Alpha 16:25, Apex 16:45, Flow 16:35 and Robustness 16:05 were missing/fallback-only."
+  ],
+  "blockers": [
+    "OPEC's exact meeting decision timestamp was not published; the durable event uses the earliest accessed confirmed Reuters publication time.",
+    "No synchronized event-time panel of Brent/WTI, diesel cracks, realized exports, BTC, DXY, rates and volatility was verified.",
+    "Current realized OPEC+ production, exports, inventories and refined-product cracks remain unverified.",
+    "BTC burst observations use overlapping small rolling baselines and are serially dependent; the full scan family and multiplicity adjustment remain unresolved.",
+    "No protected OOS transition study, cross-market ablation or realistic-cost performance evidence exists.",
+    "DAEDALUS did not exercise a live API/runtime or execute repository tests during re-verification.",
+    "Control-plane provenance remains degraded by late v3 persistence and four restored-five current-slot misses."
+  ],
+  "next_highest_value_integration_target": "Build one as-of synchronized policy-to-market packet anchored to the earliest defensible OPEC decision/publication time: nominal quota decision -> realized production/export throughput -> inventories/cracks, alongside BTC, DXY, 2Y yields, equity volatility and oil returns. Cluster the 09:00/12:00 BTC alerts into one episode, compare against BTC-only realized-volatility/time-of-day baselines, and prohibit causal or cross-asset promotion until timestamp, ablation, multiplicity and protected-OOS gates pass.",
+  "owner_job_status_dependencies": [
+    {
+      "owner": "ATHENA",
+      "job": "Uncertainty/risk routing",
+      "status": "ACTIONABLE",
+      "dependency": "Close the nominal-quota-increase relief branch while keeping physical-supply and BTC-causality uncertainty open."
+    },
+    {
+      "owner": "JANUS",
+      "job": "Project-twin reconciliation and prioritization",
+      "status": "ACTIONABLE",
+      "dependency": "Represent expected policy, confirmed policy, realized physical supply and clustered market-response episodes as separate states."
+    },
+    {
+      "owner": "INFRASTRUCTURE",
+      "job": "Runtime/recovery/health",
+      "status": "DEGRADED_WITH_LATE_V3",
+      "dependency": "Preserve missed-then-late v3 history and current restored-five exact-slot misses; do not infer substantive health from durability."
+    },
+    {
+      "owner": "HELIOS PRIME",
+      "job": "Cross-system integration and meta-research gaps",
+      "status": "ACTIONABLE",
+      "dependency": "Create the synchronized cross-asset evidence packet and enforce episode-level rather than alert-level effective sample accounting."
+    }
+  ],
+  "paths": [
+    "automation_intelligence/mcp_interface/research_runs/omega/20261004T130343Z.json",
+    "automation_intelligence/mcp_interface/events/20261004T131638Z_macro_opec_november_targets_steady.json",
+    "automation_intelligence/mcp_interface/research_runs/macro/20261004T131449Z_macro.json",
+    "automation_intelligence/mcp_interface/events/20261004T132634353Z_flow_btc_recurrent_range_only_burst.json",
+    "automation_intelligence/mcp_interface/research_runs/flow/20261004T132529000Z_flow.json",
+    "automation_intelligence/mcp_interface/research_runs/aion/20261004T123846Z.json",
+    "automation_intelligence/mcp_interface/research_runs/daedalus/20261004T165527217Z_daedalus.json",
+    "automation_intelligence/omega_stack_native_v3/lanes/omega/runs/20261004T160000Z/omega-20261004T160000Z-37218601456-1.json",
+    "automation_intelligence/omega_stack_native_v3/reconciliation/missed/aion/20261004T163600Z.json",
+    "automation_intelligence/restored_five_native/receipts/advanced_csv/20261004T161500Z.json",
+    "automation_intelligence/restored_five_native/receipts/alpha_synthesis/20261004T162500Z.json",
+    "automation_intelligence/restored_five_native/receipts/apex_council/20261004T164500Z.json",
+    "automation_intelligence/restored_five_native/receipts/flow_microstructure/20261004T163500Z.json",
+    "automation_intelligence/restored_five_native/receipts/robustness_guardian/20261004T160500Z.json",
+    "automation_intelligence/mcp_interface/events/20261004T170429Z_omega_opec_btc_episode_independence_integration.json"
+  ],
+  "evidence": [
+    {
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/mcp_interface/research_runs/omega/20261004T130343Z.json",
+      "revision": "62a3d040787a752a3bed9f5c70dae12b13164177",
+      "blob_id": "85bac5e679ba66fdf051d02a2c345d2cc165e06f",
+      "url": "https://github.com/reppiks490/Icarus-engine/commit/62a3d040787a752a3bed9f5c70dae12b13164177"
+    },
+    {
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/mcp_interface/events/20261004T131638Z_macro_opec_november_targets_steady.json",
+      "revision": "979d01594ff38350f519795f73595ed0e0041a8a",
+      "blob_id": "ae4191e0aab4190a875691050f460bb0fac566c8",
+      "url": "https://github.com/reppiks490/Icarus-engine/commit/979d01594ff38350f519795f73595ed0e0041a8a"
+    },
+    {
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/mcp_interface/research_runs/macro/20261004T131449Z_macro.json",
+      "revision": "0d143bddddca45c649902cb9b0f5b6c7817273f6",
+      "blob_id": "cada414f382cdfbbb0b0d84e1147e04ddb2bbf31",
+      "url": "https://github.com/reppiks490/Icarus-engine/commit/0d143bddddca45c649902cb9b0f5b6c7817273f6"
+    },
+    {
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/mcp_interface/events/20261004T132634353Z_flow_btc_recurrent_range_only_burst.json",
+      "revision": "55b13ee815bd33ef3237873682077ecf60aac410",
+      "blob_id": "54ded68778a10f1d9c191cea15457cfb83b8a2b3",
+      "url": "https://github.com/reppiks490/Icarus-engine/commit/55b13ee815bd33ef3237873682077ecf60aac410"
+    },
+    {
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/mcp_interface/research_runs/flow/20261004T132529000Z_flow.json",
+      "revision": "eae51d64b5a2e0f11d0cb1837008e47ca4e59334",
+      "blob_id": "8d85b10c466ae252c70dbbe857f5d14300e325ab",
+      "url": "https://github.com/reppiks490/Icarus-engine/commit/eae51d64b5a2e0f11d0cb1837008e47ca4e59334"
+    },
+    {
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/mcp_interface/research_runs/aion/20261004T123846Z.json",
+      "revision": "19667d6da2dc5583262af4d0cb2968859f8d7857",
+      "blob_id": "dd19229bd85ee1d3c49951181c61362f2b159b34",
+      "url": "https://github.com/reppiks490/Icarus-engine/commit/19667d6da2dc5583262af4d0cb2968859f8d7857"
+    },
+    {
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/mcp_interface/research_runs/daedalus/20261004T165527217Z_daedalus.json",
+      "revision": "c359125808862ffbb676f3a6a71cbae025dd7f3a",
+      "blob_id": "e53732a4fb8feb7c872d3df1a339fd3c1e72f0af",
+      "url": "https://github.com/reppiks490/Icarus-engine/commit/c359125808862ffbb676f3a6a71cbae025dd7f3a"
+    },
+    {
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/omega_stack_native_v3/lanes/omega/runs/20261004T160000Z/omega-20261004T160000Z-37218601456-1.json",
+      "revision": "94e416401cf758269ff96984194abc6a02744d2a",
+      "blob_id": "34ec5d4b0e7b01deef172456590f70112746b91e",
+      "url": "https://github.com/reppiks490/Icarus-engine/commit/94e416401cf758269ff96984194abc6a02744d2a",
+      "observation": "Late deterministic liveness; SUBSTANTIVE_AI_INFERENCE_NOT_EXECUTED."
+    },
+    {
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/omega_stack_native_v3/reconciliation/missed/aion/20261004T163600Z.json",
+      "revision": "ba207d362cd41daf6b4963d2628337a86efd76e7",
+      "blob_id": "a7122b4ce31a41837eb7febed062b70a153fbdf9",
+      "url": "https://github.com/reppiks490/Icarus-engine/commit/ba207d362cd41daf6b4963d2628337a86efd76e7",
+      "observation": "Current AION 16:36 slot remained missing/backlog in inspected reconciliation."
+    },
+    {
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/restored_five_native/receipts/advanced_csv/20261004T161500Z.json",
+      "revision": "17c777c9a2bec52a3019c2113c08c25199aa2482",
+      "blob_id": "c11b5c090cc742d560a12ad0ce0a9fcff78c5489",
+      "url": "https://github.com/reppiks490/Icarus-engine/commit/17c777c9a2bec52a3019c2113c08c25199aa2482"
+    },
+    {
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/restored_five_native/receipts/alpha_synthesis/20261004T162500Z.json",
+      "revision": "17c777c9a2bec52a3019c2113c08c25199aa2482",
+      "blob_id": "7f28d806329f82bc8fd34974ffe4babbccfd19fd",
+      "url": "https://github.com/reppiks490/Icarus-engine/commit/17c777c9a2bec52a3019c2113c08c25199aa2482"
+    },
+    {
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/restored_five_native/receipts/apex_council/20261004T164500Z.json",
+      "revision": "17c777c9a2bec52a3019c2113c08c25199aa2482",
+      "blob_id": "59a0df2c2c2f8415f1ad9e2ad824802803bc89d2",
+      "url": "https://github.com/reppiks490/Icarus-engine/commit/17c777c9a2bec52a3019c2113c08c25199aa2482"
+    },
+    {
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/restored_five_native/receipts/flow_microstructure/20261004T163500Z.json",
+      "revision": "17c777c9a2bec52a3019c2113c08c25199aa2482",
+      "blob_id": "847fe90321a4acacbebc8d33c654d98ea4e4b575",
+      "url": "https://github.com/reppiks490/Icarus-engine/commit/17c777c9a2bec52a3019c2113c08c25199aa2482"
+    },
+    {
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/restored_five_native/receipts/robustness_guardian/20261004T160500Z.json",
+      "revision": "17c777c9a2bec52a3019c2113c08c25199aa2482",
+      "blob_id": "58a573f1cf3b05de1dad16da59c3a35c36d66ab3",
+      "url": "https://github.com/reppiks490/Icarus-engine/commit/17c777c9a2bec52a3019c2113c08c25199aa2482"
+    }
+  ],
+  "athena": {
+    "status": "ACTIONABLE",
+    "finding": "Officially close the November nominal-quota-increase relief branch while keeping realized-supply and BTC-causality uncertainty open; same-day alerts remain one episode."
+  },
+  "janus": {
+    "status": "ACTIONABLE",
+    "finding": "Preserve expected policy -> confirmed policy -> realized physical supply and BTC alert -> clustered episode -> validated transition as independent state chains."
+  },
+  "infrastructure": {
+    "status": "DEGRADED_WITH_LATE_V3",
+    "finding": "Latest inspected v3 cycle reconciled several missed slots to late deterministic liveness while AION 16:36 remained missing; restored-five had only Advanced CSV exact for the current inspected slots."
+  },
+  "helios_prime": {
+    "status": "ACTIONABLE",
+    "finding": "Integrate an as-of synchronized OPEC-to-cross-asset packet and episode-clustered effective-N policy before any causal or regime promotion."
+  },
+  "execution_authorized": false,
+  "production_decision_authorized": false
+}

@@ -54,6 +54,65 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Refresh main before hybrid dispatch
+        shell: bash
+        run: git pull --rebase origin main
+
+      - name: Dispatch due hybrid requests
+        id: hybrid
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/hybrid_loop_bridge.py             --repo-root .             --event-name integrated_schedule             --requested-lane all_active             --workflow-run-id "$GITHUB_RUN_ID"             --workflow-run-attempt "$GITHUB_RUN_ATTEMPT"             --max-integrated-slots 24
+
+      - name: Persist hybrid request state
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add automation_intelligence/hybrid_loop_fabric_v1/requests
+          git add automation_intelligence/hybrid_loop_fabric_v1/health
+          staged="$(git diff --cached --name-only)"
+          if [ -z "$staged" ]; then
+            echo "No hybrid request/health state changed."
+          else
+            invalid="$(printf '%s\n' "$staged" | grep -Ev '^automation_intelligence/hybrid_loop_fabric_v1/(requests|health)/' || true)"
+            if [ -n "$invalid" ]; then
+              echo "Refusing out-of-namespace hybrid mutation:" >&2
+              printf '%s\n' "$invalid" >&2
+              exit 1
+            fi
+
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -m "automation: hybrid due-slot requests ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT} [skip ci]"
+
+            pushed=0
+            for attempt in 1 2 3 4 5; do
+              git fetch origin main
+              if ! git rebase origin/main; then
+                git rebase --abort || true
+                echo "Hybrid request rebase conflict; refusing unsafe automatic resolution." >&2
+                exit 1
+              fi
+              if git push origin HEAD:main; then
+                pushed=1
+                break
+              fi
+              if [ "$attempt" -lt 5 ]; then
+                sleep $((attempt * 2))
+              fi
+            done
+
+            if [ "$pushed" -ne 1 ]; then
+              echo "Failed to persist hybrid request state after 5 optimistic attempts." >&2
+              exit 1
+            fi
+          fi
+
+      - name: Refresh main after hybrid persistence
+        shell: bash
+        run: git pull --rebase origin main
+
       - name: Execute due lane
         id: lane
         continue-on-error: true

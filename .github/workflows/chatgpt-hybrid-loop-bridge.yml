@@ -1,14 +1,6 @@
 name: chatgpt-hybrid-loop-bridge
 
 on:
-  push:
-    paths:
-      - "automation_intelligence/hybrid_loop_fabric_v1/dispatch_trigger.json"
-  schedule:
-    - cron: "0 * * * *"
-    - cron: "10 * * * *"
-    - cron: "20 * * * *"
-    - cron: "30 * * * *"
   workflow_dispatch:
     inputs:
       requested_lane:
@@ -26,7 +18,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: chatgpt-hybrid-loop-bridge-${{ github.event.schedule || inputs.requested_lane || github.event_name }}
+  group: chatgpt-hybrid-loop-bridge-${{ inputs.requested_lane || 'manual' }}
   cancel-in-progress: false
 
 jobs:
@@ -50,8 +42,6 @@ jobs:
 
       - name: Enqueue or reconcile durable hybrid work
         env:
-          EVENT_NAME: ${{ github.event_name }}
-          SCHEDULE_EXPR: ${{ github.event.schedule || '' }}
           REQUESTED_LANE: ${{ inputs.requested_lane || 'all_active' }}
           RECONCILE_ONLY: ${{ inputs.reconcile_only || false }}
         shell: bash
@@ -59,8 +49,7 @@ jobs:
           set -euo pipefail
           args=(
             --repo-root .
-            --event-name "$EVENT_NAME"
-            --schedule "$SCHEDULE_EXPR"
+            --event-name workflow_dispatch
             --requested-lane "$REQUESTED_LANE"
             --workflow-run-id "$GITHUB_RUN_ID"
             --workflow-run-attempt "$GITHUB_RUN_ATTEMPT"
@@ -97,7 +86,7 @@ jobs:
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "automation: hybrid loop request ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT} [skip ci]"
+          git commit -m "automation: manual hybrid request ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT} [skip ci]"
 
           pushed=0
           for attempt in 1 2 3 4 5; do
@@ -117,6 +106,6 @@ jobs:
           done
 
           if [ "$pushed" -ne 1 ]; then
-            echo "Failed to persist hybrid request state after 5 optimistic attempts." >&2
+            echo "Failed to persist manual hybrid request state after 5 optimistic attempts." >&2
             exit 1
           fi

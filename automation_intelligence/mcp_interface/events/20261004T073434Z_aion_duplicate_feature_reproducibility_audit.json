@@ -1,0 +1,124 @@
+{
+  "schema": "icarus-mcp-event-v1",
+  "schema_version": "icarus-mcp-event-v1",
+  "event_id": "20261004T073434Z-aion-duplicate-feature-reproducibility-audit",
+  "category": "AUDIT",
+  "severity": "warn",
+  "status": "material_finding",
+  "subsystems": [
+    "aion",
+    "ascension",
+    "prometheus",
+    "data",
+    "ml",
+    "provenance"
+  ],
+  "recorded_at": "2026-10-04T07:34:34.151Z",
+  "created_at": "2026-10-04T07:34:34.151Z",
+  "source": "AION_AUTOMATION",
+  "title": "Duplicate TIDE columns are deterministically identical but not independently replayable",
+  "summary": "Integrity/3 conservatively coalesces only duplicated TIDE Long/TIDE Short headers after exact cell-text equality across every parsed row. Two retained manifests report 41,239 compared rows per chart, zero conflicts and zero missing cells, with 41,238 bars admitted after trailing-bar exclusion. This supports structural admission for the two hashed files, but the raw files are not repository evidence, hosted workflow/status evidence is absent from the connected GitHub views, and no training or performance validation occurred.",
+  "source_repository": "reppiks490/Icarus",
+  "source_ref": "main",
+  "source_commit": "becd8ef3c959bd60518146f667870e64b657fbfa",
+  "net_new_delta": "DUPLICATE_TIDE_HEADER_AMBIGUITY_IS_RESOLVED_FOR_TWO_HASHED_FILES_AT_THE_STRUCTURAL_LEVEL, BUT REAL_DATA_REPLAY, INDICATOR_PROVENANCE, HOSTED_VERIFICATION, AND MODEL_AUTHORITY_REMAIN_UNESTABLISHED.",
+  "claim_evidence_status": "PARSER_LOGIC_AND_RETAINED_MANIFEST_SUPPORTED / RAW_SOURCE_REPLAY_HOSTED_VERIFICATION_AND_PERFORMANCE_AUTHORITY_UNVERIFIED",
+  "strongest_quantitative_claim": {
+    "files": 2,
+    "rows_compared_per_file": 41239,
+    "admitted_rows_per_file": 41238,
+    "selected_duplicate_features": [
+      "TIDE Long",
+      "TIDE Short"
+    ],
+    "conflicts": 0,
+    "missing_cells": 0,
+    "deterministic_comparison": "EXACT_CSV_CELL_TEXT",
+    "statistical_interpretation": "Deterministic within-file equality, not 82,478 independent samples and not evidence of predictive value."
+  },
+  "falsification_result": "FALSIFIED: duplicate TIDE headers necessarily imply conflicting feature values in these two hashed files. NOT FALSIFIED OR TESTED: the duplicated headers share valid indicator provenance, the TIDE features add predictive information, or parser-v3 admission improves held-out performance.",
+  "accepted_findings": [
+    "The implementation compares every physical row before timestamp, OHLC, duplicate-bar or trailing-bar filtering.",
+    "Only selected TIDE feature duplicates may be coalesced; core time/price/volume ambiguity remains fail-closed.",
+    "Missing, textually non-identical, or conflicting duplicate cells block admission, including conflicts on rows later discarded.",
+    "The retained manifests preserve raw hashes, canonical-row hashes, exact column indexes and comparison counts."
+  ],
+  "rejected_or_unverified_findings": [
+    "Reject interpreting 41,239 matching rows as an effective sample size or calibrated confidence measure; equality is deterministic for each file.",
+    "Hosted verification is unverified: the connected GitHub workflow-run and combined-status views returned no runs/statuses for source commit ceac2394... or merge commit becd8ef3....",
+    "The two raw chart exports are not committed, so repository-only reviewers cannot recompute the equality claim from source bytes.",
+    "Exact duplicate values do not establish indicator provenance, non-leakage, incremental predictive information, OOS performance, or trading authority."
+  ],
+  "estimator_validity": "No statistical estimator is needed to establish exact equality inside fixed files. Any inference beyond those bytes requires a separate sampling/provenance model. Row count cannot be promoted into confidence.",
+  "data_sufficiency": "Sufficient for structural equality of the retained hashes if the manifests are trusted; insufficient for independent replay because raw bytes are absent and provider-time/indicator-generation provenance is unattested.",
+  "multiple_testing_status": "Not a performance-family test. Selection history for why only TIDE duplicates were eligible is documented in code but not a preregistered statistical family; no predictive hypothesis was tested.",
+  "redundancy_ablation_status": "Duplicate TIDE columns contain zero incremental information relative to each other within the two manifests. Whether the coalesced TIDE feature adds information beyond price/volume or leaks target state is untested.",
+  "held_out_oos_status": "No training executed and no held-out/OOS performance result exists. Realistic costs are premature and remain mandatory only if a predictive trading rule later survives.",
+  "maturity_change": "Structural data-admission and manifest transparency increase. Indicator provenance, model, parameter, calibration, anomaly and performance maturity do not increase. Legacy parser receipts remain needs_requalification; DAEDALUS BLOCKING remains authoritative.",
+  "blockers": [
+    "Raw chart bytes are absent from repository evidence, preventing independent replay against raw_sha256 values.",
+    "No accessible GitHub workflow runs or combined commit statuses support the event's hosted-verification statement.",
+    "Provider/export configuration and indicator-generation provenance for the duplicated TIDE columns are unattested.",
+    "No no-retune model rerun, TIDE-vs-no-TIDE ablation, purged temporal validation, untouched OOS block or realistic-cost result exists.",
+    "The Icarus-engine producer_contract.json path is absent; the readable Icarus contract and explicit task envelope were used."
+  ],
+  "next_decisive_experiment": "First, independently replay integrity/3 against the exact raw_sha256-bound exports in an authorized evidence store and persist a verifier receipt that names raw blob identity, parser blob and canonical-row hashes. Then freeze one no-retune model specification and compare coalesced-TIDE versus TIDE-dropped datasets using purged temporal folds plus a final untouched contiguous OOS block. Treat duplicate copies as one feature; report leakage checks, dependence-aware uncertainty, the complete model/feature family, and realistic costs only if a trading rule survives.",
+  "paths": [
+    "coordination/CHART_COLUMN_QUALIFICATION_20261004.json",
+    "icarus_engine/trainers/integrity.py",
+    "tests_engine/test_source_data_contract.py",
+    "automation_intelligence/mcp_interface/events/20261004_chart_identical_feature_qualification.json",
+    "automation_intelligence/mcp_interface/events/20261004T073434Z_aion_duplicate_feature_reproducibility_audit.json"
+  ],
+  "evidence": [
+    {
+      "repository": "reppiks490/Icarus",
+      "path": "coordination/CHART_COLUMN_QUALIFICATION_20261004.json",
+      "revision": "becd8ef3c959bd60518146f667870e64b657fbfa",
+      "blob_id": "23c07051364f3ca17ecaa93ad85826d5184829d6",
+      "url": "https://github.com/reppiks490/Icarus/commit/becd8ef3c959bd60518146f667870e64b657fbfa"
+    },
+    {
+      "repository": "reppiks490/Icarus",
+      "path": "icarus_engine/trainers/integrity.py",
+      "revision": "becd8ef3c959bd60518146f667870e64b657fbfa",
+      "blob_id": "8072bb0a3d2bd325a3aabb8ddcd1fa60f184038e",
+      "url": "https://github.com/reppiks490/Icarus/commit/becd8ef3c959bd60518146f667870e64b657fbfa"
+    },
+    {
+      "repository": "reppiks490/Icarus",
+      "path": "automation_intelligence/mcp_interface/events/20261004_chart_identical_feature_qualification.json",
+      "revision": "becd8ef3c959bd60518146f667870e64b657fbfa",
+      "blob_id": "b406df6a120f6a0fb7f8b2616d73f78d80382154",
+      "url": "https://github.com/reppiks490/Icarus/commit/becd8ef3c959bd60518146f667870e64b657fbfa"
+    },
+    {
+      "repository": "reppiks490/Icarus",
+      "path": "pull/313",
+      "revision": "14defd1e61ca6c809fabc6f6aad252b90cb3a338",
+      "observed": "PR merged; body claims 26 local tests and requires hosted checks; connected workflow-run and combined-status views returned empty results.",
+      "url": "https://github.com/reppiks490/Icarus/pull/313"
+    },
+    {
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/omega_stack_native_v3/lanes/flow/runs/20261004T072400Z/flow-20261004T072400Z-37185858876-1.json",
+      "revision": "5b145fc3c57d134760ad0d929513198523ec26b4",
+      "observed": "deterministic_liveness; SUBSTANTIVE_AI_INFERENCE_NOT_EXECUTED",
+      "url": "https://github.com/reppiks490/Icarus-engine/commit/5b145fc3c57d134760ad0d929513198523ec26b4"
+    }
+  ],
+  "aion": {
+    "status": "MATERIAL_FINDING",
+    "finding": "Preserve parser-v3, raw hashes, canonical-row hashes and exact duplicate-column witnesses as a new structural state while retaining legacy parser receipts as needs_requalification; do not rewrite historical authority."
+  },
+  "ascension": {
+    "status": "MATERIAL_FINDING",
+    "finding": "Structural equality is supported by code and retained manifests, but raw-source replay and hosted-check claims are not independently verified through accessible repository evidence; Spine/interface visibility must not confer extra trust."
+  },
+  "prometheus": {
+    "status": "MATERIAL_FINDING",
+    "finding": "Research priority is an exact-byte independent replay followed by a preregistered no-retune coalesced-TIDE versus TIDE-dropped ablation on purged temporal folds and untouched OOS data."
+  },
+  "execution_authorized": false,
+  "production_decision_authorized": false
+}

@@ -9,7 +9,7 @@ import pandas as pd
 import pytest
 
 from cl_lab import store
-from cl_lab.feeds import registry, sources
+from cl_lab.feeds import databento as databento_feed, registry, sources
 from cl_lab.feeds.http import FeedError
 
 
@@ -106,3 +106,113 @@ def test_binance_backfill_plan_skips_cached_months(monkeypatch):
     _, used, notes = registry.refresh_binance(old, "BTCUSDT", "5m", pd.Timestamp("2024-11-03T12:00Z"))
     days_oct = [f"2024-10-{d:02d}" for d in range(1, 32)]
     assert seen == ["2024-10", *days_oct, "2024-11-01", "2024-11-02"] and used == 34 and len(notes) == 34
+
+
+class _FakeDBNStore:
+    def __init__(self, frame):
+        self._frame = frame
+
+    def to_df(self):
+        return self._frame.copy()
+
+
+class _FakeMetadata:
+    def __init__(self, cost):
+        self.cost = cost
+        self.calls = []
+
+    def get_cost(self, **kwargs):
+        self.calls.append(kwargs)
+        return self.cost
+
+
+class _FakeTimeseries:
+    def __init__(self, frame):
+        self.frame = frame
+        self.calls = []
+
+    def get_range(self, **kwargs):
+        self.calls.append(kwargs)
+        return _FakeDBNStore(self.frame)
+
+
+class _FakeHistorical:
+    def __init__(self, frame, cost=0.25):
+        self.metadata = _FakeMetadata(cost)
+        self.timeseries = _FakeTimeseries(frame)
+
+
+def test_databento_continuous_symbol_and_5m_resample(monkeypatch):
+    monkeypatch.setenv("DATABENTO_ROLL_RULE", "v")
+    assert databento_feed.continuous_symbol("mnq") == "MNQ.v.0"
+    monkeypatch.setenv("DATABENTO_ROLL_RULE", "n")
+    assert databento_feed.continuous_symbol("ES") == "ES.n.0"
+    monkeypatch.setenv("DATABENTO_ROLL_RULE", "bad")
+    with pytest.raises(ValueError):
+        databento_feed.continuous_symbol("NQ")
+
+    idx = pd.date_range("2026-10-01T13:30:00Z", periods=10, freq="1min")
+    one = pd.DataFrame({
+        "open": np.arange(10, dtype=float) + 100,
+        "high": np.arange(10, dtype=float) + 101,
+        "low": np.arange(10, dtype=float) + 99,
+        "close": np.arange(10, dtype=float) + 100.5,
+        "volume": np.ones(10),
+    }, index=idx)
+    five = databento_feed.resample_5m(one)
+    assert len(five) == 2
+    assert five.iloc[0]["open"] == 100.0
+    assert five.iloc[0]["high"] == 105.0
+    assert five.iloc[0]["low"] == 99.0
+    assert five.iloc[0]["close"] == 104.5
+    assert five.iloc[0]["volume"] == 5.0
+
+
+def test_databento_fetch_estimates_cost_before_request(monkeypatch):
+    monkeypatch.setenv("DATABENTO_ROLL_RULE", "v")
+    monkeypatch.setenv("CL_DATABENTO_START", "2026-10-01T13:30:00Z")
+    monkeypatch.setenv("CL_DATABENTO_MAX_USD_PER_FEED", "0.50")
+    idx = pd.date_range("2026-10-01T13:30:00Z", periods=10, freq="1min")
+    raw = pd.DataFrame({
+        "open": np.arange(10, dtype=float) + 100,
+        "high": np.arange(10, dtype=float) + 101,
+        "low": np.arange(10, dtype=float) + 99,
+        "close": np.arange(10, dtype=float) + 100.5,
+        "volume": np.ones(10),
+    }, index=idx)
+    client = _FakeHistorical(raw, cost=0.25)
+    df, meta = databento_feed.fetch_continuous_5m(
+        "NQ", pd.DataFrame(), pd.Timestamp("2026-10-01T13:40:00Z"), client=client
+    )
+    assert len(client.metadata.calls) == 1
+    assert len(client.timeseries.calls) == 1
+    assert client.metadata.calls[0]["symbols"] == "NQ.v.0"
+    assert client.metadata.calls[0]["stype_in"] == "continuous"
+    assert client.metadata.calls[0]["schema"] == "ohlcv-1m"
+    assert meta["estimated_cost_usd"] == 0.25
+    assert meta["request_performed"] is True
+    assert len(df) == 2
+
+    expensive = _FakeHistorical(raw, cost=0.75)
+    with pytest.raises(FeedError, match="exceeds"):
+        databento_feed.fetch_continuous_5m(
+            "NQ", pd.DataFrame(), pd.Timestamp("2026-10-01T13:40:00Z"), client=expensive
+        )
+    assert len(expensive.metadata.calls) == 1
+    assert len(expensive.timeseries.calls) == 0
+
+
+def test_databento_registry_is_dormant_without_key(tmp_path, monkeypatch):
+    monkeypatch.delenv("DATABENTO_API_KEY", raising=False)
+    monkeypatch.setenv("DATABENTO_ROLL_RULE", "v")
+    man = registry.refresh_all(
+        str(tmp_path / "cache"),
+        only={"databento_nq_5m", "databento_mgc_5m"},
+        now="2026-10-04T12:00Z",
+    )
+    for name in ("databento_nq_5m", "databento_mgc_5m"):
+        ent = man["feeds"][name]
+        assert ent["status"] == "unconfigured"
+        assert ent["dataset"] == "GLBX.MDP3"
+        assert ent["continuous_symbol"].endswith(".v.0")
+        assert ent["integrity"]["rows"] == 0

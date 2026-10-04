@@ -4,7 +4,7 @@ CL (Claude, Anthropic) — 2026-10-03. Lane tag **CL**: branches `claude/cl-*`, 
 
 ## What it does (every scheduled run, free on public Actions)
 
-1. **Feeds** (`cl_lab/feeds/`): keyless public sources, live-verified 2026-10-04 — Binance public bulk 5m klines (BTCUSDT, ETHUSDT, with taker-buy volume), Coinbase Exchange 5m candles (BTC-USD), FRED (DGS10, DGS2, T10Y2Y, DFF, VIXCLS), Cboe (VIX, VIX9D, VIX3M, VVIX, SKEW), CFTC TFF for E-mini / Micro E-mini / consolidated Nasdaq-100. Yahoo is deliberately not used (terms ban automated collection; HTTP 429 from cloud IPs). Raw rows live only in the Actions cache; the repo receives manifests (rows, coverage, sha256, integrity) and derived statistics.
+1. **Feeds** (`cl_lab/feeds/`): keyless public sources, live-verified 2026-10-04 — Binance public bulk 5m klines (BTCUSDT, ETHUSDT, with taker-buy volume), Coinbase Exchange 5m candles (BTC-USD), FRED (DGS10, DGS2, T10Y2Y, DFF, VIXCLS), Cboe (VIX, VIX9D, VIX3M, VVIX, SKEW), CFTC TFF for E-mini / Micro E-mini / consolidated Nasdaq-100 — plus an **optional Databento GLBX.MDP3 continuous-futures corpus** for NQ/MNQ, ES/MES, YM/MYM, RTY/M2K, GC/MGC and SI/SIL. Databento requests use continuous `ROOT.v.0` (or configured n/c rule), download native 1m OHLCV, derive 5m bars causally, estimate historical cost before download, and refuse any request above `CL_DATABENTO_MAX_USD_PER_FEED`. Yahoo is deliberately not used (terms ban automated collection; HTTP 429 from cloud IPs). Raw rows live only in the Actions/local cache; the repo receives manifests (rows, coverage, sha256, integrity) and derived statistics.
 2. **Grammar** (`cl_lab/grammar.py`, `cl-g1`, 492 pre-registered candidates): intraday momentum (Gao, Han, Li & Zhou 2018), noise-boundary breakout (Zarattini, Aziz & Barbon 2024), opening-range breakout incl. the 5-minute first-candle rule, overnight gap fade/follow, prior-day/overnight **liquidity sweep** reversal vs continuation (the ICARUS premise), same-half-hour persistence (Heston, Korajczyk & Sadka 2010), VWAP trend (Zarattini & Aziz 2023), each × volatility regime (all / high / low, causal).
 3. **Backtester** (`cl_lab/backtest.py`): decisions on bar closes, fills at the next bar open; stops checked from the entry bar; same-bar stop+target = stop; gap-through fills at the open. Costs: MNQ $0.85/side + 1 tick/side ($2.70 RT); stress 2×. Crypto 5 bp fee + 1 bp slippage per side; stress 2×.
 4. **Gates** (`cl_lab/validate.py`, `cl-gates-1`): TUNE < 2025-10-01, HOLD 2025-10-01 → 2026-10-04 (untouched by the grammar's design), FORWARD ≥ 2026-10-05. Sample → Newey–West t ≥ 2 → BH-FDR q ≤ 0.10 over all 492 → Deflated Sharpe ≥ 0.95 with Li–Ji effective trials → HOLD t ≥ 1.65 with Holm → doubled-cost stress → quarterly + parameter-neighbour stability → asset-level Hansen SPA p ≤ 0.10 and CSCV PBO ≤ 0.25.
@@ -34,11 +34,34 @@ Every one of the 492 candidates passes cross-day prefix invariance and intraday 
 
 All 492 candidates **REJECTED** on MNQ, BTCUSDT and ETHUSDT. Best MNQ TUNE t = 2.08 (gap fade, 46 trades — below the sample gate); BH-FDR rejections 0; effective trials ≈ 116–125; SPA p = 0.86 (MNQ), 0.99 (BTC), 0.57 (ETH); PBO 0.46 / 0.33 / 0.21. The published intraday rules, at these parameterizations and realistic costs, show no edge distinguishable from data-snooping on 2024–2026 data. The lab is built to keep searching honestly, not to manufacture champions.
 
+## Databento corpus activation
+
+Databento is dormant unless `DATABENTO_API_KEY` is present. The key must stay in an environment variable, local `.env`, or GitHub Actions secret; never commit it. The first uncached range defaults to `2024-09-01T00:00:00Z` so the corpus can align with the current research window, but **every feed is cost-estimated before download** and the default hard cap is USD 1.00 per feed/request. If the estimate exceeds that cap the feed records an error and no paid data is requested. Raise the cap only after reviewing the estimate.
+
+The Databento cache expansion is **corpus/data-plane only**. New futures families are not automatically promoted into candidate evaluation until their per-contract commission/slippage assumptions have been independently specified and tested. This prevents a new data source from silently becoming a trading claim.
+
+GitHub Actions can use repository secret `DATABENTO_API_KEY`; with no secret, Databento feeds are reported as `unconfigured` (or `cached` when prior cache exists) rather than failing the public-feed cycle.
+
 ## Run locally
 
 ```
-pip install "numpy>=1.26,<3" "pandas>=2.2,<3" "scipy>=1.11" pytest
+pip install "numpy>=1.26,<3" "pandas>=2.2,<3" "scipy>=1.11" "databento>=0.87,<1" pytest
 python -m pytest -q tests_cl
 python -m cl_lab.feeds --cache .cl_cache --manifest /tmp/feeds.json
 python -m cl_lab.run --out /tmp/cl_out --cache .cl_cache
+```
+
+
+### Optional Databento local example
+
+```bash
+# Put the real value in your shell or local .env; never paste it into chat/GitHub code.
+export DATABENTO_API_KEY='db-...'
+export DATABENTO_DATASET='GLBX.MDP3'
+export DATABENTO_ROLL_RULE='v'
+export CL_DATABENTO_MAX_USD_PER_FEED='1.00'
+
+# Refresh only a small subset first.
+python -m cl_lab.feeds --cache .cl_cache --manifest /tmp/feeds.json \
+  --only databento_mnq_5m,databento_es_5m,databento_mgc_5m
 ```

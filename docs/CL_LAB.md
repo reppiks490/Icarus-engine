@@ -18,6 +18,10 @@ The repo's own v3.1 port runs every time its code, preset or the 20m tape change
 
 Each run invents 24 never-tested compositions per asset from ~56k (wider grids × regime × 14 causal day conditioners: prior-session direction, overnight gap and range, day of week, VIX level and VIX9D/VIX term structure). Every attempt is appended to `explore_ledger.jsonl`; BH-FDR includes every earlier TUNE p-value, the Deflated Sharpe counts every earlier trial, and HOLD uses Bonferroni over every rule that ever reached HOLD — so more searching cannot manufacture a champion. `cl_lab/causality.py` makes the look-ahead checks reusable; every conditioner and sampled composition passes them.
 
+## Federation watch (cl_lab/watch.py, `cl-federation-watch.yml`)
+
+Runs after every peer export, event-contract and tests run on main (plus hourly): canonical gate result, engine event-contract and tests results, peer-packet age vs 1800 s, malformed custom-agent events (exact legacy blobs honoured), and scheduled-run delivery. Verdict GREEN / DEGRADED / RED in `automation_intelligence/cl_lab/federation_health.json` (written only on change) and one `[CL] Federation health` issue opened, updated or closed automatically. Read-only: it never repairs or relaxes a check. First live read (2026-10-04 16:5xZ): RED — canonical gate failure, event contract failure, packet 3578 s old, 4 malformed events; peer export delivered 5 scheduled runs in 24 h against a `*/10` cron.
+
 ## Causality proof (tests_cl/test_core.py)
 
 Every one of the 492 candidates passes cross-day prefix invariance and intraday truncation invariance (bars after the cut replaced with garbage); a deliberately leaky positive control is detected. The workflow refuses to publish outputs if any lab test fails.

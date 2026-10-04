@@ -9,10 +9,17 @@ import os
 import pandas as pd
 
 from .. import store
-from . import sources
+from . import databento as databento_feed, sources
 from .http import FeedError
 
 BINANCE_START = "2024-09"   # aligns with the committed MNQ tape (2024-09-20 onward)
+
+# Continuous CME corpus families. These feeds are dormant unless DATABENTO_API_KEY
+# is configured. Raw vendor rows remain in the Actions/local cache only.
+DATABENTO_FUTURES_ROOTS = (
+    "NQ", "MNQ", "ES", "MES", "YM", "MYM", "RTY", "M2K",
+    "GC", "MGC", "SI", "SIL",
+)
 
 FEEDS = [
     dict(name="btcusdt_5m", kind="binance", symbol="BTCUSDT", interval="5m", intraday=True),
@@ -23,6 +30,8 @@ FEEDS = [
     *[dict(name=f"cboe_{n.lower()}", kind="cboe", index=n, intraday=False)
       for n in ("VIX", "VIX9D", "VIX3M", "VVIX", "SKEW")],
     dict(name="cftc_tff_nasdaq", kind="cftc", intraday=False),
+    *[dict(name=f"databento_{root.lower()}_5m", kind="databento", root=root, intraday=True)
+      for root in DATABENTO_FUTURES_ROOTS],
 ]
 
 
@@ -90,6 +99,15 @@ def _fetch(feed, old, now):
             df = pd.concat([old.reset_index(), df.reset_index()]).drop_duplicates(["date", "code"], keep="last")
             df = df.set_index("date").sort_index()
         return df, 1, []
+    if k == "databento":
+        df, meta = databento_feed.fetch_continuous_5m(feed["root"], old, now)
+        notes = [
+            f"symbol={meta.get('symbol')}",
+            f"estimated_cost_usd={meta.get('estimated_cost_usd', 0.0):.6f}",
+            f"request_performed={bool(meta.get('request_performed'))}",
+            f"range={meta.get('start')}..{meta.get('end')}",
+        ]
+        return store.merge_frames(old, df), 1 if meta.get("request_performed") else 0, notes
     raise ValueError(k)
 
 
@@ -102,6 +120,20 @@ def refresh_all(cache_dir, only=None, now=None) -> dict:
             continue
         path = os.path.join(cache_dir, f"{feed['name']}.csv.gz")
         intraday = feed["intraday"]
+        # Databento is optional/paid. Absence of a key is a dormant capability,
+        # not a broken public-feed cycle; preserve any prior cache without error.
+        if feed["kind"] == "databento" and not (os.environ.get("DATABENTO_API_KEY") or "").strip():
+            old = store.load_frame(path, intraday=True)
+            status = "cached" if old is not None and not old.empty else "unconfigured"
+            ent = store.manifest_entry(
+                feed["name"], old, status,
+                error=None if status == "cached" else "DATABENTO_API_KEY not configured",
+                intraday=True,
+            )
+            ent.update(kind="databento", root=feed["root"], dataset="GLBX.MDP3",
+                       continuous_symbol=databento_feed.continuous_symbol(feed["root"]))
+            out["feeds"][feed["name"]] = ent
+            continue
         try:
             old = store.load_frame(path, intraday=intraday) if feed["kind"] != "cftc" else _load_cftc(path)
             df, used, notes = _fetch(feed, old, now)
@@ -113,6 +145,9 @@ def refresh_all(cache_dir, only=None, now=None) -> dict:
         except Exception as e:  # recorded, never raised: one dead feed must not stop the lab
             ent = store.manifest_entry(feed["name"], None, "error", error=f"{type(e).__name__}: {e}")
         ent["kind"] = feed["kind"]
+        if feed["kind"] == "databento":
+            ent.update(root=feed["root"], dataset="GLBX.MDP3",
+                       continuous_symbol=databento_feed.continuous_symbol(feed["root"]))
         out["feeds"][feed["name"]] = ent
     return out
 

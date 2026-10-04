@@ -54,3 +54,13 @@ def test_ledger_roundtrip(tmp_path):
     explore.append_ledger(str(p), [dict(asset="MNQ", id="x1", p=0.5)])
     explore.append_ledger(str(p), [dict(asset="MNQ", id="x2", p=0.2)])
     assert [r["id"] for r in explore.load_ledger(str(p))] == ["x1", "x2"]
+
+
+def test_research_hypotheses_are_causal_and_stable(frame):
+    from cl_lab import hypotheses
+    ids = [c.id for c in hypotheses.CANDIDATES]
+    assert len(set(ids)) == 3 and all(i.startswith("r") for i in ids)
+    for c in hypotheses.CANDIDATES:
+        fn = lambda s, c=c: hypotheses.eod_trades(s, dict(c.params)["variant"])
+        assert causality.prefix_violations(frame, fn) == [], c.spec()
+        assert causality.intraday_violations(frame, fn, [(70, 5), (100, 71), (130, 72)]) == [], c.spec()

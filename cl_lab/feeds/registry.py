@@ -18,7 +18,7 @@ BINANCE_START = "2024-09"   # aligns with the committed MNQ tape (2024-09-20 onw
 # is configured. Raw vendor rows remain in the Actions/local cache only.
 DATABENTO_FUTURES_ROOTS = (
     "NQ", "MNQ", "ES", "MES", "YM", "MYM", "RTY", "M2K",
-    "GC", "MGC", "SI", "SIL",
+    "GC", "MGC", "SI", "SIL", "PL", "PA", "BTC", "MBT",
 )
 
 FEEDS = [

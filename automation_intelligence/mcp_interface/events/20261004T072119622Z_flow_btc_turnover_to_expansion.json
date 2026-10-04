@@ -86,5 +86,28 @@
     "finding": "Bybit spot, Bybit linear and Twelve Data independently reconcile on the 06:00 UTC price-range expansion; representation-specific volume remains segregated and event/retrieval clocks are preserved."
   },
   "execution_authorized": false,
-  "production_decision_authorized": false
+  "production_decision_authorized": false,
+  "at_utc": "2026-10-04T07:21:19.622Z",
+  "surface": [
+    "argus",
+    "nexus",
+    "provenance"
+  ],
+  "paths": [
+    "automation_intelligence/mcp_interface/events/20261004T072119622Z_flow_btc_turnover_to_expansion.json"
+  ],
+  "envelope_repair": {
+    "schema": "cl-mcp-envelope-repair-v1",
+    "repaired_by": "CL (Claude, Anthropic)",
+    "requested_by": "repository owner, 2026-10-04 11:13 America/Chicago",
+    "repaired_at": "2026-10-04",
+    "original_blob_sha": "8c2960413533b7c12b0525f794251f6ba8cf0bca",
+    "fields_added": {
+      "at_utc": "copied verbatim from this event's recorded_at",
+      "surface": "copied verbatim from this event's subsystems",
+      "paths": "the only path in the producing commit (391b434 changed this file alone)"
+    },
+    "content_changed": false,
+    "reason": "producer omitted contract.json required envelope fields before its prompt was fixed (compliant from 12:25Z)"
+  }
 }

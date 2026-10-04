@@ -1,0 +1,90 @@
+{
+  "schema_version": "icarus-mcp-event-v1",
+  "event_id": "flow-btc-turnover-to-expansion-20261004T060000Z",
+  "category": "AUDIT",
+  "severity": "MEDIUM",
+  "status": "VERIFIED",
+  "subsystems": [
+    "argus",
+    "nexus",
+    "provenance"
+  ],
+  "recorded_at": "2026-10-04T07:21:19.622Z",
+  "event_time": "2026-10-04T06:00:00Z",
+  "retrieval_time": "2026-10-04T07:20:44.953Z",
+  "title": "BTC turnover anomaly converted into joint range-volume expansion",
+  "summary": "The 05:00 UTC Bybit spot turnover anomaly was followed by a completed 06:00 UTC joint range-and-volume expansion. Bybit spot printed a $196.30 range and 150.136441 BTC volume; versus the preceding 28 completed spot hours, robust z-scores were +2.78 for range and +3.24 for volume. Bybit linear ($201.70 range) and Twelve Data BTC/USD ($195.36 range) independently corroborated the price expansion. This supports a one-step precursor sequence but does not establish order-flow direction, causality, or persistent cross-market stress.",
+  "source": "FLOW_AUTOMATION",
+  "source_repository": "reppiks490/Icarus-engine",
+  "source_ref": "main",
+  "source_commit": null,
+  "evidence": [
+    {
+      "provider": "Bybit",
+      "representation": "BTCUSDT spot 1h candle",
+      "event_time": "2026-10-04T06:00:00Z",
+      "retrieval_time": "2026-10-04T07:20:44.953Z",
+      "open": 84890,
+      "high": 85071.6,
+      "low": 84875.3,
+      "close": 85028.3,
+      "range_usd": 196.3,
+      "volume_btc": 150.136441,
+      "baseline_window": "preceding 28 completed spot hours",
+      "range_median_usd": 112.7,
+      "range_mad_usd": 20.25,
+      "range_robust_z": 2.7846,
+      "volume_median_btc": 69.1966185,
+      "volume_mad_btc": 16.875327,
+      "volume_robust_z": 3.2351
+    },
+    {
+      "provider": "Bybit",
+      "representation": "BTCUSDT linear perpetual 1h candle",
+      "event_time": "2026-10-04T06:00:00Z",
+      "high": 85034,
+      "low": 84832.3,
+      "range_usd": 201.7,
+      "reported_volume": 917.937,
+      "note": "Linear-contract volume retained under its own representation semantics and not fused with spot volume."
+    },
+    {
+      "provider": "Twelve Data",
+      "representation": "BTC/USD 1h candle",
+      "event_time": "2026-10-04T06:00:00Z",
+      "high": 85072.54,
+      "low": 84877.18,
+      "range_usd": 195.36,
+      "note": "Returned series contained no volume field; corroborates price range only."
+    },
+    {
+      "provider": "Bybit",
+      "representation": "BTCUSDT spot displayed order book",
+      "source_timestamp": "2026-10-04T07:20:44.953Z",
+      "best_bid_price": 84962.7,
+      "best_bid_qty_btc": 0.566189,
+      "best_ask_price": 84962.8,
+      "best_ask_qty_btc": 0.373263,
+      "spread_usd": 0.1,
+      "note": "Point-in-time displayed depth only; no persistence or historical order-flow inference."
+    }
+  ],
+  "conflicts": [],
+  "data_gaps": [
+    "No historical trade or depth sequence; aggressor flow, absorption mechanism and persistent liquidity cannot be inferred.",
+    "No fresh direct NQ/MNQ, GC/MGC, SI, DXY, Treasury-yield or volatility-index evidence in this cycle.",
+    "Icarus-engine producer_contract.json was absent; envelope fields were derived from the readable Icarus repository contract and explicit task contract."
+  ],
+  "regime_implication": "The 05:00 turnover-only anomaly preceded a 06:00 joint price-range and spot-turnover expansion by one completed hour. This strengthens a precursor hypothesis for this episode only; it is not yet a learned rule or persistent regime classification.",
+  "next_decisive_check": "Test whether the next completed BTC hour sustains joint elevated range and turnover, or mean-reverts. Replay 5-minute observations around 05:00-07:00 UTC before admitting any precursor relationship into a learned baseline.",
+  "argus": {
+    "status": "MATERIAL_DELTA",
+    "finding": "Authenticated candle volume moved from an extreme turnover/range divergence at 05:00 UTC into a statistically abnormal joint range+volume expansion at 06:00 UTC; no aggressor-direction or absorption mechanism is inferred."
+  },
+  "nexus": {
+    "status": "MATERIAL_DELTA",
+    "finding": "Bybit spot, Bybit linear and Twelve Data independently reconcile on the 06:00 UTC price-range expansion; representation-specific volume remains segregated and event/retrieval clocks are preserved."
+  },
+  "execution_authorized": false,
+  "production_decision_authorized": false
+}

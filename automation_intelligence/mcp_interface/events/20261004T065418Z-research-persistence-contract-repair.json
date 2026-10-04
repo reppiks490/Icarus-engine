@@ -1,0 +1,56 @@
+{
+  "schema_version": "icarus-mcp-event-v1",
+  "event_id": "20261004T065418Z-research-persistence-contract-repair",
+  "at_utc": "2026-10-04T06:54:18.195Z",
+  "category": "REPAIR",
+  "status": "degraded",
+  "severity": "warn",
+  "summary": "All five ChatGPT scheduler prompts now require immutable research-run receipts for material, no-change and blocked outcomes, explicit repository/branch destination, and exact read-back verification. Saved prompt configuration verified 5/5; future scheduled execution remains unverified.",
+  "surface": "ChatGPT scheduler research-output persistence",
+  "source": "MCP_REPAIR",
+  "paths": [
+    "automation_intelligence/mcp_interface/research_runs/"
+  ],
+  "evidence": {
+    "configuration_checks": [
+      {
+        "title": "DAEDALUS PRIME Systems Auditor",
+        "promptMatches": true,
+        "scheduleUnchanged": true,
+        "enabled": true
+      },
+      {
+        "title": "AION PRIME Quant Scientist",
+        "promptMatches": true,
+        "scheduleUnchanged": true,
+        "enabled": true
+      },
+      {
+        "title": "Flow Velocity Engine",
+        "promptMatches": true,
+        "scheduleUnchanged": true,
+        "enabled": true
+      },
+      {
+        "title": "Macro Shock Sentinel",
+        "promptMatches": true,
+        "scheduleUnchanged": true,
+        "enabled": true
+      },
+      {
+        "title": "OMEGA Fusion Core",
+        "promptMatches": true,
+        "scheduleUnchanged": true,
+        "enabled": true
+      }
+    ],
+    "contract": "RESEARCH PERSISTENCE REPAIR v1 — mandatory finalization, authorized 2026-10-04.\nDestination: repository reppiks490/Icarus-engine, branch main. Use connected GitHub tools directly. GitHub-native v3 receipts prove liveness only and MUST NOT stand in for this ChatGPT run's work.\nAt the start, read the latest available receipt for this lane under automation_intelligence/mcp_interface/research_runs/<lane>/ and its referenced evidence; compare actual prior work before making learning claims. If inaccessible, record the exact gap.\nBound research so finalization fits the run. EVERY run, including NO_MATERIAL_DELTA or BLOCKED, must create one immutable JSON receipt at automation_intelligence/mcp_interface/research_runs/<lane>/<unique-UTC-run-id>.json. Required fields: schema_version=\"icarus-research-run-v1\", run_id, lane, automation_id, started_at_utc, completed_at_utc, outcome (MATERIAL_DELTA|NO_MATERIAL_DELTA|BLOCKED), substantive_work_performed (truthful boolean), summary, evidence (actual source URLs, repository paths and observed revision/blob IDs when available), prior_receipt_path (or null with gap), event_paths (array), blockers (array), execution_authorized=false. Record actual tool/evidence work, never call a heartbeat research or invent tests, results, timestamps, IDs, or prior history.\nFor MATERIAL_DELTA, first save the existing icarus-mcp-event-v1 event under automation_intelligence/mcp_interface/events/ using the producer contract.json required envelope fields and existing source/brain-feed contract. Read it back and compare exact content, then reference its path in the receipt. If the event cannot be saved or verified, receipt outcome=BLOCKED and record the material finding plus exact persistence error so it can be recovered. NO_MATERIAL_DELTA/BLOCKED receipts do not require a placeholder brain event. Earlier instructions to stop without creating an event do not waive this separate receipt.\nAfter creating the receipt, fetch the exact file from main and compare the JSON with the intended payload. Only after a successful match report RESEARCH_PERSISTENCE=VERIFIED with repository path and returned commit SHA. On any unavailable write/read-back or mismatch report RESEARCH_PERSISTENCE=FAILED or UNVERIFIED with the exact error and include the complete unsaved receipt in the response. A create timeout is ambiguous: read the same path before any retry, never overwrite an existing record. No success claim based solely on task last_run_time or a write request.\nOn later runs, recover accessible unsaved prior results, preserving original provenance/time and labeling recovered_at separately; never fabricate missing historical work. Report inaccessible historical runs as UNVERIFIED_HISTORY. Preserve all existing research, authority, no-trading, and subsystem requirements. Do not change schedules.",
+    "root_cause": "Previous prompts only required material events; no mandatory no-change/blocked receipt or read-back, so absence of an event was ambiguous.",
+    "limitations": [
+      "No access to previous scheduler conversation outputs through available tools; historical recovery unverified.",
+      "No post-change scheduled research completion verified yet.",
+      "This repair event is not a research result from any of the five agents."
+    ]
+  },
+  "execution_authorized": false
+}

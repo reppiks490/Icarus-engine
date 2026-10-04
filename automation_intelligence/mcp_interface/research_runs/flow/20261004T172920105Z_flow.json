@@ -1,0 +1,63 @@
+{
+  "schema_version": "icarus-research-run-v1",
+  "run_id": "flow-20261004T172920105Z",
+  "lane": "flow",
+  "automation_id": "6ab817544e68819197b5db21eb2cbe2b",
+  "started_at_utc": "2026-10-04T17:28:16Z",
+  "completed_at_utc": "2026-10-04T17:29:20.105Z",
+  "outcome": "NO_MATERIAL_DELTA",
+  "substantive_work_performed": true,
+  "summary": "Fresh completed-hour acquisition did not extend the prior 12:00 UTC range-only burst into another abnormal flow or volatility event. At 16:00 UTC, Bybit spot printed a 261.0 USD range and 70.422881 BTC volume. Against the preceding 28 completed spot hours, robust z-scores were +1.1025 for range and -0.2075 for volume, below the anomaly threshold. Bybit linear (265.7 USD) and Twelve Data BTC/USD (254.67 USD) independently reconciled the price range. ARGUS records a genuine point-in-time 0.1 USD displayed spread but has no historical depth sequence and therefore reports NO_MATERIAL_DELTA. NEXUS finds no new representation conflict or source-health drift and reports NO_MATERIAL_DELTA. The recurrent episodic-volatility interpretation remains unchanged; no routing, learning or trading behavior was altered.",
+  "evidence": [
+    {
+      "type": "prior_receipt",
+      "repository": "reppiks490/Icarus-engine",
+      "ref": "main",
+      "path": "automation_intelligence/mcp_interface/research_runs/flow/20261004T132529000Z_flow.json",
+      "blob_sha": "8d85b10c466ae252c70dbbe857f5d14300e325ab"
+    },
+    {
+      "type": "provider_query",
+      "source": "Bybit get_kline",
+      "url": "https://agent.bybit.com/mcp/open?symbol=BTCUSDT&category=spot&source=chatgpt",
+      "representation": "BTCUSDT spot 1h",
+      "event_time": "2026-10-04T16:00:00Z",
+      "retrieval_time_anchor": "2026-10-04T17:28:50.753Z",
+      "result": "Range 261.0 USD; volume 70.422881 BTC; range robust z +1.1025; volume robust z -0.2075 against preceding 28 completed hours."
+    },
+    {
+      "type": "provider_query",
+      "source": "Bybit get_kline",
+      "url": "https://agent.bybit.com/mcp/open?symbol=BTCUSDT&category=linear&source=chatgpt",
+      "representation": "BTCUSDT linear 1h",
+      "event_time": "2026-10-04T16:00:00Z",
+      "retrieval_time_anchor": "2026-10-04T17:28:50.753Z",
+      "result": "Range 265.7 USD; reported volume 656.84; representation-specific volume not fused."
+    },
+    {
+      "type": "provider_query",
+      "source": "Twelve Data get_time_series",
+      "url": "https://twelvedata.com/",
+      "representation": "BTC/USD 1h",
+      "event_time": "2026-10-04T16:00:00Z",
+      "retrieval_time_anchor": "2026-10-04T17:28:50.753Z",
+      "result": "Range 254.67 USD; forming 17:00 interval excluded."
+    },
+    {
+      "type": "provider_query",
+      "source": "Bybit get_orderbook",
+      "url": "https://www.bybit.com/",
+      "representation": "BTCUSDT spot point-in-time displayed depth",
+      "source_timestamp": "2026-10-04T17:28:50.753Z",
+      "result": "Best bid 85376.5 x 0.357747 BTC; best ask 85376.6 x 0.059495 BTC; displayed spread 0.1 USD; no historical depth inference."
+    }
+  ],
+  "prior_receipt_path": "automation_intelligence/mcp_interface/research_runs/flow/20261004T132529000Z_flow.json",
+  "event_paths": [],
+  "blockers": [
+    "K-line and Twelve Data responses exposed event timestamps but no provider-specific retrieval timestamp; retrieval_time_anchor uses the parallel batch's Bybit orderbook server timestamp.",
+    "A single order-book snapshot has no historical depth baseline and cannot establish persistent liquidity, order-flow direction, auction behavior, liquidations, funding, basis, open interest or exchange flow.",
+    "No fresh direct NQ/MNQ, GC/MGC, SI, DXY, Treasury/rate-proxy or volatility-index evidence was acquired in this bounded cycle."
+  ],
+  "execution_authorized": false
+}

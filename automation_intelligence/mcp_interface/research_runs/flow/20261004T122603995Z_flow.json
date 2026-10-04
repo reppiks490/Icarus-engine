@@ -1,0 +1,82 @@
+{
+  "schema_version": "icarus-research-run-v1",
+  "run_id": "flow-20261004T122603995Z",
+  "lane": "flow",
+  "automation_id": "6ab817544e68819197b5db21eb2cbe2b",
+  "started_at_utc": "2026-10-04T12:23:32Z",
+  "completed_at_utc": "2026-10-04T12:26:03.995Z",
+  "outcome": "MATERIAL_DELTA",
+  "substantive_work_performed": true,
+  "summary": "Verified a net-new completed 09:00 UTC BTC range-only volatility burst after the prior 06:00 UTC joint range/turnover expansion, followed by normalization at 11:00 UTC. Bybit spot range robust z was +4.34 while spot volume robust z was only +0.70. Bybit linear and Twelve Data independently corroborated the price-range expansion. No directional order-flow, persistent liquidity-stress, or cross-asset causal claim was made.",
+  "evidence": [
+    {
+      "type": "prior_receipt",
+      "repository": "reppiks490/Icarus-engine",
+      "ref": "main",
+      "path": "automation_intelligence/mcp_interface/research_runs/flow/20261004T072206788Z_flow.json",
+      "blob_sha": "29dc749d2dbc2d7d005afe19e88575ddc62b61e5",
+      "observed_commit_sha": "212d3e28cd882431f5b724f3dd1136dc188681c0"
+    },
+    {
+      "type": "provider_query",
+      "source": "Bybit get_kline",
+      "url": "https://agent.bybit.com/mcp/open?symbol=BTCUSDT&category=spot&source=chatgpt",
+      "representation": "BTCUSDT spot 1h",
+      "event_time": "2026-10-04T09:00:00Z",
+      "retrieval_time_anchor": "2026-10-04T12:24:49.752Z",
+      "result": "Range 276.1 USD; volume 93.236680 BTC; range robust z +4.3356; volume robust z +0.7005 against preceding 28 completed hours."
+    },
+    {
+      "type": "provider_query",
+      "source": "Bybit get_kline",
+      "url": "https://agent.bybit.com/mcp/open?symbol=BTCUSDT&category=linear&source=chatgpt",
+      "representation": "BTCUSDT linear 1h",
+      "event_time": "2026-10-04T09:00:00Z",
+      "retrieval_time_anchor": "2026-10-04T12:24:49.752Z",
+      "result": "Range 279.0 USD; reported volume 1061.814."
+    },
+    {
+      "type": "provider_query",
+      "source": "Twelve Data get_time_series",
+      "url": "https://twelvedata.com/",
+      "representation": "BTC/USD 1h",
+      "event_time": "2026-10-04T09:00:00Z",
+      "retrieval_time_anchor": "2026-10-04T12:24:49.752Z",
+      "result": "Range 281.21 USD."
+    },
+    {
+      "type": "provider_query",
+      "source": "Bybit get_orderbook",
+      "url": "https://www.bybit.com/",
+      "representation": "BTCUSDT spot point-in-time displayed depth",
+      "source_timestamp": "2026-10-04T12:24:49.752Z",
+      "result": "Best bid 85284.2, best ask 85284.3, displayed spread 0.1 USD; snapshot used only as point-in-time evidence."
+    },
+    {
+      "type": "contract",
+      "repository": "reppiks490/Icarus-engine",
+      "ref": "main",
+      "path": "automation_intelligence/mcp_interface/contract.json",
+      "blob_sha": "991b157fd82b3dd9e7e49356fefb06dd89c22579"
+    },
+    {
+      "type": "persisted_event",
+      "repository": "reppiks490/Icarus-engine",
+      "ref": "main",
+      "path": "automation_intelligence/mcp_interface/events/20261004T122521423Z_flow_btc_range_only_burst_normalization.json",
+      "commit_sha": "f7779835663620f0bb96091721240e588a52026f",
+      "blob_sha": "293894bc0cb7983c880f01193aa745d0c88028ff",
+      "verification": "Exact JSON read back from main"
+    }
+  ],
+  "prior_receipt_path": "automation_intelligence/mcp_interface/research_runs/flow/20261004T072206788Z_flow.json",
+  "event_paths": [
+    "automation_intelligence/mcp_interface/events/20261004T122521423Z_flow_btc_range_only_burst_normalization.json"
+  ],
+  "blockers": [
+    "The K-line and Twelve Data responses exposed bar timestamps but no provider-specific retrieval timestamp; retrieval_time_anchor uses the same parallel query batch's Bybit orderbook server timestamp.",
+    "A single current order-book snapshot has no historical depth baseline and cannot establish a liquidity regime.",
+    "No fresh direct NQ/MNQ, GC/MGC, SI, DXY, Treasury/rate-proxy, or volatility-index evidence was acquired in this bounded cycle."
+  ],
+  "execution_authorized": false
+}

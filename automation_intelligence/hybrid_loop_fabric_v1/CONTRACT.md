@@ -133,3 +133,17 @@ The registry preserves every account loop with continuing architectural/research
 - Repository evidence outranks summaries where they conflict.
 - A GitHub Action is infrastructure, not cognition.
 - A ChatGPT automation is cognition, not a substitute for durable infrastructure.
+
+## Historical executor
+
+Historical lanes are not silently re-enabled. The former retired connection-canary automation slot `6abb1db46b308191ba1a27f13a42e745` is repurposed as **Historical Hybrid Executor (inactive)** and remains disabled.
+
+When intentionally enabled, it:
+- accepts only manual GitHub requests for registry lanes marked `HISTORICAL_DISABLED`;
+- resolves the exact original paused ChatGPT automation by `automation_id` and uses that task prompt as the primary execution contract;
+- uses the registry mandate only as a durable index/fallback, not as permission to discard detailed original instructions;
+- writes the same immutable hybrid result schema and read-back verifies it;
+- never enables the original paused task or mutates scheduler topology unless the user explicitly authorizes that exact mutation.
+
+This preserves the full dormant prompts while giving every valuable historical lane a GitHub↔ChatGPT execution path.
+

@@ -6,161 +6,238 @@
   "timezone": "America/Chicago",
   "execution_authorized": false,
   "architecture": {
-    "github_role": ["durable scheduling requests","immutable request identity","backfill detection","state/checkpoint persistence","result verification","audit trail"],
-    "chatgpt_role": ["research and reasoning","tool/plugin use","evidence reconciliation","hypothesis generation","analysis","task-specific judgment"],
+    "github_role": [
+      "durable scheduling requests",
+      "immutable request identity",
+      "backfill detection",
+      "state/checkpoint persistence",
+      "result verification",
+      "audit trail"
+    ],
+    "chatgpt_role": [
+      "research and reasoning",
+      "tool/plugin use",
+      "evidence reconciliation",
+      "hypothesis generation",
+      "analysis",
+      "task-specific judgment"
+    ],
     "completion_rule": "A GitHub request is complete only when its required result file exists and truthfully references the exact request_id. GitHub-native liveness receipts alone never count as substantive ChatGPT completion."
   },
   "active_schedule": {
-    "github_dispatch_minutes": {"omega":0,"macro":12,"flow":24,"aion":36,"daedalus":48},
+    "github_dispatch_minutes": {
+      "omega": 0,
+      "macro": 12,
+      "flow": 24,
+      "aion": 36,
+      "daedalus": 48
+    },
     "chatgpt_execution_delay_minutes": 5,
     "backfill_policy": "Oldest unresolved request first; then current request if budget permits. Never fabricate missed work."
   },
   "lanes": {
     "omega": {
-      "title":"OMEGA Fusion Core",
-      "automation_id":"6abb57443c0c81919676c71d87493353",
-      "state":"ACTIVE",
-      "project_scope":"ICARUS",
-      "mandate":"Supervisory synthesis lane. Reconcile Macro, Flow, AION, DAEDALUS, MCP-event and control-plane evidence; consume ATHENA, JANUS, INFRASTRUCTURE and HELIOS PRIME contributions; resolve conflicts/dependencies/blockers; emit evidence-backed integration priorities; preserve execution_authorized=false and immutable research/event receipts."
+      "title": "OMEGA Fusion Core",
+      "automation_id": "6abb57443c0c81919676c71d87493353",
+      "state": "ACTIVE",
+      "project_scope": "ICARUS",
+      "mandate": "Supervisory synthesis lane. Reconcile Macro, Flow, AION, DAEDALUS, MCP-event and control-plane evidence; consume ATHENA, JANUS, INFRASTRUCTURE and HELIOS PRIME contributions; resolve conflicts/dependencies/blockers; emit evidence-backed integration priorities; preserve execution_authorized=false and immutable research/event receipts.",
+      "dispatch_mode": "SCHEDULED_GITHUB_REQUEST_THEN_NATIVE_CHATGPT_WORKER"
     },
     "macro": {
-      "title":"Macro Shock Sentinel",
-      "automation_id":"6ab8174517b48191b67ac472205a28d3",
-      "state":"ACTIVE",
-      "project_scope":"ICARUS",
-      "mandate":"Macro/rates/FX/index/commodity regime and event-risk research. Own ORACLE and SUPERMESH-X responsibilities: time-valid research state, source/provider routing, freshness/provenance, provider drift and failover; distinguish FACT/SOURCE_CLAIM/MODEL_INFERENCE/UNKNOWN; never manufacture shocks."
+      "title": "Macro Shock Sentinel",
+      "automation_id": "6ab8174517b48191b67ac472205a28d3",
+      "state": "ACTIVE",
+      "project_scope": "ICARUS",
+      "mandate": "Macro/rates/FX/index/commodity regime and event-risk research. Own ORACLE and SUPERMESH-X responsibilities: time-valid research state, source/provider routing, freshness/provenance, provider drift and failover; distinguish FACT/SOURCE_CLAIM/MODEL_INFERENCE/UNKNOWN; never manufacture shocks.",
+      "dispatch_mode": "SCHEDULED_GITHUB_REQUEST_THEN_NATIVE_CHATGPT_WORKER"
     },
     "flow": {
-      "title":"Flow Velocity Engine",
-      "automation_id":"6ab817544e68819197b5db21eb2cbe2b",
-      "state":"ACTIVE",
-      "project_scope":"ICARUS",
-      "mandate":"Evidence-backed abnormal flow, microstructure, volatility, liquidity and cross-market research. Own ARGUS and NEXUS: authenticated market microstructure truth, causal data fabric, source/representation identity, event/availability clocks, replay, lineage, OOD/source health and cross-source reconciliation. Never claim unavailable depth/order-flow/OI/liquidations/funding/basis."
+      "title": "Flow Velocity Engine",
+      "automation_id": "6ab817544e68819197b5db21eb2cbe2b",
+      "state": "ACTIVE",
+      "project_scope": "ICARUS",
+      "mandate": "Evidence-backed abnormal flow, microstructure, volatility, liquidity and cross-market research. Own ARGUS and NEXUS: authenticated market microstructure truth, causal data fabric, source/representation identity, event/availability clocks, replay, lineage, OOD/source health and cross-source reconciliation. Never claim unavailable depth/order-flow/OI/liquidations/funding/basis.",
+      "dispatch_mode": "SCHEDULED_GITHUB_REQUEST_THEN_NATIVE_CHATGPT_WORKER"
     },
     "aion": {
-      "title":"AION PRIME Quant Scientist",
-      "automation_id":"6abb1618be1c8191943f5d4e2d88978d",
-      "state":"ACTIVE",
-      "project_scope":"ICARUS",
-      "mandate":"Quantitative falsification and research-evolution lane. Own AION, ASCENSION and PROMETHEUS: durable causal market memory, independent evaluator/trust/collision assurance, hypothesis generation and experiment routing. Require provenance, temporal integrity, costs, multiple-testing status, estimator validity, data sufficiency, ablation/redundancy awareness and OOS evidence where performance claims depend on it."
+      "title": "AION PRIME Quant Scientist",
+      "automation_id": "6abb1618be1c8191943f5d4e2d88978d",
+      "state": "ACTIVE",
+      "project_scope": "ICARUS",
+      "mandate": "Quantitative falsification and research-evolution lane. Own AION, ASCENSION and PROMETHEUS: durable causal market memory, independent evaluator/trust/collision assurance, hypothesis generation and experiment routing. Require provenance, temporal integrity, costs, multiple-testing status, estimator validity, data sufficiency, ablation/redundancy awareness and OOS evidence where performance claims depend on it.",
+      "dispatch_mode": "SCHEDULED_GITHUB_REQUEST_THEN_NATIVE_CHATGPT_WORKER"
     },
     "daedalus": {
-      "title":"DAEDALUS PRIME Systems Auditor",
-      "automation_id":"6ab8177918b48191a97e56c44b57d2c5",
-      "state":"ACTIVE",
-      "project_scope":"ICARUS",
-      "mandate":"Independent assurance and adversarial falsification. Own DAEDALUS and AEGIS: causal feature construction, purged/embargoed evaluation, multiple-testing control, holdout budgets, stress/ablation/drift checks, leakage/backdating/causal-time attacks, execution-assumption attacks, provenance corruption and weak-oracle detection. Classify VERIFIED/BLOCKING/DEGRADED/UNVERIFIED and never self-clear without evidence."
+      "title": "DAEDALUS PRIME Systems Auditor",
+      "automation_id": "6ab8177918b48191a97e56c44b57d2c5",
+      "state": "ACTIVE",
+      "project_scope": "ICARUS",
+      "mandate": "Independent assurance and adversarial falsification. Own DAEDALUS and AEGIS: causal feature construction, purged/embargoed evaluation, multiple-testing control, holdout budgets, stress/ablation/drift checks, leakage/backdating/causal-time attacks, execution-assumption attacks, provenance corruption and weak-oracle detection. Classify VERIFIED/BLOCKING/DEGRADED/UNVERIFIED and never self-clear without evidence.",
+      "dispatch_mode": "SCHEDULED_GITHUB_REQUEST_THEN_NATIVE_CHATGPT_WORKER"
     },
-
     "icarus_unified_control": {
-      "title":"ICARUS Unified Control Cycle",
-      "automation_id":"6ab50595ccb0819184e68bf620480e91",
-      "state":"HISTORICAL_DISABLED",
-      "project_scope":"ICARUS",
-      "mandate":"Five-stage same-execution control pipeline: evidence convergence, deterministic subsystem rotation, empirical research, repair/architecture forge, and independent verification/release assurance. Preserves pinned snapshots, claim/evidence/attempt lineage, dependency/conflict graphs, maturity authority, multiple-testing history, deterministic replay, cross-cycle continuity, anti-stagnation and fail-closed semantics."
+      "title": "ICARUS Unified Control Cycle",
+      "automation_id": "6ab50595ccb0819184e68bf620480e91",
+      "state": "HISTORICAL_DISABLED",
+      "project_scope": "ICARUS",
+      "mandate": "Five-stage same-execution control pipeline: evidence convergence, deterministic subsystem rotation, empirical research, repair/architecture forge, and independent verification/release assurance. Preserves pinned snapshots, claim/evidence/attempt lineage, dependency/conflict graphs, maturity authority, multiple-testing history, deterministic replay, cross-cycle continuity, anti-stagnation and fail-closed semantics.",
+      "execution_worker_automation_id": "6abb1db46b308191ba1a27f13a42e745",
+      "dispatch_mode": "MANUAL_GITHUB_REQUEST_THEN_HISTORICAL_EXECUTOR"
     },
     "aegis_red_team": {
-      "title":"AEGIS Red-Team Loop",
-      "automation_id":"6ab5d0af6fb4819182bc5081c0920862",
-      "state":"HISTORICAL_DISABLED",
-      "project_scope":"ICARUS_AEGIS",
-      "mandate":"Adversarially falsify the highest-severity supported claim using independent evidence and property/metamorphic/mutation/fault-injection checks. Attack leakage, holdout contamination, multiple testing, OOD/calibration, nonstationarity, common-driver redundancy, execution-cost blindness, schema ambiguity, recovery corruption, replay nondeterminism, provenance tampering and authority violations."
+      "title": "AEGIS Red-Team Loop",
+      "automation_id": "6ab5d0af6fb4819182bc5081c0920862",
+      "state": "HISTORICAL_DISABLED",
+      "project_scope": "ICARUS_AEGIS",
+      "mandate": "Adversarially falsify the highest-severity supported claim using independent evidence and property/metamorphic/mutation/fault-injection checks. Attack leakage, holdout contamination, multiple testing, OOD/calibration, nonstationarity, common-driver redundancy, execution-cost blindness, schema ambiguity, recovery corruption, replay nondeterminism, provenance tampering and authority violations.",
+      "execution_worker_automation_id": "6abb1db46b308191ba1a27f13a42e745",
+      "dispatch_mode": "MANUAL_GITHUB_REQUEST_THEN_HISTORICAL_EXECUTOR"
     },
     "loop_governor": {
-      "title":"ICARUS Loop Governor",
-      "automation_id":"6ab5d88fe3bc8191a6df61e2c66aa8ed",
-      "state":"HISTORICAL_DISABLED",
-      "project_scope":"ACCOUNT_CONTROL",
-      "mandate":"Supervisory portfolio manager for loop health and allocation. Inspect enabled state, cadence, freshness, evidence and marginal value; classify HEALTHY/LATE/STALE/MISCONFIGURED/BLOCKED/UNKNOWN; preserve distinct roles; minimize duplication and thrash; retarget goals or swap subordinate loops only from evidence; never infer health from enabled=true alone."
+      "title": "ICARUS Loop Governor",
+      "automation_id": "6ab5d88fe3bc8191a6df61e2c66aa8ed",
+      "state": "HISTORICAL_DISABLED",
+      "project_scope": "ACCOUNT_CONTROL",
+      "mandate": "Supervisory portfolio manager for loop health and allocation. Inspect enabled state, cadence, freshness, evidence and marginal value; classify HEALTHY/LATE/STALE/MISCONFIGURED/BLOCKED/UNKNOWN; preserve distinct roles; minimize duplication and thrash; retarget goals or swap subordinate loops only from evidence; never infer health from enabled=true alone.",
+      "execution_worker_automation_id": "6abb1db46b308191ba1a27f13a42e745",
+      "dispatch_mode": "MANUAL_GITHUB_REQUEST_THEN_HISTORICAL_EXECUTOR"
     },
     "3d_masterbuild": {
-      "title":"3D Masterbuild Loop",
-      "automation_id":"6ab729e3fc948191bb2427f9886abbd5",
-      "state":"HISTORICAL_DISABLED",
-      "project_scope":"3D_CHARACTER_BUILDER",
-      "mandate":"Advance the prompt-driven high-end 3D character-builder: dense geometry, 4K/8K/UDIM PBR, displacement/micro-normal, skin/eyes, strand/groom hair, retopology, segmentation, morphs, rigging, animation, prompt/image/multiview generation, LOD/export, GPU acceleration and high-end rendering; require concrete net-new architecture, implementation, research, tests or bottleneck decisions."
+      "title": "3D Masterbuild Loop",
+      "automation_id": "6ab729e3fc948191bb2427f9886abbd5",
+      "state": "HISTORICAL_DISABLED",
+      "project_scope": "3D_CHARACTER_BUILDER",
+      "mandate": "Advance the prompt-driven high-end 3D character-builder: dense geometry, 4K/8K/UDIM PBR, displacement/micro-normal, skin/eyes, strand/groom hair, retopology, segmentation, morphs, rigging, animation, prompt/image/multiview generation, LOD/export, GPU acceleration and high-end rendering; require concrete net-new architecture, implementation, research, tests or bottleneck decisions.",
+      "execution_worker_automation_id": "6abb1db46b308191ba1a27f13a42e745",
+      "dispatch_mode": "MANUAL_GITHUB_REQUEST_THEN_HISTORICAL_EXECUTOR"
     },
     "aegis_masterbuild": {
-      "title":"AEGIS Masterbuild Loop",
-      "automation_id":"6ab5d0a8592081918da36960bd6cf1eb",
-      "state":"HISTORICAL_DISABLED",
-      "project_scope":"ICARUS_AEGIS",
-      "mandate":"Architecture-to-implementation masterbuild lane. Prioritize verified executable defects, root-cause analysis and TDD; preserve deterministic serialization/replay, temporal integrity, fail-closed qualification and tamper-evident provenance; historically focused on pre-window trade-state leakage, CLI integration lineage and then AEGIS kernel gates."
+      "title": "AEGIS Masterbuild Loop",
+      "automation_id": "6ab5d0a8592081918da36960bd6cf1eb",
+      "state": "HISTORICAL_DISABLED",
+      "project_scope": "ICARUS_AEGIS",
+      "mandate": "Architecture-to-implementation masterbuild lane. Prioritize verified executable defects, root-cause analysis and TDD; preserve deterministic serialization/replay, temporal integrity, fail-closed qualification and tamper-evident provenance; historically focused on pre-window trade-state leakage, CLI integration lineage and then AEGIS kernel gates.",
+      "execution_worker_automation_id": "6abb1db46b308191ba1a27f13a42e745",
+      "dispatch_mode": "MANUAL_GITHUB_REQUEST_THEN_HISTORICAL_EXECUTOR"
     },
     "release_cohesion": {
-      "title":"ICARUS Release Cohesion Loop",
-      "automation_id":"6ab47d3efef48191874fc2fdba18ef74",
-      "state":"HISTORICAL_DISABLED",
-      "project_scope":"ICARUS",
-      "mandate":"Independent integration/regression/qualification lane. Reconcile provenance-backed artifacts, validate executable/composition claims on pinned revisions, identify exact release blockers, require independent oracle quality, and qualify entry to kernel/release gates without equating green CI with semantic correctness."
+      "title": "ICARUS Release Cohesion Loop",
+      "automation_id": "6ab47d3efef48191874fc2fdba18ef74",
+      "state": "HISTORICAL_DISABLED",
+      "project_scope": "ICARUS",
+      "mandate": "Independent integration/regression/qualification lane. Reconcile provenance-backed artifacts, validate executable/composition claims on pinned revisions, identify exact release blockers, require independent oracle quality, and qualify entry to kernel/release gates without equating green CI with semantic correctness.",
+      "execution_worker_automation_id": "6abb1db46b308191ba1a27f13a42e745",
+      "dispatch_mode": "MANUAL_GITHUB_REQUEST_THEN_HISTORICAL_EXECUTOR"
     },
     "implementation_extraction": {
-      "title":"ICARUS Implementation Extraction Loop",
-      "automation_id":"6ab487512e9c8191b7bbc2bd42bfd304",
-      "state":"HISTORICAL_DISABLED",
-      "project_scope":"ICARUS",
-      "mandate":"Translate verified designs/findings into the smallest implementation-ready package: exact interfaces, schemas, provenance/version requirements, temporal/replay semantics, dependencies, fail-closed behavior, acceptance criteria, independent tests, deterministic vectors, destination/module boundary, patch skeleton, rollback and non-goals."
+      "title": "ICARUS Implementation Extraction Loop",
+      "automation_id": "6ab487512e9c8191b7bbc2bd42bfd304",
+      "state": "HISTORICAL_DISABLED",
+      "project_scope": "ICARUS",
+      "mandate": "Translate verified designs/findings into the smallest implementation-ready package: exact interfaces, schemas, provenance/version requirements, temporal/replay semantics, dependencies, fail-closed behavior, acceptance criteria, independent tests, deterministic vectors, destination/module boundary, patch skeleton, rollback and non-goals.",
+      "execution_worker_automation_id": "6abb1db46b308191ba1a27f13a42e745",
+      "dispatch_mode": "MANUAL_GITHUB_REQUEST_THEN_HISTORICAL_EXECUTOR"
     },
     "helios_prime_integration": {
-      "title":"HELIOS Prime Integration Loop",
-      "automation_id":"6ab5d0b80b88819191a643ca143bbc51",
-      "state":"HISTORICAL_DISABLED",
-      "project_scope":"ICARUS_HELIOS",
-      "mandate":"Sibling cross-system integration/evolution lane. Reconcile HELIOS H1-H6 with ICARUS/AION/DAEDALUS/NEXUS/AEGIS, close source-package gaps, validate adapter boundaries, preserve serialized contract compatibility, establish provenance/ownership, and emit extraction-ready adapter specs, migration/replay tests and compatibility matrices."
+      "title": "HELIOS Prime Integration Loop",
+      "automation_id": "6ab5d0b80b88819191a643ca143bbc51",
+      "state": "HISTORICAL_DISABLED",
+      "project_scope": "ICARUS_HELIOS",
+      "mandate": "Sibling cross-system integration/evolution lane. Reconcile HELIOS H1-H6 with ICARUS/AION/DAEDALUS/NEXUS/AEGIS, close source-package gaps, validate adapter boundaries, preserve serialized contract compatibility, establish provenance/ownership, and emit extraction-ready adapter specs, migration/replay tests and compatibility matrices.",
+      "execution_worker_automation_id": "6abb1db46b308191ba1a27f13a42e745",
+      "dispatch_mode": "MANUAL_GITHUB_REQUEST_THEN_HISTORICAL_EXECUTOR"
     },
     "icarus_assurance": {
-      "title":"ICARUS Assurance Loop",
-      "automation_id":"6ab5b14ce2cc8191aea1eb5416b23152",
-      "state":"HISTORICAL_DISABLED",
-      "project_scope":"ICARUS",
-      "mandate":"Implementation-and-verification lane targeting the highest-value unresolved executable gap, especially durable control-plane substrate and repository-addressable evidence. Use adversarial/property/mutation/regression checks where possible and preserve pinned revision, lineage, oracle independence, conflict/dependency state and precise remediation."
+      "title": "ICARUS Assurance Loop",
+      "automation_id": "6ab5b14ce2cc8191aea1eb5416b23152",
+      "state": "HISTORICAL_DISABLED",
+      "project_scope": "ICARUS",
+      "mandate": "Implementation-and-verification lane targeting the highest-value unresolved executable gap, especially durable control-plane substrate and repository-addressable evidence. Use adversarial/property/mutation/regression checks where possible and preserve pinned revision, lineage, oracle independence, conflict/dependency state and precise remediation.",
+      "execution_worker_automation_id": "6abb1db46b308191ba1a27f13a42e745",
+      "dispatch_mode": "MANUAL_GITHUB_REQUEST_THEN_HISTORICAL_EXECUTOR"
     },
     "edge_research_s3": {
-      "title":"3/5 ICARUS Agent Reach Edge Research",
-      "automation_id":"6ab45acb71a481919e7cda2fcae073a1",
-      "state":"HISTORICAL_DISABLED",
-      "project_scope":"ICARUS",
-      "mandate":"Empirical edge research with progressive registry, honest attempt ledger and multiple-testing universe. Cross-reference independent evidence; decompose mechanisms; require observability/data sufficiency, estimator validity, redundancy/incremental-information tests, factual-provenance checks, realistic cost/stress/OOS evidence, and reject redundant or unsupported complexity."
+      "title": "3/5 ICARUS Agent Reach Edge Research",
+      "automation_id": "6ab45acb71a481919e7cda2fcae073a1",
+      "state": "HISTORICAL_DISABLED",
+      "project_scope": "ICARUS",
+      "mandate": "Empirical edge research with progressive registry, honest attempt ledger and multiple-testing universe. Cross-reference independent evidence; decompose mechanisms; require observability/data sufficiency, estimator validity, redundancy/incremental-information tests, factual-provenance checks, realistic cost/stress/OOS evidence, and reject redundant or unsupported complexity.",
+      "execution_worker_automation_id": "6abb1db46b308191ba1a27f13a42e745",
+      "dispatch_mode": "MANUAL_GITHUB_REQUEST_THEN_HISTORICAL_EXECUTOR"
     },
     "evidence_convergence_s1": {
-      "title":"1/5 ICARUS Evidence Convergence",
-      "automation_id":"6ab487f2edac8191ac50c99b26775ad1",
-      "state":"HISTORICAL_DISABLED",
-      "project_scope":"ICARUS",
-      "mandate":"Establish repository truth and one evidence-backed priority. Pin immutable repository snapshots, maintain stable evidence/claim/dependency/conflict lineage, detect duplication and contradictions, enforce policy/version/handoff integrity, adaptive depth and anti-stagnation, and never manufacture work."
+      "title": "1/5 ICARUS Evidence Convergence",
+      "automation_id": "6ab487f2edac8191ac50c99b26775ad1",
+      "state": "HISTORICAL_DISABLED",
+      "project_scope": "ICARUS",
+      "mandate": "Establish repository truth and one evidence-backed priority. Pin immutable repository snapshots, maintain stable evidence/claim/dependency/conflict lineage, detect duplication and contradictions, enforce policy/version/handoff integrity, adaptive depth and anti-stagnation, and never manufacture work.",
+      "execution_worker_automation_id": "6abb1db46b308191ba1a27f13a42e745",
+      "dispatch_mode": "MANUAL_GITHUB_REQUEST_THEN_HISTORICAL_EXECUTOR"
     },
     "repair_architecture_s4": {
-      "title":"4/5 ICARUS Repair & Architecture Forge",
-      "automation_id":"6ab47cac6eec8191b4e22fcdf4314cf2",
-      "state":"HISTORICAL_DISABLED",
-      "project_scope":"ICARUS",
-      "mandate":"Convert mature evidence-backed findings into the smallest safe repair or implementation-ready package. Use root-cause analysis and RED→GREEN→REFACTOR for canonical defects, design-gate new behavior, create research-only diagnostic seams for blocked ablations, preserve oracle independence, current CI context and exact snapshot/policy lineage."
+      "title": "4/5 ICARUS Repair & Architecture Forge",
+      "automation_id": "6ab47cac6eec8191b4e22fcdf4314cf2",
+      "state": "HISTORICAL_DISABLED",
+      "project_scope": "ICARUS",
+      "mandate": "Convert mature evidence-backed findings into the smallest safe repair or implementation-ready package. Use root-cause analysis and RED→GREEN→REFACTOR for canonical defects, design-gate new behavior, create research-only diagnostic seams for blocked ablations, preserve oracle independence, current CI context and exact snapshot/policy lineage.",
+      "execution_worker_automation_id": "6abb1db46b308191ba1a27f13a42e745",
+      "dispatch_mode": "MANUAL_GITHUB_REQUEST_THEN_HISTORICAL_EXECUTOR"
     },
     "subsystem_rotation_s2": {
-      "title":"2/5 ICARUS Subsystem Rotation",
-      "automation_id":"6ab47d0f7ab08191a5293ec9181e4fce",
-      "state":"HISTORICAL_DISABLED",
-      "project_scope":"ICARUS",
-      "mandate":"Round-robin NEXUS→AION→ARGUS→ATHENA→DAEDALUS→ORACLE; advance one evidence-backed subsystem boundary without duplication. Require same-cycle policy/snapshot integrity, preserve evidence/claim/dependency/conflict lineage, validate ownership/interfaces and produce the smallest useful artifact."
+      "title": "2/5 ICARUS Subsystem Rotation",
+      "automation_id": "6ab47d0f7ab08191a5293ec9181e4fce",
+      "state": "HISTORICAL_DISABLED",
+      "project_scope": "ICARUS",
+      "mandate": "Round-robin NEXUS→AION→ARGUS→ATHENA→DAEDALUS→ORACLE; advance one evidence-backed subsystem boundary without duplication. Require same-cycle policy/snapshot integrity, preserve evidence/claim/dependency/conflict lineage, validate ownership/interfaces and produce the smallest useful artifact.",
+      "execution_worker_automation_id": "6abb1db46b308191ba1a27f13a42e745",
+      "dispatch_mode": "MANUAL_GITHUB_REQUEST_THEN_HISTORICAL_EXECUTOR"
     },
     "verification_release_s5": {
-      "title":"5/5 ICARUS Verification & Release",
-      "automation_id":"6ab45cd29df4819182b4ad09661de84e",
-      "state":"HISTORICAL_DISABLED",
-      "project_scope":"ICARUS",
-      "mandate":"Independent cycle-close verification and release assurance. Reconstruct policy/snapshot/handoff/evidence chains, collapse duplicate evidence, require dependency closure and independent verification oracles, arbitrate conflicts without voting, enforce promotion authority, and only allow VERIFIED_FOR_INTEGRATION from same-policy pinned-revision evidence."
+      "title": "5/5 ICARUS Verification & Release",
+      "automation_id": "6ab45cd29df4819182b4ad09661de84e",
+      "state": "HISTORICAL_DISABLED",
+      "project_scope": "ICARUS",
+      "mandate": "Independent cycle-close verification and release assurance. Reconstruct policy/snapshot/handoff/evidence chains, collapse duplicate evidence, require dependency closure and independent verification oracles, arbitrate conflicts without voting, enforce promotion authority, and only allow VERIFIED_FOR_INTEGRATION from same-policy pinned-revision evidence.",
+      "execution_worker_automation_id": "6abb1db46b308191ba1a27f13a42e745",
+      "dispatch_mode": "MANUAL_GITHUB_REQUEST_THEN_HISTORICAL_EXECUTOR"
     },
     "helios_audit": {
-      "title":"HELIOS Audit Loop",
-      "automation_id":"6ab47a8451088191970b043ccaa58abb",
-      "state":"HISTORICAL_DISABLED",
-      "project_scope":"ICARUS_HELIOS",
-      "mandate":"Read-only audit of HELIOS/ICARUS repositories, branches, commits, PRs, Actions, artifacts, handoffs, architecture, tests and sibling contracts. Reconcile capability/ownership status, drift, duplication, integration hazards and blockers; prefer canonical repository evidence and never fabricate plugin/worker execution."
+      "title": "HELIOS Audit Loop",
+      "automation_id": "6ab47a8451088191970b043ccaa58abb",
+      "state": "HISTORICAL_DISABLED",
+      "project_scope": "ICARUS_HELIOS",
+      "mandate": "Read-only audit of HELIOS/ICARUS repositories, branches, commits, PRs, Actions, artifacts, handoffs, architecture, tests and sibling contracts. Reconcile capability/ownership status, drift, duplication, integration hazards and blockers; prefer canonical repository evidence and never fabricate plugin/worker execution.",
+      "execution_worker_automation_id": "6abb1db46b308191ba1a27f13a42e745",
+      "dispatch_mode": "MANUAL_GITHUB_REQUEST_THEN_HISTORICAL_EXECUTOR"
     }
   },
   "excluded_retired": [
-    {"title":"RETIRED OMEGA Work-bound (inactive)","automation_id":"6ab817357a2c8191ac3a407f14d6a8c1","reason":"superseded by active OMEGA/GitHub-native v3"},
-    {"title":"RETIRED Connection Canary","automation_id":"6abb1db46b308191ba1a27f13a42e745","reason":"single-purpose Dropbox mutation canary; no enduring research mandate"},
-    {"title":"RETIRED AION PRIME (inactive)","automation_id":"6ab817679a248191928d7bd6fa8e4a3c","reason":"superseded by active AION PRIME"}
+    {
+      "title": "RETIRED OMEGA Work-bound (inactive)",
+      "automation_id": "6ab817357a2c8191ac3a407f14d6a8c1",
+      "reason": "superseded by active OMEGA/GitHub-native v3"
+    },
+    {
+      "title": "RETIRED AION PRIME (inactive)",
+      "automation_id": "6ab817679a248191928d7bd6fa8e4a3c",
+      "reason": "superseded by active AION PRIME"
+    }
+  ],
+  "historical_executor": {
+    "automation_id": "6abb1db46b308191ba1a27f13a42e745",
+    "title": "Historical Hybrid Executor (inactive)",
+    "state": "DISABLED",
+    "schedule_when_enabled": "hourly at :57 America/Chicago",
+    "purpose": "Execute manually dispatched HISTORICAL_DISABLED lanes by resolving the exact original paused ChatGPT automation prompt via automation_id, while GitHub supplies durable request/result state.",
+    "execution_authorized": false
+  },
+  "repurchased_retired_slots": [
+    {
+      "former_title": "RETIRED Connection Canary",
+      "automation_id": "6abb1db46b308191ba1a27f13a42e745",
+      "new_title": "Historical Hybrid Executor (inactive)",
+      "reason": "Retired single-purpose canary slot reused as dormant account-wide historical hybrid executor."
+    }
   ]
 }

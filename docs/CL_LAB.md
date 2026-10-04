@@ -10,13 +10,21 @@ CL (Claude, Anthropic) — 2026-10-03. Lane tag **CL**: branches `claude/cl-*`, 
 4. **Gates** (`cl_lab/validate.py`, `cl-gates-1`): TUNE < 2025-10-01, HOLD 2025-10-01 → 2026-10-04 (untouched by the grammar's design), FORWARD ≥ 2026-10-05. Sample → Newey–West t ≥ 2 → BH-FDR q ≤ 0.10 over all 492 → Deflated Sharpe ≥ 0.95 with Li–Ji effective trials → HOLD t ≥ 1.65 with Holm → doubled-cost stress → quarterly + parameter-neighbour stability → asset-level Hansen SPA p ≤ 0.10 and CSCV PBO ≤ 0.25.
 5. **Registry** (`automation_intelligence/cl_lab/champions.json`): a rule is frozen at first registration (CANDIDATE or better); forward evidence counts only sessions after that date; entries are never deleted.
 
+## THE PULSE OF ICARUS (cl_lab/pulse_track.py)
+
+The repo's own v3.1 port runs every time its code, preset or the 20m tape change, on three variants: Heikin-Ashi signals with REAL fills (what a broker gives), standard candles, and HA-chart-with-HA-fills (TradingView's default; status always `ARTIFACT_REFERENCE`). CL base costs $0.85/side/contract + 1 tick, stress $1.70 + 2 ticks; the repo's historical $0.37 + 2 ticks is reported too and reproduces the earlier +$11,853. First run (2024-09 → 2026-09, 10 MNQ): HA real fills +$11,915 over 490 trades (TUNE t 0.27, HOLD t 0.37) → REJECTED; candles +$33,746 (TUNE t 1.68, HOLD t 0.31) → REJECTED; HA fills +$317,187 → artifact. Deflated Sharpe assumes 100 tuning trials (the TradingView history is unrecorded).
+
+## Edge explorer (cl_lab/explore.py, `cl-x1`)
+
+Each run invents 24 never-tested compositions per asset from ~56k (wider grids × regime × 14 causal day conditioners: prior-session direction, overnight gap and range, day of week, VIX level and VIX9D/VIX term structure). Every attempt is appended to `explore_ledger.jsonl`; BH-FDR includes every earlier TUNE p-value, the Deflated Sharpe counts every earlier trial, and HOLD uses Bonferroni over every rule that ever reached HOLD — so more searching cannot manufacture a champion. `cl_lab/causality.py` makes the look-ahead checks reusable; every conditioner and sampled composition passes them.
+
 ## Causality proof (tests_cl/test_core.py)
 
 Every one of the 492 candidates passes cross-day prefix invariance and intraday truncation invariance (bars after the cut replaced with garbage); a deliberately leaky positive control is detected. The workflow refuses to publish outputs if any lab test fails.
 
 ## Outputs (namespace `automation_intelligence/cl_lab/`, 1:1 persistence invariant)
 
-`heartbeat.json` (only mutable marker) → `history/<RUN_ID>.json` (immutable, read back) → `latest.json` (identical bytes) → `candidates_latest.json`, `champions.json`, `ui_feed.json`, `feeds_manifest.json`. RUN_ID is deterministic from the inputs, so unchanged inputs are a no-op. `ui_feed.json` (`cl_lab.ui_feed/1`) is the contract for the ICARUS UI: `ui_state` is always `RESEARCH ONLY`; nothing here is trading authority.
+`heartbeat.json` (only mutable marker) → `history/<RUN_ID>.json` (immutable, read back) → `latest.json` (identical bytes) → `candidates_latest.jsonl`, `pulse_latest.json`, `explore_ledger.jsonl`, `champions.json`, `ui_feed.json`, `feeds_manifest.json`. RUN_ID is deterministic from the inputs, so unchanged inputs are a no-op. `ui_feed.json` (`cl_lab.ui_feed/1`) is the contract for the ICARUS UI: `ui_state` is always `RESEARCH ONLY`; nothing here is trading authority.
 
 ## First run (2026-10-04, local, same inputs as Actions)
 

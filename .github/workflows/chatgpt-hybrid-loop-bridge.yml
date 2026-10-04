@@ -3,17 +3,21 @@ name: chatgpt-hybrid-loop-bridge
 on:
   schedule:
     - cron: "0 * * * *"
-    - cron: "12 * * * *"
-    - cron: "24 * * * *"
-    - cron: "36 * * * *"
-    - cron: "48 * * * *"
+    - cron: "10 * * * *"
+    - cron: "20 * * * *"
+    - cron: "30 * * * *"
   workflow_dispatch:
     inputs:
       requested_lane:
-        description: "Lane slug, all_active, or all_registered"
+        description: "Lane slug or all_active. Historical lanes must be dispatched one at a time."
         required: true
         type: string
         default: "all_active"
+      reconcile_only:
+        description: "Reconcile result/request health without creating a new request."
+        required: true
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -41,23 +45,29 @@ jobs:
         shell: bash
         run: git pull --rebase origin main
 
-      - name: Enqueue durable hybrid request
+      - name: Enqueue or reconcile durable hybrid work
         env:
           EVENT_NAME: ${{ github.event_name }}
           SCHEDULE_EXPR: ${{ github.event.schedule || '' }}
           REQUESTED_LANE: ${{ inputs.requested_lane || 'all_active' }}
+          RECONCILE_ONLY: ${{ inputs.reconcile_only || false }}
         shell: bash
         run: |
           set -euo pipefail
-          python tools/hybrid_loop_bridge.py \
-            --repo-root . \
-            --event-name "$EVENT_NAME" \
-            --schedule "$SCHEDULE_EXPR" \
-            --requested-lane "$REQUESTED_LANE" \
-            --workflow-run-id "$GITHUB_RUN_ID" \
+          args=(
+            --repo-root .
+            --event-name "$EVENT_NAME"
+            --schedule "$SCHEDULE_EXPR"
+            --requested-lane "$REQUESTED_LANE"
+            --workflow-run-id "$GITHUB_RUN_ID"
             --workflow-run-attempt "$GITHUB_RUN_ATTEMPT"
+          )
+          if [ "$RECONCILE_ONLY" = "true" ]; then
+            args+=(--reconcile-only)
+          fi
+          python tools/hybrid_loop_bridge.py "${args[@]}"
 
-      - name: Stage only hybrid bridge runtime state
+      - name: Stage only hybrid runtime state
         shell: bash
         run: |
           set -euo pipefail
@@ -65,7 +75,7 @@ jobs:
           git add automation_intelligence/hybrid_loop_fabric_v1/health
           staged="$(git diff --cached --name-only)"
           if [ -z "$staged" ]; then
-            echo "No hybrid request state changed."
+            echo "No hybrid request/health state changed."
             exit 0
           fi
           invalid="$(printf '%s\n' "$staged" | grep -Ev '^automation_intelligence/hybrid_loop_fabric_v1/(requests|health)/' || true)"
@@ -75,7 +85,7 @@ jobs:
             exit 1
           fi
 
-      - name: Commit and persist hybrid request
+      - name: Commit and persist hybrid request state
         shell: bash
         run: |
           set -euo pipefail
@@ -104,6 +114,6 @@ jobs:
           done
 
           if [ "$pushed" -ne 1 ]; then
-            echo "Failed to persist hybrid request after 5 optimistic attempts." >&2
+            echo "Failed to persist hybrid request state after 5 optimistic attempts." >&2
             exit 1
           fi

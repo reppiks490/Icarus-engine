@@ -20,8 +20,8 @@ from datetime import date
 
 import pandas as pd
 
-from . import (EXECUTION_AUTHORIZED, LAB_VERSION, LANE, bars, costs, explore, grammar, pulse_track, registry, sessions,
-               store, validate)
+from . import (EXECUTION_AUTHORIZED, LAB_VERSION, LANE, bars, costs, explore, grammar, hypotheses, pulse_track, registry,
+               sessions, store, validate)
 
 ASSETS = {
     "MNQ": dict(kind="csv", path="data/mnq_5m_full.csv", cost=costs.MNQ, stress=costs.MNQ_STRESS,
@@ -218,6 +218,14 @@ def run_cycle(out_dir, cache_dir=".cl_cache", assets=None, now=None):
                                                      for r in xrec.values()),
                                                     key=lambda r: -(r["tune_t"] if r["tune_t"] is not None else -99))[:5])
         full[n] += list(xrec.values())
+        hrec, hdiag, _ = validate.evaluate(sess, hypotheses.CANDIDATES, cfg["cost"], cfg["stress"], cfg["metric"],
+                                           forward_start=FORWARD_START, run_fn=hypotheses.run_r)
+        reg = registry.merge(reg, n, hrec, run_id, at, hypotheses.HYPOTHESES_VERSION)
+        per_asset[n]["hypotheses"] = dict(
+            version=hypotheses.HYPOTHESES_VERSION, diagnostics=hdiag,
+            records=[{k: r.get(k) for k in ("id", "family", "params", "tune_trades", "tune_t", "dsr", "hold_t",
+                                            "hold_holm_p", "status")} for r in hrec.values()])
+        full[n] += list(hrec.values())
         if n == "MNQ":
             p = pulse_section(out_dir, list(sess.dates), diag["var_sr"])
             per_asset[n]["pulse"] = {k: p.get(k) for k in ("strategy", "variants", "totals", "trials_assumed_for_dsr",
@@ -246,7 +254,8 @@ def run_cycle(out_dir, cache_dir=".cl_cache", assets=None, now=None):
         ui_state="RESEARCH ONLY", execution_authorized=False, production_decision_authorized=False,
         feeds={k: v.get("status") for k, v in feeds.items()},
         assets={n: {k: v.get(k) for k in ("status", "sessions", "status_counts", "diagnostics", "champions",
-                                          "challengers", "pulse", "explorer")} for n, v in per_asset.items()}))
+                                          "challengers", "pulse", "explorer", "hypotheses")}
+                for n, v in per_asset.items()}))
     _write_json(hb_path, dict(lane=LANE, status="IDLE", last_run_id=run_id, last_completed_at=payload["finished_at"],
                               latest_sha256=latest_sha, execution_authorized=False))
     return dict(status="RUN_PERSISTED", run_id=run_id, latest_sha256=latest_sha)

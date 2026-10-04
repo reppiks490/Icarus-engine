@@ -649,3 +649,201 @@ tape have now inverted on real data: the 83.6% win rate, the location sign, the
 hold-time gradient, and the cross-asset breadth features. The tape is not a
 weak proxy for the market; it is an unrelated process that happens to look like
 one. Nothing measured on it should be carried forward without re-testing.
+
+
+<!-- CL (Claude, Anthropic) — 2026-10-04: reconciled verbatim from PR #2 (branch claude/research-restore @ f04ae692a54eff04f9098961bcd8e578cd25d9ca, docs/RESEARCH_LOG.md lines 655-848). These four sections existed only on that branch; every other PR #2 file is already on main or is vendor data withheld from this public repo. The 16-market panel CSVs these sections cite remain on that branch only. -->
+
+## F-004 (closed) — 16-market replication refutes the premise, and the continuation lead with it
+
+F-004 left two things open: whether the sweep premise replicates, and whether
+the CONTINUATION signal at MNQ 10m (73% half-to-half sign agreement, negative
+both halves) was real. Six more markets were added -- volatility, an energy
+sector, silver, intermediate rates, the dollar, emerging -- bringing the panel
+to 16 markets across nine asset classes, 2,772 cells.
+
+**Adding independent markets REDUCED the apparent signal:**
+
+| panel | cells | raw p<0.05 | expected by chance | survive FDR |
+|---|---|---|---|---|
+| 10 markets | 1,692 | 176 | ~85 | 4 |
+| **16 markets** | **2,772** | **245** | **~139** | **1** |
+
+The lone survivor is the same SPY cell as before: one span, longest lookback,
+longest horizon, in a window where SPY fell. If a real effect existed, more
+markets would sharpen it. Fewer survivors on more data is what multiple-testing
+noise does when the correction is applied honestly.
+
+**Sign agreement is BELOW chance:**
+
+```
+pooled          46.5%  over 1,386 paired cells   (chance 50%, z = -2.60)
+median market   50.0%  -- exactly chance
+below 50%       8 of 16 markets
+```
+
+Systematic *dis*agreement between halves is not noise and not a real effect.
+It is drift: each half carries its own directional tilt, and the sweep effect
+reads it with opposite sign in each. The swings are enormous -- IEF goes from
+13% positive cells to 83% (+70pp), EEM 90% to 27% (-63pp), VXX 77% to 26%.
+
+**The continuation lead was an order statistic.** MNQ 10m's 73% agreement is
+the MAXIMUM of sixteen draws whose median is exactly 50%. Nothing about it
+survives being placed next to fifteen siblings. It was logged as a thread to
+test rather than a result, and testing it is what killed it.
+
+**Verdict.** The liquidity-sweep premise -- reversal OR continuation -- is not
+supported in any market on the panel. This is consistent with everything
+downstream: a permutation null on the finished strategy at p=0.377 held-out is
+what an entry signal built on a false premise produces.
+
+**What this does not say.** It does not say the engine is worthless or that no
+intraday edge exists. It says that THIS trigger, taking out a prior extreme and
+reclaiming it, carries no directional information at these horizons. The
+structural result in N-003 still stands on held-out data: large HTF moves
+develop progressively and are reachable from a lower timeframe. That problem is
+an execution problem, and it is untouched by this.
+
+---
+
+## N-004 — Time of day (NEGATIVE), and the conditioning search closes
+
+Time of day was the last conditioner worth trying, and the only one known with
+certainty in advance: it is not forecast, it is the clock. Intraday
+seasonality is among the most durable regularities in equity markets, so if
+the commitment trigger carried direction anywhere, the open or the close were
+the places to look.
+
+Commitment entry at 0.5 ATR, HTF 60m, sliced into 23 ET hourly buckets, both
+spans:
+
+```
+buckets positive on BOTH spans:   2   (04:00 and 11:00)
+expected by chance:             5.75   (23 x 0.25)
+```
+
+Fewer than chance, and both survivors are hollow -- 11:00 is +0.000R on the
+tuning span, and 04:00 reads +0.046R against +0.292R, a six-fold discrepancy
+that is not a stable effect. Bucket means are predominantly negative
+throughout, which is what a trigger that enters at a local extreme and pays
+the spread produces.
+
+**The conditioning search is now complete:**
+
+| conditioner | tested on | result |
+|---|---|---|
+| sweep structure | 16 markets, 2,772 cells | no directional information (F-004) |
+| prior volatility | 5 quintiles, both spans | MFE/MAE invariant at ~0.90 |
+| cross-asset breadth | 9 features, two halves | 7 of 9 reverse sign (N-002) |
+| time of day | 23 buckets, both spans | fewer both-span positives than chance |
+
+**What this says, precisely.** At 5-to-60-minute horizons on MNQ, the direction
+of the next move is not predictable from any of: the sweep trigger, the
+volatility regime, related instruments, or the clock. That is what market
+efficiency looks like at this resolution, and it is consistent with the
+permutation null on the finished strategy (p=0.377 held-out).
+
+**What it does not say.** It does not say no edge exists. It says none of the
+PRICE-DERIVED conditioners tested carry direction. Three things remain
+genuinely untested rather than refuted:
+
+1. **True order flow.** Aggressor-side volume is the one input that is causal
+   to price formation rather than derived from it. Astra's
+   `icarus_engine/microstructure.py` is built and correct and waiting on a tick
+   feed this plan does not entitle.
+2. **Options positioning.** Dealer hedging is mechanical, published, and
+   largely ignored by retail. Per-strike aggregates ARE entitled; open
+   interest is not, so only a volume-weighted proxy is reachable.
+3. **Cross-sectional lead-lag.** N-002 tested cross-asset features against
+   MNQ. It did not test lead-lag STRUCTURE across the thirteen-market panel,
+   which is a different question and is now cheap to ask.
+
+The structural result in N-003 also stands untouched: large HTF moves develop
+progressively and are reachable from a lower timeframe, on held-out data. What
+is missing is direction, not geometry.
+
+---
+
+## N-005 — Cross-sectional lead-lag (NEGATIVE in aggregate; what replicates is not tradeable)
+
+The last untested price-derived idea. N-002 asked whether cross-asset features
+predict MNQ; this asks whether any market in the thirteen-market panel leads
+any other, which is a different question.
+
+The test subtracts the lagging market's OWN past return from both the predictor
+and the target before measuring. Without that, a raw cross-correlation between
+two co-moving assets is mostly contemporaneous overlap plus each one's own
+autocorrelation, and reports "leads" that are neither predictive nor tradeable.
+Every ordered pair is split at the median of its own shared timestamps, because
+the panel's coverage is heterogeneous -- QQQ and NVDA sit in 2024 while most
+markets sit in 2026, so one calendar split leaves most pairs with no early half.
+
+**Aggregate: chance.**
+
+```
+lag 15min   60/116 pairs hold sign   52%   z = +0.37
+lag 30min   65/116 pairs hold sign   56%   z = +1.30
+lag 60min   55/116 pairs hold sign   47%   z = -0.56
+```
+
+**What replicates is the same exposure in two wrappers:**
+
+```
+TLT -> IEF   +0.092 / +0.098    both Treasury ETFs
+USO -> XLE   +0.104 / +0.078    oil -> oil companies
+SLV -> GLD   +0.056 / +0.068    silver -> gold
+```
+
+These are not leads. They are one piece of information arriving at two closely
+linked instruments at slightly different speeds, which is what the residual
+control cannot remove because the instruments genuinely share an underlying.
+Magnitudes of 0.05-0.10 residual correlation do not survive costs.
+
+The only cross-complex pair to hold was TLT -> IWM (+0.059 / +0.102 at 60min),
+rates leading small caps -- economically sensible, still far too small to
+trade, and IWM is not the instrument in question.
+
+**Verdict.** No tradeable lead-lag structure in the panel. With this, every
+price-derived conditioner has been tested and none carries usable direction at
+intraday horizons.
+
+---
+
+## N-003 (confirmed) — the capture geometry replicates across fourteen markets
+
+N-003 was the only positive structural result left standing after seven
+negatives, and it was measured on MNQ alone. Subjected to the same
+cross-market test that killed the sweep premise:
+
+```
+4,583 large HTF bars, 14 markets, 9 asset classes, both halves each
+arrived in a single LTF print:   24   (0.5%)
+per-market range:                0.0% - 5.1%
+concentration (median):          0.15 - 0.25 in every market
+directionality (median):         0.40 - 0.72
+```
+
+Equity indices, a single stock, metals, energy, an energy sector, rates, fx,
+volatility, emerging markets and futures. Every market, both halves.
+
+This is the first result in the project that got STRONGER under replication
+rather than dissolving. The contrast with F-004 is the point: there, adding six
+markets took FDR survivors from 4 to 1 and pooled sign agreement to 46.5%.
+Here, adding thirteen markets left the effect unchanged at 0.5%.
+
+The metals are the only mild exception -- GLD and SLV run 3-5% one-print bars
+against 0-1% elsewhere, so precious metals gap slightly more. Still negligible.
+
+**What this establishes.** Large intraday moves develop progressively across
+their constituent lower-timeframe bars. They are structurally reachable from
+below, universally, not as a property of MNQ.
+
+**What it does not establish.** It is a property of price PATHS, not an edge.
+It says a move can be entered after it begins; it says nothing about which way
+the next one goes. Paired with the seven negatives, the position is precise:
+
+  the execution half of the HTF/LTF idea is sound in every market tested
+  the direction half is unsolved, and no price-derived conditioner supplies it
+
+That is a real constraint rather than a dead end. It means any directional
+input that IS found -- order flow, options positioning, something not derived
+from the price series -- lands on an execution layer already known to work.

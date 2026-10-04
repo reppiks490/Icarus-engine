@@ -63,7 +63,8 @@
     },
     "chatgpt_execution_delay_minutes": 5,
     "timezone": "America/Chicago",
-    "dst_note": "Every-hour schedules retain the same minute under DST; no local-hour translation is required."
+    "dst_note": "Every-hour schedules retain the same minute under DST; no local-hour translation is required.",
+    "dispatch_semantics": "Nominal due minutes remain :00/:10/:20/:30. The primary GitHub plane may wake late; the bridge persists every missing due slot since fabric activation with due_slot_utc plus actual requested_at_utc and recovered_after_schedule_delay."
   },
   "lanes": {
     "robustness_guardian": {
@@ -705,5 +706,26 @@
       "helios_audit"
     ],
     "migration_status": "PROMOTED_INTO_DISPATCHABLE_LANES"
+  },
+  "fabric_activated_at_utc": "2026-10-04T19:02:00Z",
+  "github_dispatch_plane": {
+    "primary_workflow": ".github/workflows/github-native-ai-plane.yml",
+    "primary_mode": "INTEGRATED_DUE_SLOT_CATCHUP",
+    "nominal_wakeup": "4-59/5 * * * *",
+    "behavior": "Every observed native-plane run reconstructs missing active-lane due slots since fabric activation, oldest first, using stable due_slot_utc identities. Delayed GitHub cron therefore creates late requests honestly rather than fabricating execution.",
+    "fallback_workflow": ".github/workflows/chatgpt-hybrid-loop-bridge.yml",
+    "fallback_runtime_status": "PRESENT_BUT_NO_OBSERVED_ACTIONS_RUN_AS_OF_2026-10-04T20:33:00Z",
+    "execution_authorized": false
+  },
+  "controllers": {
+    "hybrid_scheduler_guard": {
+      "title": "Hybrid Scheduler Guard",
+      "automation_id": "6ac2b850145c8191bbadc97c07b167bf",
+      "state": "ACTIVE_CONTROLLER",
+      "schedule": "BEGIN:VEVENT\nDTSTART;TZID=America/Chicago:20261004T155000\nRRULE:FREQ=HOURLY;BYMINUTE=50\nEND:VEVENT",
+      "responsibility": "Keep exactly the four active cognition workers enabled and Historical Hybrid Executor disabled without changing task prompts or schedules.",
+      "substantive_lane": false,
+      "execution_authorized": false
+    }
   }
 }

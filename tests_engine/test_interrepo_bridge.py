@@ -346,6 +346,9 @@ def test_peer_export_contract_and_workflow_are_research_only():
     assert "restored-five-native-liveness" in workflow
     assert "github.event.workflow_run.conclusion == 'success'" in workflow
     assert "github.event.workflow_run.event == 'schedule'" in workflow
+    # Event-driven refresh: lane event pushes must also re-export the packet (cron is throttled).
+    assert '"automation_intelligence/mcp_interface/events/**"' in workflow
+    assert '"automation_intelligence/mcp_interface/research_runs/**"' in workflow
     assert "permissions:\n  contents: write" in workflow
 
 def test_peer_exporter_writes_exact_deterministic_packet(tmp_path):

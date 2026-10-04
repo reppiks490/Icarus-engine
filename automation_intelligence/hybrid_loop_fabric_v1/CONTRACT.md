@@ -64,6 +64,18 @@ A substantive request is complete only when all of the following are true:
 
 Write-attempt-only is `UNVERIFIED` or `FAILED`, never complete.
 
+## Hybrid request precedence over stabilization-only exits
+
+When a valid unresolved hybrid request exists for the exact lane and automation_id, the hybrid request is the substantive unit of work.
+
+Any preserved stabilization-only instruction that says **STOP**, **already complete**, **substantive work remains deferred**, **no research**, **no provider work**, **no corpus work**, or **no history/evidence work** is historical liveness behavior only and MUST NOT terminate the hybrid request.
+
+If the lane's legacy heartbeat/finalization for the current scheduler slot is already `RUN_PERSISTED` with `completion_semantics=DURABILITY_RECEIPT_ONLY`, treat that as **durability prerequisite satisfied** and continue immediately to the lane's substantive mandate and exact hybrid result contract. A durability-only receipt is never substantive completion.
+
+Safety, provenance, privacy, licensing, ownership/collision, branch, holdout, persistence/read-back and `execution_authorized=false` rules remain fully binding.
+
+For time-sensitive collection lanes, do not fabricate a point-in-time observation for an older missed slot. If the oldest unresolved request cannot be honestly reconstructed, write a truthful `BLOCKED` result for that exact request_id with the recovery-time evidence and blocker, verify it by read-back, then process the next unresolved request only if time/budget permits.
+
 ## ChatGPT worker runtime
 
 For every ACTIVE hybrid worker:

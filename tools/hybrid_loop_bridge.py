@@ -4,7 +4,7 @@ import argparse
 import hashlib
 import json
 import os
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -34,6 +34,10 @@ def z(dt: datetime) -> str:
 
 def compact_stamp(dt: datetime) -> str:
     return dt.astimezone(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+
+
+def parse_utc(value: str) -> datetime:
+    return datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
 
 
 def load_registry(repo_root: Path) -> dict[str, Any]:
@@ -143,6 +147,18 @@ def unresolved_requests(repo_root: Path, lane: str, automation_id: str, limit: i
     return unresolved
 
 
+def existing_due_slots(repo_root: Path, lane: str) -> set[str]:
+    slots: set[str] = set()
+    for path in request_files(repo_root, lane):
+        payload = load_json(path)
+        if not payload:
+            continue
+        slot = payload.get("due_slot_utc")
+        if isinstance(slot, str):
+            slots.add(slot)
+    return slots
+
+
 def write_json_exclusive(path: Path, payload: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     if path.exists():
@@ -195,6 +211,48 @@ def select_lanes(
         return [requested]
 
     raise ValueError(f"lane is not dispatchable: {requested}")
+
+
+def dispatch_minute(registry: dict[str, Any], lane: str) -> int:
+    schedule = registry.get("active_schedule", {})
+    mapping = schedule.get("github_dispatch_minutes_local", {})
+    if lane not in mapping:
+        raise ValueError(f"no dispatch minute registered for {lane}")
+    minute = int(mapping[lane])
+    if minute < 0 or minute > 59:
+        raise ValueError(f"invalid dispatch minute for {lane}: {minute}")
+    return minute
+
+
+def due_slots_for_lane(
+    repo_root: Path,
+    registry: dict[str, Any],
+    lane: str,
+    now: datetime,
+    max_slots: int = 24,
+) -> list[datetime]:
+    if lane_state(registry["lanes"][lane]) != "ACTIVE":
+        return []
+
+    activation_raw = registry.get("fabric_activated_at_utc")
+    if not isinstance(activation_raw, str):
+        raise ValueError("fabric_activated_at_utc missing from registry")
+    activation = parse_utc(activation_raw)
+
+    minute = dispatch_minute(registry, lane)
+    first = activation.replace(minute=minute, second=0, microsecond=0)
+    if first < activation:
+        first += timedelta(hours=1)
+
+    existing = existing_due_slots(repo_root, lane)
+    missing: list[datetime] = []
+    slot = first
+    while slot <= now:
+        if z(slot) not in existing:
+            missing.append(slot)
+        slot += timedelta(hours=1)
+
+    return missing[:max_slots] if max_slots > 0 else missing
 
 
 def build_health(
@@ -257,30 +315,41 @@ def enqueue(
     workflow_run_id: str,
     workflow_run_attempt: str,
     now: datetime,
+    due_slot: datetime | None = None,
 ) -> dict[str, Any]:
     cfg = registry["lanes"][lane]
     automation_id = str(cfg["automation_id"])
     state = lane_state(cfg)
 
-    if event_name == "schedule" and state != "ACTIVE":
+    if event_name in {"schedule", "integrated_schedule"} and state != "ACTIVE":
         raise ValueError(f"scheduled dispatch forbidden for non-active lane {lane}")
 
-    request_origin = (
-        "GITHUB_ACTIONS_SCHEDULE"
-        if event_name == "schedule"
-        else "GITHUB_ACTIONS_MANUAL"
-    )
+    if event_name == "schedule":
+        request_origin = "GITHUB_ACTIONS_SCHEDULE"
+    elif event_name == "integrated_schedule":
+        request_origin = "GITHUB_ACTIONS_INTEGRATED_SCHEDULE"
+    else:
+        request_origin = "GITHUB_ACTIONS_MANUAL"
 
     prior_unresolved = unresolved_requests(repo_root, lane, automation_id, limit=24)
 
-    base_id = f"{lane}-{compact_stamp(now)}-gh-{workflow_run_id}-{workflow_run_attempt}"
-    request_id = base_id
-    immutable_path = repo_root / request_dir_for(lane) / f"{request_id}.json"
-    suffix = 1
-    while immutable_path.exists():
-        request_id = f"{base_id}-{suffix}"
+    if due_slot is not None:
+        request_id = f"{lane}-{compact_stamp(due_slot)}"
         immutable_path = repo_root / request_dir_for(lane) / f"{request_id}.json"
-        suffix += 1
+        if immutable_path.exists():
+            payload = load_json(immutable_path)
+            if payload is None:
+                raise ValueError(f"existing immutable request is unreadable: {immutable_path}")
+            return payload
+    else:
+        base_id = f"{lane}-{compact_stamp(now)}-gh-{workflow_run_id}-{workflow_run_attempt}"
+        request_id = base_id
+        immutable_path = repo_root / request_dir_for(lane) / f"{request_id}.json"
+        suffix = 1
+        while immutable_path.exists():
+            request_id = f"{base_id}-{suffix}"
+            immutable_path = repo_root / request_dir_for(lane) / f"{request_id}.json"
+            suffix += 1
 
     required_result = result_path_for(lane, request_id)
     request = {
@@ -304,6 +373,10 @@ def enqueue(
         "github_liveness_receipt_is_not_completion": True,
         "execution_authorized": False,
     }
+    if due_slot is not None:
+        request["due_slot_utc"] = z(due_slot)
+        request["request_created_at_utc"] = z(now)
+        request["recovered_after_schedule_delay"] = now > due_slot + timedelta(minutes=10)
 
     write_json_exclusive(immutable_path, request)
     write_json_replace(repo_root / request_dir_for(lane) / "latest.json", request)
@@ -320,6 +393,7 @@ def main() -> int:
     parser.add_argument("--workflow-run-id", required=True)
     parser.add_argument("--workflow-run-attempt", required=True)
     parser.add_argument("--reconcile-only", action="store_true")
+    parser.add_argument("--max-integrated-slots", type=int, default=24)
     args = parser.parse_args()
 
     repo_root = Path(args.repo_root).resolve()
@@ -340,18 +414,45 @@ def main() -> int:
         print(json.dumps({"fabric_id": FABRIC_ID, "health": health}, indent=2, sort_keys=True))
         return 0
 
-    emitted = [
-        enqueue(
-            repo_root=repo_root,
-            registry=registry,
-            lane=lane,
-            event_name=args.event_name,
-            workflow_run_id=args.workflow_run_id,
-            workflow_run_attempt=args.workflow_run_attempt,
-            now=now,
-        )
-        for lane in selected
-    ]
+    emitted: list[dict[str, Any]] = []
+
+    if args.event_name == "integrated_schedule":
+        for lane in selected:
+            slots = due_slots_for_lane(
+                repo_root=repo_root,
+                registry=registry,
+                lane=lane,
+                now=now,
+                max_slots=args.max_integrated_slots,
+            )
+            for slot in slots:
+                emitted.append(
+                    enqueue(
+                        repo_root=repo_root,
+                        registry=registry,
+                        lane=lane,
+                        event_name=args.event_name,
+                        workflow_run_id=args.workflow_run_id,
+                        workflow_run_attempt=args.workflow_run_attempt,
+                        now=now,
+                        due_slot=slot,
+                    )
+                )
+            reconcile_lane(repo_root, registry, lane, now)
+    else:
+        emitted = [
+            enqueue(
+                repo_root=repo_root,
+                registry=registry,
+                lane=lane,
+                event_name=args.event_name,
+                workflow_run_id=args.workflow_run_id,
+                workflow_run_attempt=args.workflow_run_attempt,
+                now=now,
+            )
+            for lane in selected
+        ]
+
     print(json.dumps({"fabric_id": FABRIC_ID, "requests": emitted}, indent=2, sort_keys=True))
     return 0
 

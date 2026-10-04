@@ -13,8 +13,17 @@ def registry() -> dict:
     return {
         "schema_version": "icarus-hybrid-loop-registry-v2",
         "fabric_id": bridge.FABRIC_ID,
+        "fabric_activated_at_utc": "2026-10-04T19:02:00Z",
         "execution_authorized": False,
         "backfill_policy": {"order": "OLDEST_UNRESOLVED_FIRST"},
+        "active_schedule": {
+            "github_dispatch_minutes_local": {
+                "robustness_guardian": 0,
+                "advanced_csv": 10,
+                "alpha_synthesis": 20,
+                "microstructure_sensor_grid": 30,
+            }
+        },
         "lanes": {
             "robustness_guardian": {"title": "Robustness Guardian Evolution", "automation_id": "a", "project_scope": "ICARUS", "current_state": "ACTIVE"},
             "advanced_csv": {"title": "Advanced CSV Data Collector", "automation_id": "b", "project_scope": "ICARUS", "current_state": "ACTIVE"},
@@ -48,6 +57,48 @@ class HybridBridgeTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             bridge.select_lanes(registry(), "workflow_dispatch", "", "all_registered")
 
+    def test_integrated_schedule_selects_active_only(self) -> None:
+        selected = bridge.select_lanes(registry(), "integrated_schedule", "", "all_active")
+        self.assertEqual(set(selected), {"robustness_guardian", "advanced_csv", "alpha_synthesis", "microstructure_sensor_grid"})
+
+    def test_due_slots_start_after_fabric_activation(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            slots = bridge.due_slots_for_lane(
+                root,
+                registry(),
+                "advanced_csv",
+                datetime(2026, 10, 4, 20, 35, tzinfo=timezone.utc),
+            )
+            self.assertEqual(
+                [bridge.z(x) for x in slots],
+                ["2026-10-04T19:10:00Z", "2026-10-04T20:10:00Z"],
+            )
+
+    def test_integrated_slot_is_idempotent(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            reg = registry()
+            now = datetime(2026, 10, 4, 20, 35, tzinfo=timezone.utc)
+            slot = datetime(2026, 10, 4, 20, 0, tzinfo=timezone.utc)
+            first = bridge.enqueue(root, reg, "robustness_guardian", "integrated_schedule", "100", "1", now, due_slot=slot)
+            second = bridge.enqueue(root, reg, "robustness_guardian", "integrated_schedule", "101", "1", now, due_slot=slot)
+            self.assertEqual(first["request_id"], second["request_id"])
+            self.assertEqual(first["request_id"], "robustness_guardian-20261004T200000Z")
+            self.assertEqual(first["due_slot_utc"], "2026-10-04T20:00:00Z")
+            files = bridge.request_files(root, "robustness_guardian")
+            self.assertEqual(len(files), 1)
+
+    def test_due_slots_skip_existing_slots(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            reg = registry()
+            now = datetime(2026, 10, 4, 20, 35, tzinfo=timezone.utc)
+            slot = datetime(2026, 10, 4, 19, 0, tzinfo=timezone.utc)
+            bridge.enqueue(root, reg, "robustness_guardian", "integrated_schedule", "100", "1", now, due_slot=slot)
+            slots = bridge.due_slots_for_lane(root, reg, "robustness_guardian", now)
+            self.assertEqual([bridge.z(x) for x in slots], ["2026-10-04T20:00:00Z"])
+
     def test_result_requires_full_contract(self) -> None:
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
@@ -68,10 +119,10 @@ class HybridBridgeTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
             lane = "robustness_guardian"
-            request_id = "robustness_guardian-20261004T180000Z-gh-1-1"
+            request_id = "robustness_guardian-20261004T180000Z"
             req_dir = root / bridge.request_dir_for(lane)
             req_dir.mkdir(parents=True)
-            (req_dir / (request_id + ".json")).write_text(json.dumps({"request_id": request_id}))
+            (req_dir / (request_id + ".json")).write_text(json.dumps({"request_id": request_id, "due_slot_utc": "2026-10-04T18:00:00Z"}))
             result = {
                 "schema_version": bridge.RESULT_SCHEMA,
                 "fabric_id": bridge.FABRIC_ID,
@@ -99,10 +150,12 @@ class HybridBridgeTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
             reg = registry()
-            now1 = datetime(2026, 10, 4, 18, 0, tzinfo=timezone.utc)
-            first = bridge.enqueue(root, reg, "robustness_guardian", "schedule", "10", "1", now1)
-            now2 = datetime(2026, 10, 4, 19, 0, tzinfo=timezone.utc)
-            second = bridge.enqueue(root, reg, "robustness_guardian", "schedule", "11", "1", now2)
+            now1 = datetime(2026, 10, 4, 19, 5, tzinfo=timezone.utc)
+            slot1 = datetime(2026, 10, 4, 19, 0, tzinfo=timezone.utc)
+            first = bridge.enqueue(root, reg, "robustness_guardian", "integrated_schedule", "10", "1", now1, due_slot=slot1)
+            now2 = datetime(2026, 10, 4, 20, 5, tzinfo=timezone.utc)
+            slot2 = datetime(2026, 10, 4, 20, 0, tzinfo=timezone.utc)
+            second = bridge.enqueue(root, reg, "robustness_guardian", "integrated_schedule", "11", "1", now2, due_slot=slot2)
             self.assertIn(first["request_id"], second["prior_unresolved_request_ids"])
             self.assertTrue((root / bridge.request_dir_for("robustness_guardian") / (first["request_id"] + ".json")).exists())
             self.assertTrue((root / bridge.request_dir_for("robustness_guardian") / (second["request_id"] + ".json")).exists())

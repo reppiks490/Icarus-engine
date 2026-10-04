@@ -1,0 +1,60 @@
+{
+  "schema_version": "icarus-research-run-v1",
+  "run_id": "macro-20261004T171143943Z",
+  "lane": "macro",
+  "automation_id": "6ab8174517b48191b67ac472205a28d3",
+  "started_at_utc": "2026-10-04T17:10:39Z",
+  "completed_at_utc": "2026-10-04T17:11:43.943Z",
+  "outcome": "NO_MATERIAL_DELTA",
+  "substantive_work_performed": true,
+  "summary": "Fresh macro and durable-state checks found no new regime change beyond the last verified OPEC+ policy event. Iran's October 4 statement that Hormuz will remain closed until seven conditions are met is an authoritative restatement of the conditional-closure posture already reported on August 18 and refined through September negotiations. The net-new detail is that U.S. feedback was received through Qatari intermediaries and the dispute is now described as partly about sequencing; this does not establish a new physical closure, reopening, supply loss, or cross-asset shock. ORACLE therefore keeps the existing graded Hormuz operability/security-risk state unchanged. SUPERMESH-X treats Reuters, Press TV/Tasnim and downstream reports as multiple publications tracing to the same Iranian official origin, not independent physical-flow corroboration.",
+  "evidence": [
+    {
+      "type": "PRIOR_RECEIPT",
+      "path": "automation_intelligence/mcp_interface/research_runs/macro/20261004T131449Z_macro.json",
+      "blob_sha": "cada414f382cdfbbb0b0d84e1147e04ddb2bbf31",
+      "observed_finding": "Latest durable Macro state records the verified October 4 OPEC+ November-target decision."
+    },
+    {
+      "type": "CURRENT_SOURCE_CLAIM",
+      "url": "https://www.reuters.com/world/middle-east/iran-says-strait-hormuz-will-not-reopen-until-conditions-are-met-2026-10-04/",
+      "source_time_utc": "2026-10-04T07:59:00Z",
+      "retrieved_at_utc": "2026-10-04T17:10:39Z",
+      "observed_finding": "Iran's parliament speaker reiterated conditional Hormuz closure; Reuters also reported active Qatari-mediated messaging and unresolved sequencing."
+    },
+    {
+      "type": "PRIOR_COMPARISON",
+      "url": "https://www.reuters.com/world/middle-east/hormuz-strait-remain-shut-until-us-meets-interim-deal-conditions-iran-says-2026-08-18/",
+      "source_time_utc": "2026-08-18T09:45:08Z",
+      "retrieved_at_utc": "2026-10-04T17:10:39Z",
+      "observed_finding": "The same core conditional-closure position was already public on August 18, preventing promotion of the October 4 restatement as a new shock."
+    },
+    {
+      "type": "PRIOR_COMPARISON",
+      "url": "https://www.reuters.com/world/middle-east/iran-submits-conditions-reopening-hormuz-us-representative-state-media-says-2026-09-22/",
+      "source_time_utc": "2026-09-22T19:45:10Z",
+      "retrieved_at_utc": "2026-10-04T17:10:39Z",
+      "observed_finding": "Iran had already conveyed reopening conditions to the United States in September."
+    },
+    {
+      "type": "PRIMARY_ORIGIN_REPUBLICATION",
+      "url": "https://www.presstv.ir/Detail/2026/10/04/777577/Hormuz-closed-until-conditions-met-Iran-parl-speaker-dismisses-US-psychological-warfare-as-vain-illusion",
+      "retrieved_at_utc": "2026-10-04T17:10:39Z",
+      "observed_finding": "Iranian state media carries the official-origin claim; it is not independent evidence of aggregate vessel traffic or export throughput."
+    },
+    {
+      "type": "DURABLE_STATE_SEARCH",
+      "path": "automation_intelligence/mcp_interface/events/",
+      "observed_revision": "main",
+      "observed_finding": "A complete recursive tree filename scan found no Hormuz/Iran-named event in Icarus-engine; GitHub code search for the exact reopening phrase returned zero results but flagged the result set incomplete, so absence is not treated as exhaustive content proof."
+    }
+  ],
+  "prior_receipt_path": "automation_intelligence/mcp_interface/research_runs/macro/20261004T131449Z_macro.json",
+  "event_paths": [],
+  "blockers": [
+    "Traditional cross-asset markets were closed for the weekend, so no synchronized NQ, Treasury, DXY, gold, crude, volatility or breadth response could be established.",
+    "No verified aggregate Hormuz vessel count, physical export-throughput, freight, insurance or reserve-release dataset newer than the prior durable state was available in this cycle.",
+    "GitHub code-search results were marked incomplete; repository filename inventory was complete but cannot prove absence inside generically named event contents."
+  ],
+  "execution_authorized": false
+}

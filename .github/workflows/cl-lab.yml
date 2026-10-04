@@ -38,7 +38,7 @@ jobs:
           python-version: "3.11"
 
       - name: Install lab dependencies
-        run: python -m pip install "numpy>=1.26,<3" "pandas>=2.2,<3" "scipy>=1.11" pytest
+        run: python -m pip install "numpy>=1.26,<3" "pandas>=2.2,<3" "scipy>=1.11" "databento>=0.87,<1" pytest
 
       - name: Lab tests (fail closed - no outputs if causality or statistics tests fail)
         run: python -m pytest -q tests_cl -p no:cacheprovider
@@ -50,7 +50,9 @@ jobs:
           key: cl-feeds-${{ github.run_id }}
           restore-keys: cl-feeds-
 
-      - name: Refresh keyless feeds
+      - name: Refresh public + optional Databento feeds
+        env:
+          DATABENTO_API_KEY: ${{ secrets.DATABENTO_API_KEY }}
         run: python -m cl_lab.feeds --cache .cl_cache --manifest automation_intelligence/cl_lab/feeds_manifest.json
 
       - name: Save feed cache

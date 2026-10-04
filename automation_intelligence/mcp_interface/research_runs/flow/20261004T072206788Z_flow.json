@@ -1,0 +1,70 @@
+{
+  "schema_version": "icarus-research-run-v1",
+  "run_id": "flow-20261004T072206788Z",
+  "lane": "flow",
+  "automation_id": "6ab817544e68819197b5db21eb2cbe2b",
+  "started_at_utc": "2026-10-04T07:20:03Z",
+  "completed_at_utc": "2026-10-04T07:22:06.787Z",
+  "outcome": "MATERIAL_DELTA",
+  "substantive_work_performed": true,
+  "summary": "Verified that the prior 05:00 UTC Bybit spot turnover-only anomaly was followed by a completed 06:00 UTC joint range-and-volume expansion. Spot robust z-scores were +2.78 range and +3.24 volume against the preceding 28 completed hours. Bybit linear and Twelve Data independently corroborated the price-range expansion. No causal direction, order-flow direction or persistent cross-market regime was inferred.",
+  "evidence": [
+    {
+      "type": "provider_query",
+      "source": "Bybit get_kline",
+      "url": "https://agent.bybit.com/mcp/open?symbol=BTCUSDT&category=spot&source=chatgpt",
+      "representation": "BTCUSDT spot 1h",
+      "retrieval_time": "2026-10-04T07:20:44.953Z",
+      "event_time": "2026-10-04T06:00:00Z"
+    },
+    {
+      "type": "provider_query",
+      "source": "Bybit get_kline",
+      "url": "https://agent.bybit.com/mcp/open?symbol=BTCUSDT&category=linear&source=chatgpt",
+      "representation": "BTCUSDT linear 1h",
+      "retrieval_time": "2026-10-04T07:20:44.953Z",
+      "event_time": "2026-10-04T06:00:00Z"
+    },
+    {
+      "type": "provider_query",
+      "source": "Twelve Data get_time_series",
+      "url": "https://twelvedata.com/",
+      "representation": "BTC/USD 1h",
+      "retrieval_time": "2026-10-04T07:20:44.953Z",
+      "event_time": "2026-10-04T06:00:00Z"
+    },
+    {
+      "type": "provider_query",
+      "source": "Bybit get_orderbook",
+      "url": "https://www.bybit.com/",
+      "representation": "BTCUSDT spot point-in-time displayed depth",
+      "source_timestamp": "2026-10-04T07:20:44.953Z"
+    },
+    {
+      "type": "persisted_event",
+      "repository": "reppiks490/Icarus-engine",
+      "ref": "main",
+      "path": "automation_intelligence/mcp_interface/events/20261004T072119622Z_flow_btc_turnover_to_expansion.json",
+      "commit_sha": "391b434b04a799d41b80e1a003448a0c15e479f8",
+      "blob_sha": "8c2960413533b7c12b0525f794251f6ba8cf0bca",
+      "verification": "Exact JSON read back from main"
+    },
+    {
+      "type": "repository_gap",
+      "repository": "reppiks490/Icarus-engine",
+      "ref": "main",
+      "path": "automation_intelligence/mcp_interface/research_runs/flow/",
+      "observed_result": "404 NOT_FOUND at run start; no prior Flow receipt accessible"
+    }
+  ],
+  "prior_receipt_path": null,
+  "event_paths": [
+    "automation_intelligence/mcp_interface/events/20261004T072119622Z_flow_btc_turnover_to_expansion.json"
+  ],
+  "blockers": [
+    "UNVERIFIED_HISTORY: mandated Icarus-engine Flow receipt directory was absent at run start",
+    "SCHEMA_LOCATION_MISMATCH: Icarus-engine producer_contract.json was absent; event envelope used the readable Icarus contract plus explicit task requirements",
+    "No historical trade/depth sequence and no fresh direct NQ/MNQ, metals, DXY, rates or volatility-index observations"
+  ],
+  "execution_authorized": false
+}

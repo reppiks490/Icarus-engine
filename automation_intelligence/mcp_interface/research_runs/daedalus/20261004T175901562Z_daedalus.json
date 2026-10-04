@@ -1,0 +1,87 @@
+{
+  "schema_version": "icarus-research-run-v1",
+  "run_id": "daedalus-20261004T175901562Z",
+  "lane": "daedalus",
+  "automation_id": "6ab8177918b48191a97e56c44b57d2c5",
+  "started_at_utc": "2026-10-04T17:55:47Z",
+  "completed_at_utc": "2026-10-04T17:59:01.562Z",
+  "outcome": "MATERIAL_DELTA",
+  "substantive_work_performed": true,
+  "summary": "Independently audited the newly installed Hybrid Loop Fabric's highest-consequence claim for the active DAEDALUS lane. Registry, contract, bridge workflow, producer event contract, and prior durable DAEDALUS receipt were fetched. The registry/workflow specify a DAEDALUS dispatch at minute 48 and the ChatGPT worker ran after that window, yet both requests/daedalus/latest.json and health/daedalus.json returned 404 and repository search exposed no DAEDALUS request. This blocks exact request identity, backlog recovery, and result persistence. DAEDALUS classifies the handoff BLOCKING; AEGIS requires fail-closed behavior because synthesizing request_id or required_result_path would fabricate durable completion identity.",
+  "evidence": [
+    {
+      "type": "hybrid_registry",
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/registry.json",
+      "observed_blob_sha": "020dddb09b6fdc42980b72b11656d965732c1ef1",
+      "url": "https://github.com/reppiks490/Icarus-engine/blob/main/automation_intelligence/hybrid_loop_fabric_v1/registry.json",
+      "observation": "DAEDALUS lane is ACTIVE, automation_id matches, and GitHub dispatch minute is 48."
+    },
+    {
+      "type": "hybrid_contract",
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/CONTRACT.md",
+      "observed_blob_sha": "fe25193bf84f91df3352c995824aaeeccc5d7daa",
+      "url": "https://github.com/reppiks490/Icarus-engine/blob/main/automation_intelligence/hybrid_loop_fabric_v1/CONTRACT.md",
+      "observation": "Contract requires exact request identity, oldest-unresolved processing, immutable result path, and read-back verification."
+    },
+    {
+      "type": "bridge_workflow",
+      "repository": "reppiks490/Icarus-engine",
+      "path": ".github/workflows/chatgpt-hybrid-loop-bridge.yml",
+      "observed_blob_sha": "3f5d584e781dd7c1246a238ba9ed9fb665fb99b2",
+      "url": "https://github.com/reppiks490/Icarus-engine/blob/main/.github/workflows/chatgpt-hybrid-loop-bridge.yml",
+      "observation": "Workflow declares the 48 * * * * schedule and stages requests/health state for persistence."
+    },
+    {
+      "type": "missing_request_pointer",
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/requests/daedalus/latest.json",
+      "url": "https://github.com/reppiks490/Icarus-engine/blob/main/automation_intelligence/hybrid_loop_fabric_v1/requests/daedalus/latest.json",
+      "observation": "Direct GitHub fetch returned 404 Not Found; no request_id, required_result_path, or prior_unresolved_request_ids were available."
+    },
+    {
+      "type": "missing_lane_health",
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/health/daedalus.json",
+      "url": "https://github.com/reppiks490/Icarus-engine/blob/main/automation_intelligence/hybrid_loop_fabric_v1/health/daedalus.json",
+      "observation": "Direct GitHub fetch returned 404 Not Found."
+    },
+    {
+      "type": "prior_daedalus_receipt",
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/mcp_interface/research_runs/daedalus/20261004T165527217Z_daedalus.json",
+      "observed_blob_sha": "e53732a4fb8feb7c872d3df1a339fd3c1e72f0af",
+      "url": "https://github.com/reppiks490/Icarus-engine/blob/main/automation_intelligence/mcp_interface/research_runs/daedalus/20261004T165527217Z_daedalus.json",
+      "observation": "Prior substantive DAEDALUS state was loaded before asserting the net-new hybrid handoff defect."
+    },
+    {
+      "type": "corroborating_lane_receipt",
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/mcp_interface/research_runs/aion/20261004T174629Z.json",
+      "observed_revision": "0e4f35103a243537775bd876d58c77fe91692e8f",
+      "url": "https://github.com/reppiks490/Icarus-engine/commit/0e4f35103a243537775bd876d58c77fe91692e8f",
+      "observation": "AION independently recorded the same missing-request failure class shortly before the DAEDALUS dispatch window."
+    },
+    {
+      "type": "material_audit_event",
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/mcp_interface/events/20261004T175823277Z_daedalus_hybrid_request_handoff_blocked.json",
+      "observed_blob_sha": "7152f44370ca392685bc1fd1afd4f9226d09a4a6",
+      "observed_revision": "d020487f630a5c4246622aea3e7a763d5df3ab5f",
+      "url": "https://github.com/reppiks490/Icarus-engine/blob/main/automation_intelligence/mcp_interface/events/20261004T175823277Z_daedalus_hybrid_request_handoff_blocked.json",
+      "observation": "Material BLOCKING event was created and exact JSON read-back matched."
+    }
+  ],
+  "prior_receipt_path": "automation_intelligence/mcp_interface/research_runs/daedalus/20261004T165527217Z_daedalus.json",
+  "event_paths": [
+    "automation_intelligence/mcp_interface/events/20261004T175823277Z_daedalus_hybrid_request_handoff_blocked.json"
+  ],
+  "blockers": [
+    "automation_intelligence/hybrid_loop_fabric_v1/requests/daedalus/latest.json does not exist on main.",
+    "automation_intelligence/hybrid_loop_fabric_v1/health/daedalus.json does not exist on main.",
+    "No exact request_id, prior_unresolved_request_ids, or required_result_path can be recovered, so the mandatory hybrid result cannot be created without fabricating identity.",
+    "The connected GitHub interface did not expose an accepted workflow-runs collection read in this run, so the exact workflow failure mode remains UNVERIFIED."
+  ],
+  "execution_authorized": false
+}

@@ -1,0 +1,103 @@
+{
+  "schema_version": "icarus-mcp-event-v1",
+  "event_id": "flow-20261004T120000Z-btc-recurrent-range-only-burst",
+  "at_utc": "2026-10-04T12:00:00Z",
+  "category": "AUDIT",
+  "status": "VERIFIED",
+  "severity": "MEDIUM",
+  "summary": "The completed 12:00 UTC BTC interval produced a second independently corroborated range-only volatility burst after the prior 09:00 burst normalized by 11:00. Bybit spot range robust z was +3.95 while spot-volume robust z was only +0.85; no abnormal-turnover, directional order-flow, persistent-liquidity, or causal cross-market claim is supported.",
+  "surface": [
+    "ARGUS authenticated volatility versus order-flow classification",
+    "NEXUS representation reconciliation and event-time integrity",
+    "ICARUS BTC episodic-volatility regime context"
+  ],
+  "source": "FLOW_AUTOMATION",
+  "paths": [
+    "automation_intelligence/mcp_interface/contract.json",
+    "automation_intelligence/mcp_interface/research_runs/flow/20261004T122603995Z_flow.json"
+  ],
+  "evidence": [
+    {
+      "classification": "FACT",
+      "source": "Bybit get_kline",
+      "source_type": "PUBLIC_DIRECT_VENUE_CANDLE",
+      "representation": "BTCUSDT spot 1h",
+      "url": "https://agent.bybit.com/mcp/open?symbol=BTCUSDT&category=spot&source=chatgpt",
+      "event_time": "2026-10-04T12:00:00Z",
+      "retrieval_time_anchor": "2026-10-04T13:26:10.954Z",
+      "high_usd": 85394.5,
+      "low_usd": 85100.7,
+      "range_usd": 293.8,
+      "volume_btc": 99.304983,
+      "baseline": "preceding 28 completed Bybit spot 1h intervals",
+      "range_median_usd": 116.2,
+      "range_mad_usd": 30.3,
+      "volume_median_btc": 74.0770885,
+      "volume_mad_btc": 20.063395,
+      "range_robust_z": 3.9535,
+      "volume_robust_z": 0.8481
+    },
+    {
+      "classification": "FACT",
+      "source": "Bybit get_kline",
+      "source_type": "PUBLIC_DIRECT_VENUE_CANDLE",
+      "representation": "BTCUSDT linear 1h",
+      "url": "https://agent.bybit.com/mcp/open?symbol=BTCUSDT&category=linear&source=chatgpt",
+      "event_time": "2026-10-04T12:00:00Z",
+      "retrieval_time_anchor": "2026-10-04T13:26:10.954Z",
+      "high_usd": 85356,
+      "low_usd": 85053.8,
+      "range_usd": 302.2,
+      "reported_volume": 1152.478,
+      "note": "Linear reported volume is representation-specific and was not fused with spot BTC volume."
+    },
+    {
+      "classification": "FACT",
+      "source": "Twelve Data get_time_series",
+      "source_type": "INDEPENDENT_MARKET_DATA_REPRESENTATION",
+      "representation": "BTC/USD 1h",
+      "url": "https://twelvedata.com/",
+      "event_time": "2026-10-04T12:00:00Z",
+      "retrieval_time_anchor": "2026-10-04T13:26:10.954Z",
+      "high_usd": 85389,
+      "low_usd": 85097.19,
+      "range_usd": 291.81,
+      "note": "The forming 13:00 interval was excluded."
+    },
+    {
+      "classification": "FACT",
+      "source": "Bybit get_orderbook",
+      "source_type": "PUBLIC_DIRECT_VENUE_DEPTH_SNAPSHOT",
+      "representation": "BTCUSDT spot point-in-time displayed depth",
+      "source_time": "2026-10-04T13:26:10.954Z",
+      "best_bid_usd": 85221.4,
+      "best_bid_qty_btc": 0.975134,
+      "best_ask_usd": 85221.5,
+      "best_ask_qty_btc": 0.104597,
+      "displayed_spread_usd": 0.1,
+      "note": "Point-in-time snapshot only; no historical depth baseline."
+    },
+    {
+      "classification": "MODEL_INFERENCE",
+      "source": "FLOW_AUTOMATION",
+      "finding": "The 09:00 burst, 11:00 normalization, and new 12:00 burst strengthen a recurrent episodic range-expansion interpretation. Lack of abnormal spot volume prevents escalation to an abnormal-flow or joint range-plus-turnover event."
+    }
+  ],
+  "conflicts": [],
+  "data_gaps": [
+    "No historical depth or trade sequence was acquired; order-flow direction, persistent liquidity, auction behavior, liquidations, funding, basis, open interest and exchange flow are unknown.",
+    "No fresh direct NQ/MNQ, GC/MGC, SI, DXY, Treasury/rate or volatility-index observation was acquired in this bounded cycle.",
+    "Provider-specific retrieval timestamps were unavailable for K-line/time-series responses; the parallel batch's Bybit orderbook server timestamp anchors retrieval."
+  ],
+  "regime_implication": "Recurrent intraday BTC range bursts are appearing after rapid normalization, consistent with episodic volatility clustering rather than continuously elevated volatility. No trading or routing behavior was changed.",
+  "next_decisive_check": "Test whether the next completed BTC hour normalizes again or develops joint range-plus-turnover expansion, and acquire synchronous direct futures/USD/rates/volatility data to determine whether the burst is BTC-specific or cross-market.",
+  "argus": {
+    "status": "MATERIAL_DELTA",
+    "finding": "Authenticated Bybit spot candles show a +3.95 robust-z range burst with only +0.85 volume robust-z; classify as volatility evidence, not authenticated abnormal order flow. Current displayed depth is a single snapshot only."
+  },
+  "nexus": {
+    "status": "MATERIAL_DELTA",
+    "finding": "The 12:00 ranges reconcile tightly across Bybit spot ($293.80), Bybit linear ($302.20), and Twelve Data ($291.81); the forming 13:00 interval was excluded and representation-specific volumes were not fused."
+  },
+  "execution_authorized": false
+}

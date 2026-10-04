@@ -1,149 +1,194 @@
-# ICARUS Account Hybrid Loop Fabric v1
+# ICARUS Account-Wide Hybrid Loop Fabric v1.1
 
-## Purpose
+## Authority split
 
-This fabric makes ChatGPT automations and GitHub Actions complementary rather than competing schedulers.
+GitHub Actions is durable infrastructure. ChatGPT automations are cognition.
 
-- **GitHub Actions owns durable orchestration:** immutable work requests, request identity, cadence, backfill detection, durable state, verification, audit history, and recovery metadata.
-- **ChatGPT owns cognition:** research, reasoning, external/tool use, evidence reconciliation, hypothesis generation, quantitative analysis, architecture judgment, and task-specific decisions.
-- Existing GitHub-native v3 liveness receipts remain useful, but **never count as substantive ChatGPT work** unless a matching hybrid result receipt proves the cognition lane completed the exact request.
+GitHub owns durable scheduling requests, immutable request identity, persistent state/checkpoints, unresolved/backlog visibility, failure detection, historical backfill bookkeeping, result reconciliation, audit history, concurrency protection and repository-native evidence.
 
-Trading/deployment/publication authority remains false unless the user separately and explicitly changes it.
+ChatGPT owns reasoning, research, analysis, scientific judgment, hypothesis generation, evidence reconciliation, plugin/tool use, code/architecture judgment, model-assisted synthesis and task-specific cognition.
 
-## Namespaces
+A GitHub Action, heartbeat, enabled flag, scheduler timestamp or deterministic receipt is **liveness only** unless a valid matching ChatGPT hybrid result proves that the exact request was substantively processed.
+
+`execution_authorized=false` is invariant. This fabric grants no trading, broker/order, deployment, publication, credential or force-push authority.
+
+## Canonical paths
 
 - Registry: `automation_intelligence/hybrid_loop_fabric_v1/registry.json`
+- Contract: `automation_intelligence/hybrid_loop_fabric_v1/CONTRACT.md`
 - Requests: `automation_intelligence/hybrid_loop_fabric_v1/requests/<lane>/<request_id>.json`
 - Latest request pointer: `automation_intelligence/hybrid_loop_fabric_v1/requests/<lane>/latest.json`
 - Results: `automation_intelligence/hybrid_loop_fabric_v1/results/<lane>/<request_id>.json`
 - Health: `automation_intelligence/hybrid_loop_fabric_v1/health/<lane>.json`
-- Existing substantive research receipts remain under `automation_intelligence/mcp_interface/research_runs/<lane>/` where that lane already uses them.
-- Existing material MCP/Automation events remain under `automation_intelligence/mcp_interface/events/`.
+- Prompt snapshots: `automation_intelligence/hybrid_loop_fabric_v1/contracts/`
+- Existing domain receipts/events remain authoritative in their existing lane/project namespaces and are referenced by the hybrid result rather than replaced.
 
-## GitHub request contract
+## Request contract
 
-Every request is immutable and contains at minimum:
+Every immutable request uses `schema_version=icarus-hybrid-work-request-v1` and contains:
 
-- `schema_version=icarus-hybrid-work-request-v1`
 - `fabric_id`
 - `request_id`
 - `lane`
 - `title`
 - `automation_id`
+- `project_scope`
 - `requested_at_utc`
 - `request_origin`
 - `workflow_run_id`
 - `workflow_run_attempt`
 - `contract_fingerprint`
+- `contract_registry_path`
 - `required_result_path`
 - `prior_unresolved_request_ids`
+- `backfill_policy`
+- `substantive_ai_inference_required=true`
+- `github_liveness_receipt_is_not_completion=true`
 - `execution_authorized=false`
 
-A request does **not** claim that research or inference happened.
+The immutable request file is never overwritten. `latest.json` is only a mutable convenience pointer.
 
-## ChatGPT worker contract
+## Completion rule
 
-At the start of a hybrid run, the ChatGPT automation must:
+A GitHub request is **NOT complete merely because GitHub Actions ran**.
 
-1. Read `registry.json` and verify its lane title/automation_id.
-2. Read `requests/<lane>/latest.json`.
-3. Scan the bounded unresolved backlog surfaced by the request/health state.
-4. Prefer the **oldest unresolved request first** so connector outages or scheduler misses are naturally backfilled.
-5. Read the lane's existing durable research receipt/evidence state before claiming learning or change.
-6. Perform the lane's original substantive mandate. The hybrid layer does not weaken, replace, summarize away, or silently mutate the original task contract.
-7. Preserve provenance, temporal integrity, evidence limitations, and all lane-specific safety/authority invariants.
-8. Never call a liveness heartbeat, GitHub request, scheduler timestamp, or deterministic placeholder substantive research.
+A substantive request is complete only when all of the following are true:
 
-When work for a request finishes, create exactly one immutable result file at the request's `required_result_path`.
+1. an immutable result exists at the request's exact `required_result_path`;
+2. the result uses `schema_version=icarus-hybrid-work-result-v1`;
+3. `fabric_id`, `request_id`, `lane` and `automation_id` match the request exactly;
+4. `outcome` is one of `MATERIAL_DELTA`, `NO_MATERIAL_DELTA`, `BLOCKED`;
+5. all required result fields are present and `execution_authorized=false`;
+6. the ChatGPT worker fetched the target-branch result back and compared it to the intended payload;
+7. only exact read-back permits `HYBRID_RESULT=VERIFIED`.
+
+Write-attempt-only is `UNVERIFIED` or `FAILED`, never complete.
+
+## ChatGPT worker runtime
+
+For every ACTIVE hybrid worker:
+
+1. fetch `registry.json` and this contract;
+2. verify exact lane, title, automation_id, repository and branch;
+3. fetch the lane's `requests/<lane>/latest.json`;
+4. inspect unresolved requests from the hot window, preserving all older requests durably;
+5. select the **oldest unresolved request first**;
+6. perform the lane's preserved substantive mandate, not a heartbeat placeholder;
+7. preserve existing lane-specific receipts, histories, ledgers, MCP events, state capsules and evidence;
+8. create exactly one immutable hybrid result for each completed request;
+9. fetch that result back from the target branch and compare it exactly;
+10. refuse false success if persistence or read-back cannot be proven.
+
+The worker may process the newest request after an older unresolved request only when time/budget still permits truthful substantive work and verified persistence.
 
 ## Result contract
 
-Minimum fields:
+Every immutable result uses `schema_version=icarus-hybrid-work-result-v1` and contains:
 
-- `schema_version=icarus-hybrid-work-result-v1`
-- `fabric_id=icarus-account-hybrid-loop-fabric-v1`
+- `fabric_id`
 - `request_id`
 - `lane`
 - `automation_id`
 - `started_at_utc`
 - `completed_at_utc`
-- `outcome=MATERIAL_DELTA|NO_MATERIAL_DELTA|BLOCKED`
-- `substantive_work_performed` (truthful boolean)
+- `outcome`
+- `substantive_work_performed`
 - `summary`
-- `research_receipt_paths` (array)
-- `event_paths` (array)
-- `evidence` (actual sources/repository objects/tool outputs as applicable)
-- `blockers` (array)
-- `backfilled_request_ids` (array)
+- `evidence`
+- `research_receipt_paths`
+- `event_paths`
+- `blockers`
+- `backfilled_request_ids`
 - `execution_authorized=false`
 
-The worker must fetch the exact result file back from `main` and compare it with the intended payload. Only exact read-back permits `HYBRID_RESULT=VERIFIED`.
+A result is an orchestration/completion proof. It never replaces substantive domain evidence.
 
-If write/read-back is unavailable or mismatched, the ChatGPT run must say `HYBRID_RESULT=FAILED` or `UNVERIFIED`, include the unsaved result payload in its report when possible, and never claim completion.
+## Backfill and outages
 
-## Backfill contract
+- Retain every request ID.
+- Default hot scan: 24 most recent immutable requests per lane.
+- Process oldest unresolved first.
+- Preserve original request provenance and separately record actual recovery time.
+- Never fabricate work that supposedly occurred during an outage.
+- Reconstruct only what current evidence supports.
+- Irrecoverable work remains unresolved or is closed with truthful `outcome=BLOCKED`; no synthetic history is manufactured.
+- Failed and missed history is never erased.
 
-GitHub keeps unresolved requests visible until a matching result exists.
+## Active cutover schedule
 
-ChatGPT workers must:
-- process the oldest unresolved request first;
-- preserve the original request_id and provenance;
-- never fabricate the work that would have occurred during an outage;
-- label recovered work with actual recovery time;
-- leave a request unresolved if the substantive task cannot be honestly reconstructed;
-- process more than one request in a run only when the task can still be completed and verified within the run.
+The live scheduler observed during the migration has four enabled valuable lanes. Their native ChatGPT cadence remains hourly at:
 
-The default bounded scan is the most recent 24 request files for the lane. Historical backlog older than that is not deleted; it is simply outside the default hot scan and may be reconciled manually or by a deeper recovery run.
+- Robustness Guardian Evolution: :05 America/Chicago
+- Advanced CSV Data Collector: :15
+- Alpha Synthesis Evolution: :25
+- Microstructure Sensor Grid: :35
 
-## Scheduling
+GitHub dispatches exactly five minutes earlier:
 
-Active GitHub dispatch lanes:
+- Robustness Guardian Evolution: :00
+- Advanced CSV Data Collector: :10
+- Alpha Synthesis Evolution: :20
+- Microstructure Sensor Grid: :30
 
-- OMEGA: minute :00
-- Macro: :12
-- Flow: :24
-- AION: :36
-- DAEDALUS: :48
+Because these are every-hour schedules, UTC GitHub cron minute values remain the same minute through DST transitions.
 
-The corresponding ChatGPT automations should run **five minutes later** (:05, :17, :29, :41, :53) to give GitHub time to persist the request first. This separation prevents the common race where the AI task wakes before its durable request exists.
+## Active mandate recovery
 
-Historical lanes remain registered but disabled. They are hybrid-ready for manual dispatch or later reactivation without being silently re-enabled.
+The four enabled prompts at migration time were stabilization/liveness contracts that explicitly deferred substantive work. Their exact pre-cutover prompts are snapshotted under `contracts/active_originals/`.
 
-## Failure semantics
+Each active worker is also bound to the richer disabled predecessor contract for the same lane. The hybrid runtime supersedes only stabilization clauses that prohibit substantive work; it does **not** weaken safety, authority, provenance, persistence, repository ownership, collision or verification gates.
 
-- GitHub request exists, no result: `PENDING` or `OVERDUE`, never success.
-- Result exists but request_id/lane/automation_id mismatch: `INVALID_RESULT`.
-- Deterministic v3 liveness exists but hybrid result does not: `LIVENESS_ONLY`.
-- ChatGPT work exists only in conversation output and was not persisted/read back: `UNVERIFIED`.
-- Connector outage: retain request and retry/backfill later.
-- Concurrent main movement: rebase only when safe; never resolve content conflicts by silently overwriting another writer.
-- Duplicate request/result IDs: fail closed; immutable IDs must not be overwritten.
+## Historical lanes
 
-## Historical lane policy
+Disabled/paused valuable tasks are registered as `HISTORICAL_DISABLED` and remain disabled. They are dispatched manually, one lane at a time, through GitHub.
 
-The registry preserves every account loop with continuing architectural/research value. Explicitly retired/superseded canaries are excluded from active hybridization, but their prior repository evidence remains historical evidence. Disabled historical lanes are not automatically restarted.
+A historical request must have `request_origin=GITHUB_ACTIONS_MANUAL`. The Historical Hybrid Executor resolves the exact original paused automation by automation_id/title and obeys that detailed prompt as primary contract. It never enables the original task.
+
+Repository-only historical mandates from the superseded hybrid registry are retained separately and are never misrepresented as current scheduler records.
+
+## Historical Hybrid Executor
+
+The only clearly disposable disabled slot identified during this migration is automation `6abda2dc3aa881919b80fa89f1c5122e`, an exact duplicate stabilization Alpha task with no recorded run and no unique substantive mandate. Its pre-repurpose prompt is snapshotted before reuse.
+
+The repurposed executor remains **disabled**. When intentionally enabled it:
+
+- accepts only manually dispatched historical requests;
+- handles one historical lane at a time;
+- resolves the original task by automation_id/title when exposed;
+- uses the registry mandate only as an index/fallback;
+- writes and exact-readback-verifies the normal immutable hybrid result;
+- never automatically enables the original paused automation;
+- never grants execution authority.
+
+## Existing specialist persistence and liveness planes
+
+Existing durability/watchdog/native-liveness workflows and lane-specific persistence remain preserved. Deterministic liveness receipts remain distinct from substantive ChatGPT research.
+
+Hybrid results reference existing research receipts, MCP events, audit receipts, brain-feed objects, experiment ledgers, agent state and evidence records rather than replacing them.
+
+## Concurrency and write safety
+
+The bridge workflow:
+
+- grants `contents: write` only;
+- stages only `automation_intelligence/hybrid_loop_fabric_v1/requests` and `health`;
+- uses immutable request filenames;
+- uses safe Actions concurrency without canceling an in-progress writer;
+- fetches/rebases before push and retries ordinary concurrent-main movement;
+- never force-pushes;
+- aborts on semantic/rebase conflict rather than silently resolving it;
+- uses `[skip ci]` for request commits to avoid recursive workflow storms.
 
 ## Non-negotiable invariants
 
-- No fabricated plugins, sources, tests, commits, results, timestamps, backfills, or research.
-- No claim of self-learning without durable before/after evidence.
-- No silent strategy retuning.
-- No live trading authority.
-- No deployment/publication/force-push/destructive repository action unless separately authorized.
-- Repository evidence outranks summaries where they conflict.
-- A GitHub Action is infrastructure, not cognition.
-- A ChatGPT automation is cognition, not a substitute for durable infrastructure.
+Never fabricate tool/plugin execution, research, tests, commits, workflow results, timestamps, backfills, model inference or evidence.
 
-## Historical executor
+Never claim self-learning without durable before/after evidence.
 
-Historical lanes are not silently re-enabled. The former retired connection-canary automation slot `6abb1db46b308191ba1a27f13a42e745` is repurposed as **Historical Hybrid Executor (inactive)** and remains disabled.
+Never count a heartbeat, task last_run_time or enabled flag as successful substantive work.
 
-When intentionally enabled, it:
-- accepts only manual GitHub requests for registry lanes marked `HISTORICAL_DISABLED`;
-- resolves the exact original paused ChatGPT automation by `automation_id` and uses that task prompt as the primary execution contract;
-- uses the registry mandate only as a durable index/fallback, not as permission to discard detailed original instructions;
-- writes the same immutable hybrid result schema and read-back verifies it;
-- never enables the original paused task or mutates scheduler topology unless the user explicitly authorizes that exact mutation.
+Do not authorize live trading.
 
-This preserves the full dormant prompts while giving every valuable historical lane a GitHub↔ChatGPT execution path.
+Do not authorize deployment/publication/force-push/destructive repository changes unless separately and explicitly authorized.
 
+Preserve provenance and existing specialist persistence.

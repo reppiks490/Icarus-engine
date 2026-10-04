@@ -1,0 +1,47 @@
+{
+  "api_credential_required": false,
+  "canonical_state_mutated": false,
+  "deterministic_facts": {
+    "execution_authorized": false,
+    "expected_RUN_ID": "apex-council-20261001T094500Z",
+    "fallback_only": false,
+    "observed_worker_RUN_ID": "apex-council-20261001T094500Z",
+    "observed_worker_RUN_STATUS": "RUN_PERSISTED",
+    "run_id_match": true,
+    "slot_status": "WORKER_RECEIPT_VERIFIED",
+    "substantive_work_claimed": false,
+    "worker_receipt_status": "CHATGPT_CANONICAL_RECEIPT_PRESENT"
+  },
+  "execution_authorized": false,
+  "inference_backend": "local_gguf",
+  "input_path": "/home/runner/work/Icarus-engine/Icarus-engine/automation_intelligence/restored_five_native/receipts/apex_council/20261001T094500Z.json",
+  "input_sha256": "cacb0fcce178ddda8a241a08d4f207f62dc49851bdaef8481b8c57028226376e",
+  "lane": "apex_council",
+  "llama_cpp_sha256": "98020bb5a2a9e0284110e5c110158e18dca984a547d5afde1631fef0f03dd826",
+  "model": "Qwen/Qwen3-1.7B-GGUF@90862c4:Q8_0",
+  "model_advisory": {
+    "conflicts": [],
+    "data_gaps": [],
+    "execution_authorized": false,
+    "non_authoritative": true,
+    "summary": "Evidence matches expected RUN_ID and status. No gaps or conflicts. Fallback-only? No. Next step: Monitor slot status for receipt confirmation."
+  },
+  "model_sha256": "061b54daade076b5d3362dac252678d17da8c68f07560be70818cace6590cb1a",
+  "observed_at_utc": "2026-10-04T05:44:35Z",
+  "paid_api_call_made": false,
+  "payload": {
+    "conflicts": [],
+    "data_gaps": [
+      "SUBSTANTIVE_WORK_NOT_PROVEN"
+    ],
+    "execution_authorized": false,
+    "lane": "apex_council",
+    "net_new_delta": "SHADOW_ASSESSMENT_ONLY",
+    "summary": "Worker durability receipt verified. Observed RUN_ID matches expected. Substantive work is not proven by this durability evidence."
+  },
+  "response_id": "local-12822b01a890826c42949010",
+  "response_status": "completed",
+  "run_origin": "GITHUB_NATIVE_LOCAL_GGUF_SHADOW",
+  "schema_version": "restored-five-local-shadow-v2",
+  "substantive_research_source": "DURABLE_REPO_EVIDENCE_ONLY"
+}

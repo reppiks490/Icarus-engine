@@ -1,0 +1,41 @@
+{
+  "schema_version": "icarus-hybrid-work-result-v1",
+  "fabric_id": "icarus-account-hybrid-loop-fabric-v1",
+  "request_id": "microstructure_sensor_grid-20261004T203518Z-gh-37232665158-1",
+  "lane": "microstructure_sensor_grid",
+  "automation_id": "6abaef8effb48191aa5c959455451681",
+  "started_at_utc": "2026-10-04T23:35:08Z",
+  "completed_at_utc": "2026-10-04T23:35:08Z",
+  "outcome": "BLOCKED",
+  "substantive_work_performed": false,
+  "summary": "Oldest unresolved manual request could not be truthfully reconstructed at recovery time. Point-in-time trades, quotes, order-book/depth, imbalance, sweep or absorption observations for the original request time were not fabricated.",
+  "evidence": [
+    {
+      "type": "request_provenance",
+      "requested_at_utc": "2026-10-04T20:35:18Z",
+      "workflow_run_id": "37232665158",
+      "workflow_run_attempt": "1",
+      "request_origin": "GITHUB_ACTIONS_MANUAL"
+    },
+    {
+      "type": "durability_reference",
+      "path": "automation_intelligence/flow/finalization_state.json",
+      "observed_run_id": "flow-20261004T223500Z",
+      "run_status": "RUN_PERSISTED",
+      "completion_semantics": "DURABILITY_RECEIPT_ONLY"
+    },
+    {
+      "type": "durability_reference",
+      "path": "automation_intelligence/flow/heartbeat.json",
+      "observed_run_id": "flow-20261004T223500Z",
+      "run_status": "RUN_PERSISTED"
+    }
+  ],
+  "research_receipt_paths": [],
+  "event_paths": [],
+  "blockers": [
+    "Recovery occurred materially after the request timestamp; historical point-in-time microstructure state was not durably captured by this worker and cannot be manufactured."
+  ],
+  "backfilled_request_ids": [],
+  "execution_authorized": false
+}

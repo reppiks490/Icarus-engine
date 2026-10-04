@@ -714,8 +714,28 @@
     "nominal_wakeup": "4-59/5 * * * *",
     "behavior": "Every observed native-plane run reconstructs missing active-lane due slots since fabric activation, oldest first, using stable due_slot_utc identities. Delayed GitHub cron therefore creates late requests honestly rather than fabricating execution.",
     "fallback_workflow": ".github/workflows/chatgpt-hybrid-loop-bridge.yml",
-    "fallback_runtime_status": "PRESENT_BUT_NO_OBSERVED_ACTIONS_RUN_AS_OF_2026-10-04T20:33:00Z",
-    "execution_authorized": false
+    "fallback_runtime_status": "OBSERVED_RUNNING",
+    "execution_authorized": false,
+    "fallback_observed_runs": [
+      {
+        "run_id": "37232665158",
+        "event": "push",
+        "conclusion": "success",
+        "created_at_utc": "2026-10-04T20:35:11Z"
+      },
+      {
+        "run_id": "37232775773",
+        "event": "schedule",
+        "conclusion": "success",
+        "created_at_utc": "2026-10-04T20:36:56Z"
+      }
+    ],
+    "primary_observed_run": {
+      "run_id": "37232953658",
+      "event": "push",
+      "conclusion": "success",
+      "completed_at_utc": "2026-10-04T20:40:33Z"
+    }
   },
   "controllers": {
     "hybrid_scheduler_guard": {

@@ -1,0 +1,98 @@
+{
+  "schema_version": "icarus-mcp-event-v1",
+  "event_id": "flow-20261004T122521423Z-btc-range-only-burst-normalization",
+  "at_utc": "2026-10-04T12:25:21.423Z",
+  "category": "EVOLUTION",
+  "status": "VERIFIED",
+  "severity": "MEDIUM",
+  "summary": "BTC exhibited a completed 09:00 UTC range-only volatility burst after the prior 06:00 UTC joint range/turnover expansion, then normalized by 11:00 UTC. Bybit spot range was 276.1 USD (robust z +4.34) while spot volume was 93.236680 BTC (robust z +0.70); Bybit linear and Twelve Data independently corroborated the price-range expansion. This is not evidence of directional order flow or persistent liquidity stress.",
+  "surface": [
+    "BTC/USD",
+    "BTCUSDT spot",
+    "BTCUSDT linear",
+    "ARGUS anomaly state",
+    "NEXUS source reconciliation"
+  ],
+  "source": "FLOW_AUTOMATION",
+  "paths": [
+    "automation_intelligence/mcp_interface/research_runs/flow/20261004T072206788Z_flow.json",
+    "automation_intelligence/mcp_interface/events/20261004T072119622Z_flow_btc_turnover_to_expansion.json"
+  ],
+  "evidence": [
+    {
+      "fact_type": "FACT",
+      "source": "Bybit get_kline",
+      "source_url": "https://agent.bybit.com/mcp/open?symbol=BTCUSDT&category=spot&source=chatgpt",
+      "representation": "BTCUSDT spot 1h",
+      "event_time": "2026-10-04T09:00:00Z",
+      "retrieval_time": "2026-10-04T12:24:49.752Z",
+      "observation": {
+        "range_usd": 276.1,
+        "volume_btc": 93.23668,
+        "close_usd": 85235.1,
+        "range_robust_z": 4.3356,
+        "volume_robust_z": 0.7005,
+        "baseline": "preceding 28 completed hourly bars, median/MAD"
+      }
+    },
+    {
+      "fact_type": "FACT",
+      "source": "Bybit get_kline",
+      "source_url": "https://agent.bybit.com/mcp/open?symbol=BTCUSDT&category=linear&source=chatgpt",
+      "representation": "BTCUSDT linear 1h",
+      "event_time": "2026-10-04T09:00:00Z",
+      "retrieval_time": "2026-10-04T12:24:49.752Z",
+      "observation": {
+        "range_usd": 279,
+        "reported_volume": 1061.814
+      }
+    },
+    {
+      "fact_type": "FACT",
+      "source": "Twelve Data get_time_series",
+      "source_url": "https://twelvedata.com/",
+      "representation": "BTC/USD 1h",
+      "event_time": "2026-10-04T09:00:00Z",
+      "retrieval_time": "2026-10-04T12:24:49.752Z",
+      "observation": {
+        "range_usd": 281.21
+      }
+    },
+    {
+      "fact_type": "FACT",
+      "source": "Bybit get_kline",
+      "source_url": "https://agent.bybit.com/mcp/open?symbol=BTCUSDT&category=spot&source=chatgpt",
+      "representation": "BTCUSDT spot 1h",
+      "event_time": "2026-10-04T11:00:00Z",
+      "retrieval_time": "2026-10-04T12:24:49.752Z",
+      "observation": {
+        "range_usd": 114.4,
+        "volume_btc": 30.421963,
+        "range_robust_z": -0.0401,
+        "volume_robust_z": -1.695
+      }
+    },
+    {
+      "fact_type": "FACT",
+      "source": "Bybit get_orderbook",
+      "source_url": "https://www.bybit.com/",
+      "representation": "BTCUSDT spot point-in-time displayed depth",
+      "source_timestamp": "2026-10-04T12:24:49.752Z",
+      "observation": {
+        "best_bid_usd": 85284.2,
+        "best_ask_usd": 85284.3,
+        "spread_usd": 0.1
+      },
+      "limitation": "Single snapshot without historical depth baseline; no liquidity-regime conclusion."
+    }
+  ],
+  "argus": {
+    "status": "VERIFIED",
+    "finding": "The 09:00 UTC abnormality was price-range-only in Bybit spot (range z +4.34; volume z +0.70), so it is classified as a volatility burst rather than authenticated directional order flow. The 11:00 UTC bar normalized."
+  },
+  "nexus": {
+    "status": "VERIFIED",
+    "finding": "Three representations agreed on the 09:00 UTC range burst: Bybit spot 276.1 USD, Bybit linear 279.0 USD, and Twelve Data BTC/USD 281.21 USD; the current forming 12:00 bar was excluded."
+  },
+  "execution_authorized": false
+}

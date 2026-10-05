@@ -1,5 +1,5 @@
 # CL (Claude, Anthropic) — 2026-10-03 — cl_lab.feeds.registry: feed catalogue and incremental cache refresh
-"""refresh_all(cache_dir) fetches every feed, merges it into ``cache_dir/<name>.csv.gz``
+"""refresh_all(cache_dir) fetches every feed, merges it into cache_dir/<name>.csv.gz
 and returns a JSON-safe manifest. It never raises for a feed failure: the error is
 recorded and the other feeds continue. Raw rows are written ONLY under cache_dir."""
 from __future__ import annotations
@@ -12,10 +12,11 @@ from .. import store
 from . import databento as databento_feed, sources
 from .http import FeedError
 
-BINANCE_START = "2024-09"   # aligns with the committed MNQ tape (2024-09-20 onward)
+BINANCE_START = "2024-09"
 
-# Continuous CME corpus families. These feeds are dormant unless DATABENTO_API_KEY
-# is configured. Raw vendor rows remain in the Actions/local cache only.
+# Continuous CME corpus families. Presence in this catalogue does NOT authorize
+# a paid request. Scheduled Databento downloads additionally require an explicit
+# CL_DATABENTO_ROOTS allowlist and are bounded by one aggregate refresh budget.
 DATABENTO_FUTURES_ROOTS = (
     "NQ", "MNQ", "ES", "MES", "YM", "MYM", "RTY", "M2K",
     "GC", "MGC", "SI", "SIL", "PL", "PA", "BTC", "MBT",
@@ -42,6 +43,26 @@ def _months(start: str, end_exclusive: pd.Period):
         p += 1
 
 
+def _databento_policy() -> tuple[set[str], float, str | None]:
+    """Return selected roots, total USD cap, and any configuration error.
+
+    DATABENTO_API_KEY proves authentication only. It is deliberately not treated
+    as permission to spend on all catalogued futures.
+    """
+    raw = (os.environ.get("CL_DATABENTO_ROOTS") or "").strip()
+    selected = {x.strip().upper() for x in raw.split(",") if x.strip()}
+    unknown = sorted(selected - set(DATABENTO_FUTURES_ROOTS))
+    if unknown:
+        return set(), 0.0, "unknown CL_DATABENTO_ROOTS: " + ",".join(unknown)
+    try:
+        cap = float(os.environ.get("CL_DATABENTO_MAX_USD_PER_REFRESH") or "1.00")
+    except ValueError:
+        return selected, 0.0, "CL_DATABENTO_MAX_USD_PER_REFRESH must be numeric"
+    if cap < 0:
+        return selected, 0.0, "CL_DATABENTO_MAX_USD_PER_REFRESH must be >= 0"
+    return selected, cap, None
+
+
 def refresh_binance(old: pd.DataFrame, symbol, interval, now: pd.Timestamp, max_requests=80):
     """Backfill complete months from BINANCE_START, then daily files of the current month up to yesterday."""
     frames, used, notes = [], 0, []
@@ -56,7 +77,7 @@ def refresh_binance(old: pd.DataFrame, symbol, interval, now: pd.Timestamp, max_
             frames.append(sources.fetch_binance_bulk(symbol, interval, str(m)))
         except FeedError as e:
             notes.append(f"{m}: {e}")
-            if "404" in str(e):  # monthly archive not published yet: fall back to that month's daily files
+            if "404" in str(e):
                 d = m.start_time
                 while d <= m.end_time.normalize() and used < max_requests:
                     ds = d.strftime("%Y-%m-%d")
@@ -68,7 +89,7 @@ def refresh_binance(old: pd.DataFrame, symbol, interval, now: pd.Timestamp, max_
                             notes.append(f"{ds}: {e2}")
                     d += pd.Timedelta(days=1)
     day = cur.start_time
-    yday = (now.tz_convert("UTC").tz_localize(None).normalize() - pd.Timedelta(days=1))
+    yday = now.tz_convert("UTC").tz_localize(None).normalize() - pd.Timedelta(days=1)
     while day <= yday and used < max_requests:
         ds = day.strftime("%Y-%m-%d")
         if ds not in have:
@@ -100,40 +121,105 @@ def _fetch(feed, old, now):
             df = df.set_index("date").sort_index()
         return df, 1, []
     if k == "databento":
-        df, meta = databento_feed.fetch_continuous_5m(feed["root"], old, now)
-        notes = [
-            f"symbol={meta.get('symbol')}",
-            f"estimated_cost_usd={meta.get('estimated_cost_usd', 0.0):.6f}",
-            f"request_performed={bool(meta.get('request_performed'))}",
-            f"range={meta.get('start')}..{meta.get('end')}",
-        ]
-        return store.merge_frames(old, df), 1 if meta.get("request_performed") else 0, notes
+        raise RuntimeError("Databento feeds must pass refresh_all paid-request policy")
     raise ValueError(k)
+
+
+def _databento_base_entry(feed, old, status: str, error: str | None = None) -> dict:
+    ent = store.manifest_entry(feed["name"], old, status, error=error, intraday=True)
+    ent.update(
+        kind="databento",
+        root=feed["root"],
+        dataset="GLBX.MDP3",
+        continuous_symbol=databento_feed.continuous_symbol(feed["root"]),
+    )
+    return ent
 
 
 def refresh_all(cache_dir, only=None, now=None) -> dict:
     now = pd.Timestamp.now(tz="UTC") if now is None else pd.Timestamp(now)
     os.makedirs(cache_dir, exist_ok=True)
-    out = {"schema": "cl_lab.feeds.manifest/1", "generated_at": now.isoformat(), "feeds": {}}
+    selected_roots, total_cap, policy_error = _databento_policy()
+    db_key_present = bool((os.environ.get("DATABENTO_API_KEY") or "").strip())
+    db_spend = 0.0
+    out = {
+        "schema": "cl_lab.feeds.manifest/1",
+        "generated_at": now.isoformat(),
+        "feeds": {},
+        "databento_budget": {
+            "key_configured": db_key_present,
+            "selected_roots": sorted(selected_roots),
+            "max_usd_per_refresh": total_cap,
+            "estimated_spend_usd": 0.0,
+            "remaining_usd": total_cap,
+            "policy_error": policy_error,
+        },
+    }
     for feed in FEEDS:
         if only and feed["name"] not in only:
             continue
         path = os.path.join(cache_dir, f"{feed['name']}.csv.gz")
         intraday = feed["intraday"]
-        # Databento is optional/paid. Absence of a key is a dormant capability,
-        # not a broken public-feed cycle; preserve any prior cache without error.
-        if feed["kind"] == "databento" and not (os.environ.get("DATABENTO_API_KEY") or "").strip():
+
+        if feed["kind"] == "databento":
             old = store.load_frame(path, intraday=True)
-            status = "cached" if old is not None and not old.empty else "unconfigured"
-            ent = store.manifest_entry(
-                feed["name"], old, status,
-                error=None if status == "cached" else "DATABENTO_API_KEY not configured",
-                intraday=True,
+            if not db_key_present:
+                status = "cached" if old is not None and not old.empty else "unconfigured"
+                ent = _databento_base_entry(
+                    feed, old, status,
+                    error=None if status == "cached" else "DATABENTO_API_KEY not configured",
+                )
+                ent["selected"] = feed["root"] in selected_roots
+                out["feeds"][feed["name"]] = ent
+                continue
+            if policy_error:
+                ent = _databento_base_entry(feed, old, "blocked", error=policy_error)
+                ent["selected"] = False
+                out["feeds"][feed["name"]] = ent
+                continue
+            if feed["root"] not in selected_roots:
+                status = "cached" if old is not None and not old.empty else "configured_dormant"
+                ent = _databento_base_entry(feed, old, status)
+                ent["selected"] = False
+                out["feeds"][feed["name"]] = ent
+                continue
+
+            remaining = max(0.0, total_cap - db_spend)
+            try:
+                df, meta = databento_feed.fetch_continuous_5m(
+                    feed["root"], old, now, budget_cap_usd=remaining
+                )
+                merged = store.merge_frames(old, df)
+                if merged is None or merged.empty:
+                    raise FeedError("no rows")
+                store.save_frame(merged, path)
+                if meta.get("request_performed"):
+                    db_spend += float(meta.get("estimated_cost_usd") or 0.0)
+                ent = store.manifest_entry(feed["name"], merged, "ok", intraday=True)
+                ent.update(
+                    requests=1 if meta.get("request_performed") else 0,
+                    notes=[
+                        f"symbol={meta.get('symbol')}",
+                        f"estimated_cost_usd={meta.get('estimated_cost_usd', 0.0):.6f}",
+                        f"request_performed={bool(meta.get('request_performed'))}",
+                        f"range={meta.get('start')}..{meta.get('end')}",
+                    ],
+                    estimated_cost_usd=float(meta.get("estimated_cost_usd") or 0.0),
+                    selected=True,
+                )
+            except Exception as e:
+                ent = _databento_base_entry(
+                    feed, old, "error", error=f"{type(e).__name__}: {e}"
+                )
+                ent["selected"] = True
+            ent.update(
+                root=feed["root"],
+                dataset="GLBX.MDP3",
+                continuous_symbol=databento_feed.continuous_symbol(feed["root"]),
             )
-            ent.update(kind="databento", root=feed["root"], dataset="GLBX.MDP3",
-                       continuous_symbol=databento_feed.continuous_symbol(feed["root"]))
             out["feeds"][feed["name"]] = ent
             continue
+
         try:
             old = store.load_frame(path, intraday=intraday) if feed["kind"] != "cftc" else _load_cftc(path)
             df, used, notes = _fetch(feed, old, now)
@@ -142,13 +228,13 @@ def refresh_all(cache_dir, only=None, now=None) -> dict:
             store.save_frame(df, path)
             ent = store.manifest_entry(feed["name"], df, "ok", intraday=intraday and feed["kind"] != "cftc")
             ent["requests"], ent["notes"] = used, notes[:10]
-        except Exception as e:  # recorded, never raised: one dead feed must not stop the lab
+        except Exception as e:
             ent = store.manifest_entry(feed["name"], None, "error", error=f"{type(e).__name__}: {e}")
         ent["kind"] = feed["kind"]
-        if feed["kind"] == "databento":
-            ent.update(root=feed["root"], dataset="GLBX.MDP3",
-                       continuous_symbol=databento_feed.continuous_symbol(feed["root"]))
         out["feeds"][feed["name"]] = ent
+
+    out["databento_budget"]["estimated_spend_usd"] = round(db_spend, 6)
+    out["databento_budget"]["remaining_usd"] = round(max(0.0, total_cap - db_spend), 6)
     return out
 
 

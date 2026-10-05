@@ -1,139 +1,157 @@
 {
  "execution_authorized": false,
- "generated_at": "2026-10-05T02:58:49.593937+00:00",
+ "generated_at": "2026-10-05T03:03:14.994211+00:00",
  "production_decision_authorized": false,
  "providers": {
   "eodhd": {
    "call_budget": 18,
-   "calls": 16,
+   "calls": 11,
    "credential_env": "EODHD_API_TOKEN",
    "datasets": {
-    "tick_windows": {
-     "date": "2026-10-02",
-     "failed_requests": 16,
-     "rows": [
-      {
-       "date": "2026-10-02",
-       "error": "EODHD HTTP 403",
-       "status": "error",
-       "symbol": "QQQ",
-       "window": "open"
+    "eod_1y": {
+     "range": "2025-10-05..2026-10-05",
+     "status": "ok",
+     "symbols": {
+      "AAPL": {
+       "avg_volume_20d": 42234202.0,
+       "cache": {
+        "bytes": 6772,
+        "sha256": "4be2c4e87fa57bf8bad7a114f7e22add3deed2e8663d0a691f3616f2f2cdb64a"
+       },
+       "first": "2025-10-06T00:00:00+00:00",
+       "last": "2026-10-02T00:00:00+00:00",
+       "realized_vol_20d_pct": 23.086535433344963,
+       "return_pct": 30.477471140232115,
+       "rows": 250
       },
-      {
-       "date": "2026-10-02",
-       "error": "EODHD HTTP 403",
-       "status": "error",
-       "symbol": "QQQ",
-       "window": "close"
+      "AMZN": {
+       "avg_volume_20d": 35179745.0,
+       "cache": {
+        "bytes": 6379,
+        "sha256": "f83b708650813d543e6e5939c2680b25b37434f263e89d62146ae480bb939b9b"
+       },
+       "first": "2025-10-06T00:00:00+00:00",
+       "last": "2026-10-02T00:00:00+00:00",
+       "realized_vol_20d_pct": 21.36588574816617,
+       "return_pct": 13.861475780896338,
+       "rows": 250
       },
-      {
-       "date": "2026-10-02",
-       "error": "EODHD HTTP 403",
-       "status": "error",
-       "symbol": "SPY",
-       "window": "open"
+      "AVGO": {
+       "avg_volume_20d": 25036465.0,
+       "cache": {
+        "bytes": 7052,
+        "sha256": "1248a0d90e365bd5bc4ef577ed7829b3249236fda4d3447c4280326f4330c66f"
+       },
+       "first": "2025-10-06T00:00:00+00:00",
+       "last": "2026-10-02T00:00:00+00:00",
+       "realized_vol_20d_pct": 33.14833808838228,
+       "return_pct": 6.652459952773082,
+       "rows": 250
       },
-      {
-       "date": "2026-10-02",
-       "error": "EODHD HTTP 403",
-       "status": "error",
-       "symbol": "SPY",
-       "window": "close"
+      "GOOGL": {
+       "avg_volume_20d": 27370015.0,
+       "cache": {
+        "bytes": 7317,
+        "sha256": "5a9aa99e4e76f77d376e01c77cc05f1a164e64c1679aa64f3d53722f07ca1d8d"
+       },
+       "first": "2025-10-06T00:00:00+00:00",
+       "last": "2026-10-02T00:00:00+00:00",
+       "realized_vol_20d_pct": 25.97108258329468,
+       "return_pct": 37.52079826919967,
+       "rows": 250
       },
-      {
-       "date": "2026-10-02",
-       "error": "EODHD HTTP 403",
-       "status": "error",
-       "symbol": "NVDA",
-       "window": "open"
+      "META": {
+       "avg_volume_20d": 23664915.0,
+       "cache": {
+        "bytes": 7159,
+        "sha256": "0d57a29c5f7bfaad65dc82274adc35c839a7a7aed07717c372a62bb2a4408204"
+       },
+       "first": "2025-10-06T00:00:00+00:00",
+       "last": "2026-10-02T00:00:00+00:00",
+       "realized_vol_20d_pct": 56.97984250533595,
+       "return_pct": 2.0805601924511974,
+       "rows": 250
       },
-      {
-       "date": "2026-10-02",
-       "error": "EODHD HTTP 403",
-       "status": "error",
-       "symbol": "NVDA",
-       "window": "close"
+      "MSFT": {
+       "avg_volume_20d": 21253995.0,
+       "cache": {
+        "bytes": 7022,
+        "sha256": "d0cdf0ee6bd28b1b1b071f1fcdab5a3b463bb93f6d17091501304d836057fb12"
+       },
+       "first": "2025-10-06T00:00:00+00:00",
+       "last": "2026-10-02T00:00:00+00:00",
+       "realized_vol_20d_pct": 22.363309092568503,
+       "return_pct": -1.283073975606619,
+       "rows": 250
       },
-      {
-       "date": "2026-10-02",
-       "error": "EODHD HTTP 403",
-       "status": "error",
-       "symbol": "AAPL",
-       "window": "open"
+      "NVDA": {
+       "avg_volume_20d": 109965953.4,
+       "cache": {
+        "bytes": 7001,
+        "sha256": "ece14da32c90aa48448dfb4bfac4a86318c37c9cb2f02eb2fbfea0e316219620"
+       },
+       "first": "2025-10-06T00:00:00+00:00",
+       "last": "2026-10-02T00:00:00+00:00",
+       "realized_vol_20d_pct": 24.57448344512621,
+       "return_pct": 26.39352986145065,
+       "rows": 250
       },
-      {
-       "date": "2026-10-02",
-       "error": "EODHD HTTP 403",
-       "status": "error",
-       "symbol": "AAPL",
-       "window": "close"
+      "QQQ": {
+       "avg_volume_20d": 33875335.0,
+       "cache": {
+        "bytes": 7019,
+        "sha256": "6d728f403593d179dda11afe5d53176a1bfbd9a1cf25029640154dd50d0e2666"
+       },
+       "first": "2025-10-06T00:00:00+00:00",
+       "last": "2026-10-02T00:00:00+00:00",
+       "realized_vol_20d_pct": 15.314939443722123,
+       "return_pct": 23.925193873871663,
+       "rows": 250
       },
-      {
-       "date": "2026-10-02",
-       "error": "EODHD HTTP 403",
-       "status": "error",
-       "symbol": "MSFT",
-       "window": "open"
+      "SPY": {
+       "avg_volume_20d": 46046944.0,
+       "cache": {
+        "bytes": 7277,
+        "sha256": "d7930026647d045cecbb0595b623933d4e8bfe207eed4dcaf9ae26b2601c14be"
+       },
+       "first": "2025-10-06T00:00:00+00:00",
+       "last": "2026-10-02T00:00:00+00:00",
+       "realized_vol_20d_pct": 10.358963596421871,
+       "return_pct": 15.832568029284143,
+       "rows": 250
       },
-      {
-       "date": "2026-10-02",
-       "error": "EODHD HTTP 403",
-       "status": "error",
-       "symbol": "MSFT",
-       "window": "close"
-      },
-      {
-       "date": "2026-10-02",
-       "error": "EODHD HTTP 403",
-       "status": "error",
-       "symbol": "AVGO",
-       "window": "open"
-      },
-      {
-       "date": "2026-10-02",
-       "error": "EODHD HTTP 403",
-       "status": "error",
-       "symbol": "AVGO",
-       "window": "close"
-      },
-      {
-       "date": "2026-10-02",
-       "error": "EODHD HTTP 403",
-       "status": "error",
-       "symbol": "AMZN",
-       "window": "open"
-      },
-      {
-       "date": "2026-10-02",
-       "error": "EODHD HTTP 403",
-       "status": "error",
-       "symbol": "AMZN",
-       "window": "close"
-      },
-      {
-       "date": "2026-10-02",
-       "error": "EODHD HTTP 403",
-       "status": "error",
-       "symbol": "META",
-       "window": "open"
-      },
-      {
-       "date": "2026-10-02",
-       "error": "EODHD HTTP 403",
-       "status": "error",
-       "symbol": "META",
-       "window": "close"
+      "TSLA": {
+       "avg_volume_20d": 38116105.0,
+       "cache": {
+        "bytes": 6493,
+        "sha256": "7134c5994bd2e9362ca23390caca0733d51d404cda3c4d0710b62503b5b75668"
+       },
+       "first": "2025-10-06T00:00:00+00:00",
+       "last": "2026-10-02T00:00:00+00:00",
+       "realized_vol_20d_pct": 38.83679171866316,
+       "return_pct": -18.23717595146167,
+       "rows": 250
       }
-     ],
-     "status": "error",
-     "strategy": "09:30-10:00 and 15:30-16:00 America/New_York; max 10,000 ticks/window"
+     }
+    },
+    "tick_windows": {
+     "access": "denied",
+     "probe": {
+      "date": "2026-10-02",
+      "error": "EODHD HTTP 403",
+      "status": "error",
+      "symbol": "AAPL",
+      "window": "open"
+     },
+     "status": "plan_limited",
+     "strategy": "single capability probe only; no repeated denied tick calls"
     }
    },
    "execution_authorized": false,
-   "generated_at": "2026-10-05T02:58:49.593937+00:00",
+   "generated_at": "2026-10-05T03:03:14.994211+00:00",
    "production_decision_authorized": false,
    "provider": "eodhd",
-   "status": "partial",
+   "status": "ok",
    "symbols": [
     "QQQ",
     "SPY",
@@ -142,31 +160,66 @@
     "MSFT",
     "AVGO",
     "AMZN",
-    "META"
+    "META",
+    "GOOGL",
+    "TSLA"
    ]
   },
   "fmp": {
    "call_budget": 20,
-   "calls": 2,
+   "calls": 13,
    "credential_env": "FMP_API_KEY",
    "datasets": {
+    "dividends_calendar": {
+     "cache": {
+      "bytes": 341,
+      "sha256": "7a1bfa7302f6d55e5e47f7dc0e9da191e0f22b596e494fbd4326bd2c869722e6"
+     },
+     "focus": [],
+     "focus_rows": 0,
+     "rows": 6,
+     "status": "ok"
+    },
     "earnings_calendar": {
      "cache": {
       "bytes": 467,
-      "sha256": "a18b24ea44f6fa78175b5ea968402da6c84a70d79a54049743c04429a38eb0d1"
+      "sha256": "0ff83559e1cde4cf57ad80479f0030db7c0e633c388a9c677265edb1ae3eebc9"
      },
      "focus": [],
      "focus_rows": 0,
      "rows": 21,
      "status": "ok"
     },
-    "profile_probe": {
-     "rows": 1,
+    "profiles": {
+     "refresh": "weekly",
+     "refreshed_this_run": true,
+     "status": "ok",
+     "symbols": [
+      "QQQ",
+      "SPY",
+      "NVDA",
+      "AAPL",
+      "MSFT",
+      "AVGO",
+      "AMZN",
+      "META",
+      "GOOGL",
+      "TSLA"
+     ]
+    },
+    "splits_calendar": {
+     "cache": {
+      "bytes": 22,
+      "sha256": "398f4fbbe4deb8eb2f295dcd511f13df48634c8c06d069f5ec1f95cb3de59812"
+     },
+     "focus": [],
+     "focus_rows": 0,
+     "rows": 0,
      "status": "ok"
     }
    },
    "execution_authorized": false,
-   "generated_at": "2026-10-05T02:58:49.593937+00:00",
+   "generated_at": "2026-10-05T03:03:14.994211+00:00",
    "production_decision_authorized": false,
    "provider": "fmp",
    "status": "ok"
@@ -175,7 +228,7 @@
    "calls": 0,
    "credential_env": "TIINGO_API_TOKEN",
    "execution_authorized": false,
-   "generated_at": "2026-10-05T02:58:49.593937+00:00",
+   "generated_at": "2026-10-05T03:03:14.994211+00:00",
    "production_decision_authorized": false,
    "provider": "tiingo",
    "status": "unconfigured"
@@ -187,7 +240,7 @@
   "equity_tick_pressure": {},
   "execution_authorized": false,
   "provider_status": {
-   "eodhd": "partial",
+   "eodhd": "ok",
    "fmp": "ok",
    "tiingo": "unconfigured"
   },

@@ -283,6 +283,8 @@ def refresh_all(cache_dir, only=None, now=None, ledger_dir=None) -> dict:
                                        intraday=intraday and feed["kind"] not in ("cftc", "cftc_report"))
             if feed["kind"] in ("cftc", "cftc_report"):
                 ent["integrity"] = _cftc_panel_integrity(df)
+            if feed["kind"] == "treasury":
+                ent["integrity"] = treasury.panel_integrity(df, feed["dataset"])
             ent["requests"], ent["notes"] = used, notes[:10]
         except Exception as e:  # recorded, never raised: one dead feed must not stop the lab
             ent = store.manifest_entry(feed["name"], None, "error", error=f"{type(e).__name__}: {e}")

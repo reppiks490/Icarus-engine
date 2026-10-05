@@ -75,3 +75,31 @@ def test_auction_bid_to_cover_feature_is_term_local():
 def test_treasury_feeds_registered():
     names={f["name"] for f in registry.FEEDS}
     assert {"treasury_operating_cash","treasury_auctions","treasury_debt_to_penny"} <= names
+
+
+def test_treasury_panel_integrity_uses_dataset_identity():
+    df=pd.DataFrame({
+        "account_type":["A","B","A"],
+        "src_line_nbr":[1,1,1],
+        "close_today_bal":[100.0,200.0,110.0],
+    },index=pd.to_datetime(["2026-10-01","2026-10-01","2026-10-02"]))
+    df.index.name="date"
+    rep=treasury.panel_integrity(df,"operating_cash")
+    assert rep["rows"]==3
+    assert rep["dates"]==2
+    assert rep["duplicate_records"]==0
+
+    dup=pd.concat([df,df.iloc[[0]]])
+    rep2=treasury.panel_integrity(dup,"operating_cash")
+    assert rep2["duplicate_records"]==1
+
+
+def test_treasury_auction_integrity_allows_same_date_different_cusips():
+    df=pd.DataFrame({
+        "cusip":["A","B"],
+        "security_term":["2-Year","5-Year"],
+    },index=pd.to_datetime(["2026-10-01","2026-10-01"]))
+    df.index.name="date"
+    rep=treasury.panel_integrity(df,"auctions")
+    assert rep["duplicate_records"]==0
+    assert rep["dates"]==1

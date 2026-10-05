@@ -105,7 +105,12 @@ def _dedupe(df: pd.DataFrame, dataset: str) -> pd.DataFrame:
         return pd.DataFrame() if df is None else df
     spec = DATASETS[dataset]
     flat = df.reset_index()
-    keys = [k for k in spec["identity"] if k in flat.columns]
+    keys = []
+    for key in spec["identity"]:
+        if key == spec["date_field"] and "date" in flat.columns:
+            keys.append("date")
+        elif key in flat.columns:
+            keys.append(key)
     if not keys:
         keys = ["date"]
     flat = flat.drop_duplicates(keys, keep="last")

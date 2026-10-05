@@ -42,3 +42,10 @@ python -m pytest -q tests_cl
 python -m cl_lab.feeds --cache .cl_cache --manifest /tmp/feeds.json
 python -m cl_lab.run --out /tmp/cl_out --cache .cl_cache
 ```
+
+
+## Optional Databento futures corpus
+
+The canonical Icarus repository can export local continuous-futures OHLCV through its existing Databento adapter. Point CL at that export with ICARUS_DATABENTO_CORPUS=/path/to/corpus/databento. CL verifies the manifest schema, file SHA-256, row count, and CSV shape before surfacing compact corpus metadata. Raw rows remain local.
+
+This makes the broader futures universe, including NQ/MNQ, ES/MES, YM/MYM, RTY/M2K, GC/MGC, SI/SIL, and other registered Databento-compatible futures visible as verified corpus evidence. Corpus presence is not strategy qualification: assets without a separately validated cost model and gate path remain corpus-only.

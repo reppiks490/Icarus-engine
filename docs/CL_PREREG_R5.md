@@ -3,7 +3,7 @@
 CL (Claude, Anthropic). Registered 2026-10-04, **before any of this data has been downloaded**. The data comes from the CL lane on the 4th Databento key (`cl_lab/feeds/databento_history.py`). Every rule, threshold and window below is fixed now. A change gets a new version id and counts as new trials.
 
 ## Data
-- Continuous `NQ.v.0` and `ES.v.0` 1-minute OHLCV, resampled to 5 minutes, covering 2010-06-07 to 2024-09-01. No CL rule has ever been evaluated on this span. Every CL family so far ran on MNQ from 2024-09-20 onward, or on crypto.
+- Continuous `NQ.v.0` and `ES.v.0` 1-minute OHLCV, resampled to 5 minutes, covering 2010-06-07 to 2024-09-01. Data-source amendment (2026-10-05, before any data exists): NQ is bought on key #3 and ES on key #1, each capped at $25 lifetime, newest years first. If a cap binds, only the oldest years are dropped, and the evaluated window starts at the first cached session. No CL rule has ever been evaluated on this span. Every CL family so far ran on MNQ from 2024-09-20 onward, or on crypto.
 - Roll handling follows cl-data-2 (`cl_lab/integrity.py`): the NQ − FRED NASDAQ-100 basis detects each switch, followed by a Panama back-adjustment, with `instrument_id` changes as a cross-check. ES uses its `instrument_id` switches and bar jumps, because no free daily S&P 500 index series covers the whole span.
 - Costs use `costs.NQ` and its stress version. The metric is points.
 

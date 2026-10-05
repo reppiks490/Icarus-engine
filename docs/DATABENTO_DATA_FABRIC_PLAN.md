@@ -4,6 +4,18 @@ Status: research/data architecture only. This plan does not authorize trading or
 
 ## Current three-account allocation
 
+> **Owner decision, 2026-10-05: split the remaining credit of keys #1–#3 (CL, `cl_lab/feeds/databento_budget.py`).** The 4th key's account is locked by Databento (`403 auth_account_locked`). Each paid lane has a **lifetime** cap on one account, and a ledger in `automation_intelligence/cl_lab/spend/`. Every lane writes only its own ledger, which is committed and mirrored in its cache, so workflows can't overspend by racing each other. When a lane can't afford everything, it shortens the **date range** (oldest first). It never changes the schema or resolution.
+>
+> Remaining credit is estimated from the manifests at $125 per account. The Databento portal is the authority, so if its balance differs, edit `ESTIMATED_REMAINING_USD`.
+>
+> | Key | Est. remaining | Lane (lifetime cap) | Margin |
+> |---|---|---|---|
+> | #1 primary | ~$56 | ES 1-minute history, 2010-06 → 2024-09 ($25) | ~$31 for corpus top-ups |
+> | #2 secondary | ~$98.5 | index MBO/MBP-10 depth ($93) | ~$5.5 for VXM/DX top-ups |
+> | #3 third | $125 | NQ 1-minute history ($25), plus diversifier depth ($95) | ~$5 |
+>
+> **Fixed at the same time:** the depth acquirer pre-created its temporary file, so the SDK refused every download with `FileExistsError`: 0 downloads and, by all evidence, $0 spent. `--budget-usd` is a per-run figure, and these runs happen several times a day. With downloads working, and no lifetime cap, each run could have bought up to $95 of new days. The lane caps above close that gap.
+
 > **Owner decision, 2026-10-04 (applied by CL):** no request is refused outright.
 > - **Key #1:** each asset is capped at **$3.50 per request** (`CL_DATABENTO_MAX_USD_PER_FEED`). A request estimated above the cap takes the largest window that fits instead: the most recent data on a first pull, or the oldest missing span on a catch-up, so the cache never has a hole. Free cost estimates are bisected to find it. Vendor gateway errors (502/503/504, timeouts) are retried twice.
 > - **VX** is no longer requested. Its 25-month history was estimated at $97.97, and VXM tracks the same index.

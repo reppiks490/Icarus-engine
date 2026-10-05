@@ -31,6 +31,7 @@ import pandas as pd
 
 from .. import store
 from . import databento as dbfeed
+from . import databento_budget as budget
 
 HISTORICAL_LAG_DEFAULT_MINUTES = 500
 
@@ -539,6 +540,7 @@ def acquire_profile(
     max_request_usd: float,
     now: Any = None,
     client: Any = None,
+    ledger_dir: str | None = None,
 ) -> dict[str, Any]:
     cfg = PROFILES.get(profile)
     if cfg is None:
@@ -556,6 +558,12 @@ def acquire_profile(
             "production_decision_authorized": False,
         }
     hist = client or dbfeed.historical_client(account=account)
+    # CL 2026-10-05, owner's credit split: --budget-usd is per run, so without a lifetime ledger every run
+    # (several a day) could buy up to the full budget again on new days. Cap each run at what the lane has left.
+    lane = budget.Lane({"index": "depth:index", "diversifier": "depth:diversifier"}[profile],
+                       ledger_dir, mirror=depth_cache) if ledger_dir else None
+    if lane is not None:
+        budget_usd = min(float(budget_usd), lane.remaining)
     candidates = profile_candidates(profile, cache_dir, now)
     priced, cached = price_candidates(hist, account, candidates, depth_cache, max_request_usd)
     selected = allocate(priced, budget_usd)
@@ -587,6 +595,7 @@ def acquire_profile(
                 dir=os.path.join(depth_cache, "_raw_tmp"),
             )
             os.close(fd)
+            os.remove(raw_path)   # CL: the SDK refuses to stream into an existing file (FileExistsError, 2026-10-05)
             # Count the full preflight estimate conservatively before the API call:
             # a transport failure after request acceptance must not make the ledger
             # look cheaper than the spend we authorized.
@@ -595,6 +604,9 @@ def acquire_profile(
             dbn = hist.timeseries.get_range(**request_kwargs(c), path=raw_path)
             raw_sha = _sha256(raw_path)
             raw_bytes = os.path.getsize(raw_path)
+            if lane is not None:
+                lane.record(float(r["estimated_cost_usd"]), f"{c.root} {c.schema} {c.day}",
+                            pd.Timestamp.now(tz="UTC").isoformat())
             features = summarize_store(dbn)
             if features.empty:
                 raise RuntimeError("depth request produced no reducible records")
@@ -615,6 +627,10 @@ def acquire_profile(
                 "feature_last": str(features.index[-1]),
             })
         except Exception as ex:
+            if lane is not None and raw_path and os.path.exists(raw_path) and os.path.getsize(raw_path) > 0 \
+                    and not any(e.get("what") == f"{c.root} {c.schema} {c.day}" for e in lane.data.get("entries", [])):
+                lane.record(float(r["estimated_cost_usd"]), f"{c.root} {c.schema} {c.day} (partial)",
+                            pd.Timestamp.now(tz="UTC").isoformat())   # bytes arrived: count it as spent
             rows.append({
                 **base,
                 "status": "download_error",
@@ -637,6 +653,7 @@ def acquire_profile(
         "account": account,
         "credential_env": dbfeed.api_key_env(account),
         "budget_usd": float(budget_usd),
+        "lane": (dict(id=lane.lane, cap_usd=lane.cfg["cap_usd"], spent_usd=lane.data["spent_usd"]) if lane is not None else None),
         "max_request_usd": float(max_request_usd),
         "estimated_selected_usd": estimated_selected,
         "estimated_requested_usd": estimated_requested,
@@ -659,6 +676,7 @@ def main(argv=None):
     ap.add_argument("--out", required=True)
     ap.add_argument("--budget-usd", type=float, default=95.0)
     ap.add_argument("--max-request-usd", type=float, default=15.0)
+    ap.add_argument("--ledger-dir", default=budget.LEDGER_DIR)
     a = ap.parse_args(argv)
     result = acquire_profile(
         profile=a.profile,
@@ -666,6 +684,7 @@ def main(argv=None):
         depth_cache=a.depth_cache,
         budget_usd=a.budget_usd,
         max_request_usd=a.max_request_usd,
+        ledger_dir=a.ledger_dir,
     )
     os.makedirs(os.path.dirname(os.path.abspath(a.out)), exist_ok=True)
     with open(a.out, "w", encoding="utf-8") as f:

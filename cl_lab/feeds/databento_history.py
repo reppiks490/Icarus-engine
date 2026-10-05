@@ -1,128 +1,138 @@
-# CL (Claude, Anthropic) — 2026-10-04 — CL lane on the 4th Databento key: long-history NQ/ES backfill
-"""Backfills continuous NQ and ES 1-minute OHLCV from June 2010 up to the start of the key #1
-corpus (2024-09-01), so the lab can test every rule on ~14 years it has never seen.
+# CL (Claude, Anthropic) — 2026-10-04 (rev. 2026-10-05) — long-history NQ/ES backfill on the owner's budget split
+"""Backfills continuous NQ and ES 1-minute OHLCV from June 2010 up to the start of the key #1 corpus
+(2024-09-01), so the lab can test every rule on ~14 years it has never seen.
 
-Spending rules (estimates come from Databento's free ``metadata.get_cost``):
-- one request = one calendar year of one root; a request above MAX_USD_PER_REQUEST is not sent;
-- at most MAX_USD_PER_RUN per workflow run and MAX_USD_LIFETIME for the whole lane, enforced
-  against a committed ledger (automation_intelligence/cl_lab/history_ledger.json) so a lost
-  Actions cache can never trigger silent re-spending past the lifetime cap;
-- chunks already in the ledger AND present in the cache are skipped (idempotent).
-Raw rows live only in the Actions cache (``databento_hist_{root}_5m.csv.gz``); the repository
-receives the ledger (ranges, row counts, estimates), never vendor rows."""
+Owner decision 2026-10-05 (the 4th key's account is locked by Databento): the cost is split across
+the remaining credit of keys #1-#3 (``databento_budget``): NQ on key #3 (lane ``history:NQ``), ES on
+key #1 (lane ``history:ES``), each with a lifetime cap. Years are bought NEWEST FIRST; when a lane's
+remaining cap cannot buy the next older year, that year is shortened from its old end to what fits,
+and anything older is skipped. Only the length of history shrinks, never the schema or resolution.
+
+Per-request and per-run limits (MAX_USD_PER_REQUEST, MAX_USD_PER_RUN) spread the work across runs;
+estimates come from Databento's free ``metadata.get_cost``. A 401/403/auth error stops the lane at
+once. Raw rows live only in the Actions cache (``databento_hist_{root}_5m.csv.gz``); the repository
+receives the ledgers (ranges, row counts, estimates), never vendor rows."""
 from __future__ import annotations
 
 import argparse
 import json
 import os
-from typing import Any
 
 import pandas as pd
 
 from .. import store
 from . import databento as dbf
+from . import databento_budget as budget
 
-ACCOUNT = "cl"
-ROOTS = (("NQ", "GLBX.MDP3"), ("ES", "GLBX.MDP3"))
+ROOTS = (("NQ", "GLBX.MDP3", "history:NQ"), ("ES", "GLBX.MDP3", "history:ES"))
 START = pd.Timestamp("2010-06-07T00:00:00Z")      # first full week of GLBX.MDP3 history
 END = pd.Timestamp("2024-09-01T00:00:00Z")        # key #1's corpus begins here
-MAX_USD_PER_REQUEST, MAX_USD_PER_RUN, MAX_USD_LIFETIME = 15.0, 15.0, 60.0
-LEDGER_IN_CACHE = "databento_history_ledger.json"
+MAX_USD_PER_REQUEST, MAX_USD_PER_RUN = 15.0, 15.0
+AUTH_ERRORS = ("401", "403", "auth_")   # e.g. "403 auth_account_locked" observed 2026-10-05
 
 
 def chunks():
+    """Calendar-year windows, newest first."""
     out, a = [], START
     while a < END:
         b = min(pd.Timestamp(f"{a.year + 1}-01-01T00:00:00Z"), END)
         out.append((a, b))
         a = b
-    return out
+    return out[::-1]
 
 
 def cache_path(cache_dir, root):
     return os.path.join(cache_dir, f"databento_hist_{root.lower()}_5m.csv.gz")
 
 
-def _load(path):
-    try:
-        with open(path, encoding="utf-8") as f:
-            return json.load(f)
-    except (OSError, ValueError):
-        return None
+def _kw(root, dataset, a, b):
+    return dict(dataset=dataset, symbols=dbf.continuous_symbol(root, "v"), schema="ohlcv-1m",
+                stype_in="continuous", start=a.isoformat(), end=b.isoformat())
 
 
-def run(cache_dir: str, ledger_path: str, *, client: Any = None, now=None) -> dict:
+def run(cache_dir: str, ledger_dir: str = budget.LEDGER_DIR, *, clients: dict | None = None, now=None) -> dict:
+    """``clients``: optional {account: client} (tests). Returns a status per root."""
     now = pd.Timestamp.now(tz="UTC") if now is None else pd.Timestamp(now)
-    copies = [x for x in (_load(ledger_path), _load(os.path.join(cache_dir, LEDGER_IN_CACHE))) if x]
-    # the committed ledger and the cached copy can diverge if a run dies before committing: keep the larger spend
-    led = max(copies, key=lambda x: x.get("spent_estimated_usd", 0.0)) if copies else dict(schema="cl_lab.databento_history/1", lane="CL", account=ACCOUNT,
-                                     key_env=dbf.api_key_env(ACCOUNT), caps=dict(per_request=MAX_USD_PER_REQUEST,
-                                     per_run=MAX_USD_PER_RUN, lifetime=MAX_USD_LIFETIME), spent_estimated_usd=0.0, chunks={})
-    led["last_run_at"], led["run_status"], run_spent, notes = now.isoformat(), "OK", 0.0, []
-    if client is None and not dbf.account_configured(ACCOUNT):
-        led["run_status"] = f"UNCONFIGURED: {dbf.api_key_env(ACCOUNT)} not set"
-        return _save(led, ledger_path, (), cache_dir)
-    client = client or dbf.historical_client(account=ACCOUNT)
-    for root, dataset in ROOTS:
+    budget.check_split()
+    clients = dict(clients or {})
+    out = {}
+    run_spent = 0.0
+    for root, dataset, lane_id in ROOTS:
+        lane = budget.Lane(lane_id, ledger_dir, mirror=cache_dir)
+        account = lane.cfg["account"]
+        st = out[root] = dict(lane=lane_id, account=account, key_env=dbf.api_key_env(account), status="OK",
+                              cap_usd=lane.cfg["cap_usd"], spent_usd=lane.data["spent_usd"], bought=[], trimmed=None)
+        if account not in clients:
+            if not dbf.account_configured(account):
+                st["status"] = f"UNCONFIGURED: {dbf.api_key_env(account)} not set"
+                continue
+            clients[account] = dbf.historical_client(account=account)
+        client = clients[account]
         path = cache_path(cache_dir, root)
         frame = store.load_frame(path) if os.path.exists(path) else pd.DataFrame()
         for a, b in chunks():
-            key = f"{root}:{a.date()}..{b.date()}"
-            have = not frame.empty and ((frame.index >= a) & (frame.index < b)).any()
-            if have:                      # never pay twice for rows already cached
-                if led["chunks"].get(key, {}).get("status") != "DONE":
-                    led["chunks"][key] = dict(led["chunks"].get(key, {}), status="DONE", source="cache")
-                continue
-            kw = dict(dataset=dataset, symbols=dbf.continuous_symbol(root, "v"), schema="ohlcv-1m",
-                      stype_in="continuous", start=a.isoformat(), end=b.isoformat())
+            if not frame.empty and ((frame.index >= a) & (frame.index < b)).any():
+                continue                                   # cached: never pay twice
+            if lane.data.get("exhausted_before"):          # an older year was already cut: nothing older to buy
+                st["status"] = "CAP_REACHED"
+                break
+            kw = _kw(root, dataset, a, b)
             try:
                 est = float(dbf._retry(lambda: client.metadata.get_cost(**kw)))
-            except Exception as ex:  # noqa: BLE001 - recorded, never raised
-                led["chunks"][key] = dict(status="ESTIMATE_FAILED", error=f"{type(ex).__name__}: {ex}"[:200])
-                continue
-            if est > MAX_USD_PER_REQUEST:
-                led["chunks"][key] = dict(status="OVER_REQUEST_CAP", estimate_usd=round(est, 4))
-                continue
-            if run_spent + est > MAX_USD_PER_RUN or led["spent_estimated_usd"] + est > MAX_USD_LIFETIME:
-                notes.append(f"budget reached before {key} (estimate ${est:.4f})")
-                led["run_status"] = "BUDGET_PAUSED"
-                return _save(led, ledger_path, notes, cache_dir)
-            try:
-                store_ = dbf._retry(lambda: client.timeseries.get_range(**kw))
-                part = dbf.resample_5m(dbf._as_ohlcv_1m(store_))
             except Exception as ex:  # noqa: BLE001
-                led["chunks"][key] = dict(status="REQUEST_FAILED", estimate_usd=round(est, 4), error=f"{type(ex).__name__}: {ex}"[:200])
-                continue
+                msg = f"{type(ex).__name__}: {ex}"
+                st["status"] = (f"AUTH_FAILED: {msg[:160]}" if any(t in msg for t in AUTH_ERRORS)
+                                else f"ESTIMATE_FAILED: {msg[:160]}")
+                break
+            if est > MAX_USD_PER_REQUEST + 1e-12 and lane.remaining >= est:
+                st["status"] = f"OVER_REQUEST_CAP: {a.date()}..{b.date()} ${est:.2f}"
+                break
+            if est > lane.remaining + 1e-12:               # the lifetime cap cannot buy this whole year: shorten it
+                allow = min(lane.remaining, MAX_USD_PER_REQUEST)
+                fit = dbf._fit_range(lambda x, y: dbf._retry(lambda: client.metadata.get_cost(**_kw(root, dataset, x, y))),
+                                     a, b, allow, keep="end")
+                lane.data["exhausted_before"] = (fit[0] if fit else b).isoformat()
+                lane.save()
+                if fit is None:
+                    st["status"] = "CAP_REACHED"
+                    break
+                a2, b2, est = fit
+                st["trimmed"] = dict(year_start=a.isoformat(), kept_from=a2.isoformat(), estimate_usd=round(est, 4))
+                kw = _kw(root, dataset, a2, b2)
+            if run_spent + est > MAX_USD_PER_RUN + 1e-12:
+                st["status"] = "RUN_LIMIT"                 # continues next run
+                break
+            try:
+                part = dbf.resample_5m(dbf._as_ohlcv_1m(dbf._retry(lambda: client.timeseries.get_range(**kw))))
+            except Exception as ex:  # noqa: BLE001
+                st["status"] = f"REQUEST_FAILED: {type(ex).__name__}: {ex}"[:200]
+                break
             run_spent += est
-            led["spent_estimated_usd"] = round(led["spent_estimated_usd"] + est, 6)
+            lane.record(est, f"{root} {kw['start'][:10]}..{kw['end'][:10]} rows5m={len(part)}", now.isoformat())
             frame = store.merge_frames(frame, part)
             store.save_frame(frame, path)
-            led["chunks"][key] = dict(status="DONE", estimate_usd=round(est, 4), rows_5m=int(len(part)),
-                                      first=part.index[0].isoformat() if len(part) else None,
-                                      last=part.index[-1].isoformat() if len(part) else None, at=now.isoformat())
-    return _save(led, ledger_path, notes, cache_dir)
-
-
-def _save(led, ledger_path, notes=(), cache_dir=None):
-    led["notes"] = list(notes)[:10]
-    led["execution_authorized"] = False
-    for path in [ledger_path] + ([os.path.join(cache_dir, LEDGER_IN_CACHE)] if cache_dir else []):
-        os.makedirs(os.path.dirname(os.path.abspath(path)), exist_ok=True)
-        tmp = path + ".tmp"
-        with open(tmp, "w", encoding="utf-8") as f:
-            json.dump(led, f, indent=1, sort_keys=True)
-            f.write("\n")
-        os.replace(tmp, path)
-    return led
+            st["bought"].append(dict(start=kw["start"], end=kw["end"], usd=round(est, 4), rows_5m=int(len(part))))
+            if st["trimmed"]:
+                st["status"] = "CAP_REACHED"
+                break
+        st["spent_usd"] = lane.data["spent_usd"]
+        st["history_first"] = frame.index[0].isoformat() if not frame.empty else None
+    return out
 
 
 def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("--cache", default=".cl_cache")
-    ap.add_argument("--ledger", default="automation_intelligence/cl_lab/history_ledger.json")
+    ap.add_argument("--ledger-dir", default=budget.LEDGER_DIR)
+    ap.add_argument("--status", default="automation_intelligence/cl_lab/history_status.json")
     a = ap.parse_args(argv)
-    led = run(a.cache, a.ledger)
-    print(json.dumps({k: led.get(k) for k in ("run_status", "spent_estimated_usd", "notes")}))
+    res = run(a.cache, a.ledger_dir)
+    os.makedirs(os.path.dirname(os.path.abspath(a.status)), exist_ok=True)
+    with open(a.status, "w", encoding="utf-8") as f:
+        json.dump(dict(schema="cl_lab.databento_history_status/1", roots=res, execution_authorized=False),
+                  f, indent=1, sort_keys=True, default=str)
+        f.write("\n")
+    print(json.dumps({r: (v["status"], v["spent_usd"]) for r, v in res.items()}))
 
 
 if __name__ == "__main__":

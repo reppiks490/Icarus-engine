@@ -313,14 +313,17 @@ def collect_tiingo(cache_dir: str, now: pd.Timestamp, token: str | None) -> dict
         else:
             start = "2008-01-01"
         try:
-            fresh = _safe_json_get(
-                f"https://api.tiingo.com/tiingo/daily/{symbol}/prices",
-                params={"startDate": start, "endDate": now.date().isoformat()},
-                headers=headers,
-                provider="Tiingo",
-            )
-            out["calls"] += 1
             merged = prior if isinstance(prior, list) else []
+            if pd.Timestamp(start).date() > now.date():
+                fresh = []
+            else:
+                fresh = _safe_json_get(
+                    f"https://api.tiingo.com/tiingo/daily/{symbol}/prices",
+                    params={"startDate": start, "endDate": now.date().isoformat()},
+                    headers=headers,
+                    provider="Tiingo",
+                )
+                out["calls"] += 1
             if isinstance(fresh, list) and fresh:
                 by_date = {str(x.get("date"))[:10]: x for x in merged if x.get("date")}
                 for x in fresh:

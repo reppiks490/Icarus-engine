@@ -50,6 +50,13 @@ jobs:
           key: cl-feeds-${{ github.run_id }}
           restore-keys: cl-feeds-
 
+      - name: Refresh FRED + ALFRED point-in-time macro fabric
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+          ICARUS_FRED_CACHE: .cl_cache
+          ICARUS_FRED_MANIFEST: automation_intelligence/cl_lab/fred_alfred_manifest.json
+        run: python -m cl_lab.feeds.fred_alfred
+
       - name: Refresh public + primary Databento OHLCV corpus
         # CL 2026-10-04: a slow first Databento pull must not starve the lab cycle. The cache is saved
         # either way and the next run continues incrementally from the last cached bar.

@@ -9,7 +9,7 @@ import os
 import pandas as pd
 
 from .. import store
-from . import databento as databento_feed, databento_budget, sources
+from . import databento as databento_feed, databento_budget, sources, treasury
 from .http import FeedError
 
 BINANCE_START = "2024-09"   # aligns with the committed MNQ tape (2024-09-20 onward)
@@ -74,6 +74,9 @@ FEEDS = [
     dict(name="cftc_tff_nasdaq", kind="cftc", intraday=False),
     dict(name="cftc_tff_all", kind="cftc_report", report="tff", intraday=False),
     dict(name="cftc_disaggregated_all", kind="cftc_report", report="disaggregated", intraday=False),
+    dict(name="treasury_operating_cash", kind="treasury", dataset="operating_cash", intraday=False),
+    dict(name="treasury_auctions", kind="treasury", dataset="auctions", intraday=False),
+    dict(name="treasury_debt_to_penny", kind="treasury", dataset="debt_to_penny", intraday=False),
     *[dict(name=f"databento_{root.lower()}_5m", kind="databento", root=root,
            dataset="GLBX.MDP3", research_role="core", intraday=True)
       for root in DATABENTO_FUTURES_ROOTS],
@@ -160,6 +163,9 @@ def _fetch(feed, old, now, max_usd=None, charge=None):
         df = sources.derive_cftc_position_features(df)
         notes = [f"report={feed['report']}", f"revision_window_start={since.date() if since is not None else 'full-history'}"]
         return df, None, notes
+    if k == "treasury":
+        df, note = treasury.refresh(old, feed["dataset"])
+        return df, None, [note]
     if k == "databento":
         df, meta = databento_feed.fetch_continuous_5m(
             feed["root"], old, now, dataset=feed.get("dataset") or "GLBX.MDP3",
@@ -257,6 +263,8 @@ def refresh_all(cache_dir, only=None, now=None, ledger_dir=None) -> dict:
             ent.update(root=feed["root"], dataset=feed.get("dataset") or "GLBX.MDP3",
                        research_role=feed.get("research_role"),
                        continuous_symbol=databento_feed.continuous_symbol(feed["root"]))
+        elif feed["kind"] == "treasury":
+            ent.update(dataset=feed["dataset"], source="U.S. Treasury Fiscal Data API")
         out["feeds"][feed["name"]] = ent
     return out
 

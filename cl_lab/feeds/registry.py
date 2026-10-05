@@ -9,7 +9,7 @@ import os
 import pandas as pd
 
 from .. import store
-from . import databento as databento_feed, databento_budget, sources
+from . import databento as databento_feed, databento_budget, sources, treasury
 from .http import FeedError
 
 BINANCE_START = "2024-09"   # aligns with the committed MNQ tape (2024-09-20 onward)
@@ -72,6 +72,9 @@ FEEDS = [
     *[dict(name=f"cboe_{n.lower()}", kind="cboe", index=n, intraday=False)
       for n in ("VIX", "VIX9D", "VIX3M", "VVIX", "SKEW")],
     dict(name="cftc_tff_nasdaq", kind="cftc", intraday=False),
+    dict(name="treasury_operating_cash", kind="treasury", dataset="operating_cash", intraday=False),
+    dict(name="treasury_auctions", kind="treasury", dataset="auctions", intraday=False),
+    dict(name="treasury_debt_to_penny", kind="treasury", dataset="debt_to_penny", intraday=False),
     *[dict(name=f"databento_{root.lower()}_5m", kind="databento", root=root,
            dataset="GLBX.MDP3", research_role="core", intraday=True)
       for root in DATABENTO_FUTURES_ROOTS],
@@ -145,6 +148,9 @@ def _fetch(feed, old, now, max_usd=None, charge=None):
             df = pd.concat([old.reset_index(), df.reset_index()]).drop_duplicates(["date", "code"], keep="last")
             df = df.set_index("date").sort_index()
         return df, 1, []
+    if k == "treasury":
+        df, note = treasury.refresh(old, feed["dataset"])
+        return df, None, [note]
     if k == "databento":
         df, meta = databento_feed.fetch_continuous_5m(
             feed["root"], old, now, dataset=feed.get("dataset") or "GLBX.MDP3",
@@ -241,6 +247,8 @@ def refresh_all(cache_dir, only=None, now=None, ledger_dir=None) -> dict:
             ent.update(root=feed["root"], dataset=feed.get("dataset") or "GLBX.MDP3",
                        research_role=feed.get("research_role"),
                        continuous_symbol=databento_feed.continuous_symbol(feed["root"]))
+        elif feed["kind"] == "treasury":
+            ent.update(dataset=feed["dataset"], source="U.S. Treasury Fiscal Data API")
         out["feeds"][feed["name"]] = ent
     return out
 

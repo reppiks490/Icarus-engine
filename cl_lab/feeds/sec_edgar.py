@@ -34,7 +34,9 @@ def _get(url):
     wait=0.13-(time.monotonic()-_last_request)
     if wait>0:
         time.sleep(wait)
-    raw=get_bytes(url,headers={"User-Agent":_ua(),"Accept-Encoding":"gzip, deflate","Accept":"application/json"})
+    # Do not request compressed transfer encoding here: the shared stdlib HTTP helper
+    # returns response bytes verbatim and intentionally does not transparently gunzip.
+    raw=get_bytes(url,headers={"User-Agent":_ua(),"Accept":"application/json"})
     _last_request=time.monotonic()
     return json.loads(raw)
 
@@ -128,6 +130,18 @@ def refresh(cache_dir,tickers=None):
     tickers=tuple(tickers or DEFAULT_TICKERS)
     mapping=ticker_map()
     root=Path(cache_dir)/"sec_edgar"
+    filings_path=root/"filings.csv.gz"
+    prior=pd.DataFrame()
+    if filings_path.exists():
+        try:
+            prior=pd.read_csv(filings_path,compression="gzip")
+            if "accepted_at" in prior:
+                prior["accepted_at"]=pd.to_datetime(prior["accepted_at"],errors="coerce",utc=True)
+            for col in ("filing_date","report_date"):
+                if col in prior:
+                    prior[col]=pd.to_datetime(prior[col],errors="coerce")
+        except Exception:
+            prior=pd.DataFrame()
     all_filings=[]; all_facts=[]; status={}
     for ticker in tickers:
         cik=mapping.get(ticker)
@@ -135,7 +149,13 @@ def refresh(cache_dir,tickers=None):
             status[ticker]={"status":"error","error":"ticker not found in SEC mapping"}
             continue
         try:
-            filings=filings_for_ticker(ticker,cik)
+            old=prior[prior["ticker"].eq(ticker)].copy() if not prior.empty and "ticker" in prior else pd.DataFrame()
+            # Historical submission shards are a seed operation. Hourly refreshes only need
+            # the SEC recent-submissions payload; cached historical accessions are retained.
+            recent=filings_for_ticker(ticker,cik,max_history_files=0 if not old.empty else 8)
+            filings=(pd.concat([old,recent],ignore_index=True)
+                     .drop_duplicates(["ticker","accession"],keep="last")
+                     if not old.empty else recent)
             amap={r.accession:r.accepted_at for r in filings.itertuples() if pd.notna(r.accepted_at)}
             facts=companyfacts_for_ticker(ticker,cik,amap)
             if filings.empty:
@@ -143,7 +163,8 @@ def refresh(cache_dir,tickers=None):
             all_filings.append(filings)
             all_facts.append(facts)
             status[ticker]={"status":"ok","cik":cik,"filings":len(filings),"facts":len(facts),
-                            "accepted_timestamps":int(filings["accepted_at"].notna().sum())}
+                            "accepted_timestamps":int(filings["accepted_at"].notna().sum()),
+                            "history_seeded":bool(not old.empty)}
         except Exception as e:
             status[ticker]={"status":"error","cik":cik,"error":f"{type(e).__name__}: {e}"}
     filings=pd.concat(all_filings,ignore_index=True) if all_filings else pd.DataFrame()

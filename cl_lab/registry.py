@@ -5,7 +5,7 @@ append to status_history; entries are never deleted. Forward evidence for a
 rule only counts sessions dated after first_registered_at."""
 from __future__ import annotations
 
-PROMOTABLE = ("CANDIDATE", "CHALLENGER", "CHAMPION")
+PROMOTABLE = ("CANDIDATE", "CHALLENGER", "CHAMPION", "HOLD_CONFIRMED")  # HOLD_CONFIRMED: cl-hc1 forward-shadow candidate
 
 
 def merge(registry: dict, asset: str, records: dict, run_id: str, at: str, grammar: str) -> dict:

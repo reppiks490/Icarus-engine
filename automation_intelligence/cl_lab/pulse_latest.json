@@ -14,7 +14,119 @@
   ]
  },
  "execution_authorized": false,
- "fingerprint": "420ecd46a57d92bd2be79543dd2c3b117d33eb4fd26a549a7be2c240d6c09e2b",
+ "fingerprint": "0cc0880d9a4a72c5b9215e5db452b1d153229ce4287c349b886d5161ac944908",
+ "forward": {
+  "CANDLES": {
+   "after": "2026-10-05",
+   "net_usd": 0.0,
+   "trades": 0
+  },
+  "HA_HA_FILLS": {
+   "after": "2026-10-05",
+   "net_usd": 0.0,
+   "trades": 0
+  },
+  "HA_REAL_FILLS": {
+   "after": "2026-10-05",
+   "net_usd": 0.0,
+   "trades": 0
+  }
+ },
+ "integrity": {
+  "data_version": "cl-data-2",
+  "detected": [
+   {
+    "bar_jump": 274.75,
+    "bp": 122.1,
+    "delta": 267.46,
+    "method": "basis",
+    "quarter": "2024-12",
+    "session": "2024-12-12",
+    "status": "DETECTED",
+    "switch": "bar",
+    "ts": "2024-12-12T05:00:00+00:00"
+   },
+   {
+    "bar_jump": null,
+    "bp": 110.9,
+    "delta": 215.79,
+    "method": "basis",
+    "quarter": "2025-03",
+    "session": "2025-03-13",
+    "status": "DETECTED",
+    "switch": "session_boundary",
+    "ts": "2025-03-12T22:00:00+00:00"
+   },
+   {
+    "bar_jump": 196.5,
+    "bp": 100.0,
+    "delta": 221.73,
+    "method": "basis",
+    "quarter": "2025-06",
+    "session": "2025-06-12",
+    "status": "DETECTED",
+    "switch": "bar",
+    "ts": "2025-06-12T04:00:00+00:00"
+   },
+   {
+    "bar_jump": 245.75,
+    "bp": 92.8,
+    "delta": 224.96,
+    "method": "basis",
+    "quarter": "2025-09",
+    "session": "2025-09-11",
+    "status": "DETECTED",
+    "switch": "bar",
+    "ts": "2025-09-11T04:00:00+00:00"
+   },
+   {
+    "bar_jump": null,
+    "bp": 101.5,
+    "delta": 263.51,
+    "method": "basis",
+    "quarter": "2025-12",
+    "session": "2025-12-11",
+    "status": "DETECTED",
+    "switch": "session_boundary",
+    "ts": "2025-12-10T23:00:00+00:00"
+   },
+   {
+    "bar_jump": 149.0,
+    "bp": 88.1,
+    "delta": 218.18,
+    "method": "basis",
+    "quarter": "2026-03",
+    "session": "2026-03-12",
+    "status": "DETECTED",
+    "switch": "bar",
+    "ts": "2026-03-12T04:00:00+00:00"
+   },
+   {
+    "bar_jump": 656.75,
+    "bp": 94.6,
+    "delta": 281.35,
+    "method": "basis",
+    "quarter": "2026-06",
+    "session": "2026-06-11",
+    "status": "DETECTED",
+    "switch": "bar",
+    "ts": "2026-06-11T04:00:00+00:00"
+   },
+   {
+    "bar_jump": 257.75,
+    "bp": 97.6,
+    "delta": 287.04,
+    "method": "basis",
+    "quarter": "2026-09",
+    "session": "2026-09-10",
+    "status": "DETECTED",
+    "switch": "bar",
+    "ts": "2026-09-10T04:00:00+00:00"
+   }
+  ],
+  "min_jump_bp": 40.0,
+  "not_detected": []
+ },
  "preset": {
   "htf_tf_5": "W",
   "point_value": 2.0,
@@ -27,82 +139,83 @@
  },
  "preset_source": "presets/NQ-20m-ultracoded.json (RECONSTRUCTED)",
  "repo_convention_ha_real_fills": {
-  "net_usd": 11853.0,
-  "trades": 491
+  "net_usd": 14044.6,
+  "trades": 493
  },
  "schema": "cl_lab.pulse/1",
  "strategy": "THE PULSE OF ICARUS v3.1 (repo port)",
  "tape": "data/mnq_20m_full.csv",
+ "tape_last_bar_close": "2026-10-04T23:20:00+00:00",
  "totals": {
   "CANDLES|base": {
-   "net_usd": 33745.7,
-   "trades": 560
+   "net_usd": 46476.96,
+   "trades": 572
   },
   "CANDLES|stress": {
-   "net_usd": 24943.4,
-   "trades": 557
+   "net_usd": 35819.46,
+   "trades": 567
   },
   "HA_HA_FILLS|base": {
-   "net_usd": 317186.5,
-   "trades": 540
+   "net_usd": 328982.0,
+   "trades": 550
   },
   "HA_REAL_FILLS|base": {
-   "net_usd": 11915.0,
-   "trades": 490
+   "net_usd": 15187.4,
+   "trades": 491
   },
   "HA_REAL_FILLS|repo_convention": {
-   "net_usd": 11853.0,
-   "trades": 491
+   "net_usd": 14044.6,
+   "trades": 493
   },
   "HA_REAL_FILLS|stress": {
-   "net_usd": 4405.0,
-   "trades": 491
+   "net_usd": 6543.4,
+   "trades": 493
   }
  },
  "trials_assumed_for_dsr": 100,
- "var_sr_from_grammar": 0.00334405,
+ "var_sr_from_grammar": 0.00347077,
  "variants": {
   "CANDLES": {
-   "dsr": 0.1567,
+   "dsr": 0.2695,
    "g1_sample": true,
-   "g2_tune_edge": false,
+   "g2_tune_edge": true,
    "g3_fdr": true,
    "g4_dsr": false,
    "g5_hold": false,
    "g6_stress": false,
    "g7_stability": false,
-   "hold_net_usd": 5319.0,
-   "hold_net_usd_stress": 6309.0,
-   "hold_p": 0.377572,
-   "hold_t": 0.312,
-   "hold_trades": 259,
-   "psr": 0.9127,
-   "quarters_positive": 0.667,
+   "hold_net_usd": 8310.3,
+   "hold_net_usd_stress": 5504.3,
+   "hold_p": 0.318045,
+   "hold_t": 0.473,
+   "hold_trades": 263,
+   "psr": 0.9642,
+   "quarters_positive": 0.7,
    "status": "REJECTED",
-   "tune_net_usd": 28426.7,
-   "tune_t": 1.681,
-   "tune_trade_days": 151,
-   "tune_trades": 301,
+   "tune_net_usd": 38166.66,
+   "tune_t": 2.232,
+   "tune_trade_days": 153,
+   "tune_trades": 309,
    "variant": "CANDLES"
   },
   "HA_HA_FILLS": {
    "dsr": 1.0,
-   "hold_net_usd": 150309.5,
+   "hold_net_usd": 168587.5,
    "hold_net_usd_stress": null,
    "hold_p": 0.0,
-   "hold_t": 8.712,
-   "hold_trades": 250,
+   "hold_t": 9.791,
+   "hold_trades": 262,
    "psr": 1.0,
    "quarters_positive": 1.0,
    "status": "ARTIFACT_REFERENCE",
-   "tune_net_usd": 166877.0,
-   "tune_t": 7.89,
+   "tune_net_usd": 160394.5,
+   "tune_t": 7.765,
    "tune_trade_days": 145,
-   "tune_trades": 290,
+   "tune_trades": 288,
    "variant": "HA_HA_FILLS"
   },
   "HA_REAL_FILLS": {
-   "dsr": 0.018,
+   "dsr": 0.0334,
    "g1_sample": true,
    "g2_tune_edge": false,
    "g3_fdr": false,
@@ -110,18 +223,18 @@
    "g5_hold": false,
    "g6_stress": false,
    "g7_stability": false,
-   "hold_net_usd": 6573.5,
-   "hold_net_usd_stress": 3919.5,
-   "hold_p": 0.356995,
-   "hold_t": 0.367,
-   "hold_trades": 233,
-   "psr": 0.6099,
-   "quarters_positive": 0.556,
+   "hold_net_usd": 3904.8,
+   "hold_net_usd_stress": 62.0,
+   "hold_p": 0.416267,
+   "hold_t": 0.211,
+   "hold_trades": 237,
+   "psr": 0.7209,
+   "quarters_positive": 0.5,
    "status": "REJECTED",
-   "tune_net_usd": 5341.5,
-   "tune_t": 0.273,
-   "tune_trade_days": 139,
-   "tune_trades": 257,
+   "tune_net_usd": 11282.6,
+   "tune_t": 0.583,
+   "tune_trade_days": 136,
+   "tune_trades": 254,
    "variant": "HA_REAL_FILLS"
   }
  }

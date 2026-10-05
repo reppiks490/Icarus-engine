@@ -25,7 +25,7 @@ concurrency:
 jobs:
   lab:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 90
     steps:
       - name: Check out main
         uses: actions/checkout@v4
@@ -47,12 +47,27 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: .cl_cache
-          key: cl-feeds-${{ github.run_id }}
+          key: cl-feeds-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: cl-feeds-
 
-      - name: Refresh public + optional Databento feeds
+      - name: Refresh FRED + ALFRED point-in-time macro fabric
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+          ICARUS_FRED_CACHE: .cl_cache
+          ICARUS_FRED_MANIFEST: automation_intelligence/cl_lab/fred_alfred_manifest.json
+        run: python -m cl_lab.feeds.fred_alfred
+
+      - name: Refresh public + primary Databento OHLCV corpus
+        # CL 2026-10-04: a slow first Databento pull must not starve the lab cycle. The cache is saved
+        # either way and the next run continues incrementally from the last cached bar.
+        # PR #84 hardening: a configured key authenticates only; paid scheduled roots must be explicitly
+        # allowlisted and every request remains bounded by per-feed and aggregate refresh budgets.
+        timeout-minutes: 40
+        continue-on-error: true
         env:
           DATABENTO_API_KEY: ${{ secrets.DATABENTO_API_KEY }}
+          DATABENTO_API_KEY_SECONDARY: ${{ secrets.DATABENTO_API_KEY_SECONDARY }}  # VXM + DX bars only (owner, 2026-10-04)
+          CL_DATABENTO_OHLCV_ACCOUNT: primary
           CL_DATABENTO_ROOTS: ${{ vars.CL_DATABENTO_ROOTS }}
           CL_DATABENTO_START: ${{ vars.CL_DATABENTO_START }}
           CL_DATABENTO_MAX_USD_PER_FEED: ${{ vars.CL_DATABENTO_MAX_USD_PER_FEED }}
@@ -60,12 +75,30 @@ jobs:
           DATABENTO_ROLL_RULE: ${{ vars.DATABENTO_ROLL_RULE }}
         run: python -m cl_lab.feeds --cache .cl_cache --manifest automation_intelligence/cl_lab/feeds_manifest.json
 
+      - name: CL history backfill (NQ on key 3, ES on key 1; 1m bars 2010-06 to 2024-09)
+        # Owner's credit split (cl_lab/feeds/databento_budget.py): $25 lifetime per root, newest years first,
+        # the oldest year shortened to fit; <= $15 per request and per run; cached years are never re-bought.
+        timeout-minutes: 30
+        continue-on-error: true
+        env:
+          DATABENTO_API_KEY: ${{ secrets.DATABENTO_API_KEY }}
+          DATABENTO_API_KEY_THIRD: ${{ secrets.DATABENTO_API_KEY_THIRD }}
+        run: python -m cl_lab.feeds.databento_history --cache .cl_cache
+
       - name: Save feed cache
         if: always()
         uses: actions/cache/save@v4
         with:
           path: .cl_cache
-          key: cl-feeds-${{ github.run_id }}
+          key: cl-feeds-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Restore external data fabric cache (read-only; Tiingo/FMP/EODHD, no API calls)
+        continue-on-error: true
+        uses: actions/cache/restore@v4
+        with:
+          path: .external_data_cache
+          key: external-data-read-${{ github.run_id }}
+          restore-keys: external-data-
 
       - name: Run lab cycle
         id: lab
@@ -84,6 +117,22 @@ jobs:
           git commit -m "[CL] cl-lab: ${RUN_ID} [skip ci]"
           for i in 1 2 3 4 5; do
             if git pull --rebase origin main && git push origin HEAD:main; then exit 0; fi
+            sleep $((i * 7))
+          done
+          exit 1
+
+      - name: Commit spend ledgers when the lab cycle failed
+        # CL 2026-10-05: paid Databento spend must reach git even when a later step fails.
+        if: failure()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git reset -q
+          if [ -d automation_intelligence/cl_lab/spend ]; then git add automation_intelligence/cl_lab/spend; fi
+          if git diff --cached --quiet; then echo "no ledger changes"; exit 0; fi
+          git commit -m "[CL] spend ledgers after a failed lab cycle [skip ci]"
+          for i in 1 2 3 4 5; do
+            if git pull --rebase --autostash origin main && git push origin HEAD:main; then exit 0; fi
             sleep $((i * 7))
           done
           exit 1

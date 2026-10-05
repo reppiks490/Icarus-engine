@@ -1,0 +1,125 @@
+# ChatGPT — 2026-10-04 — paid Databento depth corpus worker
+# Runs only after CL broad-corpus success (plus schedule/manual), keeping paid
+# microstructure acquisition isolated from the normal research loop.
+name: databento-depth-corpus
+
+on:
+  workflow_run:
+    workflows: ["cl-lab"]
+    types: [completed]
+  schedule:
+    - cron: "20 3,15 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: databento-depth-corpus
+  cancel-in-progress: false
+
+jobs:
+  acquire:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install depth dependencies
+        run: python -m pip install "numpy>=1.26,<3" "pandas>=2.2,<3" "databento>=0.87,<1" pytest
+
+      - name: Depth pipeline tests
+        run: >-
+          python -m pytest -q
+          tests_cl/test_databento_depth_plan.py
+          tests_cl/test_databento_depth_acquire.py
+          tests_cl/test_feeds.py
+          -p no:cacheprovider
+
+      - name: Restore broad feed cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .cl_cache
+          key: cl-feeds-depth-${{ github.run_id }}
+          restore-keys: |
+            cl-feeds-
+
+      - name: Verify broad core corpus is present
+        run: |
+          python - <<'PY'
+          import os
+          roots = ("nq","mnq","es","mes","ym","mym","rty","m2k","gc","mgc","si","sil","pl","pa","btc","mbt")
+          good = []
+          for root in roots:
+              p = f".cl_cache/databento_{root}_5m.csv.gz"
+              if os.path.exists(p) and os.path.getsize(p) > 100:
+                  good.append(root)
+          print(f"Databento core OHLCV cache: {len(good)}/16 -> {','.join(good)}")
+          if len(good) < 12:
+              raise SystemExit("fewer than 12/16 core Databento OHLCV caches are ready; refuse depth spend")
+          PY
+
+      - name: Restore derived depth cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .databento_depth_cache
+          key: databento-depth-${{ github.run_id }}
+          restore-keys: |
+            databento-depth-
+
+      - name: Acquire index microstructure from secondary account
+        env:
+          DATABENTO_API_KEY_SECONDARY: ${{ secrets.DATABENTO_API_KEY_SECONDARY }}
+          CL_DATABENTO_HISTORICAL_LAG_MINUTES: "500"
+        run: >-
+          python -m cl_lab.feeds.databento_depth_acquire
+          --profile index
+          --cache .cl_cache
+          --depth-cache .databento_depth_cache
+          --out automation_intelligence/cl_lab/databento_depth_corpus_index.json
+          --budget-usd 95
+          --max-request-usd 15
+
+      - name: Acquire diversifier and macro microstructure from third account
+        env:
+          DATABENTO_API_KEY_THIRD: ${{ secrets.DATABENTO_API_KEY_THIRD }}
+          CL_DATABENTO_HISTORICAL_LAG_MINUTES: "500"
+        run: >-
+          python -m cl_lab.feeds.databento_depth_acquire
+          --profile diversifier
+          --cache .cl_cache
+          --depth-cache .databento_depth_cache
+          --out automation_intelligence/cl_lab/databento_depth_corpus_diversifier.json
+          --budget-usd 95
+          --max-request-usd 15
+
+      - name: Save derived depth cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .databento_depth_cache
+          key: databento-depth-${{ github.run_id }}
+
+      - name: Commit compact depth manifests
+        if: always()   # CL 2026-10-05: lane ledgers (spend recorded before each download) must reach git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add automation_intelligence/cl_lab/databento_depth_corpus_*.json
+          if [ -d automation_intelligence/cl_lab/spend ]; then git add automation_intelligence/cl_lab/spend; fi
+          if git diff --cached --quiet; then echo "no depth manifest changes"; exit 0; fi
+          git commit -m "[Databento] depth corpus manifests [skip ci]"
+          for i in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push origin HEAD:main; then exit 0; fi
+            sleep $((i * 7))
+          done
+          exit 1

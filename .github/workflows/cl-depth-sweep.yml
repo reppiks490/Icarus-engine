@@ -1,0 +1,106 @@
+# CL (Claude, Anthropic) — 2026-10-05 — leftover Databento credit -> NQ MBP-10 order-book days on keys #1-#3
+# Owner decision 2026-10-05: everything left once the other lanes are paid for goes to MBO/MBP data.
+# Own cache and concurrency group: no other workflow writes the sweep cache or the sweep ledgers.
+name: cl-depth-sweep
+
+on:
+  workflow_run:
+    workflows: ["databento-depth-corpus"]
+    types: [completed]
+  schedule:
+    - cron: "52 5,17 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cl-depth-sweep
+  cancel-in-progress: false
+
+jobs:
+  sweep:
+    runs-on: ubuntu-latest
+    timeout-minutes: 200
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install
+        run: python -m pip install "numpy>=1.26,<3" "pandas>=2.2,<3" "databento>=0.87,<1" pytest
+
+      - name: Sweep tests
+        run: python -m pytest -q tests_cl/test_depth_sweep.py tests_cl/test_databento_history.py -p no:cacheprovider
+
+      - name: Restore broad feed cache (NQ trading days, history and corpus ledger mirrors)
+        uses: actions/cache/restore@v4
+        with:
+          path: .cl_cache
+          key: cl-feeds-sweep-${{ github.run_id }}
+          restore-keys: |
+            cl-feeds-
+
+      - name: Restore sweep cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .databento_sweep_cache
+          key: databento-sweep-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            databento-sweep-
+
+      - name: Sweep key #1 (primary)
+        continue-on-error: true
+        timeout-minutes: 60
+        env:
+          DATABENTO_API_KEY: ${{ secrets.DATABENTO_API_KEY }}
+        run: >-
+          python -m cl_lab.feeds.databento_depth_sweep --account primary --cache .cl_cache
+          --depth-cache .databento_sweep_cache
+          --out automation_intelligence/cl_lab/databento_depth_sweep_primary.json
+
+      - name: Sweep key #2 (secondary)
+        continue-on-error: true
+        timeout-minutes: 60
+        env:
+          DATABENTO_API_KEY_SECONDARY: ${{ secrets.DATABENTO_API_KEY_SECONDARY }}
+        run: >-
+          python -m cl_lab.feeds.databento_depth_sweep --account secondary --cache .cl_cache
+          --depth-cache .databento_sweep_cache
+          --out automation_intelligence/cl_lab/databento_depth_sweep_secondary.json
+
+      - name: Sweep key #3 (third)
+        continue-on-error: true
+        timeout-minutes: 60
+        env:
+          DATABENTO_API_KEY_THIRD: ${{ secrets.DATABENTO_API_KEY_THIRD }}
+        run: >-
+          python -m cl_lab.feeds.databento_depth_sweep --account third --cache .cl_cache
+          --depth-cache .databento_sweep_cache
+          --out automation_intelligence/cl_lab/databento_depth_sweep_third.json
+
+      - name: Save sweep cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .databento_sweep_cache
+          key: databento-sweep-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Commit sweep manifests and ledgers
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add automation_intelligence/cl_lab/databento_depth_sweep_*.json 2>/dev/null || true
+          if [ -d automation_intelligence/cl_lab/spend ]; then git add automation_intelligence/cl_lab/spend; fi
+          if git diff --cached --quiet; then echo "no sweep changes"; exit 0; fi
+          git commit -m "[CL] depth sweep manifests [skip ci]"
+          for i in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push origin HEAD:main; then exit 0; fi
+            sleep $((i * 7))
+          done
+          exit 1

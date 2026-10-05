@@ -1,0 +1,55 @@
+{
+  "api_credential_required": false,
+  "canonical_state_mutated": false,
+  "deterministic_facts": {
+    "execution_authorized": false,
+    "expected_RUN_ID": "advanced-csv-20261001T131500Z",
+    "fallback_only": true,
+    "observed_worker_RUN_ID": null,
+    "observed_worker_RUN_STATUS": null,
+    "run_id_match": null,
+    "slot_status": "FALLBACK_LIVENESS_ONLY",
+    "substantive_work_claimed": false,
+    "worker_receipt_status": "WORKER_RECEIPT_CHECK_UNAVAILABLE"
+  },
+  "execution_authorized": false,
+  "inference_backend": "local_gguf",
+  "input_path": "/home/runner/work/Icarus-engine/Icarus-engine/automation_intelligence/restored_five_native/receipts/advanced_csv/20261001T131500Z.json",
+  "input_sha256": "73afb9e71a916dbeb972f33ff262bdb4ea7a7c59e11b8b3179660f6d46ff652f",
+  "lane": "advanced_csv",
+  "llama_cpp_sha256": "98020bb5a2a9e0284110e5c110158e18dca984a547d5afde1631fef0f03dd826",
+  "model": "Qwen/Qwen3-1.7B-GGUF@90862c4:Q8_0",
+  "model_advisory": {
+    "conflicts": [
+      "slot_status is 'FALLBACK_LIVENESS_ONLY' but no worker_receipt_status or RUN_STATUS observed"
+    ],
+    "data_gaps": [
+      "observed_worker_RUN_ID",
+      "observed_worker_RUN_STATUS",
+      "observed_worker_schema_version"
+    ],
+    "execution_authorized": false,
+    "non_authoritative": true,
+    "summary": "FALLBACK_ONLY with missing worker status data, no RUN status observed, slot status pending. Next step: check worker status or re-schedule."
+  },
+  "model_sha256": "061b54daade076b5d3362dac252678d17da8c68f07560be70818cace6590cb1a",
+  "observed_at_utc": "2026-10-05T06:17:18Z",
+  "paid_api_call_made": false,
+  "payload": {
+    "conflicts": [],
+    "data_gaps": [
+      "FALLBACK_LIVENESS_ONLY",
+      "WORKER_RECEIPT_NOT_VERIFIED:WORKER_RECEIPT_CHECK_UNAVAILABLE",
+      "SUBSTANTIVE_WORK_NOT_PROVEN"
+    ],
+    "execution_authorized": false,
+    "lane": "advanced_csv",
+    "net_new_delta": "SHADOW_ASSESSMENT_ONLY",
+    "summary": "Fallback-only durability receipt; worker completion is not verified. Substantive work is not proven by this durability evidence."
+  },
+  "response_id": "local-9137646c5135b26f2237e54b",
+  "response_status": "completed",
+  "run_origin": "GITHUB_NATIVE_LOCAL_GGUF_SHADOW",
+  "schema_version": "restored-five-local-shadow-v2",
+  "substantive_research_source": "DURABLE_REPO_EVIDENCE_ONLY"
+}

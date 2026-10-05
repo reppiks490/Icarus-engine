@@ -1,0 +1,97 @@
+{
+ "data_amendments": [
+  {
+   "change": "tapes carrying Databento instrument_id (the 2010-2024 NQ history) take every instrument_id change as a roll, sized by the adjacent-bar jump; tapes without it (the MNQ tape) are unchanged",
+   "date": "2026-10-05",
+   "from_version": "cl-data-2",
+   "reason": "the cl-data-2 integrity report on the provisional NQ 2013-2024 run showed 35 of 46 low-carry rolls below the 40 bp threshold, i.e. unadjusted; no rule, threshold, window or id changes",
+   "to_version": "cl-data-3"
+  }
+ ],
+ "data_version": "cl-data-3",
+ "execution_authorized": false,
+ "hold_confirmation": {
+  "hold_t": 1.65,
+  "holm_alpha": 0.05,
+  "min_hold_trades": 30,
+  "version": "cl-hc1"
+ },
+ "lane": "CL",
+ "ml": {
+  "alpha": 0.1,
+  "band": 0.02,
+  "decisions": [
+   "10:00",
+   "12:00",
+   "15:30"
+  ],
+  "embargo": 1,
+  "ids": [
+   "m3a9320d4bc8",
+   "m3abf9a61d64",
+   "m10e4aeff6c4"
+  ],
+  "min_train": 120,
+  "refit": 21,
+  "version": "cl-ml1"
+ },
+ "month_end_costs_bp_rt": {
+  "base": 1.0,
+  "stress": 3.0
+ },
+ "r2": {
+  "eodrev": [
+   "q12d2044d50e",
+   "q01f8bb14407",
+   "q12c94609ee9",
+   "q2f4adbd1d90"
+  ],
+  "flow": [
+   "qce1276a5f9b",
+   "q57227a75888",
+   "q1d0df02c404",
+   "q03fab0f4ad1"
+  ],
+  "monthend": [
+   "q5e6a9399e7a",
+   "qbe9efb3ee37",
+   "q09a8a8d007b"
+  ],
+  "monthend_mnq": "q91aca49a97d",
+  "prefomc": "q4a2d8330eed",
+  "version": "cl-r2"
+ },
+ "r3": {
+  "hold_confirm": {
+   "ETHUSDT": [
+    "qce1276a5f9b"
+   ]
+  },
+  "protocol": "cl-hc1",
+  "reason": "best R2-D TUNE lead; REJECTED at G4; HOLD unseen",
+  "registered": "2026-10-04"
+ },
+ "r4": {
+  "forward_watch": {
+   "ETHUSDT": [
+    "qce1276a5f9b"
+   ]
+  },
+  "registered": "2026-10-04",
+  "rule": {
+   "min_trades": 60,
+   "nw_t": 1.65
+  }
+ },
+ "registered": "2026-10-04",
+ "schema": "cl_lab.prereg/1",
+ "spec": "docs/CL_PREREG_R2.md",
+ "trials": {
+  "eodrev": 4,
+  "flow_per_asset": 4,
+  "ml_per_asset": 3,
+  "monthend": 3,
+  "monthend_mnq": "descriptive",
+  "prefomc": "descriptive"
+ }
+}

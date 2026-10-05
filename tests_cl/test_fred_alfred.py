@@ -23,3 +23,20 @@ def test_catalog_has_orthogonal_families_and_vintage_sensitive_series():
     assert {"rates","liquidity","credit","inflation","labor","growth","risk"} <= set(fa.SERIES)
     assert {"CPIAUCSL","PAYEMS","UNRATE","GDPC1"} <= fa.VINTAGE_SERIES
     assert len({x for ids in fa.SERIES.values() for x in ids}) >= 35
+
+
+def test_manifest_validation_rejects_empty_rows_and_missing_vintages():
+    m={"series":{
+        "DGS10":{"status":"ok","rows":10},
+        "CPIAUCSL":{"status":"ok","rows":10,"vintage_dates":0},
+        "PAYEMS":{"status":"error","rows":0},
+    }}
+    bad=fa.validate_manifest(m)
+    assert bad==["CPIAUCSL","PAYEMS"]
+
+def test_manifest_validation_accepts_real_rows_and_vintages():
+    m={"series":{
+        "DGS10":{"status":"ok","rows":10},
+        "CPIAUCSL":{"status":"ok","rows":10,"vintage_dates":5},
+    }}
+    assert fa.validate_manifest(m)==[]

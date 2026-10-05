@@ -79,3 +79,33 @@ def test_run_with_no_credentials_is_dormant(tmp_path, monkeypatch):
     assert res["providers"]["eodhd"]["status"] == "unconfigured"
     assert res["providers"]["tiingo"]["status"] == "unconfigured"
     assert res["execution_authorized"] is False
+
+
+def test_eodhd_eod_summary():
+    rows = [
+        {"date": "2026-01-02", "open": 100, "high": 102, "low": 99, "close": 101, "adjusted_close": 100, "volume": 1000},
+        {"date": "2026-01-05", "open": 101, "high": 103, "low": 100, "close": 102, "adjusted_close": 110, "volume": 2000},
+    ]
+    s = ext.summarize_eodhd_eod(rows)
+    assert s["rows"] == 2
+    assert round(s["return_pct"], 8) == 10.0
+
+
+def test_eodhd_tick_denial_falls_back_without_burning_budget(tmp_path, monkeypatch):
+    calls = []
+    def fake(url, *, params=None, headers=None, provider, timeout=45, retries=2):
+        calls.append((url, dict(params or {})))
+        if "/api/ticks/" in url:
+            raise ext.ProviderError("EODHD HTTP 403")
+        if "/api/eod/" in url:
+            return [{"date": "2026-10-01", "open": 1, "high": 2, "low": 1, "close": 2,
+                     "adjusted_close": 2, "volume": 100}]
+        raise AssertionError(url)
+    monkeypatch.setattr(ext, "_safe_json_get", fake)
+    result = ext.collect_eodhd(str(tmp_path), pd.Timestamp("2026-10-05T02:00:00Z"), "token")
+    assert result["datasets"]["tick_windows"]["status"] == "plan_limited"
+    assert result["datasets"]["tick_windows"]["access"] == "denied"
+    assert result["datasets"]["eod_1y"]["status"] == "ok"
+    assert result["calls"] == 1 + len(ext.DEFAULT_UNIVERSE)
+    assert sum(1 for url, _ in calls if "/api/ticks/" in url) == 1
+    assert sum(1 for url, _ in calls if "/api/eod/" in url) == len(ext.DEFAULT_UNIVERSE)

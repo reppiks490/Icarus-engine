@@ -118,7 +118,7 @@ def _manifest_base(provider: str, status: str, now: pd.Timestamp) -> dict[str, A
 
 
 def collect_fmp(cache_dir: str, now: pd.Timestamp, api_key: str | None) -> dict[str, Any]:
-    """Use FMP free-tier calls only where they provide nonredundant event value."""
+    """Use only FMP surfaces verified useful on the user's current free tier."""
     if not (api_key or "").strip():
         return {**_manifest_base("fmp", "unconfigured", now), "credential_env": "FMP_API_KEY", "calls": 0}
 
@@ -128,43 +128,71 @@ def collect_fmp(cache_dir: str, now: pd.Timestamp, api_key: str | None) -> dict[
     start = now.date() - dt.timedelta(days=1)
     end = now.date() + dt.timedelta(days=21)
 
-    # Verified accessible on the user's current FMP free tier.
-    try:
-        data = _safe_json_get(
-            f"{base}/earnings-calendar",
-            params={"from": start.isoformat(), "to": end.isoformat(), "apikey": api_key},
-            provider="FMP",
-        )
-        out["calls"] += 1
-        cache_meta = _write_gz_json(Path(cache_dir) / "fmp" / "earnings_calendar.json.gz", data)
-        events = data if isinstance(data, list) else []
-        focus = [x for x in events if str(x.get("symbol", "")).upper() in DEFAULT_UNIVERSE]
-        out["datasets"]["earnings_calendar"] = {
-            "status": "ok",
-            "rows": len(events),
-            "focus_rows": len(focus),
-            "focus": focus[:30],
-            "cache": cache_meta,
-        }
-    except Exception as ex:
-        out["datasets"]["earnings_calendar"] = {"status": "error", "error": str(ex)[:180]}
-        out["status"] = "partial"
+    # These date-range calendar surfaces have been verified against the current
+    # free account. They add event context without duplicating Databento/Tiingo.
+    calendar_specs = (
+        ("earnings_calendar", "earnings-calendar"),
+        ("dividends_calendar", "dividends-calendar"),
+        ("splits_calendar", "splits-calendar"),
+    )
+    for name, endpoint in calendar_specs:
+        try:
+            data = _safe_json_get(
+                f"{base}/{endpoint}",
+                params={"from": start.isoformat(), "to": end.isoformat(), "apikey": api_key},
+                provider="FMP",
+            )
+            out["calls"] += 1
+            cache_meta = _write_gz_json(Path(cache_dir) / "fmp" / f"{name}.json.gz", data)
+            events = data if isinstance(data, list) else []
+            focus = [x for x in events if str(x.get("symbol", "")).upper() in DEFAULT_UNIVERSE]
+            out["datasets"][name] = {
+                "status": "ok",
+                "rows": len(events),
+                "focus_rows": len(focus),
+                "focus": focus[:30],
+                "cache": cache_meta,
+            }
+        except Exception as ex:
+            out["datasets"][name] = {"status": "error", "error": str(ex)[:180]}
+            out["status"] = "partial"
 
-    # One low-cost capability probe for company profile. If the free tier denies it,
-    # do not fan out further calls.
-    try:
-        prof = _safe_json_get(
-            f"{base}/profile",
-            params={"symbol": "QQQ", "apikey": api_key},
-            provider="FMP",
-        )
-        out["calls"] += 1
-        out["datasets"]["profile_probe"] = {"status": "ok", "rows": len(prof) if isinstance(prof, list) else 1}
-    except Exception as ex:
-        out["datasets"]["profile_probe"] = {"status": "plan_limited", "error": str(ex)[:180]}
-
+    # Company profile works on the current free tier. Cache the full priority
+    # universe, but refresh at most weekly because this data changes slowly.
+    profile_path = Path(cache_dir) / "fmp" / "profiles.json.gz"
+    prior = _read_gz_json(profile_path, {})
+    generated = None
+    if isinstance(prior, dict):
+        try:
+            generated = pd.Timestamp(prior.get("_generated_at")) if prior.get("_generated_at") else None
+        except Exception:
+            generated = None
+    refresh_profiles = generated is None or (now - generated.tz_convert("UTC") if generated.tzinfo else now - generated.tz_localize("UTC")) > pd.Timedelta(days=7)
+    profiles = dict(prior) if isinstance(prior, dict) else {}
+    if refresh_profiles:
+        profiles = {"_generated_at": now.isoformat()}
+        for symbol in DEFAULT_UNIVERSE:
+            if out["calls"] >= out["call_budget"]:
+                break
+            try:
+                prof = _safe_json_get(
+                    f"{base}/profile",
+                    params={"symbol": symbol, "apikey": api_key},
+                    provider="FMP",
+                )
+                out["calls"] += 1
+                profiles[symbol] = prof
+            except Exception as ex:
+                out["calls"] += 1
+                profiles[symbol] = {"status": "error", "error": str(ex)[:160]}
+        _write_gz_json(profile_path, profiles)
+    out["datasets"]["profiles"] = {
+        "status": "ok",
+        "symbols": [s for s in DEFAULT_UNIVERSE if s in profiles],
+        "refresh": "weekly",
+        "refreshed_this_run": refresh_profiles,
+    }
     return out
-
 
 def summarize_eodhd_ticks(payload: Any) -> dict[str, Any]:
     if payload == []:
@@ -204,52 +232,157 @@ def summarize_eodhd_ticks(payload: Any) -> dict[str, Any]:
     }
 
 
+def summarize_eodhd_eod(rows: Any) -> dict[str, Any]:
+    if not isinstance(rows, list) or not rows:
+        return {"rows": 0}
+    frame = pd.DataFrame(rows)
+    if "date" not in frame:
+        return {"rows": int(len(frame))}
+    frame["date"] = pd.to_datetime(frame["date"], utc=True, errors="coerce")
+    frame = frame.dropna(subset=["date"]).sort_values("date")
+    out = {
+        "rows": int(len(frame)),
+        "first": frame["date"].iloc[0].isoformat(),
+        "last": frame["date"].iloc[-1].isoformat(),
+    }
+    close_col = "adjusted_close" if "adjusted_close" in frame else ("close" if "close" in frame else None)
+    if close_col:
+        close = pd.to_numeric(frame[close_col], errors="coerce").dropna()
+        if len(close) >= 2:
+            out["return_pct"] = float((close.iloc[-1] / close.iloc[0] - 1.0) * 100.0)
+            ret = close.pct_change().dropna()
+            if len(ret) >= 20:
+                out["realized_vol_20d_pct"] = float(ret.tail(20).std(ddof=1) * math.sqrt(252) * 100.0)
+    if "volume" in frame:
+        v = pd.to_numeric(frame["volume"], errors="coerce").dropna()
+        if len(v):
+            out["avg_volume_20d"] = float(v.tail(20).mean())
+    return out
+
+
 def collect_eodhd(cache_dir: str, now: pd.Timestamp, token: str | None) -> dict[str, Any]:
+    """Prefer tick microstructure, but fail over once to useful free-plan EOD."""
     if not (token or "").strip():
         return {**_manifest_base("eodhd", "unconfigured", now), "credential_env": "EODHD_API_TOKEN", "calls": 0}
 
     out = _manifest_base("eodhd", "ok", now)
-    out.update(credential_env="EODHD_API_TOKEN", call_budget=18, calls=0, datasets={}, symbols=list(EODHD_TICK_UNIVERSE))
+    out.update(credential_env="EODHD_API_TOKEN", call_budget=18, calls=0, datasets={}, symbols=list(DEFAULT_UNIVERSE))
     day = _previous_weekday(now)
     windows = (("open", dt.time(9, 30), dt.time(10, 0)), ("close", dt.time(15, 30), dt.time(16, 0)))
-    rows = []
-    failures = 0
 
-    for symbol in EODHD_TICK_UNIVERSE:
-        for role, t0, t1 in windows:
-            if out["calls"] >= out["call_budget"]:
-                break
-            start_local = dt.datetime.combine(day, t0, NY)
-            end_local = dt.datetime.combine(day, t1, NY)
-            params = {
-                "s": symbol,
-                "from": int(start_local.timestamp()),
-                "to": int(end_local.timestamp()),
-                "limit": 10000,
-                "api_token": token,
-                "fmt": "json",
-            }
-            try:
-                payload = _safe_json_get("https://eodhd.com/api/ticks/", params=params, provider="EODHD")
-                out["calls"] += 1
-                raw_meta = _write_gz_json(Path(cache_dir) / "eodhd" / day.isoformat() / f"{symbol}_{role}.json.gz", payload)
-                summary = summarize_eodhd_ticks(payload)
-                rows.append({"symbol": symbol, "window": role, "date": day.isoformat(), **summary, "cache": raw_meta})
-            except Exception as ex:
-                out["calls"] += 1
-                failures += 1
-                rows.append({"symbol": symbol, "window": role, "date": day.isoformat(), "status": "error", "error": str(ex)[:160]})
+    def tick_params(symbol: str, t0: dt.time, t1: dt.time) -> dict[str, Any]:
+        start_local = dt.datetime.combine(day, t0, NY)
+        end_local = dt.datetime.combine(day, t1, NY)
+        return {
+            "s": symbol,
+            "from": int(start_local.timestamp()),
+            "to": int(end_local.timestamp()),
+            "limit": 10000,
+            "api_token": token,
+            "fmt": "json",
+        }
+
+    # One probe prevents wasting the whole free-plan daily budget on a
+    # plan-gated endpoint. AAPL is deliberately used because EODHD documents it
+    # as a canonical tick symbol.
+    probe_symbol, probe_role, probe_t0, probe_t1 = "AAPL", *windows[0]
+    tick_rows: list[dict[str, Any]] = []
+    tick_access = "unknown"
+    try:
+        payload = _safe_json_get(
+            "https://eodhd.com/api/ticks/",
+            params=tick_params(probe_symbol, probe_t0, probe_t1),
+            provider="EODHD",
+        )
+        out["calls"] += 1
+        raw_meta = _write_gz_json(Path(cache_dir) / "eodhd" / day.isoformat() / f"{probe_symbol}_{probe_role}.json.gz", payload)
+        tick_rows.append({
+            "symbol": probe_symbol, "window": probe_role, "date": day.isoformat(),
+            **summarize_eodhd_ticks(payload), "cache": raw_meta,
+        })
+        tick_access = "available"
+    except Exception as ex:
+        out["calls"] += 1
+        tick_access = "denied" if "HTTP 403" in str(ex) else "error"
+        tick_rows.append({
+            "symbol": probe_symbol, "window": probe_role, "date": day.isoformat(),
+            "status": "error", "error": str(ex)[:160],
+        })
+
+    if tick_access == "available":
+        for symbol in EODHD_TICK_UNIVERSE:
+            for role, t0, t1 in windows:
+                if symbol == probe_symbol and role == probe_role:
+                    continue
+                if out["calls"] >= 16:
+                    break
+                try:
+                    payload = _safe_json_get(
+                        "https://eodhd.com/api/ticks/",
+                        params=tick_params(symbol, t0, t1),
+                        provider="EODHD",
+                    )
+                    out["calls"] += 1
+                    raw_meta = _write_gz_json(Path(cache_dir) / "eodhd" / day.isoformat() / f"{symbol}_{role}.json.gz", payload)
+                    tick_rows.append({
+                        "symbol": symbol, "window": role, "date": day.isoformat(),
+                        **summarize_eodhd_ticks(payload), "cache": raw_meta,
+                    })
+                except Exception as ex:
+                    out["calls"] += 1
+                    tick_rows.append({
+                        "symbol": symbol, "window": role, "date": day.isoformat(),
+                        "status": "error", "error": str(ex)[:160],
+                    })
+        failed = sum(1 for r in tick_rows if r.get("status") == "error")
+        out["datasets"]["tick_windows"] = {
+            "status": "ok" if failed == 0 else "partial",
+            "access": tick_access,
+            "date": day.isoformat(),
+            "rows": tick_rows,
+            "failed_requests": failed,
+            "strategy": "09:30-10:00 and 15:30-16:00 America/New_York; max 10,000 ticks/window",
+        }
+        if failed:
+            out["status"] = "partial"
+        return out
+
+    # Free-plan fallback documented by EODHD: one-year EOD history for any US
+    # ticker. This is useful as an independent validation corpus and consumes
+    # only ten additional calls after the single tick capability probe.
     out["datasets"]["tick_windows"] = {
-        "status": "ok" if failures == 0 else ("partial" if failures < len(rows) else "error"),
-        "date": day.isoformat(),
-        "rows": rows,
-        "failed_requests": failures,
-        "strategy": "09:30-10:00 and 15:30-16:00 America/New_York; max 10,000 ticks/window",
+        "status": "plan_limited",
+        "access": tick_access,
+        "probe": tick_rows[0],
+        "strategy": "single capability probe only; no repeated denied tick calls",
     }
-    if failures:
-        out["status"] = "partial"
+    eod = {}
+    from_date = (now.date() - dt.timedelta(days=365)).isoformat()
+    to_date = now.date().isoformat()
+    failures = 0
+    for symbol in DEFAULT_UNIVERSE:
+        if out["calls"] >= out["call_budget"]:
+            break
+        try:
+            rows = _safe_json_get(
+                f"https://eodhd.com/api/eod/{symbol}.US",
+                params={"from": from_date, "to": to_date, "api_token": token, "fmt": "json"},
+                provider="EODHD",
+            )
+            out["calls"] += 1
+            raw_meta = _write_gz_json(Path(cache_dir) / "eodhd" / "eod" / f"{symbol}.json.gz", rows)
+            eod[symbol] = {**summarize_eodhd_eod(rows), "cache": raw_meta}
+        except Exception as ex:
+            out["calls"] += 1
+            failures += 1
+            eod[symbol] = {"status": "error", "error": str(ex)[:160]}
+    out["datasets"]["eod_1y"] = {
+        "status": "ok" if failures == 0 else ("partial" if failures < len(eod) else "error"),
+        "symbols": eod,
+        "range": f"{from_date}..{to_date}",
+    }
+    out["status"] = "ok" if failures == 0 else "partial"
     return out
-
 
 def summarize_tiingo_eod(rows: Any) -> dict[str, Any]:
     if not isinstance(rows, list) or not rows:

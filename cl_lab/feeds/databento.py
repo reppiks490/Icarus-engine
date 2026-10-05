@@ -28,6 +28,7 @@ import pandas as pd
 from .http import FeedError
 
 DATASET = "GLBX.MDP3"
+SUPPORTED_DATASETS = ("GLBX.MDP3", "XCBF.PITCH", "IFUS.IMPACT")
 BAR_COLS = ("open", "high", "low", "close", "volume")
 DEFAULT_START = "2024-09-01T00:00:00Z"
 
@@ -117,15 +118,19 @@ def fetch_continuous_5m(
     now: pd.Timestamp,
     *,
     client: Any = None,
+    dataset: str | None = None,
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
     """Fetch an incremental cost-gated continuous contract and return 5m bars.
 
     Existing cache is deliberately re-fetched from its last 5m bucket so the
     final bucket can be corrected without creating a gap.
     """
-    dataset = (os.environ.get("DATABENTO_DATASET") or DATASET).strip()
-    if dataset != DATASET:
-        raise FeedError(f"CL futures corpus requires {DATASET}, got {dataset!r}")
+    dataset = (dataset or os.environ.get("DATABENTO_DATASET") or DATASET).strip()
+    if dataset not in SUPPORTED_DATASETS:
+        raise FeedError(
+            f"unsupported Databento futures dataset {dataset!r}; "
+            f"supported={','.join(SUPPORTED_DATASETS)}"
+        )
     symbol = continuous_symbol(root)
     now = pd.Timestamp(now)
     if now.tzinfo is None:

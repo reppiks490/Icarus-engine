@@ -587,9 +587,12 @@ def acquire_profile(
                 dir=os.path.join(depth_cache, "_raw_tmp"),
             )
             os.close(fd)
+            # Count the full preflight estimate conservatively before the API call:
+            # a transport failure after request acceptance must not make the ledger
+            # look cheaper than the spend we authorized.
+            estimated_requested += float(r["estimated_cost_usd"])
             # SDK streams the response to path while returning a replayable DBNStore.
             dbn = hist.timeseries.get_range(**request_kwargs(c), path=raw_path)
-            estimated_requested += float(r["estimated_cost_usd"])
             raw_sha = _sha256(raw_path)
             raw_bytes = os.path.getsize(raw_path)
             features = summarize_store(dbn)

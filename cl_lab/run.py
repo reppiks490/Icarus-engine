@@ -368,11 +368,19 @@ def run_cycle(out_dir, cache_dir=".cl_cache", assets=None, now=None):
                 )
             }
             depth_corpus[lane]["roots"] = per_root
+    external_fabric = _read_json(os.path.join(out_dir, "external_data_fabric.json"), {})
+    external_summary = external_fabric.get("summary", {}) if isinstance(external_fabric, dict) else {}
     _write_json(os.path.join(out_dir, "ui_feed.json"), dict(
         schema="cl_lab.ui_feed/1", lane=LANE, run_id=run_id, generated_at=at, evidence_class="RESEARCH_ONLY",
         ui_state="RESEARCH ONLY", execution_authorized=False, production_decision_authorized=False,
         feeds={k: v.get("status") for k, v in feeds.items()},
         databento_depth_corpus=depth_corpus,
+        external_data_fabric={
+            "provider_status": external_summary.get("provider_status", {}),
+            "universe": external_summary.get("universe", []),
+            "equity_tick_pressure": external_summary.get("equity_tick_pressure", {}),
+            "upcoming_focus_earnings": external_summary.get("upcoming_focus_earnings", []),
+        },
         corpus={k: corpus_state.get(k) for k in ("status", "dataset", "roll_rule", "minutes",
                                                  "verified_assets", "blocked_assets", "assets")},
         assets={n: {k: v.get(k) for k in ("status", "sessions", "status_counts", "diagnostics", "champions",

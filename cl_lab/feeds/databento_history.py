@@ -28,6 +28,7 @@ START = pd.Timestamp("2010-06-07T00:00:00Z")      # first full week of GLBX.MDP3
 END = pd.Timestamp("2024-09-01T00:00:00Z")        # key #1's corpus begins here
 MAX_USD_PER_REQUEST, MAX_USD_PER_RUN, MAX_USD_LIFETIME = 15.0, 15.0, 60.0
 LEDGER_IN_CACHE = "databento_history_ledger.json"
+AUTH_ERRORS = ("401", "403", "auth_")   # e.g. "403 auth_account_locked" observed 2026-10-05
 
 
 def chunks():
@@ -78,7 +79,11 @@ def run(cache_dir: str, ledger_path: str, *, client: Any = None, now=None) -> di
             try:
                 est = float(dbf._retry(lambda: client.metadata.get_cost(**kw)))
             except Exception as ex:  # noqa: BLE001 - recorded, never raised
-                led["chunks"][key] = dict(status="ESTIMATE_FAILED", error=f"{type(ex).__name__}: {ex}"[:200])
+                msg = f"{type(ex).__name__}: {ex}"
+                if any(t in msg for t in AUTH_ERRORS):   # locked/invalid key: stop at once, do not hammer the API
+                    led["run_status"] = f"AUTH_FAILED: {msg[:160]}"
+                    return _save(led, ledger_path, notes, cache_dir)
+                led["chunks"][key] = dict(status="ESTIMATE_FAILED", error=msg[:200])
                 continue
             if est > MAX_USD_PER_REQUEST:
                 led["chunks"][key] = dict(status="OVER_REQUEST_CAP", estimate_usd=round(est, 4))

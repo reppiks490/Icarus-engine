@@ -69,3 +69,14 @@ def test_over_request_cap_and_unconfigured(tmp_path, monkeypatch):
     monkeypatch.delenv("DATABENTO_API_KEY_FOURTH", raising=False)
     led = dh.run(str(tmp_path / "c2"), str(tmp_path / "l2.json"), now="2026-10-05T00:00Z")
     assert led["run_status"].startswith("UNCONFIGURED") and json.load(open(tmp_path / "l2.json"))["execution_authorized"] is False
+
+
+def test_locked_account_stops_after_one_call(tmp_path):
+    class _Locked(_Client):
+        def get_cost(self, **kw):
+            self.cost_calls.append(kw)
+            raise RuntimeError("BentoClientError: 403 auth_account_locked Your account has been locked")
+    c = _Locked()
+    led = dh.run(str(tmp_path / "c"), str(tmp_path / "l.json"), client=c, now="2026-10-05T05:00Z")
+    assert led["run_status"].startswith("AUTH_FAILED") and len(c.cost_calls) == 1 and c.range_calls == []
+    assert led["spent_estimated_usd"] == 0.0

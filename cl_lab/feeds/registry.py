@@ -203,6 +203,32 @@ def _feed_cap(feed) -> float:
     return float(os.environ.get("CL_DATABENTO_MAX_USD_PER_FEED") or "1.00")
 
 
+def _cftc_panel_integrity(df: pd.DataFrame) -> dict:
+    """Integrity for weekly multi-contract panels.
+
+    Repeated dates are expected because every report date has many contracts; the
+    actual uniqueness key is (date, code).  Report both panel shape and true duplicate
+    records so manifests do not flag valid cross-sectional rows as timestamp defects.
+    """
+    if df is None or df.empty:
+        return {"rows": 0, "report_dates": 0, "contracts": 0, "duplicate_records": 0}
+    flat = df.reset_index()
+    date_col = "date" if "date" in flat.columns else flat.columns[0]
+    if "code" not in flat.columns:
+        raise FeedError("CFTC panel missing contract code")
+    dates = pd.to_datetime(flat[date_col], errors="coerce")
+    return {
+        "rows": int(len(flat)),
+        "first": dates.min().isoformat(),
+        "last": dates.max().isoformat(),
+        "report_dates": int(dates.nunique()),
+        "contracts": int(flat["code"].astype("string").nunique(dropna=True)),
+        "duplicate_records": int(flat.duplicated([date_col, "code"]).sum()),
+        "missing_dates": int(dates.isna().sum()),
+        "missing_codes": int(flat["code"].isna().sum()),
+    }
+
+
 def refresh_all(cache_dir, only=None, now=None, ledger_dir=None) -> dict:
     now = pd.Timestamp.now(tz="UTC") if now is None else pd.Timestamp(now)
     os.makedirs(cache_dir, exist_ok=True)
@@ -255,6 +281,8 @@ def refresh_all(cache_dir, only=None, now=None, ledger_dir=None) -> dict:
             store.save_frame(df, path)
             ent = store.manifest_entry(feed["name"], df, "ok",
                                        intraday=intraday and feed["kind"] not in ("cftc", "cftc_report"))
+            if feed["kind"] in ("cftc", "cftc_report"):
+                ent["integrity"] = _cftc_panel_integrity(df)
             ent["requests"], ent["notes"] = used, notes[:10]
         except Exception as e:  # recorded, never raised: one dead feed must not stop the lab
             ent = store.manifest_entry(feed["name"], None, "error", error=f"{type(e).__name__}: {e}")

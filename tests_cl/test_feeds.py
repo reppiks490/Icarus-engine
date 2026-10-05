@@ -429,3 +429,20 @@ def test_cftc_position_features_net_oi_momentum_and_acceleration():
 def test_cftc_broad_feeds_registered():
     names = {f["name"] for f in registry.FEEDS}
     assert {"cftc_tff_nasdaq", "cftc_tff_all", "cftc_disaggregated_all"} <= names
+
+
+def test_cftc_panel_integrity_uses_date_contract_key():
+    df = pd.DataFrame(
+        {"code": ["A", "B", "A", "B"], "value": [1, 2, 3, 4]},
+        index=pd.to_datetime(["2026-09-22", "2026-09-22", "2026-09-29", "2026-09-29"]),
+    )
+    df.index.name = "date"
+    rep = registry._cftc_panel_integrity(df)
+    assert rep["rows"] == 4
+    assert rep["report_dates"] == 2
+    assert rep["contracts"] == 2
+    assert rep["duplicate_records"] == 0
+
+    dup = pd.concat([df, df.iloc[[0]]])
+    rep2 = registry._cftc_panel_integrity(dup)
+    assert rep2["duplicate_records"] == 1

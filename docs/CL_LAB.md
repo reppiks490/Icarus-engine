@@ -46,6 +46,13 @@ python -m cl_lab.run --out /tmp/cl_out --cache .cl_cache
 
 ## Optional Databento futures corpus
 
-The canonical Icarus repository can export local continuous-futures OHLCV through its existing Databento adapter. Point CL at that export with ICARUS_DATABENTO_CORPUS=/path/to/corpus/databento. CL verifies the manifest schema, file SHA-256, row count, and CSV shape before surfacing compact corpus metadata. Raw rows remain local.
+There are two intentionally separate Databento paths:
 
-This makes the broader futures universe, including NQ/MNQ, ES/MES, YM/MYM, RTY/M2K, GC/MGC, SI/SIL, and other registered Databento-compatible futures visible as verified corpus evidence. Corpus presence is not strategy qualification: assets without a separately validated cost model and gate path remain corpus-only.
+1. **Scheduled CL cache feed.** The CL feed registry knows the full registered futures universe (NQ/MNQ, ES/MES, YM/MYM, RTY/M2K, GC/MGC, SI/SIL, PL/PA, BTC/MBT), but a Databento API key by itself does **not** authorize paid historical downloads. Scheduled paid requests require an explicit GitHub Actions variable `CL_DATABENTO_ROOTS` such as `NQ,MNQ`. Each request is estimated before download and is bounded by `CL_DATABENTO_MAX_USD_PER_FEED`; the entire refresh is additionally bounded by `CL_DATABENTO_MAX_USD_PER_REFRESH`. Both default to USD 1.00 when unset, but the root allowlist defaults to empty, so adding the secret alone remains dormant. Optional variables `CL_DATABENTO_START` and `DATABENTO_ROLL_RULE` control the initial window and continuous roll rule. Raw rows stay only in `.cl_cache/` and never enter Git.
+
+2. **Canonical local corpus import.** The canonical Icarus repository can export local continuous-futures OHLCV through its existing Databento adapter. Point CL at that export with `ICARUS_DATABENTO_CORPUS=/path/to/corpus/databento`. CL verifies manifest schema, file SHA-256, row count, and CSV shape before surfacing compact corpus metadata. Raw rows remain local and both `databento_corpus/` and `corpus/databento/` are ignored by Git.
+
+The broader futures universe is therefore available as verified corpus evidence without silently becoming strategy-qualified. Corpus presence is not alpha, a champion, or production authority: assets without a separately validated cost model and gate path remain corpus-only.
+
+Recommended first activation is deliberately small: configure the API key as a secret, set `CL_DATABENTO_ROOTS=NQ,MNQ`, use a recent `CL_DATABENTO_START`, keep the total refresh budget low, inspect the cost/coverage manifest, then expand the allowlist only after the observed spend and entitlements are understood.
+

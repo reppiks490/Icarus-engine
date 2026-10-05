@@ -565,6 +565,14 @@ def acquire_profile(
     if lane is not None:
         budget_usd = min(float(budget_usd), lane.remaining)
     candidates = profile_candidates(profile, cache_dir, now)
+    if lane is not None:   # CL 2026-10-05: a slice already paid for (net spend in the ledger) is never bought again
+        net: dict[str, float] = {}
+        for e in lane.data.get("entries", []):
+            w = str(e.get("what", "")).split()
+            if len(w) >= 3:
+                net[" ".join(w[:3])] = net.get(" ".join(w[:3]), 0.0) + float(e.get("usd", 0.0))
+        candidates = [c for c in candidates if net.get(f"{c.root} {c.schema} {c.day}", 0.0) <= 1e-9
+                      or os.path.exists(feature_path(depth_cache, account, c))]
     priced, cached = price_candidates(hist, account, candidates, depth_cache, max_request_usd)
     selected = allocate(priced, budget_usd)
     selected_keys = {(x["root"], x["schema"], x["day"]) for x in selected}
@@ -578,7 +586,11 @@ def acquire_profile(
         if key not in selected_keys:
             rows.append({**r, "selected": False})
 
+    stop = False
     for r in selected:
+        if stop:
+            rows.append({**r, "selected": True, "status": "skipped_after_paid_error", "request_performed": False})
+            continue
         c = Candidate(
             root=str(r["root"]), dataset=str(r["dataset"]), schema=str(r["schema"]),
             day=str(r["day"]), role=str(r["role"]), priority=float(r["priority"]),
@@ -627,16 +639,20 @@ def acquire_profile(
                 "feature_last": str(features.index[-1]),
             })
         except Exception as ex:
-            if lane is not None and any(e.get("what") == f"{c.root} {c.schema} {c.day}" for e in lane.data.get("entries", [])[-1:]) \
-                    and not (raw_path and os.path.exists(raw_path) and os.path.getsize(raw_path) > 0):
-                lane.record(-float(r["estimated_cost_usd"]), f"{c.root} {c.schema} {c.day} reversed: no data received",
-                            pd.Timestamp.now(tz="UTC").isoformat())   # not one byte arrived: nothing was billed
+            charged = lane is not None and any(e.get("what") == f"{c.root} {c.schema} {c.day}"
+                                               for e in lane.data.get("entries", [])[-1:])
+            if charged and budget.refused(ex):   # CL: only an HTTP refusal is free (budget.paid_request rule)
+                lane.record(-float(r["estimated_cost_usd"]), f"{c.root} {c.schema} {c.day} refunded: HTTP {ex.http_status}",
+                            pd.Timestamp.now(tz="UTC").isoformat())
+                charged = False
             rows.append({
                 **base,
                 "status": "download_error",
                 "request_performed": raw_path is not None and os.path.exists(raw_path),
                 "error": f"{type(ex).__name__}: {ex}",
             })
+            if charged:
+                stop = True   # CL: paid but not reduced: stop buying until the cause is known
         finally:
             if raw_path and os.path.exists(raw_path):
                 try:

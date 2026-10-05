@@ -93,3 +93,14 @@ def test_finished_lane_never_buys_again_after_cache_loss(tmp_path):
     again = _clients()
     res = dh.run(cache, led, clients=again, now="2026-10-12T00:00Z")
     assert res["NQ"]["status"] == "FINISHED" and again["third"].range_calls == [] and again["third"].cost_calls == []
+
+
+def test_parse_failure_keeps_the_charge_and_holds_the_lane(tmp_path, monkeypatch):
+    cache, led = str(tmp_path / "cache"), str(tmp_path / "spend")
+    monkeypatch.setattr(dh.dbf, "_as_ohlcv_1m", lambda store: (_ for _ in ()).throw(ValueError("bad payload")))
+    cl = _clients()
+    res = dh.run(cache, led, clients=cl, now="2026-10-05T00:00Z")
+    assert res["NQ"]["status"].startswith("PARSE_FAILED") and res["NQ"]["spent_usd"] > 0
+    n = len(cl["third"].range_calls)
+    res = dh.run(cache, led, clients=cl, now="2026-10-06T00:00Z")
+    assert res["NQ"]["status"].startswith("HOLD") and len(cl["third"].range_calls) == n     # not bought again

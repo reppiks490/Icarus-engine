@@ -168,9 +168,12 @@ def test_charge_is_recorded_before_download_and_reversed_only_without_bytes(tmp_
     for root in ("NQ", "MNQ", "ES", "MES", "RTY", "M2K", "YM", "MYM"):
         store.save_frame(_bars(40), os.path.join(cache, f"databento_{root.lower()}_5m.csv.gz"))
 
+    class _Http503(Exception):
+        http_status = 503
+
     class Refused(_SdkLikeHistorical):
         def get_range(self, path=None, **kw):
-            raise RuntimeError("503 service unavailable")            # nothing streamed
+            raise _Http503("503 service unavailable")                # HTTP refusal: nothing served
 
     class CutOff(_SdkLikeHistorical):
         def get_range(self, path=None, **kw):
@@ -184,3 +187,9 @@ def test_charge_is_recorded_before_download_and_reversed_only_without_bytes(tmp_
     res = depth.acquire_profile(profile="index", cache_dir=cache, depth_cache=dc, budget_usd=4.0, max_request_usd=15.0,
                                 now=pd.Timestamp("2026-10-12T12:00:00Z"), client=CutOff(cost=4.0), ledger_dir=led)
     assert res["lane"]["spent_usd"] == pytest.approx(4.0)
+    assert sum(r.get("status") == "download_error" for r in res["requests"]) == 1       # stopped after the paid error
+    again = _SdkLikeHistorical(cost=4.0)
+    res = depth.acquire_profile(profile="index", cache_dir=cache, depth_cache=dc, budget_usd=8.0, max_request_usd=15.0,
+                                now=pd.Timestamp("2026-10-12T12:00:00Z"), client=again, ledger_dir=led)
+    paid = [r for r in res["requests"] if r.get("status") == "ok" and r.get("request_performed")]
+    assert len(paid) == again.downloads and res["lane"]["spent_usd"] == pytest.approx(4.0 + 4.0 * again.downloads)

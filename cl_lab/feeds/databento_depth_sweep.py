@@ -228,7 +228,7 @@ def _buy(hist, account, day, a, b, est, lane, depth_cache, now, is_past) -> dict
                 partial_window=bool(b < window(day)[1]))
     what = f"{ROOT} {SCHEMA} {day} {a.isoformat()[11:16]}-{b.isoformat()[11:16]}Z"
     # Charged BEFORE the request: a run killed mid-download (step timeout) must not leave paid data off
-    # the ledger. Reversed below only when not one byte arrived.
+    # the ledger. Refunded below only when the server refused it with an HTTP error status.
     _charge(lane, day, est, what, now.isoformat(), is_past)
     raw = None
     try:
@@ -240,10 +240,10 @@ def _buy(hist, account, day, a, b, est, lane, depth_cache, now, is_past) -> dict
         try:
             dbn = hist.timeseries.get_range(**kwargs(a, b), path=raw)
         except Exception as ex:  # noqa: BLE001
-            got = bool(raw and os.path.exists(raw) and os.path.getsize(raw) > 0)
-            if not got:
-                _charge(lane, day, -est, what + " reversed: no data received", now.isoformat(), is_past)
-            return dict(base, status="download_error", charged=got, error=f"{type(ex).__name__}: {ex}"[:300])
+            refused = budget.refused(ex)       # same rule as budget.paid_request: only an HTTP refusal is free
+            if refused:
+                _charge(lane, day, -est, what + f" refunded: HTTP {ex.http_status}", now.isoformat(), is_past)
+            return dict(base, status="download_error", charged=not refused, error=f"{type(ex).__name__}: {ex}"[:300])
         raw_sha, raw_bytes = acq._sha256(raw), os.path.getsize(raw)
         try:
             res = _reduce(dbn, account, day, depth_cache)

@@ -218,7 +218,7 @@ def test_failed_download_without_bytes_is_reversed_and_retried(tmp_path):
 
     class Down(_Client):
         def get_range(self, path=None, **kw):
-            raise RuntimeError("503 service unavailable")
+            raise _Refused(503)                                       # HTTP refusal: nothing served
 
     res = sw.run_account("secondary", cache_dir=cache, depth_cache=depth, ledger_dir=led, client=Down(0.1),
                          now="2026-10-05T12:00Z")

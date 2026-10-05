@@ -62,6 +62,9 @@ def run(cache_dir: str, ledger_dir: str = budget.LEDGER_DIR, *, clients: dict | 
         account = lane.cfg["account"]
         st = out[root] = dict(lane=lane_id, account=account, key_env=dbf.api_key_env(account), status="OK",
                               cap_usd=lane.cfg["cap_usd"], spent_usd=lane.data["spent_usd"], bought=[], trimmed=None)
+        if lane.data.get("hold"):
+            st.update(status=f"HOLD: {lane.data['hold']}"[:300])
+            continue
         if lane.data.get("finished"):
             # Its unspent cap already went to the depth sweep: never buy again, even if the cache was lost.
             path = cache_path(cache_dir, root)
@@ -120,6 +123,8 @@ def run(cache_dir: str, ledger_dir: str = budget.LEDGER_DIR, *, clients: dict | 
                 part = dbf.resample_5m(dbf._as_ohlcv_1m(got))
             except Exception as ex:  # noqa: BLE001 - served and paid: the charge stands
                 st["status"] = f"PARSE_FAILED: {type(ex).__name__}: {ex}"[:200]
+                lane.data["hold"] = f"parse failed for paid range {what}: {type(ex).__name__}: {ex}"[:300]
+                lane.save()                                # never re-buy it blindly; owner/CL clears the hold
                 break
             frame = store.merge_frames(frame, part)
             store.save_frame(frame, path)

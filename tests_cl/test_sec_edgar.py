@@ -62,6 +62,7 @@ def test_refresh_tracks_partial_status_without_losing_good_ticker(monkeypatch,tm
 
 def test_sec_http_does_not_request_compressed_bytes(monkeypatch):
     seen={}
+    monkeypatch.setenv("SEC_USER_AGENT","ICARUS Research contact@example.com")
     monkeypatch.setattr(sec.time,"sleep",lambda *_: None)
     monkeypatch.setattr(sec,"_last_request",0.0)
     def fake(url,headers=None,**kwargs):
@@ -115,3 +116,23 @@ def test_ticker_map_remote_data_can_extend_default_seed(monkeypatch):
     mapping=sec.ticker_map()
     assert mapping["NVDA"]=="0001045810"
     assert mapping["AMD"]=="0000002488"
+
+
+def test_user_agent_is_required(monkeypatch):
+    monkeypatch.delenv("SEC_USER_AGENT",raising=False)
+    try:
+        sec._ua()
+        assert False, "missing SEC_USER_AGENT should fail"
+    except Exception as e:
+        assert "SEC_USER_AGENT is required" in str(e)
+
+
+def test_refresh_all_failures_return_diagnostics(monkeypatch,tmp_path):
+    monkeypatch.setattr(sec,"ticker_map",lambda:{"AAA":"0000000001","BBB":"0000000002"})
+    monkeypatch.setattr(sec,"filings_for_ticker",lambda *a,**k: (_ for _ in ()).throw(RuntimeError("blocked")))
+    monkeypatch.setattr(sec,"companyfacts_for_ticker",lambda *a,**k: pd.DataFrame())
+    filings,facts,status=sec.refresh(tmp_path,("AAA","BBB"))
+    assert filings.empty and facts.empty
+    assert status["AAA"]["status"]=="error"
+    assert "blocked" in status["AAA"]["error"]
+    assert status["BBB"]["status"]=="error"

@@ -58,3 +58,39 @@ def test_refresh_tracks_partial_status_without_losing_good_ticker(monkeypatch,tm
     assert len(f)==1 and x.empty
     assert status["AAA"]["status"]=="ok"
     assert status["BBB"]["status"]=="error"
+
+
+def test_sec_http_does_not_request_compressed_bytes(monkeypatch):
+    seen={}
+    monkeypatch.setattr(sec.time,"sleep",lambda *_: None)
+    monkeypatch.setattr(sec,"_last_request",0.0)
+    def fake(url,headers=None,**kwargs):
+        seen.update(headers or {})
+        return b'{}'
+    monkeypatch.setattr(sec,"get_bytes",fake)
+    sec._get("https://data.sec.gov/test.json")
+    assert "Accept-Encoding" not in seen
+    assert seen["Accept"]=="application/json"
+
+
+def test_refresh_seeds_history_once_then_recent_only(monkeypatch,tmp_path):
+    monkeypatch.setattr(sec,"ticker_map",lambda:{"AAA":"0000000001"})
+    calls=[]
+    def filing_frame(accession):
+        return pd.DataFrame([{
+            "ticker":"AAA","cik":"0000000001","form":"10-Q","accession":accession,
+            "filing_date":pd.Timestamp("2026-08-01"),"report_date":pd.Timestamp("2026-06-30"),
+            "acceptance_datetime_raw":"2026-08-01T12:00:00Z",
+            "accepted_at":pd.Timestamp("2026-08-01T12:00:00Z"),
+            "primary_document":"q.htm","primary_doc_description":"10-Q","items":"","file_number":"1",
+        }])
+    def filings(ticker,cik,max_history_files=8):
+        calls.append(max_history_files)
+        return filing_frame("seed" if max_history_files else "recent")
+    monkeypatch.setattr(sec,"filings_for_ticker",filings)
+    monkeypatch.setattr(sec,"companyfacts_for_ticker",lambda *a,**k: pd.DataFrame())
+    sec.refresh(tmp_path,("AAA",))
+    sec.refresh(tmp_path,("AAA",))
+    assert calls==[8,0]
+    cached=pd.read_csv(tmp_path/"sec_edgar"/"filings.csv.gz",compression="gzip")
+    assert set(cached["accession"])=={"seed","recent"}

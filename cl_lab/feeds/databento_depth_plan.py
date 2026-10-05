@@ -7,7 +7,8 @@ credits beyond any provider policy for metadata requests.
 
 Environment:
 - DATABENTO_API_KEY_SECONDARY: secondary Databento credential used by default.
-- DATABENTO_DEPTH_ACCOUNT: primary|secondary (default secondary).
+- DATABENTO_API_KEY_THIRD: optional third isolated Databento credential.
+- DATABENTO_DEPTH_ACCOUNT: primary|secondary|third (default secondary).
 - DATABENTO_DATASET: must remain GLBX.MDP3.
 - DATABENTO_ROLL_RULE: v, n, or c (default v).
 
@@ -45,8 +46,8 @@ PRIORITY = {
 
 def _normalize_account(account: str | None) -> str:
     value = (account or os.environ.get("DATABENTO_DEPTH_ACCOUNT") or "secondary").strip().lower()
-    if value not in ("primary", "secondary"):
-        raise ValueError("DATABENTO_DEPTH_ACCOUNT must be primary or secondary")
+    if value not in ("primary", "secondary", "third"):
+        raise ValueError("DATABENTO_DEPTH_ACCOUNT must be primary, secondary, or third")
     return value
 
 

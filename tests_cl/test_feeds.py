@@ -201,6 +201,18 @@ def test_databento_fetch_estimates_cost_before_request(monkeypatch):
     assert len(expensive.metadata.calls) == 1
     assert len(expensive.timeseries.calls) == 0
 
+    refresh_limited = _FakeHistorical(raw, cost=0.25)
+    with pytest.raises(FeedError, match="remaining refresh budget"):
+        databento_feed.fetch_continuous_5m(
+            "NQ",
+            pd.DataFrame(),
+            pd.Timestamp("2026-10-01T13:40:00Z"),
+            client=refresh_limited,
+            budget_cap_usd=0.10,
+        )
+    assert len(refresh_limited.metadata.calls) == 1
+    assert len(refresh_limited.timeseries.calls) == 0
+
 
 def test_databento_registry_covers_registered_futures_universe():
     assert set(registry.DATABENTO_FUTURES_ROOTS) == {
@@ -223,3 +235,87 @@ def test_databento_registry_is_dormant_without_key(tmp_path, monkeypatch):
         assert ent["dataset"] == "GLBX.MDP3"
         assert ent["continuous_symbol"].endswith(".v.0")
         assert ent["integrity"]["rows"] == 0
+
+
+def test_databento_key_alone_does_not_authorize_paid_refresh(tmp_path, monkeypatch):
+    monkeypatch.setenv("DATABENTO_API_KEY", "db-test")
+    monkeypatch.delenv("CL_DATABENTO_ROOTS", raising=False)
+    monkeypatch.setenv("DATABENTO_ROLL_RULE", "v")
+
+    def should_not_run(*args, **kwargs):
+        raise AssertionError("Databento request attempted without explicit CL_DATABENTO_ROOTS")
+
+    monkeypatch.setattr(databento_feed, "fetch_continuous_5m", should_not_run)
+    man = registry.refresh_all(
+        str(tmp_path / "cache"),
+        only={"databento_nq_5m", "databento_mgc_5m"},
+        now="2026-10-04T12:00Z",
+    )
+    assert man["databento_budget"]["key_configured"] is True
+    assert man["databento_budget"]["selected_roots"] == []
+    assert man["databento_budget"]["estimated_spend_usd"] == 0.0
+    for name in ("databento_nq_5m", "databento_mgc_5m"):
+        assert man["feeds"][name]["status"] == "configured_dormant"
+        assert man["feeds"][name]["selected"] is False
+
+
+def test_databento_registry_enforces_total_refresh_budget(tmp_path, monkeypatch):
+    monkeypatch.setenv("DATABENTO_API_KEY", "db-test")
+    monkeypatch.setenv("CL_DATABENTO_ROOTS", "NQ,MNQ")
+    monkeypatch.setenv("CL_DATABENTO_MAX_USD_PER_REFRESH", "0.30")
+    monkeypatch.setenv("DATABENTO_ROLL_RULE", "v")
+    calls = []
+
+    idx = pd.DatetimeIndex(pd.to_datetime(["2026-10-01T13:30:00Z"]), name="ts_open")
+    frame = pd.DataFrame(
+        {"open": [100.0], "high": [101.0], "low": [99.0], "close": [100.5], "volume": [10.0]},
+        index=idx,
+    )
+
+    def fake(root, old, now, *, client=None, budget_cap_usd=None):
+        calls.append((root, budget_cap_usd))
+        estimate = 0.20
+        if estimate > float(budget_cap_usd) + 1e-12:
+            raise FeedError(
+                f"Databento estimated cost ${estimate:.6f} for {root}.v.0 exceeds remaining refresh budget"
+            )
+        return frame, {
+            "symbol": f"{root}.v.0",
+            "estimated_cost_usd": estimate,
+            "request_performed": True,
+            "start": "2026-10-01T13:30:00+00:00",
+            "end": "2026-10-04T12:00:00+00:00",
+        }
+
+    monkeypatch.setattr(databento_feed, "fetch_continuous_5m", fake)
+    man = registry.refresh_all(
+        str(tmp_path / "cache"),
+        only={"databento_nq_5m", "databento_mnq_5m"},
+        now="2026-10-04T12:00Z",
+    )
+
+    assert calls[0] == ("NQ", pytest.approx(0.30))
+    assert calls[1][0] == "MNQ"
+    assert calls[1][1] == pytest.approx(0.10)
+    assert man["feeds"]["databento_nq_5m"]["status"] == "ok"
+    assert man["feeds"]["databento_mnq_5m"]["status"] == "error"
+    assert man["databento_budget"]["estimated_spend_usd"] == pytest.approx(0.20)
+    assert man["databento_budget"]["remaining_usd"] == pytest.approx(0.10)
+
+
+def test_databento_unknown_allowlist_fails_closed_without_request(tmp_path, monkeypatch):
+    monkeypatch.setenv("DATABENTO_API_KEY", "db-test")
+    monkeypatch.setenv("CL_DATABENTO_ROOTS", "NQ,NOT_A_ROOT")
+
+    def should_not_run(*args, **kwargs):
+        raise AssertionError("Databento request attempted with invalid allowlist")
+
+    monkeypatch.setattr(databento_feed, "fetch_continuous_5m", should_not_run)
+    man = registry.refresh_all(
+        str(tmp_path / "cache"),
+        only={"databento_nq_5m"},
+        now="2026-10-04T12:00Z",
+    )
+    assert man["feeds"]["databento_nq_5m"]["status"] == "blocked"
+    assert "unknown CL_DATABENTO_ROOTS" in man["feeds"]["databento_nq_5m"]["error"]
+    assert man["databento_budget"]["estimated_spend_usd"] == 0.0

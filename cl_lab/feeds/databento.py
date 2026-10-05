@@ -10,8 +10,12 @@ Environment:
 - DATABENTO_DATASET: must remain GLBX.MDP3 (default).
 - DATABENTO_ROLL_RULE: v, n, or c (default v).
 - CL_DATABENTO_START: first uncached timestamp (default 2024-09-01T00:00:00Z).
-- CL_DATABENTO_MAX_USD_PER_FEED: hard estimated-cost cap per refresh request
+- CL_DATABENTO_MAX_USD_PER_FEED: hard estimated-cost cap per individual request
   (default 1.00 USD). Raise only intentionally after reviewing the estimate.
+- CL_DATABENTO_MAX_USD_PER_REFRESH: enforced by the registry across all selected
+  Databento roots in one refresh (default 1.00 USD total).
+- CL_DATABENTO_ROOTS: explicit comma-separated paid-feed allowlist. A key alone
+  does not authorize scheduled historical downloads.
 """
 from __future__ import annotations
 
@@ -91,6 +95,7 @@ def fetch_continuous_5m(
     now: pd.Timestamp,
     *,
     client: Any = None,
+    budget_cap_usd: float | None = None,
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
     """Fetch an incremental cost-gated continuous contract and return 5m bars.
 
@@ -143,10 +148,25 @@ def fetch_continuous_5m(
         raise FeedError("CL_DATABENTO_MAX_USD_PER_FEED must be numeric") from ex
     if cap < 0:
         raise FeedError("CL_DATABENTO_MAX_USD_PER_FEED must be >= 0")
-    if estimate > cap + 1e-12:
+    if budget_cap_usd is not None:
+        try:
+            remaining = float(budget_cap_usd)
+        except (TypeError, ValueError) as ex:
+            raise FeedError("Databento refresh budget must be numeric") from ex
+        if remaining < 0:
+            raise FeedError("Databento refresh budget must be >= 0")
+        effective_cap = min(cap, remaining)
+    else:
+        remaining = None
+        effective_cap = cap
+    if estimate > effective_cap + 1e-12:
+        scope = (
+            f"remaining refresh budget=${effective_cap:.6f}"
+            if remaining is not None and effective_cap < cap
+            else f"CL_DATABENTO_MAX_USD_PER_FEED=${cap:.2f}"
+        )
         raise FeedError(
-            f"Databento estimated cost ${estimate:.6f} for {symbol} exceeds "
-            f"CL_DATABENTO_MAX_USD_PER_FEED=${cap:.2f}; no data requested"
+            f"Databento estimated cost ${estimate:.6f} for {symbol} exceeds {scope}; no data requested"
         )
     try:
         store = client.timeseries.get_range(**kwargs)
@@ -160,7 +180,9 @@ def fetch_continuous_5m(
         "schema_source": "ohlcv-1m",
         "schema_output": "ohlcv-5m-derived",
         "estimated_cost_usd": estimate,
-        "cost_cap_usd": cap,
+        "cost_cap_usd": effective_cap,
+        "per_feed_cost_cap_usd": cap,
+        "refresh_budget_cap_usd": remaining,
         "start": start.isoformat(),
         "end": end.isoformat(),
         "request_performed": True,

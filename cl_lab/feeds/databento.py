@@ -103,7 +103,7 @@ def _normalize_account(account: str | None) -> str:
 def api_key_env(account: str | None = None) -> str:
     # "cl": the 4th key, owned by the CL lane (history backfill); its secret name is configurable.
     return {"primary": "DATABENTO_API_KEY", "secondary": "DATABENTO_API_KEY_SECONDARY", "third": "DATABENTO_API_KEY_THIRD",
-            "cl": os.environ.get("CL_DATABENTO_KEY_ENV") or "DATABENTO_API_KEY_CL"}[_normalize_account(account)]
+            "cl": os.environ.get("CL_DATABENTO_KEY_ENV") or "DATABENTO_API_KEY_FOURTH"}[_normalize_account(account)]
 
 
 def account_configured(account: str | None = None) -> bool:

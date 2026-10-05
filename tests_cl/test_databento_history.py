@@ -66,6 +66,6 @@ def test_backfill_respects_run_and_lifetime_caps_and_never_pays_twice(tmp_path):
 def test_over_request_cap_and_unconfigured(tmp_path, monkeypatch):
     led = dh.run(str(tmp_path / "c"), str(tmp_path / "l.json"), client=_Client(usd_per_year=40.0), now="2026-10-05T00:00Z")
     assert led["chunks"] and all(v["status"] == "OVER_REQUEST_CAP" for v in led["chunks"].values())
-    monkeypatch.delenv("DATABENTO_API_KEY_CL", raising=False)
+    monkeypatch.delenv("DATABENTO_API_KEY_FOURTH", raising=False)
     led = dh.run(str(tmp_path / "c2"), str(tmp_path / "l2.json"), now="2026-10-05T00:00Z")
     assert led["run_status"].startswith("UNCONFIGURED") and json.load(open(tmp_path / "l2.json"))["execution_authorized"] is False

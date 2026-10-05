@@ -67,7 +67,7 @@ jobs:
         timeout-minutes: 30
         continue-on-error: true
         env:
-          DATABENTO_API_KEY_CL: ${{ secrets.DATABENTO_API_KEY_CL }}
+          DATABENTO_API_KEY_FOURTH: ${{ secrets.DATABENTO_API_KEY_FOURTH }}
         run: python -m cl_lab.feeds.databento_history --cache .cl_cache --ledger automation_intelligence/cl_lab/history_ledger.json
 
       - name: Save feed cache

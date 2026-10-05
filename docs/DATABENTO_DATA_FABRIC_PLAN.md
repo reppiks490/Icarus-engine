@@ -14,6 +14,21 @@ Status: research/data architecture only. This plan does not authorize trading or
 > | #2 secondary | ~$98.5 | index MBO/MBP-10 depth ($93) | ~$5.5 for VXM/DX top-ups |
 > | #3 third | $125 | NQ 1-minute history ($25), plus diversifier depth ($95) | ~$5 |
 >
+> **Owner decision, 2026-10-05 (b): every leftover dollar goes to MBO/MBP order-book data.** Each key now has a **sweep lane** (`depth:sweep:<account>`, `cl_lab/feeds/databento_depth_sweep.py`, workflow `cl-depth-sweep.yml`). Its cap is not fixed. It equals the key's estimated remaining credit, minus a small reserve, minus everything committed to the key's other lanes. A capped lane commits its full cap until it is marked finished; after that it commits only what it spent. So when the NQ or ES history finishes under $25, the difference moves to the sweep automatically.
+>
+> | Key | Sweep cap today | Grows to (when the history finishes, ~$17–18) | Reserve |
+> |---|---|---|---|
+> | #1 primary | ~$29 | ~$36 | $2.00: OHLCV top-ups (~$0.002/day) and rounding |
+> | #2 secondary | ~$4 | ~$4 | $1.50: VXM/DX top-ups |
+> | #3 third | ~$4.5 | ~$12 | $0.50: rounding |
+>
+> - **What the sweep buys:** `NQ.v.0` **MBP-10** (full 10 levels), 09:15–16:15 New York time, one day per request, newest first. It never buys a day any key already holds, and it reads the committed ledgers too, so a lost cache can't cause a day to be bought twice. If the money left can't buy a whole day, that day's window is shortened from its end in 15-minute steps; the depth and resolution are never reduced.
+> - **Past vs. forward days:** half of each sweep cap buys the most recent past days now. The other half is held for trading days from 2026-10-05 on, as they arrive, so the R7-E08 resilience test gets out-of-sample book data.
+> - **Spend accounting:** spend is recorded *before* each download, and reversed only if not one byte arrived. A run killed by a timeout can therefore never under-count. History purchases follow the same rule.
+> - **OHLCV top-ups:** these are now recorded in `corpus:<account>` ledgers. A top-up is refused rather than let a key go past its estimated credit.
+> - **Derived data kept:** besides the 1-minute features, the sweep keeps event-level book-resilience rows (`cl_lab/depth_resilience.py`). Each row is a touch-clearing trade with: levels swept, pre-event depth, how fast the top-5 depth and the spread refill, and the mid move up to +300 s. Raw DBN is hashed and deleted, as before.
+> - **The estimates are the weak point.** `ESTIMATED_REMAINING_USD` was derived from manifests, not read from Databento. If a key actually holds less than estimated, spending to the estimate could run past the real balance. Enter the portal balances there to remove the doubt.
+>
 > **Fixed at the same time:** the depth acquirer pre-created its temporary file, so the SDK refused every download with `FileExistsError`: 0 downloads and, by all evidence, $0 spent. `--budget-usd` is a per-run figure, and these runs happen several times a day. With downloads working, and no lifetime cap, each run could have bought up to $95 of new days. The lane caps above close that gap.
 
 > **Owner decision, 2026-10-04 (applied by CL):** no request is refused outright.

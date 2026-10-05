@@ -1,5 +1,14 @@
 {
- "data_version": "cl-data-2",
+ "data_amendments": [
+  {
+   "change": "tapes carrying Databento instrument_id (the 2010-2024 NQ history) take every instrument_id change as a roll, sized by the adjacent-bar jump; tapes without it (the MNQ tape) are unchanged",
+   "date": "2026-10-05",
+   "from_version": "cl-data-2",
+   "reason": "the cl-data-2 integrity report on the provisional NQ 2013-2024 run showed 35 of 46 low-carry rolls below the 40 bp threshold, i.e. unadjusted; no rule, threshold, window or id changes",
+   "to_version": "cl-data-3"
+  }
+ ],
+ "data_version": "cl-data-3",
  "execution_authorized": false,
  "hold_confirmation": {
   "hold_t": 1.65,

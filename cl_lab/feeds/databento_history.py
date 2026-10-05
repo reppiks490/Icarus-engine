@@ -1,4 +1,4 @@
-# CL (Claude, Anthropic) — 2026-10-04 (rev. 2026-10-05) — long-history NQ/ES backfill on the owner's budget split
+# CL (Claude, Anthropic) — 2026-10-04 (rev. 2026-10-05 b) — long-history NQ/ES backfill on the owner's budget split
 """Backfills continuous NQ and ES 1-minute OHLCV from June 2010 up to the start of the key #1 corpus
 (2024-09-01), so the lab can test every rule on ~14 years it has never seen.
 
@@ -102,19 +102,26 @@ def run(cache_dir: str, ledger_dir: str = budget.LEDGER_DIR, *, clients: dict | 
             if run_spent + est > MAX_USD_PER_RUN + 1e-12:
                 st["status"] = "RUN_LIMIT"                 # continues next run
                 break
+            what = f"{root} {kw['start'][:10]}..{kw['end'][:10]}"
+            lane.record(est, what, now.isoformat())       # before the request: a killed run cannot under-count
             try:
                 part = dbf.resample_5m(dbf._as_ohlcv_1m(dbf._retry(lambda: client.timeseries.get_range(**kw))))
             except Exception as ex:  # noqa: BLE001
+                lane.record(-est, what + " reversed: request failed", now.isoformat())
                 st["status"] = f"REQUEST_FAILED: {type(ex).__name__}: {ex}"[:200]
                 break
             run_spent += est
-            lane.record(est, f"{root} {kw['start'][:10]}..{kw['end'][:10]} rows5m={len(part)}", now.isoformat())
             frame = store.merge_frames(frame, part)
             store.save_frame(frame, path)
             st["bought"].append(dict(start=kw["start"], end=kw["end"], usd=round(est, 4), rows_5m=int(len(part))))
             if st["trimmed"]:
                 st["status"] = "CAP_REACHED"
                 break
+        cut = pd.Timestamp(lane.data["exhausted_before"]) if lane.data.get("exhausted_before") else None
+        if all((not frame.empty and ((frame.index >= a) & (frame.index < b)).any()) or (cut is not None and b <= cut)
+               for a, b in chunks()):
+            lane.finish()                                  # unspent cap now flows to the depth sweep
+        st["finished"] = bool(lane.data.get("finished"))
         st["spent_usd"] = lane.data["spent_usd"]
         st["history_first"] = frame.index[0].isoformat() if not frame.empty else None
     return out

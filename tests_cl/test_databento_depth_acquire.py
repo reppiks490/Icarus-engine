@@ -193,3 +193,17 @@ def test_charge_is_recorded_before_download_and_reversed_only_without_bytes(tmp_
                                 now=pd.Timestamp("2026-10-12T12:00:00Z"), client=again, ledger_dir=led)
     paid = [r for r in res["requests"] if r.get("status") == "ok" and r.get("request_performed")]
     assert len(paid) == again.downloads and res["lane"]["spent_usd"] == pytest.approx(4.0 + 4.0 * again.downloads)
+
+
+def test_time_budget_defers_downloads_and_leftover_raw_is_cleaned(tmp_path):
+    cache, dc, led = str(tmp_path / "cache"), str(tmp_path / "depth"), str(tmp_path / "spend")
+    os.makedirs(cache)
+    os.makedirs(os.path.join(dc, "_raw_tmp"))
+    open(os.path.join(dc, "_raw_tmp", "killed-run.dbn.zst"), "wb").write(b"partial")
+    for root in ("NQ", "MNQ", "ES", "MES", "RTY", "M2K", "YM", "MYM"):
+        store.save_frame(_bars(40), os.path.join(cache, f"databento_{root.lower()}_5m.csv.gz"))
+    client = _SdkLikeHistorical(cost=1.0)
+    res = depth.acquire_profile(profile="index", cache_dir=cache, depth_cache=dc, budget_usd=10.0, max_request_usd=15.0,
+                                now=pd.Timestamp("2026-10-12T12:00:00Z"), client=client, ledger_dir=led, time_budget_min=0.0)
+    assert client.downloads == 0 and any(r.get("status") == "deferred_time_budget" for r in res["requests"])
+    assert res["lane"]["spent_usd"] == 0.0 and not os.listdir(os.path.join(dc, "_raw_tmp"))

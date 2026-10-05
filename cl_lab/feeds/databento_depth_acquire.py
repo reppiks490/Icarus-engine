@@ -23,6 +23,7 @@ import json
 import math
 import os
 import tempfile
+import time
 from collections import defaultdict
 from dataclasses import dataclass
 from typing import Any, Iterable
@@ -541,7 +542,9 @@ def acquire_profile(
     now: Any = None,
     client: Any = None,
     ledger_dir: str | None = None,
+    time_budget_min: float | None = None,
 ) -> dict[str, Any]:
+    t_start = time.monotonic()
     cfg = PROFILES.get(profile)
     if cfg is None:
         raise ValueError(f"unknown depth profile {profile!r}")
@@ -564,6 +567,13 @@ def acquire_profile(
                        ledger_dir, mirror=depth_cache) if ledger_dir else None
     if lane is not None:
         budget_usd = min(float(budget_usd), lane.remaining)
+    # CL 2026-10-05: partial raw files left by a run killed at the job timeout are never reused (their
+    # charge stands); delete them so they are not saved into the cache again.
+    for leftover in (os.listdir(os.path.join(depth_cache, "_raw_tmp")) if os.path.isdir(os.path.join(depth_cache, "_raw_tmp")) else []):
+        try:
+            os.remove(os.path.join(depth_cache, "_raw_tmp", leftover))
+        except OSError:
+            pass
     candidates = profile_candidates(profile, cache_dir, now)
     if lane is not None:   # CL 2026-10-05: a slice already paid for (net spend in the ledger) is never bought again
         net: dict[str, float] = {}
@@ -591,6 +601,12 @@ def acquire_profile(
         if stop:
             rows.append({**r, "selected": True, "status": "skipped_after_paid_error", "request_performed": False})
             continue
+        if time_budget_min is not None and time.monotonic() - t_start > 60.0 * time_budget_min:
+            # CL 2026-10-05: never start a download the job timeout would kill (run 37271141994 was cancelled
+            # mid-download after 2 h); the rest is bought on the next run.
+            rows.append({**r, "selected": True, "status": "deferred_time_budget", "request_performed": False})
+            continue
+        print(f"depth {profile}: {r['root']} {r['schema']} {r['day']} est ${float(r['estimated_cost_usd']):.2f}", flush=True)
         c = Candidate(
             root=str(r["root"]), dataset=str(r["dataset"]), schema=str(r["schema"]),
             day=str(r["day"]), role=str(r["role"]), priority=float(r["priority"]),
@@ -693,6 +709,8 @@ def main(argv=None):
     ap.add_argument("--budget-usd", type=float, default=95.0)
     ap.add_argument("--max-request-usd", type=float, default=15.0)
     ap.add_argument("--ledger-dir", default=budget.LEDGER_DIR)
+    ap.add_argument("--time-budget-min", type=float, default=40.0,
+                    help="start no new download after this many minutes (CL: keeps both profiles inside the job timeout)")
     a = ap.parse_args(argv)
     result = acquire_profile(
         profile=a.profile,
@@ -701,6 +719,7 @@ def main(argv=None):
         budget_usd=a.budget_usd,
         max_request_usd=a.max_request_usd,
         ledger_dir=a.ledger_dir,
+        time_budget_min=a.time_budget_min,
     )
     os.makedirs(os.path.dirname(os.path.abspath(a.out)), exist_ok=True)
     with open(a.out, "w", encoding="utf-8") as f:

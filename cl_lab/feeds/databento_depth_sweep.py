@@ -22,6 +22,7 @@ import glob
 import json
 import os
 import tempfile
+import time
 from zoneinfo import ZoneInfo
 
 import pandas as pd
@@ -39,6 +40,7 @@ PAST_SHARE = 0.5
 MIN_RTH_BARS = 70
 MAX_DAYS_PRICED = 40
 MAX_DAYS_PER_RUN = 4            # keeps each account's step far inside its 60-minute timeout
+TIME_BUDGET_MIN = 40.0          # and no new download starts after this many minutes
 STEP = pd.Timedelta(minutes=15)
 
 
@@ -139,8 +141,12 @@ def run_account(account: str, *, cache_dir: str, depth_cache: str, ledger_dir: s
     fwd = [d for d in todo if d >= FORWARD_START]
     past = [d for d in todo if d < FORWARD_START]
     priced = bought = 0
+    t_start = time.monotonic()
     for day in fwd + past:
         if priced >= MAX_DAYS_PRICED or bought >= MAX_DAYS_PER_RUN or lane.remaining <= 0.01:
+            break
+        if time.monotonic() - t_start > 60.0 * TIME_BUDGET_MIN:
+            out["status"] = "TIME_BUDGET: the remaining days are bought on the next run"
             break
         is_past = day < FORWARD_START
         allow = min(lane.remaining, max_request_usd)
@@ -168,6 +174,7 @@ def run_account(account: str, *, cache_dir: str, depth_cache: str, ledger_dir: s
                 out["status"] = f"AUTH_FAILED: {msg[:160]}"
                 break
             continue
+        print(f"sweep {account}: {ROOT} {SCHEMA} {day} est ${est:.2f}", flush=True)
         res = _buy(hist, account, day, a, b, est, lane, depth_cache, now, is_past)
         if res.get("status") == "ok":
             bought += 1

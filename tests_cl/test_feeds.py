@@ -170,6 +170,7 @@ def test_databento_continuous_symbol_and_5m_resample(monkeypatch):
 
 def test_databento_fetch_estimates_cost_before_request(monkeypatch):
     monkeypatch.setenv("DATABENTO_ROLL_RULE", "v")
+    monkeypatch.setenv("CL_DATABENTO_HISTORICAL_LAG_MINUTES", "0")
     monkeypatch.setenv("CL_DATABENTO_START", "2026-10-01T13:30:00Z")
     monkeypatch.setenv("CL_DATABENTO_MAX_USD_PER_FEED", "0.50")
     idx = pd.date_range("2026-10-01T13:30:00Z", periods=10, freq="1min")
@@ -207,6 +208,63 @@ def test_databento_registry_covers_registered_futures_universe():
         "NQ", "MNQ", "ES", "MES", "YM", "MYM", "RTY", "M2K",
         "GC", "MGC", "SI", "SIL", "PL", "PA", "BTC", "MBT",
     }
+
+
+def test_databento_registry_adds_context_markets_without_promoting_core():
+    context = {(root, dataset, role) for root, dataset, role in registry.DATABENTO_INTELLIGENCE_FUTURES}
+    assert ("VX", "XCBF.PITCH", "volatility") in context
+    assert ("VXM", "XCBF.PITCH", "volatility") in context
+    assert ("DX", "IFUS.IMPACT", "dollar_index") in context
+    assert ("ZN", "GLBX.MDP3", "rates") in context
+    assert ("CL", "GLBX.MDP3", "energy") in context
+    assert ("HG", "GLBX.MDP3", "industrial_metals") in context
+    assert len(context) == 19
+    assert not (set(registry.DATABENTO_FUTURES_ROOTS) & {r for r, _, _ in context})
+
+
+def test_databento_historical_watermark_lag_clamps_terminal_range(monkeypatch):
+    monkeypatch.setenv("DATABENTO_ROLL_RULE", "v")
+    monkeypatch.setenv("CL_DATABENTO_START", "2026-10-01T00:00:00Z")
+    monkeypatch.setenv("CL_DATABENTO_HISTORICAL_LAG_MINUTES", "500")
+    monkeypatch.setenv("CL_DATABENTO_MAX_USD_PER_FEED", "1.00")
+    idx = pd.date_range("2026-10-01T00:00:00Z", periods=10, freq="1min")
+    raw = pd.DataFrame({
+        "open": np.arange(10, dtype=float) + 100,
+        "high": np.arange(10, dtype=float) + 101,
+        "low": np.arange(10, dtype=float) + 99,
+        "close": np.arange(10, dtype=float) + 100.5,
+        "volume": np.ones(10),
+    }, index=idx)
+    client = _FakeHistorical(raw, cost=0.25)
+    databento_feed.fetch_continuous_5m(
+        "NQ", pd.DataFrame(), pd.Timestamp("2026-10-01T12:00:00Z"), client=client
+    )
+    assert len(client.metadata.calls) == 1
+    assert client.metadata.calls[0]["end"] == "2026-10-01T03:40:00+00:00"
+    assert client.timeseries.calls[0]["end"] == "2026-10-01T03:40:00+00:00"
+
+
+def test_databento_accepts_cfe_and_ice_us_continuous_datasets(monkeypatch):
+    monkeypatch.setenv("CL_DATABENTO_HISTORICAL_LAG_MINUTES", "0")
+    monkeypatch.setenv("CL_DATABENTO_START", "2026-10-01T13:30:00Z")
+    monkeypatch.setenv("CL_DATABENTO_MAX_USD_PER_FEED", "1.00")
+    idx = pd.date_range("2026-10-01T13:30:00Z", periods=10, freq="1min")
+    raw = pd.DataFrame({
+        "open": np.arange(10, dtype=float) + 100,
+        "high": np.arange(10, dtype=float) + 101,
+        "low": np.arange(10, dtype=float) + 99,
+        "close": np.arange(10, dtype=float) + 100.5,
+        "volume": np.ones(10),
+    }, index=idx)
+    for root, dataset in (("VX", "XCBF.PITCH"), ("DX", "IFUS.IMPACT")):
+        client = _FakeHistorical(raw, cost=0.25)
+        _, meta = databento_feed.fetch_continuous_5m(
+            root, pd.DataFrame(), pd.Timestamp("2026-10-01T13:40:00Z"),
+            client=client, dataset=dataset
+        )
+        assert client.metadata.calls[0]["dataset"] == dataset
+        assert client.metadata.calls[0]["symbols"] == f"{root}.v.0"
+        assert meta["dataset"] == dataset
 
 
 def test_databento_registry_is_dormant_without_key(tmp_path, monkeypatch):

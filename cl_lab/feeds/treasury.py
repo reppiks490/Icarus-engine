@@ -116,6 +116,41 @@ def _dedupe(df: pd.DataFrame, dataset: str) -> pd.DataFrame:
     flat = flat.drop_duplicates(keys, keep="last")
     return flat.set_index("date").sort_index()
 
+def panel_integrity(df: pd.DataFrame, dataset: str) -> dict:
+    """Validate Treasury panels on their dataset-specific identity keys.
+
+    Multiple rows may legitimately share a date (for example, several auctions or
+    operating-cash lines).  A true duplicate is a repeated dataset identity, not a
+    repeated index timestamp.
+    """
+    if df is None or df.empty:
+        return {"rows": 0, "dates": 0, "duplicate_records": 0}
+    spec=DATASETS[dataset]
+    flat=df.reset_index()
+    date_field=spec["date_field"]
+    # parse_records stores the chosen date field as the index named "date".
+    keys=[]
+    for key in spec["identity"]:
+        if key==date_field:
+            keys.append("date")
+        elif key in flat.columns:
+            keys.append(key)
+    if not keys:
+        keys=["date"]
+    dates=pd.to_datetime(flat["date"],errors="coerce")
+    rep={
+        "rows":int(len(flat)),
+        "first":dates.min().isoformat(),
+        "last":dates.max().isoformat(),
+        "dates":int(dates.nunique()),
+        "duplicate_records":int(flat.duplicated(keys).sum()),
+        "missing_dates":int(dates.isna().sum()),
+    }
+    if len(keys)>1:
+        rep["identity_columns"]=keys
+    return rep
+
+
 def derive_features(df: pd.DataFrame, dataset: str) -> pd.DataFrame:
     if df is None or df.empty:
         return df

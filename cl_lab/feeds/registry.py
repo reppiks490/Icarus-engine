@@ -72,6 +72,8 @@ FEEDS = [
     *[dict(name=f"cboe_{n.lower()}", kind="cboe", index=n, intraday=False)
       for n in ("VIX", "VIX9D", "VIX3M", "VVIX", "SKEW")],
     dict(name="cftc_tff_nasdaq", kind="cftc", intraday=False),
+    dict(name="cftc_tff_all", kind="cftc_report", report="tff", intraday=False),
+    dict(name="cftc_disaggregated_all", kind="cftc_report", report="disaggregated", intraday=False),
     dict(name="treasury_operating_cash", kind="treasury", dataset="operating_cash", intraday=False),
     dict(name="treasury_auctions", kind="treasury", dataset="auctions", intraday=False),
     dict(name="treasury_debt_to_penny", kind="treasury", dataset="debt_to_penny", intraday=False),
@@ -148,6 +150,19 @@ def _fetch(feed, old, now, max_usd=None, charge=None):
             df = pd.concat([old.reset_index(), df.reset_index()]).drop_duplicates(["date", "code"], keep="last")
             df = df.set_index("date").sort_index()
         return df, 1, []
+    if k == "cftc_report":
+        since = None
+        if old is not None and not old.empty:
+            since = old.index.max() - pd.Timedelta(days=35)
+        fresh = sources.fetch_cftc_report(feed["report"], since=since)
+        if old is not None and not old.empty:
+            df = pd.concat([old.reset_index(), fresh.reset_index()], ignore_index=True)
+            df = df.drop_duplicates(["date", "code"], keep="last").set_index("date").sort_index()
+        else:
+            df = fresh
+        df = sources.derive_cftc_position_features(df)
+        notes = [f"report={feed['report']}", f"revision_window_start={since.date() if since is not None else 'full-history'}"]
+        return df, None, notes
     if k == "treasury":
         df, note = treasury.refresh(old, feed["dataset"])
         return df, None, [note]
@@ -217,7 +232,7 @@ def refresh_all(cache_dir, only=None, now=None, ledger_dir=None) -> dict:
             out["feeds"][feed["name"]] = ent
             continue
         try:
-            old = store.load_frame(path, intraday=intraday) if feed["kind"] != "cftc" else _load_cftc(path)
+            old = _load_cftc(path) if feed["kind"] in ("cftc", "cftc_report") else store.load_frame(path, intraday=intraday)
             lane = _corpus_lane(lanes, feed, ledger_dir, cache_dir) if feed["kind"] == "databento" else None
             cap = charge = None
             if lane is not None:
@@ -238,7 +253,8 @@ def refresh_all(cache_dir, only=None, now=None, ledger_dir=None) -> dict:
             if df is None or df.empty:
                 raise FeedError("no rows")
             store.save_frame(df, path)
-            ent = store.manifest_entry(feed["name"], df, "ok", intraday=intraday and feed["kind"] != "cftc")
+            ent = store.manifest_entry(feed["name"], df, "ok",
+                                       intraday=intraday and feed["kind"] not in ("cftc", "cftc_report"))
             ent["requests"], ent["notes"] = used, notes[:10]
         except Exception as e:  # recorded, never raised: one dead feed must not stop the lab
             ent = store.manifest_entry(feed["name"], None, "error", error=f"{type(e).__name__}: {e}")

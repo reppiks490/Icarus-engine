@@ -375,3 +375,57 @@ def test_secondary_lane_feeds_report_their_own_missing_key(tmp_path, monkeypatch
     man = registry.refresh_all(str(tmp_path), only={"databento_vxm_5m"}, now="2026-10-05T00:00Z")
     ent = man["feeds"]["databento_vxm_5m"]
     assert ent["status"] == "unconfigured" and "DATABENTO_API_KEY_SECONDARY" in ent["error"]
+
+
+def test_cftc_full_report_paginates_and_preserves_numeric_fields(monkeypatch):
+    pages = {
+        0: [
+            {"report_date_as_yyyy_mm_dd": "2026-09-22T00:00:00.000", "cftc_contract_market_code": "A",
+             "market_and_exchange_names": "INDEX A", "commodity_name": "EQUITY INDEX",
+             "open_interest_all": "1000", "asset_mgr_positions_long": "400",
+             "asset_mgr_positions_short": "100", "traders_asset_mgr_long_all": "25"},
+            {"report_date_as_yyyy_mm_dd": "2026-09-29T00:00:00.000", "cftc_contract_market_code": "A",
+             "market_and_exchange_names": "INDEX A", "commodity_name": "EQUITY INDEX",
+             "open_interest_all": "1100", "asset_mgr_positions_long": "450",
+             "asset_mgr_positions_short": "120", "traders_asset_mgr_long_all": "28"},
+        ],
+        2: [
+            {"report_date_as_yyyy_mm_dd": "2026-09-29T00:00:00.000", "cftc_contract_market_code": "B",
+             "market_and_exchange_names": "INDEX B", "commodity_name": "EQUITY INDEX",
+             "open_interest_all": "900", "asset_mgr_positions_long": "200",
+             "asset_mgr_positions_short": "250", "traders_asset_mgr_long_all": "18"},
+        ],
+    }
+    offsets = []
+    def fake_get(url, params=None, **kwargs):
+        offsets.append(params["$offset"])
+        return json.dumps(pages.get(params["$offset"], [])).encode()
+    monkeypatch.setattr(sources, "get_bytes", fake_get)
+    df = sources.fetch_cftc_report("tff", page_size=2, max_pages=3)
+    assert offsets == [0, 2]
+    assert len(df) == 3
+    assert "traders_asset_mgr_long_all" in df.columns
+    assert df["open_interest_all"].max() == 1100
+
+
+def test_cftc_position_features_net_oi_momentum_and_acceleration():
+    df = pd.DataFrame(
+        {
+            "code": ["A", "A", "A"],
+            "open_interest_all": [1000.0, 1000.0, 1000.0],
+            "asset_mgr_positions_long": [400.0, 450.0, 470.0],
+            "asset_mgr_positions_short": [100.0, 120.0, 130.0],
+        },
+        index=pd.to_datetime(["2026-09-15", "2026-09-22", "2026-09-29"]),
+    )
+    out = sources.derive_cftc_position_features(df)
+    assert out["feature_asset_mgr_net"].tolist() == [300.0, 330.0, 340.0]
+    assert out["feature_asset_mgr_net_oi"].tolist() == [0.3, 0.33, 0.34]
+    assert np.isnan(out["feature_asset_mgr_net_1w_change"].iloc[0])
+    assert out["feature_asset_mgr_net_1w_change"].iloc[1] == 30.0
+    assert out["feature_asset_mgr_net_accel"].iloc[2] == -20.0
+
+
+def test_cftc_broad_feeds_registered():
+    names = {f["name"] for f in registry.FEEDS}
+    assert {"cftc_tff_nasdaq", "cftc_tff_all", "cftc_disaggregated_all"} <= names

@@ -158,3 +158,16 @@ def build_sessions(adf: pd.DataFrame) -> Sessions:
                     prev_close=prev_close, prev_high=prev_high, prev_low=prev_low,
                     on_high=on_high, on_low=on_low, on_close=on_close, atr14=atr14,
                     vwap=_cum_vwap(H, L, C, V))
+
+
+def slot_array(sess: Sessions, adf: pd.DataFrame, col: str) -> np.ndarray:
+    """D x 78 array of ``col`` aligned to ``sess`` (CL 2026-10-04; e.g. Binance taker_buy_volume)."""
+    rth = adf[adf["rth"]]
+    pos = {d: i for i, d in enumerate(sess.dates)}
+    out = np.full((sess.D, N_SLOTS), np.nan)
+    keep = rth["session_date"].map(lambda d: d in pos).to_numpy(bool)
+    rth = rth[keep]
+    di = np.fromiter((pos[d] for d in rth["session_date"]), dtype=np.int64, count=len(rth))
+    sj = ((rth["minute_et"].to_numpy() - RTH_START_MIN) // SLOT_MIN).astype(np.int64)
+    out[di, sj] = rth[col].to_numpy(float)
+    return out

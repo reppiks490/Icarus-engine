@@ -1,6 +1,6 @@
 """FRED/ALFRED point-in-time macro fabric for ICARUS research.
 
-Raw observations/vintages remain in Actions cache.  Repository outputs are manifests only.
+Raw observations/vintages remain in Actions cache. Repository outputs are manifests only.
 ALFRED uses FRED's realtime/vintage API semantics so backtests can select only information
 known as-of a historical date and avoid revised-data leakage.
 """
@@ -13,7 +13,6 @@ import pandas as pd
 
 API="https://api.stlouisfed.org/fred"
 
-# Curated orthogonal macro state.  Keep explicit IDs: reproducible research > dynamic discovery.
 SERIES={
  "rates":["DFF","SOFR","DGS2","DGS5","DGS10","DGS30","DFII5","DFII10","T10Y2Y","T10Y3M","T5YIE","T10YIE"],
  "liquidity":["WALCL","WRESBAL","RRPONTSYD","WTREGEN","M2SL"],
@@ -52,28 +51,46 @@ def _write(df,path):
     path.parent.mkdir(parents=True,exist_ok=True)
     df.to_csv(path,index=False,compression="gzip")
 
+def validate_manifest(manifest):
+    """Fail closed when a configured macro source did not actually deliver usable data."""
+    bad=[]
+    for sid, ent in manifest["series"].items():
+        if ent.get("status") != "ok" or int(ent.get("rows") or 0) <= 0:
+            bad.append(sid)
+            continue
+        if sid in VINTAGE_SERIES and int(ent.get("vintage_dates") or 0) <= 0:
+            bad.append(sid)
+    return sorted(set(bad))
+
 def refresh(cache_dir,key,now=None):
     now=pd.Timestamp.now(tz="UTC") if now is None else pd.Timestamp(now)
     root=Path(cache_dir)/"fred_alfred"
-    manifest={"schema":"icarus.fred_alfred/1","generated_at":now.isoformat(),"series":{}}
+    manifest={"schema":"icarus.fred_alfred/2","generated_at":now.isoformat(),"series":{}}
     for family,ids in SERIES.items():
         for sid in ids:
             ent={"family":family,"point_in_time":sid in VINTAGE_SERIES}
             try:
                 cur=observations(sid,key)
+                if cur.empty:
+                    raise RuntimeError("FRED returned zero observations")
+                if "observation_date" not in cur or cur["observation_date"].isna().all():
+                    raise RuntimeError("FRED observations contain no usable dates")
                 _write(cur,root/"current"/f"{sid}.csv.gz")
                 ent.update(status="ok",rows=len(cur),
-                           observation_start=None if cur.empty else cur.observation_date.min(),
-                           observation_end=None if cur.empty else cur.observation_date.max())
+                           observation_start=cur.observation_date.min(),
+                           observation_end=cur.observation_date.max())
                 if sid in VINTAGE_SERIES:
                     vd=vintage_dates(sid,key)
+                    if not vd:
+                        raise RuntimeError("ALFRED returned zero vintage dates")
                     (root/"vintage_dates").mkdir(parents=True,exist_ok=True)
                     (root/"vintage_dates"/f"{sid}.json").write_text(json.dumps(vd))
                     ent["vintage_dates"]=len(vd)
-                    # Persist a true as-of snapshot for this run; historical research requests
-                    # arbitrary as_of dates through point_in_time rather than today's revised values.
                     pit=point_in_time(sid,key,now.date().isoformat())
+                    if pit.empty:
+                        raise RuntimeError("ALFRED point-in-time snapshot is empty")
                     _write(pit,root/"pit"/f"{sid}__{now.date().isoformat()}.csv.gz")
+                    ent["pit_rows"]=len(pit)
                 raw=(root/"current"/f"{sid}.csv.gz").read_bytes()
                 ent["sha256"]=hashlib.sha256(raw).hexdigest()
             except Exception as e:
@@ -90,8 +107,11 @@ def main():
     man=refresh(cache,key)
     Path(out).parent.mkdir(parents=True,exist_ok=True)
     Path(out).write_text(json.dumps(man,indent=2,sort_keys=True))
-    bad=[k for k,v in man["series"].items() if v["status"]!="ok"]
-    print(json.dumps({"series":len(man["series"]),"errors":bad,"manifest":out}))
+    bad=validate_manifest(man)
+    summary={"series":len(man["series"]),"ok":len(man["series"])-len(bad),"errors":bad,"manifest":out}
+    print(json.dumps(summary))
+    if bad:
+        raise SystemExit(f"FRED/ALFRED integrity failure: {len(bad)} series invalid: {','.join(bad)}")
 
 if __name__=="__main__":
     main()

@@ -321,17 +321,39 @@ def collect(cache_dir: str | Path, observed_at: pd.Timestamp | None = None) -> t
     root.mkdir(parents=True,exist_ok=True)
     current=[]; status={}
     fetchers={
-        "BLS": lambda raw: parse_bls_ics(raw),
         "BEA": lambda raw: parse_release_table(raw,"BEA",observed_at),
         "CENSUS": lambda raw: parse_release_table(raw,"CENSUS",observed_at),
         "FOMC": lambda raw: parse_fomc_html(raw,observed_at.year),
     }
     for source,url in SOURCES.items():
         try:
-            df=fetchers[source](get_bytes(url))
+            note=None
+            if source=="BLS":
+                try:
+                    df=parse_bls_ics(get_bytes(url))
+                    if df.empty:
+                        raise FeedError("BLS ICS returned zero usable events")
+                    note="ics"
+                except Exception as ics_error:
+                    # GitHub-hosted runners can receive 403 on BLS's text/calendar
+                    # endpoint while the first-party HTML schedule remains available.
+                    # Stay on BLS as source-of-record rather than substituting a
+                    # third-party economic calendar.
+                    html_url=f"https://www.bls.gov/schedule/{observed_at.year}/"
+                    df=parse_release_table(get_bytes(html_url),"BLS",observed_at)
+                    if df.empty:
+                        raise FeedError(
+                            f"BLS ICS failed ({type(ics_error).__name__}: {ics_error}); "
+                            "BLS HTML fallback returned zero usable events"
+                        )
+                    note="html_fallback"
+            else:
+                df=fetchers[source](get_bytes(url))
             if df.empty: raise FeedError(f"{source} calendar returned zero usable events")
             current.append(df)
             status[source]={"status":"ok","rows":int(len(df))}
+            if note:
+                status[source]["transport"]=note
         except Exception as e:
             status[source]={"status":"error","rows":0,"error":f"{type(e).__name__}: {e}"}
     if not current:

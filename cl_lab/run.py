@@ -251,10 +251,37 @@ def run_cycle(out_dir, cache_dir=".cl_cache", assets=None, now=None):
     os.replace(cpath + ".tmp", cpath)
     _write_json(os.path.join(out_dir, "champions.json"), reg)
     feeds = _read_json(os.path.join(out_dir, "feeds_manifest.json"), {}).get("feeds", {})
+    depth_corpus = {}
+    for lane in ("index", "diversifier"):
+        d = _read_json(os.path.join(out_dir, f"databento_depth_corpus_{lane}.json"), {})
+        if d:
+            per_root = {}
+            for row in d.get("requests", []):
+                root = row.get("root")
+                if not root:
+                    continue
+                rec = per_root.setdefault(root, {"ok": 0, "cached": 0, "errors": 0})
+                status = row.get("status")
+                if status == "ok" and row.get("request_performed"):
+                    rec["ok"] += 1
+                elif status == "cached":
+                    rec["cached"] += 1
+                elif status in ("download_error", "estimate_error"):
+                    rec["errors"] += 1
+            depth_corpus[lane] = {
+                k: d.get(k) for k in (
+                    "status", "profile", "account", "budget_usd",
+                    "max_request_usd", "estimated_requested_usd",
+                    "downloaded_slices", "cached_slices", "raw_retention",
+                    "feature_resolution", "selection_method",
+                )
+            }
+            depth_corpus[lane]["roots"] = per_root
     _write_json(os.path.join(out_dir, "ui_feed.json"), dict(
         schema="cl_lab.ui_feed/1", lane=LANE, run_id=run_id, generated_at=at, evidence_class="RESEARCH_ONLY",
         ui_state="RESEARCH ONLY", execution_authorized=False, production_decision_authorized=False,
         feeds={k: v.get("status") for k, v in feeds.items()},
+        databento_depth_corpus=depth_corpus,
         corpus={k: corpus_state.get(k) for k in ("status", "dataset", "roll_rule", "minutes",
                                                  "verified_assets", "blocked_assets", "assets")},
         assets={n: {k: v.get(k) for k in ("status", "sessions", "status_counts", "diagnostics", "champions",

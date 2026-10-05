@@ -115,6 +115,10 @@ The first full R2 run on `cl-data-2` (2026-10-04, local, the same inputs Actions
 
 R3-1 (protocol `cl-hc1`, 1 trial): ETHUSDT `open30_cont`, exactly as specified in R2-D. It passes with HOLD NW t ≥ 1.65 (one-sided), at least 30 HOLD trades, and a HOLD mean > 0 at CRYPTO_PERP_STRESS cost. A pass becomes `HOLD_CONFIRMED`, a forward-shadow candidate that still needs 60 FORWARD trades with NW t ≥ 1.65. A fail becomes `REJECTED`. The rule was chosen as the best of 8 flow and 9 ML trials on TUNE. That selection is exactly why the decision rests on HOLD alone.
 
+## 3c. R4-1 forward watch (registered 2026-10-04, before the first FORWARD session)
+
+ETHUSDT `open30_cont` (id `qce1276a5f9b`, rule unchanged) is tracked on FORWARD sessions only, those dated on or after 2026-10-05. At 60 FORWARD trades it becomes `FORWARD_CONFIRMED` if the forward NW t is at least 1.65, and `FORWARD_REJECTED` otherwise. Until then it reads `WATCHING`. No other decision is taken from forward data before 60 trades.
+
 ## 4. Trial accounting
 
 New trials: R2-A 4, R2-B 3 (B2 is descriptive), R2-C 1 (descriptive), R2-D 8, cl-ml1 9. Each family has its own FDR, DSR and Holm accounting, as cl-r1 does, and the run summary lists the lab-wide total.
@@ -123,6 +127,7 @@ New trials: R2-A 4, R2-B 3 (B2 is descriptive), R2-C 1 (descriptive), R2-D 8, cl
 
 1. 2026-10-04 — R2 registered: data fix I-1, multi-session simulator, R2-A..D, cl-ml1.
 2. 2026-10-04 — Pre-evaluation review amendments, made before any R2 evaluation ran. A4 now states its minimum history. Complete-session and last-available-close rules are added. Month-end positions are pinned. ML regularization is set to α = 0.1 on the mean loss with a ±0.02 probability band, and baselines are reported. The permutation flag is raised to \|t\| ≥ 3 so 9 controls do not false-alarm about 37 % of the time. A roll cross-check mismatch now sets `DEGRADED`. The roll anchor uses the unshifted third Friday. The basis check runs on the adjusted tape, so any |Δbasis| above 150 points is an unexplained jump.
+5. 2026-10-04 — R4-1 forward watch registered for ETHUSDT open30 flow continuation, and the MNQ tapes are extended with the Databento corpus so FORWARD evidence accrues.
 4. 2026-10-04 — R3-1 registered (ETHUSDT open30 flow continuation, HOLD confirmation) after the first R2 run and before its HOLD statistic was computed.
 3. 2026-10-04 — I-1 detector switched to the NDX basis (with the bar jump as fallback) after implementation testing showed data gaps on 3 switch sessions. This is a data-handling rule. No hypothesis had been evaluated.
 

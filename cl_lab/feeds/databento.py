@@ -91,7 +91,8 @@ def _as_ohlcv_1m(store: Any) -> pd.DataFrame:
     missing = [c for c in BAR_COLS if c not in df.columns]
     if missing:
         raise FeedError("Databento OHLCV response missing columns: " + ", ".join(missing))
-    out = df[list(BAR_COLS)].apply(pd.to_numeric, errors="coerce")
+    keep = list(BAR_COLS) + (["instrument_id"] if "instrument_id" in df.columns else [])  # CL: exact roll points
+    out = df[keep].apply(pd.to_numeric, errors="coerce")
     out.index = pd.DatetimeIndex(idx, name="ts_open")
     out = out[~out.index.duplicated(keep="last")].sort_index()
     return out.dropna(subset=["open", "high", "low", "close"])
@@ -108,6 +109,8 @@ def resample_5m(one_minute: pd.DataFrame) -> pd.DataFrame:
         "close": r["close"].last(),
         "volume": r["volume"].sum(),
     })
+    if "instrument_id" in one_minute.columns:  # CL 2026-10-04: contract of the bar's last minute (roll audit)
+        out["instrument_id"] = r["instrument_id"].last()
     out.index.name = "ts_open"
     return out.dropna(subset=["open", "high", "low", "close"])
 

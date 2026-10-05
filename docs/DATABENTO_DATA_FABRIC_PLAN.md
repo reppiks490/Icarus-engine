@@ -4,6 +4,13 @@ Status: research/data architecture only. This plan does not authorize trading or
 
 ## Current three-account allocation
 
+> **Owner decision, 2026-10-04 (applied by CL):** no request is refused outright.
+> - **Key #1:** each asset is capped at **$3.50 per request** (`CL_DATABENTO_MAX_USD_PER_FEED`). A request estimated above the cap takes the largest window that fits instead: the most recent data on a first pull, or the oldest missing span on a catch-up, so the cache never has a hole. Free cost estimates are bisected to find it. Vendor gateway errors (502/503/504, timeouts) are retried twice.
+> - **VX** is no longer requested. Its 25-month history was estimated at $97.97, and VXM tracks the same index.
+> - **VXM and DX** bars come from **key #2** (`DATABENTO_API_KEY_SECONDARY`) from 2025-07-01, about 15 months, capped at $20 per request. That is roughly $27 at Databento's 25-month quotes scaled down, which leaves key #2's $95 order-book budget for NQ/MNQ intact.
+> - **Key #3** is unchanged.
+> - The VX order-book selection on key #3 falls back to its built-in day picker because no VX bars are cached.
+
 ### Account 1 — breadth and regime memory
 Credential: `DATABENTO_API_KEY`
 

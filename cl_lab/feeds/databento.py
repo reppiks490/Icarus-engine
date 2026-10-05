@@ -21,6 +21,7 @@ Environment:
 from __future__ import annotations
 
 import os
+import time
 from typing import Any
 
 import pandas as pd
@@ -31,6 +32,55 @@ DATASET = "GLBX.MDP3"
 SUPPORTED_DATASETS = ("GLBX.MDP3", "XCBF.PITCH", "IFUS.IMPACT")
 BAR_COLS = ("open", "high", "low", "close", "volume")
 DEFAULT_START = "2024-09-01T00:00:00Z"
+
+
+TRANSIENT = ("502", "503", "504", "timed out", "Timeout", "temporarily", "Connection reset")
+
+
+def _retry(fn, attempts: int = 3, waits=(5.0, 20.0)):
+    """CL 2026-10-04: retry vendor gateway errors (502/503/504, timeouts); anything else raises at once."""
+    for i in range(attempts):
+        try:
+            return fn()
+        except Exception as ex:  # noqa: BLE001 - classified below
+            if i == attempts - 1 or not any(t in f"{type(ex).__name__}: {ex}" for t in TRANSIENT):
+                raise
+            time.sleep(waits[min(i, len(waits) - 1)])
+
+
+def _fit_range(cost_of, start: pd.Timestamp, end: pd.Timestamp, cap: float, keep: str):
+    """CL 2026-10-04: largest whole-day window inside [start, end] whose estimate fits ``cap``.
+
+    keep="end" (first pull, no cache): move the start later and keep the most recent data.
+    keep="start" (incremental catch-up): move the end earlier so no hole opens after the cache;
+    the next run continues from there. Returns (start, end, estimate) or None. Estimates are
+    free metadata calls; cost is monotone in the window, so a day-level bisection suffices."""
+    if keep == "end":
+        cands = list(pd.date_range(start.normalize() + pd.Timedelta(days=1), end - pd.Timedelta(minutes=10), freq="D"))
+        win = lambda c: (c, end)
+    else:
+        cands = list(pd.date_range(start.normalize() + pd.Timedelta(days=1), end - pd.Timedelta(minutes=10), freq="D"))[::-1]
+        win = lambda c: (start, c)
+    if not cands:
+        return None
+    memo = {}
+
+    def ok(i):
+        if i not in memo:
+            memo[i] = float(cost_of(*win(cands[i])))
+        return memo[i] <= cap + 1e-12
+
+    if not ok(len(cands) - 1):
+        return None
+    lo, hi = 0, len(cands) - 1          # ok(hi) holds; find the first index that fits
+    while lo < hi:
+        mid = (lo + hi) // 2
+        if ok(mid):
+            hi = mid
+        else:
+            lo = mid + 1
+    a, b = win(cands[lo])
+    return a, b, memo[lo]
 
 
 def continuous_symbol(root: str, roll_rule: str | None = None) -> str:
@@ -122,6 +172,9 @@ def fetch_continuous_5m(
     *,
     client: Any = None,
     dataset: str | None = None,
+    account: str | None = None,
+    start_default: str | None = None,
+    max_usd: float | None = None,
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
     """Fetch an incremental cost-gated continuous contract and return 5m bars.
 
@@ -156,7 +209,7 @@ def fetch_continuous_5m(
         last = pd.Timestamp(old.index[-1])
         start = last.tz_localize("UTC") if last.tzinfo is None else last.tz_convert("UTC")
     else:
-        start = pd.Timestamp(os.environ.get("CL_DATABENTO_START") or DEFAULT_START)
+        start = pd.Timestamp(start_default or os.environ.get("CL_DATABENTO_START") or DEFAULT_START)
         start = start.tz_localize("UTC") if start.tzinfo is None else start.tz_convert("UTC")
     if end <= start:
         return pd.DataFrame(columns=BAR_COLS, index=pd.DatetimeIndex([], tz="UTC", name="ts_open")), {
@@ -167,7 +220,7 @@ def fetch_continuous_5m(
             "request_performed": False,
         }
 
-    account = (os.environ.get("CL_DATABENTO_OHLCV_ACCOUNT") or "primary").strip().lower()
+    account = (account or os.environ.get("CL_DATABENTO_OHLCV_ACCOUNT") or "primary").strip().lower()
     if account not in ("primary", "secondary", "third"):
         raise FeedError("CL_DATABENTO_OHLCV_ACCOUNT must be primary, secondary, or third")
     client = client or historical_client(account=account)
@@ -180,22 +233,35 @@ def fetch_continuous_5m(
         end=end.isoformat(),
     )
     try:
-        estimate = float(client.metadata.get_cost(**kwargs))
+        estimate = float(_retry(lambda: client.metadata.get_cost(**kwargs)))
     except Exception as ex:
         raise FeedError(f"Databento cost estimate failed for {symbol}: {type(ex).__name__}: {ex}") from ex
     try:
-        cap = float(os.environ.get("CL_DATABENTO_MAX_USD_PER_FEED") or "1.00")
+        cap = float(max_usd if max_usd is not None else (os.environ.get("CL_DATABENTO_MAX_USD_PER_FEED") or "1.00"))
     except ValueError as ex:
         raise FeedError("CL_DATABENTO_MAX_USD_PER_FEED must be numeric") from ex
     if cap < 0:
         raise FeedError("CL_DATABENTO_MAX_USD_PER_FEED must be >= 0")
+    fitted = None
     if estimate > cap + 1e-12:
-        raise FeedError(
-            f"Databento estimated cost ${estimate:.6f} for {symbol} exceeds "
-            f"CL_DATABENTO_MAX_USD_PER_FEED=${cap:.2f}; no data requested"
-        )
+        # CL 2026-10-04: never refuse outright; take the largest window that fits the per-asset cap.
+        full = estimate
+        try:
+            fit = _fit_range(lambda a, b: _retry(lambda: client.metadata.get_cost(**dict(kwargs, start=a.isoformat(), end=b.isoformat()))),
+                             start, end, cap, keep=("start" if old is not None and not old.empty else "end"))
+        except Exception as ex:
+            raise FeedError(f"Databento cost estimate failed for {symbol}: {type(ex).__name__}: {ex}") from ex
+        if fit is None:
+            raise FeedError(
+                f"Databento estimated cost ${full:.6f} for {symbol} exceeds "
+                f"CL_DATABENTO_MAX_USD_PER_FEED=${cap:.2f} even for one day; no data requested"
+            )
+        a, b, estimate = fit
+        kwargs.update(start=a.isoformat(), end=b.isoformat())
+        fitted = dict(full_range_estimate_usd=full, requested_start=start.isoformat(), requested_end=end.isoformat())
+        start, end = a, b
     try:
-        store = client.timeseries.get_range(**kwargs)
+        store = _retry(lambda: client.timeseries.get_range(**kwargs))
     except Exception as ex:
         raise FeedError(f"Databento historical request failed for {symbol}: {type(ex).__name__}: {ex}") from ex
     frame = resample_5m(_as_ohlcv_1m(store))
@@ -213,4 +279,5 @@ def fetch_continuous_5m(
         "historical_lag_minutes": historical_lag_minutes,
         "account": account,
         "api_key_env": api_key_env(account),
+        "fitted_to_cap": fitted,
     }

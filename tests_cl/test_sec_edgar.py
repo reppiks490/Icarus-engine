@@ -1,0 +1,60 @@
+import pandas as pd
+from cl_lab.feeds import sec_edgar as sec
+
+
+def test_acceptance_timestamp_never_invents_timezone():
+    assert pd.isna(sec._accepted("2026-10-05T12:34:56.000"))
+    ts=sec._accepted("2026-10-05T12:34:56.000Z")
+    assert ts.tz is not None
+    assert ts.isoformat().startswith("2026-10-05T12:34:56")
+
+
+def test_recent_rows_filters_forms_and_preserves_acceptance_time():
+    payload={"filings":{"recent":{
+        "form":["10-Q","S-8","8-K"],
+        "accessionNumber":["a","b","c"],
+        "filingDate":["2026-08-01","2026-08-02","2026-08-03"],
+        "reportDate":["2026-06-30","","2026-08-03"],
+        "acceptanceDateTime":["2026-08-01T12:00:00.000Z","2026-08-02T12:00:00.000Z","2026-08-03T13:30:00.000Z"],
+        "primaryDocument":["q.htm","s8.htm","8k.htm"],
+        "primaryDocDescription":["10-Q","","8-K"],
+        "items":["","","2.02"],
+        "fileNumber":["1","2","1"],
+    }}}
+    rows=sec._recent_rows(payload,"AAPL","0000320193")
+    assert [r["form"] for r in rows]==["10-Q","8-K"]
+    assert rows[0]["accepted_at"].isoformat().startswith("2026-08-01T12:00:00")
+
+
+def test_companyfacts_uses_accession_acceptance_time(monkeypatch):
+    payload={"facts":{"us-gaap":{"NetIncomeLoss":{"units":{"USD":[
+        {"val":100,"start":"2026-01-01","end":"2026-03-31","filed":"2026-04-20",
+         "form":"10-Q","fy":2026,"fp":"Q1","accn":"x1"}
+    ]}}}}}
+    monkeypatch.setattr(sec,"_get",lambda url: payload)
+    accepted=pd.Timestamp("2026-04-20T20:01:02Z")
+    df=sec.companyfacts_for_ticker("AAPL","0000320193",{"x1":accepted})
+    assert len(df)==1
+    assert df.iloc[0]["concept"]=="NetIncomeLoss"
+    assert df.iloc[0]["accepted_at"]==accepted
+
+
+def test_refresh_tracks_partial_status_without_losing_good_ticker(monkeypatch,tmp_path):
+    monkeypatch.setattr(sec,"ticker_map",lambda:{"AAA":"0000000001","BBB":"0000000002"})
+    good=pd.DataFrame([{
+        "ticker":"AAA","cik":"0000000001","form":"10-Q","accession":"a",
+        "filing_date":pd.Timestamp("2026-08-01"),"report_date":pd.Timestamp("2026-06-30"),
+        "acceptance_datetime_raw":"2026-08-01T12:00:00Z",
+        "accepted_at":pd.Timestamp("2026-08-01T12:00:00Z"),
+        "primary_document":"q.htm","primary_doc_description":"10-Q","items":"","file_number":"1",
+    }])
+    def filings(ticker,cik,max_history_files=8):
+        if ticker=="BBB":
+            raise RuntimeError("temporary")
+        return good
+    monkeypatch.setattr(sec,"filings_for_ticker",filings)
+    monkeypatch.setattr(sec,"companyfacts_for_ticker",lambda *a,**k: pd.DataFrame())
+    f,x,status=sec.refresh(tmp_path,("AAA","BBB"))
+    assert len(f)==1 and x.empty
+    assert status["AAA"]["status"]=="ok"
+    assert status["BBB"]["status"]=="error"

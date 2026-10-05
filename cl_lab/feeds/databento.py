@@ -6,22 +6,20 @@ continuous CME OHLCV into the ephemeral CL cache, never commits raw vendor rows,
 and estimates request cost before any historical download.
 
 Environment:
-- DATABENTO_API_KEY: primary credential, required for the broad OHLCV lane.
-- DATABENTO_API_KEY_SECONDARY: optional isolated credential for depth-data planning.
-- DATABENTO_API_KEY_THIRD: optional third isolated credential for depth-data planning.
-- CL_DATABENTO_OHLCV_ACCOUNT: primary|secondary|third (default primary).
+- DATABENTO_API_KEY: required to activate the feed.
 - DATABENTO_DATASET: must remain GLBX.MDP3 (default).
 - DATABENTO_ROLL_RULE: v, n, or c (default v).
 - CL_DATABENTO_START: first uncached timestamp (default 2024-09-01T00:00:00Z).
-- CL_DATABENTO_HISTORICAL_LAG_MINUTES: safety lag behind the vendor's
-  historical availability watermark (default 500 minutes).
-- CL_DATABENTO_MAX_USD_PER_FEED: hard estimated-cost cap per refresh request
+- CL_DATABENTO_MAX_USD_PER_FEED: hard estimated-cost cap per individual request
   (default 1.00 USD). Raise only intentionally after reviewing the estimate.
+- CL_DATABENTO_MAX_USD_PER_REFRESH: enforced by the registry across all selected
+  Databento roots in one refresh (default 1.00 USD total).
+- CL_DATABENTO_ROOTS: explicit comma-separated paid-feed allowlist. A key alone
+  does not authorize scheduled historical downloads.
 """
 from __future__ import annotations
 
 import os
-import time
 from typing import Any
 
 import pandas as pd
@@ -29,58 +27,8 @@ import pandas as pd
 from .http import FeedError
 
 DATASET = "GLBX.MDP3"
-SUPPORTED_DATASETS = ("GLBX.MDP3", "XCBF.PITCH", "IFUS.IMPACT")
 BAR_COLS = ("open", "high", "low", "close", "volume")
 DEFAULT_START = "2024-09-01T00:00:00Z"
-
-
-TRANSIENT = ("502", "503", "504", "timed out", "Timeout", "temporarily", "Connection reset")
-
-
-def _retry(fn, attempts: int = 3, waits=(5.0, 20.0)):
-    """CL 2026-10-04: retry vendor gateway errors (502/503/504, timeouts); anything else raises at once."""
-    for i in range(attempts):
-        try:
-            return fn()
-        except Exception as ex:  # noqa: BLE001 - classified below
-            if i == attempts - 1 or not any(t in f"{type(ex).__name__}: {ex}" for t in TRANSIENT):
-                raise
-            time.sleep(waits[min(i, len(waits) - 1)])
-
-
-def _fit_range(cost_of, start: pd.Timestamp, end: pd.Timestamp, cap: float, keep: str):
-    """CL 2026-10-04: largest whole-day window inside [start, end] whose estimate fits ``cap``.
-
-    keep="end" (first pull, no cache): move the start later and keep the most recent data.
-    keep="start" (incremental catch-up): move the end earlier so no hole opens after the cache;
-    the next run continues from there. Returns (start, end, estimate) or None. Estimates are
-    free metadata calls; cost is monotone in the window, so a day-level bisection suffices."""
-    if keep == "end":
-        cands = list(pd.date_range(start.normalize() + pd.Timedelta(days=1), end - pd.Timedelta(minutes=10), freq="D"))
-        win = lambda c: (c, end)
-    else:
-        cands = list(pd.date_range(start.normalize() + pd.Timedelta(days=1), end - pd.Timedelta(minutes=10), freq="D"))[::-1]
-        win = lambda c: (start, c)
-    if not cands:
-        return None
-    memo = {}
-
-    def ok(i):
-        if i not in memo:
-            memo[i] = float(cost_of(*win(cands[i])))
-        return memo[i] <= cap + 1e-12
-
-    if not ok(len(cands) - 1):
-        return None
-    lo, hi = 0, len(cands) - 1          # ok(hi) holds; find the first index that fits
-    while lo < hi:
-        mid = (lo + hi) // 2
-        if ok(mid):
-            hi = mid
-        else:
-            lo = mid + 1
-    a, b = win(cands[lo])
-    return a, b, memo[lo]
 
 
 def continuous_symbol(root: str, roll_rule: str | None = None) -> str:
@@ -93,38 +41,15 @@ def continuous_symbol(root: str, roll_rule: str | None = None) -> str:
     return f"{root}.{rule}.0"
 
 
-def _normalize_account(account: str | None) -> str:
-    value = (account or "primary").strip().lower()
-    if value not in ("primary", "secondary", "third", "cl"):
-        raise FeedError("Databento account must be primary, secondary, third, or cl")
-    return value
-
-
-def api_key_env(account: str | None = None) -> str:
-    # "cl": the 4th key, owned by the CL lane (history backfill); its secret name is configurable.
-    return {"primary": "DATABENTO_API_KEY", "secondary": "DATABENTO_API_KEY_SECONDARY", "third": "DATABENTO_API_KEY_THIRD",
-            "cl": os.environ.get("CL_DATABENTO_KEY_ENV") or "DATABENTO_API_KEY_FOURTH"}[_normalize_account(account)]
-
-
-def account_configured(account: str | None = None) -> bool:
-    return bool((os.environ.get(api_key_env(account)) or "").strip())
-
-
-def historical_client(api_key: str | None = None, *, account: str | None = None) -> Any:
-    env_name = api_key_env(account)
-    key = (api_key or os.environ.get(env_name) or "").strip()
+def _client(api_key: str | None = None) -> Any:
+    key = (api_key or os.environ.get("DATABENTO_API_KEY") or "").strip()
     if not key:
-        raise FeedError(f"{env_name} not configured")
+        raise FeedError("DATABENTO_API_KEY not configured")
     try:
         import databento as db  # type: ignore
     except Exception as ex:
         raise FeedError("Databento SDK unavailable; install databento>=0.87,<1") from ex
     return db.Historical(key)
-
-
-def _client(api_key: str | None = None, *, account: str | None = None) -> Any:
-    # Backward-compatible private alias used by older callers/tests.
-    return historical_client(api_key, account=account)
 
 
 def _as_ohlcv_1m(store: Any) -> pd.DataFrame:
@@ -143,8 +68,7 @@ def _as_ohlcv_1m(store: Any) -> pd.DataFrame:
     missing = [c for c in BAR_COLS if c not in df.columns]
     if missing:
         raise FeedError("Databento OHLCV response missing columns: " + ", ".join(missing))
-    keep = list(BAR_COLS) + (["instrument_id"] if "instrument_id" in df.columns else [])  # CL: exact roll points
-    out = df[keep].apply(pd.to_numeric, errors="coerce")
+    out = df[list(BAR_COLS)].apply(pd.to_numeric, errors="coerce")
     out.index = pd.DatetimeIndex(idx, name="ts_open")
     out = out[~out.index.duplicated(keep="last")].sort_index()
     return out.dropna(subset=["open", "high", "low", "close"])
@@ -161,8 +85,6 @@ def resample_5m(one_minute: pd.DataFrame) -> pd.DataFrame:
         "close": r["close"].last(),
         "volume": r["volume"].sum(),
     })
-    if "instrument_id" in one_minute.columns:  # CL 2026-10-04: contract of the bar's last minute (roll audit)
-        out["instrument_id"] = r["instrument_id"].last()
     out.index.name = "ts_open"
     return out.dropna(subset=["open", "high", "low", "close"])
 
@@ -173,46 +95,30 @@ def fetch_continuous_5m(
     now: pd.Timestamp,
     *,
     client: Any = None,
-    dataset: str | None = None,
-    account: str | None = None,
-    start_default: str | None = None,
-    max_usd: float | None = None,
-    charge=None,
+    budget_cap_usd: float | None = None,
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
     """Fetch an incremental cost-gated continuous contract and return 5m bars.
 
     Existing cache is deliberately re-fetched from its last 5m bucket so the
     final bucket can be corrected without creating a gap.
     """
-    dataset = (dataset or os.environ.get("DATABENTO_DATASET") or DATASET).strip()
-    if dataset not in SUPPORTED_DATASETS:
-        raise FeedError(
-            f"unsupported Databento futures dataset {dataset!r}; "
-            f"supported={','.join(SUPPORTED_DATASETS)}"
-        )
+    dataset = (os.environ.get("DATABENTO_DATASET") or DATASET).strip()
+    if dataset != DATASET:
+        raise FeedError(f"CL futures corpus requires {DATASET}, got {dataset!r}")
     symbol = continuous_symbol(root)
     now = pd.Timestamp(now)
     if now.tzinfo is None:
         now = now.tz_localize("UTC")
     else:
         now = now.tz_convert("UTC")
-    # Historical usage access can lag wall-clock time even when cost estimation
-    # succeeds. Keep a safety margin behind the vendor watermark so a paid request
-    # cannot fail after passing the cost gate merely because the terminal range is
-    # still subscription-only/live. The observed account watermark on 2026-10-04
-    # was ~8 hours; default to 500 minutes (8h20m) and make it configurable.
-    try:
-        historical_lag_minutes = int(os.environ.get("CL_DATABENTO_HISTORICAL_LAG_MINUTES") or "500")
-    except ValueError as ex:
-        raise FeedError("CL_DATABENTO_HISTORICAL_LAG_MINUTES must be an integer") from ex
-    if historical_lag_minutes < 0:
-        raise FeedError("CL_DATABENTO_HISTORICAL_LAG_MINUTES must be >= 0")
-    end = (now - pd.Timedelta(minutes=historical_lag_minutes)).floor("10min")
+    # Keep historical requests on a complete 10-minute boundary; this avoids
+    # paying for/recording a partially formed terminal 5m bar.
+    end = now.floor("10min")
     if old is not None and not old.empty:
         last = pd.Timestamp(old.index[-1])
         start = last.tz_localize("UTC") if last.tzinfo is None else last.tz_convert("UTC")
     else:
-        start = pd.Timestamp(start_default or os.environ.get("CL_DATABENTO_START") or DEFAULT_START)
+        start = pd.Timestamp(os.environ.get("CL_DATABENTO_START") or DEFAULT_START)
         start = start.tz_localize("UTC") if start.tzinfo is None else start.tz_convert("UTC")
     if end <= start:
         return pd.DataFrame(columns=BAR_COLS, index=pd.DatetimeIndex([], tz="UTC", name="ts_open")), {
@@ -223,10 +129,7 @@ def fetch_continuous_5m(
             "request_performed": False,
         }
 
-    account = (account or os.environ.get("CL_DATABENTO_OHLCV_ACCOUNT") or "primary").strip().lower()
-    if account not in ("primary", "secondary", "third"):
-        raise FeedError("CL_DATABENTO_OHLCV_ACCOUNT must be primary, secondary, or third")
-    client = client or historical_client(account=account)
+    client = client or _client()
     kwargs = dict(
         dataset=dataset,
         symbols=symbol,
@@ -236,38 +139,37 @@ def fetch_continuous_5m(
         end=end.isoformat(),
     )
     try:
-        estimate = float(_retry(lambda: client.metadata.get_cost(**kwargs)))
+        estimate = float(client.metadata.get_cost(**kwargs))
     except Exception as ex:
         raise FeedError(f"Databento cost estimate failed for {symbol}: {type(ex).__name__}: {ex}") from ex
     try:
-        cap = float(max_usd if max_usd is not None else (os.environ.get("CL_DATABENTO_MAX_USD_PER_FEED") or "1.00"))
+        cap = float(os.environ.get("CL_DATABENTO_MAX_USD_PER_FEED") or "1.00")
     except ValueError as ex:
         raise FeedError("CL_DATABENTO_MAX_USD_PER_FEED must be numeric") from ex
     if cap < 0:
         raise FeedError("CL_DATABENTO_MAX_USD_PER_FEED must be >= 0")
-    fitted = None
-    if estimate > cap + 1e-12:
-        # CL 2026-10-04: never refuse outright; take the largest window that fits the per-asset cap.
-        full = estimate
+    if budget_cap_usd is not None:
         try:
-            fit = _fit_range(lambda a, b: _retry(lambda: client.metadata.get_cost(**dict(kwargs, start=a.isoformat(), end=b.isoformat()))),
-                             start, end, cap, keep=("start" if old is not None and not old.empty else "end"))
-        except Exception as ex:
-            raise FeedError(f"Databento cost estimate failed for {symbol}: {type(ex).__name__}: {ex}") from ex
-        if fit is None:
-            raise FeedError(
-                f"Databento estimated cost ${full:.6f} for {symbol} exceeds "
-                f"CL_DATABENTO_MAX_USD_PER_FEED=${cap:.2f} even for one day; no data requested"
-            )
-        a, b, estimate = fit
-        kwargs.update(start=a.isoformat(), end=b.isoformat())
-        fitted = dict(full_range_estimate_usd=full, requested_start=start.isoformat(), requested_end=end.isoformat())
-        start, end = a, b
+            remaining = float(budget_cap_usd)
+        except (TypeError, ValueError) as ex:
+            raise FeedError("Databento refresh budget must be numeric") from ex
+        if remaining < 0:
+            raise FeedError("Databento refresh budget must be >= 0")
+        effective_cap = min(cap, remaining)
+    else:
+        remaining = None
+        effective_cap = cap
+    if estimate > effective_cap + 1e-12:
+        scope = (
+            f"remaining refresh budget=${effective_cap:.6f}"
+            if remaining is not None and effective_cap < cap
+            else f"CL_DATABENTO_MAX_USD_PER_FEED=${cap:.2f}"
+        )
+        raise FeedError(
+            f"Databento estimated cost ${estimate:.6f} for {symbol} exceeds {scope}; no data requested"
+        )
     try:
-        if charge is not None:      # CL 2026-10-05: ledgered request, charged before it is sent (databento_budget)
-            store = charge(estimate, lambda: client.timeseries.get_range(**kwargs))
-        else:
-            store = _retry(lambda: client.timeseries.get_range(**kwargs))
+        store = client.timeseries.get_range(**kwargs)
     except Exception as ex:
         raise FeedError(f"Databento historical request failed for {symbol}: {type(ex).__name__}: {ex}") from ex
     frame = resample_5m(_as_ohlcv_1m(store))
@@ -278,12 +180,10 @@ def fetch_continuous_5m(
         "schema_source": "ohlcv-1m",
         "schema_output": "ohlcv-5m-derived",
         "estimated_cost_usd": estimate,
-        "cost_cap_usd": cap,
+        "cost_cap_usd": effective_cap,
+        "per_feed_cost_cap_usd": cap,
+        "refresh_budget_cap_usd": remaining,
         "start": start.isoformat(),
         "end": end.isoformat(),
         "request_performed": True,
-        "historical_lag_minutes": historical_lag_minutes,
-        "account": account,
-        "api_key_env": api_key_env(account),
-        "fitted_to_cap": fitted,
     }

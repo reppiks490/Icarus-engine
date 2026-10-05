@@ -60,13 +60,19 @@ jobs:
       - name: Refresh public + primary Databento OHLCV corpus
         # CL 2026-10-04: a slow first Databento pull must not starve the lab cycle. The cache is saved
         # either way and the next run continues incrementally from the last cached bar.
+        # PR #84 hardening: a configured key authenticates only; paid scheduled roots must be explicitly
+        # allowlisted and every request remains bounded by per-feed and aggregate refresh budgets.
         timeout-minutes: 40
         continue-on-error: true
         env:
           DATABENTO_API_KEY: ${{ secrets.DATABENTO_API_KEY }}
           DATABENTO_API_KEY_SECONDARY: ${{ secrets.DATABENTO_API_KEY_SECONDARY }}  # VXM + DX bars only (owner, 2026-10-04)
           CL_DATABENTO_OHLCV_ACCOUNT: primary
-          CL_DATABENTO_MAX_USD_PER_FEED: "3.50"  # owner cap per asset per request (2026-10-04)
+          CL_DATABENTO_ROOTS: ${{ vars.CL_DATABENTO_ROOTS }}
+          CL_DATABENTO_START: ${{ vars.CL_DATABENTO_START }}
+          CL_DATABENTO_MAX_USD_PER_FEED: ${{ vars.CL_DATABENTO_MAX_USD_PER_FEED }}
+          CL_DATABENTO_MAX_USD_PER_REFRESH: ${{ vars.CL_DATABENTO_MAX_USD_PER_REFRESH }}
+          DATABENTO_ROLL_RULE: ${{ vars.DATABENTO_ROLL_RULE }}
         run: python -m cl_lab.feeds --cache .cl_cache --manifest automation_intelligence/cl_lab/feeds_manifest.json
 
       - name: CL history backfill (NQ on key 3, ES on key 1; 1m bars 2010-06 to 2024-09)

@@ -170,7 +170,6 @@ def test_databento_continuous_symbol_and_5m_resample(monkeypatch):
 
 def test_databento_fetch_estimates_cost_before_request(monkeypatch):
     monkeypatch.setenv("DATABENTO_ROLL_RULE", "v")
-    monkeypatch.setenv("CL_DATABENTO_HISTORICAL_LAG_MINUTES", "0")
     monkeypatch.setenv("CL_DATABENTO_START", "2026-10-01T13:30:00Z")
     monkeypatch.setenv("CL_DATABENTO_MAX_USD_PER_FEED", "0.50")
     idx = pd.date_range("2026-10-01T13:30:00Z", periods=10, freq="1min")
@@ -199,8 +198,20 @@ def test_databento_fetch_estimates_cost_before_request(monkeypatch):
         databento_feed.fetch_continuous_5m(
             "NQ", pd.DataFrame(), pd.Timestamp("2026-10-01T13:40:00Z"), client=expensive
         )
-    assert len(expensive.metadata.calls) >= 1          # CL: cap fitting may probe smaller windows (free)
+    assert len(expensive.metadata.calls) == 1
     assert len(expensive.timeseries.calls) == 0
+
+    refresh_limited = _FakeHistorical(raw, cost=0.25)
+    with pytest.raises(FeedError, match="remaining refresh budget"):
+        databento_feed.fetch_continuous_5m(
+            "NQ",
+            pd.DataFrame(),
+            pd.Timestamp("2026-10-01T13:40:00Z"),
+            client=refresh_limited,
+            budget_cap_usd=0.10,
+        )
+    assert len(refresh_limited.metadata.calls) == 1
+    assert len(refresh_limited.timeseries.calls) == 0
 
 
 def test_databento_registry_covers_registered_futures_universe():
@@ -208,63 +219,6 @@ def test_databento_registry_covers_registered_futures_universe():
         "NQ", "MNQ", "ES", "MES", "YM", "MYM", "RTY", "M2K",
         "GC", "MGC", "SI", "SIL", "PL", "PA", "BTC", "MBT",
     }
-
-
-def test_databento_registry_adds_context_markets_without_promoting_core():
-    context = {(root, dataset, role) for root, dataset, role in registry.DATABENTO_INTELLIGENCE_FUTURES}
-    assert ("VX", "XCBF.PITCH", "volatility") in context
-    assert ("VXM", "XCBF.PITCH", "volatility") in context
-    assert ("DX", "IFUS.IMPACT", "dollar_index") in context
-    assert ("ZN", "GLBX.MDP3", "rates") in context
-    assert ("CL", "GLBX.MDP3", "energy") in context
-    assert ("HG", "GLBX.MDP3", "industrial_metals") in context
-    assert len(context) == 19
-    assert not (set(registry.DATABENTO_FUTURES_ROOTS) & {r for r, _, _ in context})
-
-
-def test_databento_historical_watermark_lag_clamps_terminal_range(monkeypatch):
-    monkeypatch.setenv("DATABENTO_ROLL_RULE", "v")
-    monkeypatch.setenv("CL_DATABENTO_START", "2026-10-01T00:00:00Z")
-    monkeypatch.setenv("CL_DATABENTO_HISTORICAL_LAG_MINUTES", "500")
-    monkeypatch.setenv("CL_DATABENTO_MAX_USD_PER_FEED", "1.00")
-    idx = pd.date_range("2026-10-01T00:00:00Z", periods=10, freq="1min")
-    raw = pd.DataFrame({
-        "open": np.arange(10, dtype=float) + 100,
-        "high": np.arange(10, dtype=float) + 101,
-        "low": np.arange(10, dtype=float) + 99,
-        "close": np.arange(10, dtype=float) + 100.5,
-        "volume": np.ones(10),
-    }, index=idx)
-    client = _FakeHistorical(raw, cost=0.25)
-    databento_feed.fetch_continuous_5m(
-        "NQ", pd.DataFrame(), pd.Timestamp("2026-10-01T12:00:00Z"), client=client
-    )
-    assert len(client.metadata.calls) == 1
-    assert client.metadata.calls[0]["end"] == "2026-10-01T03:40:00+00:00"
-    assert client.timeseries.calls[0]["end"] == "2026-10-01T03:40:00+00:00"
-
-
-def test_databento_accepts_cfe_and_ice_us_continuous_datasets(monkeypatch):
-    monkeypatch.setenv("CL_DATABENTO_HISTORICAL_LAG_MINUTES", "0")
-    monkeypatch.setenv("CL_DATABENTO_START", "2026-10-01T13:30:00Z")
-    monkeypatch.setenv("CL_DATABENTO_MAX_USD_PER_FEED", "1.00")
-    idx = pd.date_range("2026-10-01T13:30:00Z", periods=10, freq="1min")
-    raw = pd.DataFrame({
-        "open": np.arange(10, dtype=float) + 100,
-        "high": np.arange(10, dtype=float) + 101,
-        "low": np.arange(10, dtype=float) + 99,
-        "close": np.arange(10, dtype=float) + 100.5,
-        "volume": np.ones(10),
-    }, index=idx)
-    for root, dataset in (("VX", "XCBF.PITCH"), ("DX", "IFUS.IMPACT")):
-        client = _FakeHistorical(raw, cost=0.25)
-        _, meta = databento_feed.fetch_continuous_5m(
-            root, pd.DataFrame(), pd.Timestamp("2026-10-01T13:40:00Z"),
-            client=client, dataset=dataset
-        )
-        assert client.metadata.calls[0]["dataset"] == dataset
-        assert client.metadata.calls[0]["symbols"] == f"{root}.v.0"
-        assert meta["dataset"] == dataset
 
 
 def test_databento_registry_is_dormant_without_key(tmp_path, monkeypatch):
@@ -283,95 +237,85 @@ def test_databento_registry_is_dormant_without_key(tmp_path, monkeypatch):
         assert ent["integrity"]["rows"] == 0
 
 
-# ---- CL 2026-10-04: fit to the per-asset cap instead of refusing; retry vendor gateway errors ----
-class _RateMetadata:
-    def __init__(self, usd_per_day):
-        self.rate, self.calls = usd_per_day, []
+def test_databento_key_alone_does_not_authorize_paid_refresh(tmp_path, monkeypatch):
+    monkeypatch.setenv("DATABENTO_API_KEY", "db-test")
+    monkeypatch.delenv("CL_DATABENTO_ROOTS", raising=False)
+    monkeypatch.setenv("DATABENTO_ROLL_RULE", "v")
 
-    def get_cost(self, **kw):
-        self.calls.append(kw)
-        days = (pd.Timestamp(kw["end"]) - pd.Timestamp(kw["start"])) / pd.Timedelta(days=1)
-        return self.rate * days
+    def should_not_run(*args, **kwargs):
+        raise AssertionError("Databento request attempted without explicit CL_DATABENTO_ROOTS")
 
-
-class _FlakyTimeseries(_FakeTimeseries):
-    def __init__(self, frame, failures=1):
-        super().__init__(frame)
-        self.failures = failures
-
-    def get_range(self, **kwargs):
-        if self.failures:
-            self.failures -= 1
-            raise RuntimeError("BentoServerError: 504 The remote gateway timed out")
-        return super().get_range(**kwargs)
-
-
-def _rate_client(rate, flaky=0):
-    idx = pd.date_range("2026-09-01T13:30:00Z", periods=10, freq="1min")
-    raw = pd.DataFrame({"open": 100.0, "high": 101.0, "low": 99.0, "close": 100.5, "volume": 1.0}, index=idx)
-    c = _FakeHistorical(raw)
-    c.metadata = _RateMetadata(rate)
-    if flaky:
-        c.timeseries = _FlakyTimeseries(raw, flaky)
-    return c
+    monkeypatch.setattr(databento_feed, "fetch_continuous_5m", should_not_run)
+    man = registry.refresh_all(
+        str(tmp_path / "cache"),
+        only={"databento_nq_5m", "databento_mgc_5m"},
+        now="2026-10-04T12:00Z",
+    )
+    assert man["databento_budget"]["key_configured"] is True
+    assert man["databento_budget"]["selected_roots"] == []
+    assert man["databento_budget"]["estimated_spend_usd"] == 0.0
+    for name in ("databento_nq_5m", "databento_mgc_5m"):
+        assert man["feeds"][name]["status"] == "configured_dormant"
+        assert man["feeds"][name]["selected"] is False
 
 
-def test_databento_first_pull_fits_cap_keeping_recent_data(monkeypatch):
-    monkeypatch.setenv("CL_DATABENTO_HISTORICAL_LAG_MINUTES", "0")
-    monkeypatch.setenv("CL_DATABENTO_START", "2024-09-01T00:00:00Z")
-    monkeypatch.setenv("CL_DATABENTO_MAX_USD_PER_FEED", "3.50")
-    c = _rate_client(0.129)                                   # ~VX: $98 for the full range
-    _, meta = databento_feed.fetch_continuous_5m("VX", pd.DataFrame(), pd.Timestamp("2026-10-05T00:00:00Z"),
-                                                 client=c, dataset="XCBF.PITCH")
-    assert len(c.timeseries.calls) == 1 and meta["estimated_cost_usd"] <= 3.50
-    got = c.timeseries.calls[0]
-    assert got["end"] == "2026-10-05T00:00:00+00:00"
-    span = (pd.Timestamp(got["end"]) - pd.Timestamp(got["start"])) / pd.Timedelta(days=1)
-    assert 26 <= span <= 27.2 and meta["fitted_to_cap"]["full_range_estimate_usd"] > 90
+def test_databento_registry_enforces_total_refresh_budget(tmp_path, monkeypatch):
+    monkeypatch.setenv("DATABENTO_API_KEY", "db-test")
+    monkeypatch.setenv("CL_DATABENTO_ROOTS", "NQ,MNQ")
+    monkeypatch.setenv("CL_DATABENTO_MAX_USD_PER_REFRESH", "0.30")
+    monkeypatch.setenv("DATABENTO_ROLL_RULE", "v")
+    calls = []
+
+    idx = pd.DatetimeIndex(pd.to_datetime(["2026-10-01T13:30:00Z"]), name="ts_open")
+    frame = pd.DataFrame(
+        {"open": [100.0], "high": [101.0], "low": [99.0], "close": [100.5], "volume": [10.0]},
+        index=idx,
+    )
+
+    def fake(root, old, now, *, client=None, budget_cap_usd=None):
+        calls.append((root, budget_cap_usd))
+        estimate = 0.20
+        if estimate > float(budget_cap_usd) + 1e-12:
+            raise FeedError(
+                f"Databento estimated cost ${estimate:.6f} for {root}.v.0 exceeds remaining refresh budget"
+            )
+        return frame, {
+            "symbol": f"{root}.v.0",
+            "estimated_cost_usd": estimate,
+            "request_performed": True,
+            "start": "2026-10-01T13:30:00+00:00",
+            "end": "2026-10-04T12:00:00+00:00",
+        }
+
+    monkeypatch.setattr(databento_feed, "fetch_continuous_5m", fake)
+    man = registry.refresh_all(
+        str(tmp_path / "cache"),
+        only={"databento_nq_5m", "databento_mnq_5m"},
+        now="2026-10-04T12:00Z",
+    )
+
+    assert calls[0] == ("NQ", pytest.approx(0.30))
+    assert calls[1][0] == "MNQ"
+    assert calls[1][1] == pytest.approx(0.10)
+    assert man["feeds"]["databento_nq_5m"]["status"] == "ok"
+    assert man["feeds"]["databento_mnq_5m"]["status"] == "error"
+    assert man["databento_budget"]["estimated_spend_usd"] == pytest.approx(0.20)
+    assert man["databento_budget"]["remaining_usd"] == pytest.approx(0.10)
 
 
-def test_databento_incremental_catch_up_never_opens_a_hole(monkeypatch):
-    monkeypatch.setenv("CL_DATABENTO_HISTORICAL_LAG_MINUTES", "0")
-    monkeypatch.setenv("CL_DATABENTO_MAX_USD_PER_FEED", "3.50")
-    old = pd.DataFrame({"open": [1.0], "high": [1.0], "low": [1.0], "close": [1.0], "volume": [1.0]},
-                       index=pd.DatetimeIndex(["2026-08-01T00:00:00Z"], name="ts_open"))
-    c = _rate_client(0.129)
-    databento_feed.fetch_continuous_5m("VX", old, pd.Timestamp("2026-10-05T00:00:00Z"), client=c, dataset="XCBF.PITCH")
-    got = c.timeseries.calls[0]
-    assert got["start"] == "2026-08-01T00:00:00+00:00" and pd.Timestamp(got["end"]) < pd.Timestamp("2026-08-29T00:00:00Z")
+def test_databento_unknown_allowlist_fails_closed_without_request(tmp_path, monkeypatch):
+    monkeypatch.setenv("DATABENTO_API_KEY", "db-test")
+    monkeypatch.setenv("CL_DATABENTO_ROOTS", "NQ,NOT_A_ROOT")
 
+    def should_not_run(*args, **kwargs):
+        raise AssertionError("Databento request attempted with invalid allowlist")
 
-def test_databento_retries_gateway_errors(monkeypatch):
-    monkeypatch.setenv("CL_DATABENTO_HISTORICAL_LAG_MINUTES", "0")
-    monkeypatch.setenv("CL_DATABENTO_START", "2026-10-01T00:00:00Z")
-    monkeypatch.setenv("CL_DATABENTO_MAX_USD_PER_FEED", "3.50")
-    monkeypatch.setattr(databento_feed.time, "sleep", lambda s: None)
-    c = _rate_client(0.01, flaky=1)
-    _, meta = databento_feed.fetch_continuous_5m("ZS", pd.DataFrame(), pd.Timestamp("2026-10-04T00:00:00Z"), client=c)
-    assert meta["request_performed"] is True and len(c.timeseries.calls) == 1
-
-
-def test_vxm_and_dx_use_key_2_for_15_months_and_vx_is_not_requested(monkeypatch):
-    names = {f["name"]: f for f in registry.FEEDS if f["kind"] == "databento"}
-    assert "databento_vx_5m" not in names
-    for root in ("vxm", "dx"):
-        f = names[f"databento_{root}_5m"]
-        assert f["account"] == "secondary" and f["start"] == "2025-07-01T00:00:00Z" and f["max_usd"] == 20.0
-    assert "account" not in names["databento_nq_5m"]                      # core stays on key #1
-    monkeypatch.setenv("CL_DATABENTO_HISTORICAL_LAG_MINUTES", "0")
-    monkeypatch.delenv("CL_DATABENTO_START", raising=False)
-    monkeypatch.setenv("CL_DATABENTO_MAX_USD_PER_FEED", "3.50")
-    c = _rate_client(0.04)                                               # ~VXM: $18 for 15 months > $3.50
-    _, meta = databento_feed.fetch_continuous_5m("VXM", pd.DataFrame(), pd.Timestamp("2026-10-05T00:00:00Z"),
-                                                 client=c, dataset="XCBF.PITCH", account="secondary",
-                                                 start_default="2025-07-01T00:00:00Z", max_usd=20.0)
-    assert c.timeseries.calls[0]["start"] == "2025-07-01T00:00:00+00:00" and meta["fitted_to_cap"] is None
-    assert meta["account"] == "secondary" and meta["api_key_env"] == "DATABENTO_API_KEY_SECONDARY"
-
-
-def test_secondary_lane_feeds_report_their_own_missing_key(tmp_path, monkeypatch):
-    monkeypatch.setenv("DATABENTO_API_KEY", "x")
-    monkeypatch.delenv("DATABENTO_API_KEY_SECONDARY", raising=False)
-    man = registry.refresh_all(str(tmp_path), only={"databento_vxm_5m"}, now="2026-10-05T00:00Z")
-    ent = man["feeds"]["databento_vxm_5m"]
-    assert ent["status"] == "unconfigured" and "DATABENTO_API_KEY_SECONDARY" in ent["error"]
+    monkeypatch.setattr(databento_feed, "fetch_continuous_5m", should_not_run)
+    man = registry.refresh_all(
+        str(tmp_path / "cache"),
+        only={"databento_nq_5m"},
+        now="2026-10-04T12:00Z",
+    )
+    assert man["feeds"]["databento_nq_5m"]["status"] == "blocked"
+    assert "unknown CL_DATABENTO_ROOTS" in man["feeds"]["databento_nq_5m"]["error"]
+    assert man["databento_budget"]["estimated_spend_usd"] == 0.0

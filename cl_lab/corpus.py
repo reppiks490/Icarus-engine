@@ -23,6 +23,58 @@ def _sha256(path: Path) -> str:
     return h.hexdigest()
 
 
+
+def identity(snapshot: dict) -> dict:
+    """Return stable corpus identity for run fingerprinting.
+
+    Retrieval timestamps and diagnostic error text are intentionally excluded:
+    re-reading the same verified bytes must not manufacture a new logical CL run.
+    Content hash, coverage, representation and verification state remain binding.
+    """
+    if not isinstance(snapshot, dict):
+        return {}
+    stable = {
+        key: snapshot.get(key)
+        for key in (
+            "status",
+            "schema_version",
+            "provider",
+            "dataset",
+            "roll_rule",
+            "minutes",
+            "timestamp_semantics",
+            "start",
+            "end_exclusive",
+            "verified_assets",
+            "blocked_assets",
+        )
+        if key in snapshot
+    }
+    assets = {}
+    raw_assets = snapshot.get("assets")
+    if isinstance(raw_assets, dict):
+        for token, row in sorted(raw_assets.items()):
+            if not isinstance(row, dict):
+                continue
+            assets[str(token)] = {
+                key: row.get(key)
+                for key in (
+                    "status",
+                    "source_status",
+                    "rows",
+                    "first",
+                    "last",
+                    "sha256",
+                    "databento_symbol",
+                    "provider_ticker",
+                    "tv_symbol",
+                )
+                if key in row
+            }
+    stable["assets"] = assets
+    return stable
+
+
 def inspect(path: str | os.PathLike | None = None) -> dict:
     root_text = str(path or os.environ.get(ENV) or "").strip()
     if not root_text:

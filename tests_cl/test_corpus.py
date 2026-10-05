@@ -65,3 +65,42 @@ def test_corpus_inspection_is_unavailable_without_configuration(monkeypatch):
     out = corpus.inspect()
     assert out["status"] == "UNAVAILABLE"
     assert out["assets"] == {}
+
+
+def test_corpus_identity_ignores_retrieval_time_but_binds_content():
+    base = {
+        "status": "VERIFIED",
+        "schema_version": "icarus-databento-corpus-v1",
+        "provider": "databento",
+        "dataset": "GLBX.MDP3",
+        "roll_rule": "v",
+        "minutes": 5,
+        "timestamp_semantics": "bar_open_utc",
+        "start": "2026-10-01T00:00:00Z",
+        "end_exclusive": "2026-10-02T00:00:00Z",
+        "generated_at": "2026-10-04T00:00:00Z",
+        "verified_assets": 1,
+        "blocked_assets": 0,
+        "assets": {
+            "NQ": {
+                "status": "VERIFIED",
+                "source_status": "OK",
+                "rows": 2,
+                "first": "2026-10-01T00:00:00Z",
+                "last": "2026-10-01T00:05:00Z",
+                "sha256": "a" * 64,
+                "databento_symbol": "NQ.v.0",
+                "provider_ticker": "NQ=F",
+                "tv_symbol": "CME_MINI:NQ1!",
+                "error": "transient diagnostic text",
+            }
+        },
+    }
+    newer = json.loads(json.dumps(base))
+    newer["generated_at"] = "2026-10-04T01:00:00Z"
+    newer["assets"]["NQ"]["error"] = "different diagnostic text"
+    assert corpus.identity(base) == corpus.identity(newer)
+
+    changed = json.loads(json.dumps(newer))
+    changed["assets"]["NQ"]["sha256"] = "b" * 64
+    assert corpus.identity(base) != corpus.identity(changed)

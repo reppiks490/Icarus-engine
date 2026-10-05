@@ -34,32 +34,6 @@ Every one of the 492 candidates passes cross-day prefix invariance and intraday 
 
 All 492 candidates **REJECTED** on MNQ, BTCUSDT and ETHUSDT. Best MNQ TUNE t = 2.08 (gap fade, 46 trades — below the sample gate); BH-FDR rejections 0; effective trials ≈ 116–125; SPA p = 0.86 (MNQ), 0.99 (BTC), 0.57 (ETH); PBO 0.46 / 0.33 / 0.21. The published intraday rules, at these parameterizations and realistic costs, show no edge distinguishable from data-snooping on 2024–2026 data. The lab is built to keep searching honestly, not to manufacture champions.
 
-## R2: data integrity, multi-session hypotheses, order flow, walk-forward ML (2026-10-04)
-
-Specification, amendments and results: `docs/CL_PREREG_R2.md`. Frozen ids: `cl_lab/prereg_r2.json`.
-
-- `integrity.py` (`cl-data-2`): the MNQ tapes are unadjusted continuous series. Contract switches are detected from the MNQ − NASDAQ-100 basis and Panama back-adjusted. Overnight ranges that may mix contracts are blanked, and holds across an undetected roll are skipped. Every run records the switches and a post-adjustment basis check.
-- `multisession.py`: overnight holds marked to market at each RTH close, plus a daily-weight simulator for index series.
-- `events.py`: verified 2024–2026 FOMC decision dates and month-end positions.
-- `hypotheses_r2.py` (`cl-r2`): EOD reversal under the HOLD-only protocol `cl-hc1`, month-end rebalancing (40 years of NDX daily plus an MNQ execution twin), pre-FOMC event study, and crypto taker-flow imbalance.
-- `ml.py` (`cl-ml1`): an L2 logistic walk-forward model per (asset, decision time). It reports Brier, AUC, calibration, coefficient stability, baselines and a label-permutation control. Prefix, intraday and leaky-control causality tests run in CI.
-- New feed: FRED `NASDAQ100`.
-
-## Changelog (CL lab)
-
-1. 2026-10-03 — cl-g1 grammar (492), cl-gates-1, keyless feeds, registry, persistence invariant.
-2. 2026-10-04 — Edge explorer cl-x1, causal conditioners, causality proofs, federation watch.
-3. 2026-10-04 — THE PULSE OF ICARUS gated as an external strategy.
-4. 2026-10-04 — cl-r1 conditional EOD momentum (research rank 1).
-6. 2026-10-04 — Databento MNQ extension of both tapes, so FORWARD evidence accrues; PULSE forward block; R4-1 forward watch; Databento `instrument_id` kept for roll audits.
-5. 2026-10-04 — cl-data-2 roll integrity fix; multi-session simulator; cl-r2 families; cl-ml1 walk-forward ML; R3-1 HOLD confirmation. No new champion. Results are in `docs/CL_PREREG_R2.md`.
-7. 2026-10-05 — Owner's credit split across keys #1–#3: lifetime lane ledgers; NQ/ES 2010–2024 history (R5 `cl-boos1`, provisional run on 2013–2024: 0 of 506 rules confirmed); depth-acquirer download fix.
-8. 2026-10-05 — Leftover credit goes to MBO/MBP order-book data: sweep lanes with dynamic caps (`databento_budget`), NQ MBP-10 regular-session days (`databento_depth_sweep`, `cl-depth-sweep.yml`), event-level book resilience (`depth_resilience`), OHLCV top-up credit guard, spend recorded before each download. cl-data-3: Databento `instrument_id` switches are exact rolls on the history (35/46 low-carry rolls were unadjusted under cl-data-2).
-
-## Forward evidence from the Databento corpus (`cl_lab/extend.py`, 2026-10-04)
-
-The committed MNQ tapes end on 2026-09-18. When the Actions cache holds `databento_mnq_5m` (continuous `MNQ.v.0`, unadjusted), every run appends the bars after the committed tape's last bar. Committed history is never replaced. The 20-minute PULSE tape is extended with 20m bars resampled from the same bars. Roll handling (cl-data-2) and the basis check run on the combined tape. The Databento `instrument_id` changes are reported beside the detected switches as an independent cross-check, so a vendor splice inconsistency shows up as `DEGRADED`. THE PULSE now reports FORWARD trades and net per variant. R4-1 tracks ETHUSDT open-30 flow continuation on FORWARD sessions only.
-
 ## Run locally
 
 ```
@@ -72,6 +46,13 @@ python -m cl_lab.run --out /tmp/cl_out --cache .cl_cache
 
 ## Optional Databento futures corpus
 
-The canonical Icarus repository can export local continuous-futures OHLCV through its existing Databento adapter. Point CL at that export with ICARUS_DATABENTO_CORPUS=/path/to/corpus/databento. CL verifies the manifest schema, file SHA-256, row count, and CSV shape before surfacing compact corpus metadata. Raw rows remain local.
+There are two intentionally separate Databento paths:
 
-This makes the broader futures universe, including NQ/MNQ, ES/MES, YM/MYM, RTY/M2K, GC/MGC, SI/SIL, and other registered Databento-compatible futures visible as verified corpus evidence. Corpus presence is not strategy qualification: assets without a separately validated cost model and gate path remain corpus-only.
+1. **Scheduled CL cache feed.** The CL feed registry knows the full registered futures universe (NQ/MNQ, ES/MES, YM/MYM, RTY/M2K, GC/MGC, SI/SIL, PL/PA, BTC/MBT), but a Databento API key by itself does **not** authorize paid historical downloads. Scheduled paid requests require an explicit GitHub Actions variable `CL_DATABENTO_ROOTS` such as `NQ,MNQ`. Each request is estimated before download and is bounded by `CL_DATABENTO_MAX_USD_PER_FEED`; the entire refresh is additionally bounded by `CL_DATABENTO_MAX_USD_PER_REFRESH`. Both default to USD 1.00 when unset, but the root allowlist defaults to empty, so adding the secret alone remains dormant. Optional variables `CL_DATABENTO_START` and `DATABENTO_ROLL_RULE` control the initial window and continuous roll rule. Raw rows stay only in `.cl_cache/` and never enter Git.
+
+2. **Canonical local corpus import.** The canonical Icarus repository can export local continuous-futures OHLCV through its existing Databento adapter. Point CL at that export with `ICARUS_DATABENTO_CORPUS=/path/to/corpus/databento`. CL verifies manifest schema, file SHA-256, row count, and CSV shape before surfacing compact corpus metadata. Raw rows remain local and both `databento_corpus/` and `corpus/databento/` are ignored by Git.
+
+The broader futures universe is therefore available as verified corpus evidence without silently becoming strategy-qualified. Corpus presence is not alpha, a champion, or production authority: assets without a separately validated cost model and gate path remain corpus-only.
+
+Recommended first activation is deliberately small: configure the API key as a secret, set `CL_DATABENTO_ROOTS=NQ,MNQ`, use a recent `CL_DATABENTO_START`, keep the total refresh budget low, inspect the cost/coverage manifest, then expand the allowlist only after the observed spend and entitlements are understood.
+

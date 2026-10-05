@@ -55,6 +55,14 @@ DATABENTO_INTELLIGENCE_FUTURES = (
     ("ZW", "GLBX.MDP3", "agriculture"),
 )
 
+# CL 2026-10-04, owner decision: VXM and DX bars come from key #2 (secondary) over 15 months; VX is not
+# requested (its history costs far more than the key #1 per-asset cap; VXM tracks the same index).
+DATABENTO_SKIPPED = frozenset({"VX"})
+DATABENTO_LANE_OVERRIDES = {
+    "VXM": dict(account="secondary", start="2025-07-01T00:00:00Z", max_usd=20.0),
+    "DX": dict(account="secondary", start="2025-07-01T00:00:00Z", max_usd=20.0),
+}
+
 FEEDS = [
     dict(name="btcusdt_5m", kind="binance", symbol="BTCUSDT", interval="5m", intraday=True),
     dict(name="ethusdt_5m", kind="binance", symbol="ETHUSDT", interval="5m", intraday=True),
@@ -68,8 +76,8 @@ FEEDS = [
            dataset="GLBX.MDP3", research_role="core", intraday=True)
       for root in DATABENTO_FUTURES_ROOTS],
     *[dict(name=f"databento_{root.lower()}_5m", kind="databento", root=root,
-           dataset=dataset, research_role=role, intraday=True)
-      for root, dataset, role in DATABENTO_INTELLIGENCE_FUTURES],
+           dataset=dataset, research_role=role, intraday=True, **DATABENTO_LANE_OVERRIDES.get(root, {}))
+      for root, dataset, role in DATABENTO_INTELLIGENCE_FUTURES if root not in DATABENTO_SKIPPED],
 ]
 
 
@@ -139,14 +147,17 @@ def _fetch(feed, old, now):
         return df, 1, []
     if k == "databento":
         df, meta = databento_feed.fetch_continuous_5m(
-            feed["root"], old, now, dataset=feed.get("dataset") or "GLBX.MDP3"
+            feed["root"], old, now, dataset=feed.get("dataset") or "GLBX.MDP3",
+            account=feed.get("account"), start_default=feed.get("start"), max_usd=feed.get("max_usd"),
         )
         notes = [
             f"symbol={meta.get('symbol')}",
             f"estimated_cost_usd={meta.get('estimated_cost_usd', 0.0):.6f}",
             f"request_performed={bool(meta.get('request_performed'))}",
             f"range={meta.get('start')}..{meta.get('end')}",
-        ]
+            f"account={meta.get('account')}",
+        ] + ([f"fitted_to_cap_from_estimate={meta['fitted_to_cap']['full_range_estimate_usd']:.4f}"]
+             if meta.get("fitted_to_cap") else [])
         return store.merge_frames(old, df), 1 if meta.get("request_performed") else 0, notes
     raise ValueError(k)
 
@@ -162,12 +173,13 @@ def refresh_all(cache_dir, only=None, now=None) -> dict:
         intraday = feed["intraday"]
         # Databento is optional/paid. Absence of a key is a dormant capability,
         # not a broken public-feed cycle; preserve any prior cache without error.
-        if feed["kind"] == "databento" and not (os.environ.get("DATABENTO_API_KEY") or "").strip():
+        key_env = databento_feed.api_key_env(feed.get("account")) if feed["kind"] == "databento" else None
+        if feed["kind"] == "databento" and not (os.environ.get(key_env) or "").strip():
             old = store.load_frame(path, intraday=True)
             status = "cached" if old is not None and not old.empty else "unconfigured"
             ent = store.manifest_entry(
                 feed["name"], old, status,
-                error=None if status == "cached" else "DATABENTO_API_KEY not configured",
+                error=None if status == "cached" else f"{key_env} not configured",
                 intraday=True,
             )
             ent.update(kind="databento", root=feed["root"],

@@ -95,13 +95,15 @@ def continuous_symbol(root: str, roll_rule: str | None = None) -> str:
 
 def _normalize_account(account: str | None) -> str:
     value = (account or "primary").strip().lower()
-    if value not in ("primary", "secondary", "third"):
-        raise FeedError("Databento account must be primary, secondary, or third")
+    if value not in ("primary", "secondary", "third", "cl"):
+        raise FeedError("Databento account must be primary, secondary, third, or cl")
     return value
 
 
 def api_key_env(account: str | None = None) -> str:
-    return {"primary": "DATABENTO_API_KEY", "secondary": "DATABENTO_API_KEY_SECONDARY", "third": "DATABENTO_API_KEY_THIRD"}[_normalize_account(account)]
+    # "cl": the 4th key, owned by the CL lane (history backfill); its secret name is configurable.
+    return {"primary": "DATABENTO_API_KEY", "secondary": "DATABENTO_API_KEY_SECONDARY", "third": "DATABENTO_API_KEY_THIRD",
+            "cl": os.environ.get("CL_DATABENTO_KEY_ENV") or "DATABENTO_API_KEY_CL"}[_normalize_account(account)]
 
 
 def account_configured(account: str | None = None) -> bool:

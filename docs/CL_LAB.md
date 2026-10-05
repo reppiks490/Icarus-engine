@@ -53,6 +53,8 @@ Specification, amendments and results: `docs/CL_PREREG_R2.md`. Frozen ids: `cl_l
 4. 2026-10-04 — cl-r1 conditional EOD momentum (research rank 1).
 6. 2026-10-04 — Databento MNQ extension of both tapes, so FORWARD evidence accrues; PULSE forward block; R4-1 forward watch; Databento `instrument_id` kept for roll audits.
 5. 2026-10-04 — cl-data-2 roll integrity fix; multi-session simulator; cl-r2 families; cl-ml1 walk-forward ML; R3-1 HOLD confirmation. No new champion. Results are in `docs/CL_PREREG_R2.md`.
+7. 2026-10-05 — Owner's credit split across keys #1–#3: lifetime lane ledgers; NQ/ES 2010–2024 history (R5 `cl-boos1`, provisional run on 2013–2024: 0 of 506 rules confirmed); depth-acquirer download fix.
+8. 2026-10-05 — Leftover credit goes to MBO/MBP order-book data: sweep lanes with dynamic caps (`databento_budget`), NQ MBP-10 regular-session days (`databento_depth_sweep`, `cl-depth-sweep.yml`), event-level book resilience (`depth_resilience`), OHLCV top-up credit guard, spend recorded before each download. cl-data-3: Databento `instrument_id` switches are exact rolls on the history (35/46 low-carry rolls were unadjusted under cl-data-2).
 
 ## Forward evidence from the Databento corpus (`cl_lab/extend.py`, 2026-10-04)
 

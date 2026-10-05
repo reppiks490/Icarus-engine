@@ -1,4 +1,4 @@
-# CL (Claude, Anthropic) — 2026-10-04 — cl_lab.integrity: contract-roll detection and Panama back-adjustment (cl-data-2)
+# CL (Claude, Anthropic) — 2026-10-04 (rev. 2026-10-05) — cl_lab.integrity: contract-roll detection and Panama back-adjustment (cl-data-3)
 """Continuous futures tapes that splice contracts without adjustment jump by the calendar
 spread at each switch. That corrupts every cross-session price (prior close, overnight
 range, gap, ATR true range) and every position held through the switch.
@@ -14,7 +14,17 @@ tapes the switch sessions sit in data gaps, so a bar jump alone mixes the spread
 market's move across the gap.
 
 Fallback (no index data): the largest bar jump in the session dated the Thursday 8 days
-before the third Friday, accepted at >= MIN_JUMP_BP, with that jump as the adjustment."""
+before the third Friday, accepted at >= MIN_JUMP_BP, with that jump as the adjustment.
+
+cl-data-3 (2026-10-05): when the tape carries Databento's ``instrument_id`` (the contract of each
+bar), every change of it IS a roll, whatever its size; the size threshold above only exists because
+plain tapes do not say which contract a bar came from. On the 2013-2022 NQ history the calendar
+spread was often 3-30 points (< 40 bp; carry was near zero), so 35 of 46 rolls went unadjusted under
+cl-data-2. A switch is sized by the jump from the last bar of the old contract to the first bar of
+the new one when they are at most ``ADJACENT_GAP`` apart (Databento switches at 00:00 UTC, inside the
+overnight session, so the two prints are minutes apart), otherwise by the basis change of that session
+when the index close is available, otherwise by the bar jump. Quarters the instrument_id does not
+cover keep the cl-data-2 rules."""
 from __future__ import annotations
 
 import dataclasses
@@ -23,9 +33,10 @@ from datetime import date, timedelta
 import numpy as np
 import pandas as pd
 
-DATA_VERSION = "cl-data-2"
+DATA_VERSION = "cl-data-3"
 MIN_JUMP_BP = 40.0
 BASIS_JUMP_PTS = 150.0
+ADJACENT_GAP = pd.Timedelta(minutes=10)
 
 
 def third_friday(y: int, m: int) -> date:
@@ -51,9 +62,50 @@ def _bar_jumps(adf):
     return np.r_[np.nan, o[1:] - c[:-1]], c
 
 
+def _quarter_of(d: date) -> tuple[str, date]:
+    """The quarterly expiry a switch on session ``d`` belongs to (the next third Friday of Mar/Jun/Sep/Dec)."""
+    for y in (d.year, d.year + 1):
+        for m in (3, 6, 9, 12):
+            tf = third_friday(y, m)
+            if tf >= d - timedelta(days=3):
+                return f"{y}-{m:02d}", tf
+    raise ValueError(d)
+
+
+def _instrument_rolls(adf, sd, jump, basis):
+    """(rolls from instrument_id switches, set of quarters the instrument_id covers) or (None, set())."""
+    if "instrument_id" not in adf.columns:
+        return None, set()
+    v = pd.to_numeric(adf["instrument_id"], errors="coerce").to_numpy(float)
+    pos = np.flatnonzero(np.isfinite(v))
+    if len(pos) < 2:
+        return None, set()
+    first_d, last_d = sd[pos[0]], sd[pos[-1]]
+    covered = {q for q, tf in quarters(first_d, last_d) if first_d <= tf - timedelta(days=21) and tf <= last_d}
+    ts = adf.index
+    out = []
+    for i in np.flatnonzero(v[pos[1:]] != v[pos[:-1]]):
+        k, prev = int(pos[i + 1]), int(pos[i])
+        s = sd[k]
+        q, tf = _quarter_of(s)
+        rec = dict(quarter=q, third_friday=str(tf), method="instrument_id", session=str(s), pos=k,
+                   ts=ts[k].isoformat(), from_id=int(v[prev]), to_id=int(v[k]), bar_jump=float(jump[k]) if np.isfinite(jump[k]) else None)
+        prior = [d for d in (basis.index if basis is not None else []) if d < s]
+        if k == prev + 1 and ts[k] - ts[prev] <= ADJACENT_GAP and np.isfinite(jump[k]):
+            delta, sized = float(jump[k]), "adjacent_bars"
+        elif basis is not None and s in basis.index and prior:
+            delta, sized = float(basis[s] - basis[prior[-1]]), "basis"
+        else:
+            delta, sized = float(jump[k]) if np.isfinite(jump[k]) else 0.0, "bar_jump"
+        px = float(adf["close"].iloc[prev])
+        out.append(dict(rec, delta=round(delta, 4), bp=round(1e4 * delta / px, 1) if px else None, sized_by=sized,
+                        switch="bar", status="DETECTED"))
+    return out, covered
+
+
 def detect_rolls(adf: pd.DataFrame, index_close: pd.Series | None = None) -> list[dict]:
-    """``adf``: :func:`cl_lab.bars.annotate` frame in time order. ``index_close``: daily close of the
-    underlying index (date-indexed), or None for the bar-jump fallback."""
+    """``adf``: :func:`cl_lab.bars.annotate` frame in time order (an ``instrument_id`` column, when present,
+    gives exact switches). ``index_close``: daily close of the underlying index (date-indexed), or None."""
     if adf.empty:
         return []
     sd = adf["session_date"].to_numpy()
@@ -66,8 +118,15 @@ def detect_rolls(adf: pd.DataFrame, index_close: pd.Series | None = None) -> lis
         common = [d for d in lc.index if d in ix.index]
         if len(common) > 2:
             basis = pd.Series([lc[d] - ix[d] for d in common], index=common)
-    out = []
+    out, covered = _instrument_rolls(adf, sd, jump, basis)
+    out = list(out or [])
     for q, tf in quarters(min(sd), max(sd)):
+        if q not in covered and any(r["quarter"] == q and r.get("method") == "instrument_id" for r in out):
+            continue                                     # a quarter cut by the tape's edge: its switch is known
+        if q in covered:
+            if not any(r["quarter"] == q for r in out):
+                out.append(dict(quarter=q, third_friday=str(tf), method="instrument_id", status="NO_SWITCH"))
+            continue
         rec = dict(quarter=q, third_friday=str(tf))
         if basis is not None:
             db = basis.diff()
@@ -105,7 +164,7 @@ def detect_rolls(adf: pd.DataFrame, index_close: pd.Series | None = None) -> lis
             rec.update(method="bar_jump", session=str(sw), pos=k, switch="bar", ts=adf.index[k].isoformat(),
                        delta=float(jump[k]), bar_jump=float(jump[k]), bp=round(float(bp), 1))
             out.append(dict(rec, status="DETECTED" if abs(bp) >= MIN_JUMP_BP else "ROLL_NOT_DETECTED"))
-    return out
+    return sorted(out, key=lambda r: (r["quarter"], r.get("pos", -1)))
 
 
 def transfer(rolls: list[dict], adf: pd.DataFrame) -> list[dict]:
@@ -200,7 +259,7 @@ def basis_check(sess, index_close: pd.Series | None) -> dict:
 
 
 def summary(rolls: list[dict]) -> dict:
-    keep = ("quarter", "session", "method", "switch", "ts", "delta", "bp", "bar_jump", "status")
+    keep = ("quarter", "session", "method", "switch", "ts", "delta", "bp", "bar_jump", "sized_by", "status")
     return dict(data_version=DATA_VERSION, min_jump_bp=MIN_JUMP_BP,
                 detected=[{k: r.get(k) for k in keep} for r in rolls if r.get("status") == "DETECTED"],
                 not_detected=[{k: r.get(k) for k in keep} for r in rolls if r.get("status") != "DETECTED"])

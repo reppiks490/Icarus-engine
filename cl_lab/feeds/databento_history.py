@@ -1,4 +1,4 @@
-# CL (Claude, Anthropic) — 2026-10-04 (rev. 2026-10-05) — long-history NQ/ES backfill on the owner's budget split
+# CL (Claude, Anthropic) — 2026-10-04 (rev. 2026-10-05 b) — long-history NQ/ES backfill on the owner's budget split
 """Backfills continuous NQ and ES 1-minute OHLCV from June 2010 up to the start of the key #1 corpus
 (2024-09-01), so the lab can test every rule on ~14 years it has never seen.
 
@@ -62,6 +62,16 @@ def run(cache_dir: str, ledger_dir: str = budget.LEDGER_DIR, *, clients: dict | 
         account = lane.cfg["account"]
         st = out[root] = dict(lane=lane_id, account=account, key_env=dbf.api_key_env(account), status="OK",
                               cap_usd=lane.cfg["cap_usd"], spent_usd=lane.data["spent_usd"], bought=[], trimmed=None)
+        if lane.data.get("hold"):
+            st.update(status=f"HOLD: {lane.data['hold']}"[:300])
+            continue
+        if lane.data.get("finished"):
+            # Its unspent cap already went to the depth sweep: never buy again, even if the cache was lost.
+            path = cache_path(cache_dir, root)
+            frame = store.load_frame(path) if os.path.exists(path) else pd.DataFrame()
+            st.update(status="FINISHED", finished=True,
+                      history_first=frame.index[0].isoformat() if not frame.empty else None)
+            continue
         if account not in clients:
             if not dbf.account_configured(account):
                 st["status"] = f"UNCONFIGURED: {dbf.api_key_env(account)} not set"
@@ -102,19 +112,31 @@ def run(cache_dir: str, ledger_dir: str = budget.LEDGER_DIR, *, clients: dict | 
             if run_spent + est > MAX_USD_PER_RUN + 1e-12:
                 st["status"] = "RUN_LIMIT"                 # continues next run
                 break
-            try:
-                part = dbf.resample_5m(dbf._as_ohlcv_1m(dbf._retry(lambda: client.timeseries.get_range(**kw))))
+            what = f"{root} {kw['start'][:10]}..{kw['end'][:10]}"
+            run_spent += est
+            try:                                           # charged before the request (budget.paid_request)
+                got = budget.paid_request(lane, est, what, now.isoformat(), lambda: client.timeseries.get_range(**kw))
             except Exception as ex:  # noqa: BLE001
                 st["status"] = f"REQUEST_FAILED: {type(ex).__name__}: {ex}"[:200]
                 break
-            run_spent += est
-            lane.record(est, f"{root} {kw['start'][:10]}..{kw['end'][:10]} rows5m={len(part)}", now.isoformat())
+            try:
+                part = dbf.resample_5m(dbf._as_ohlcv_1m(got))
+            except Exception as ex:  # noqa: BLE001 - served and paid: the charge stands
+                st["status"] = f"PARSE_FAILED: {type(ex).__name__}: {ex}"[:200]
+                lane.data["hold"] = f"parse failed for paid range {what}: {type(ex).__name__}: {ex}"[:300]
+                lane.save()                                # never re-buy it blindly; owner/CL clears the hold
+                break
             frame = store.merge_frames(frame, part)
             store.save_frame(frame, path)
             st["bought"].append(dict(start=kw["start"], end=kw["end"], usd=round(est, 4), rows_5m=int(len(part))))
             if st["trimmed"]:
                 st["status"] = "CAP_REACHED"
                 break
+        cut = pd.Timestamp(lane.data["exhausted_before"]) if lane.data.get("exhausted_before") else None
+        if all((not frame.empty and ((frame.index >= a) & (frame.index < b)).any()) or (cut is not None and b <= cut)
+               for a, b in chunks()):
+            lane.finish()                                  # unspent cap now flows to the depth sweep
+        st["finished"] = bool(lane.data.get("finished"))
         st["spent_usd"] = lane.data["spent_usd"]
         st["history_first"] = frame.index[0].isoformat() if not frame.empty else None
     return out

@@ -110,6 +110,7 @@ jobs:
           key: databento-depth-${{ github.run_id }}
 
       - name: Commit compact depth manifests
+        if: always()   # CL 2026-10-05: lane ledgers (spend recorded before each download) must reach git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

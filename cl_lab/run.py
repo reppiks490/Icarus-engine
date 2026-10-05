@@ -165,7 +165,10 @@ def boos_section(out_dir, cache_dir, external_dir):
     cached = _read_json(os.path.join(out_dir, "boos_latest.json"), {})
     if cached.get("fingerprint") == fp:
         return cached
-    df = store.load_frame(p)[list(bars.COLUMNS)].astype(float)
+    raw = store.load_frame(p)
+    df = raw[list(bars.COLUMNS)].astype(float)
+    if "instrument_id" in raw.columns:            # cl-data-3: exact roll points on the Databento history
+        df["instrument_id"] = pd.to_numeric(raw["instrument_id"], errors="coerce")
     adf = bars.annotate(df)
     ndx = _daily_feed(cache_dir, "fred_nasdaq100", "NASDAQ100")
     rolls = integrity.detect_rolls(adf, ndx)

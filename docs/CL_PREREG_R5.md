@@ -39,3 +39,20 @@ The family is `cl-r6`, 4 trials:
 Evaluation uses only `cl-boos1` on NQ 2010-06 → 2024-09, its own family with its own BY and DSR. It is not evaluated on the 2024–2026 MNQ tape, where the unconditional reversal's HOLD was already seen.
 
 Earnings-event conditioners are deferred. The fabric's FMP earnings calendar holds only upcoming dates, so historical megacap earnings dates need a separate, budgeted FMP pull before any such hypothesis can be tested.
+
+## Data amendment cl-data-3 (2026-10-05, CL)
+The first `cl-boos1` run evaluated the cached part of the history (2013-01-02 → 2024-08-30, 2,995 sessions; key #3 is still buying 2010-06 → 2012). Its integrity report showed that only 11 of the 46 quarterly rolls cleared cl-data-2's 40 bp threshold. The 35 that didn't were low-carry rolls of roughly −19 to +31 points (2013–2022), so they were left unadjusted. That threshold exists only because plain tapes don't say which contract a bar came from. The Databento history does: it carries `instrument_id`. Under cl-data-3 (`cl_lab/integrity.py`), every `instrument_id` change on such a tape is a roll, whatever its size. The adjustment is the jump between the old contract's last bar and the new contract's first bar, since Databento switches at 00:00 UTC, so those two prints are minutes apart.
+
+This amendment was made after seeing the provisional results below. It changes data handling only: no rule, threshold, window, cost or id. Since the switches fall at 00:00 UTC, outside regular trading hours, intraday RTH P&L is unaffected; what changes is anything that crosses sessions (prior close, overnight range, gaps). The final `cl-boos1` result is the run on the complete 2010-06 → 2024-08 window under cl-data-3.
+
+## Provisional results (2013-01-02 → 2024-08-30, cl-data-2, superseded by the final run)
+| Family | Rules | BY rejections (q 0.05) | Best NW t | Its DSR | Its t, first half / second half | `BOOS_CONFIRMED` |
+|---|---|---|---|---|---|---|
+| cl-g1 | 492 | 40 | 4.62 | 0.16 | 0.02 / 4.82 | 0 |
+| cl-r1 | 3 | 0 | 0.65 | 0.63 | −0.41 / 0.73 | 0 |
+| cl-r2 R2-A | 4 | 0 | −0.85 | 0.07 | −1.17 / −0.70 | 0 |
+| cl-ml1 | 3 | 0 | 1.50 | 0.76 | 0.01 / 1.53 | 0 |
+| cl-r6 | 4 | — | — | — | — | 0 (not evaluable: megacap breadth unavailable in this run) |
+
+- **cl-g1:** 40 grammar rules pass BY. All of them use the `band` or `band_vwap` trailing exits. 34 of the 40 are positive in both halves. None comes near the deflated-Sharpe bar: the family's best DSR is 0.24, against 0.95 required, at 134 effective trials. The strongest rules earn almost all of their t-statistic after mid-2017. **No rule is confirmed.**
+- **The other families are flat or negative.** The R2-A end-of-day reversal is negative over 12 years, consistent with its 2025–2026 HOLD rejection.

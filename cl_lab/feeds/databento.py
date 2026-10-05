@@ -177,6 +177,7 @@ def fetch_continuous_5m(
     account: str | None = None,
     start_default: str | None = None,
     max_usd: float | None = None,
+    charge=None,
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
     """Fetch an incremental cost-gated continuous contract and return 5m bars.
 
@@ -263,7 +264,10 @@ def fetch_continuous_5m(
         fitted = dict(full_range_estimate_usd=full, requested_start=start.isoformat(), requested_end=end.isoformat())
         start, end = a, b
     try:
-        store = _retry(lambda: client.timeseries.get_range(**kwargs))
+        if charge is not None:      # CL 2026-10-05: ledgered request, charged before it is sent (databento_budget)
+            store = charge(estimate, lambda: client.timeseries.get_range(**kwargs))
+        else:
+            store = _retry(lambda: client.timeseries.get_range(**kwargs))
     except Exception as ex:
         raise FeedError(f"Databento historical request failed for {symbol}: {type(ex).__name__}: {ex}") from ex
     frame = resample_5m(_as_ohlcv_1m(store))

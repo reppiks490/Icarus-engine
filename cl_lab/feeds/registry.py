@@ -9,7 +9,7 @@ import os
 import pandas as pd
 
 from .. import store
-from . import databento as databento_feed, sources
+from . import databento as databento_feed, databento_budget, sources
 from .http import FeedError
 
 BINANCE_START = "2024-09"   # aligns with the committed MNQ tape (2024-09-20 onward)
@@ -128,7 +128,7 @@ def refresh_binance(old: pd.DataFrame, symbol, interval, now: pd.Timestamp, max_
     return store.merge_frames(old, new), used, notes
 
 
-def _fetch(feed, old, now):
+def _fetch(feed, old, now, max_usd=None, charge=None):
     k = feed["kind"]
     if k == "binance":
         return refresh_binance(old, feed["symbol"], feed["interval"], now)
@@ -148,7 +148,8 @@ def _fetch(feed, old, now):
     if k == "databento":
         df, meta = databento_feed.fetch_continuous_5m(
             feed["root"], old, now, dataset=feed.get("dataset") or "GLBX.MDP3",
-            account=feed.get("account"), start_default=feed.get("start"), max_usd=feed.get("max_usd"),
+            account=feed.get("account"), start_default=feed.get("start"),
+            max_usd=max_usd if max_usd is not None else feed.get("max_usd"), charge=charge,
         )
         notes = [
             f"symbol={meta.get('symbol')}",
@@ -162,9 +163,30 @@ def _fetch(feed, old, now):
     raise ValueError(k)
 
 
-def refresh_all(cache_dir, only=None, now=None) -> dict:
+def _corpus_lane(lanes, feed, ledger_dir, cache_dir):
+    """CL 2026-10-05: OHLCV top-ups are recorded per account and may never push an account past its
+    estimated credit (``databento_budget``); the depth sweep owns everything else."""
+    acct = (feed.get("account") or os.environ.get("CL_DATABENTO_OHLCV_ACCOUNT") or "primary").strip().lower()
+    lane_id = f"corpus:{acct}"
+    if lane_id not in databento_budget.CORPUS_LANES:
+        return None
+    if lane_id not in lanes:
+        lanes[lane_id] = databento_budget.Lane(lane_id, ledger_dir, mirror=cache_dir)
+        lanes[lane_id].run_spent = 0.0
+    return lanes[lane_id]
+
+
+def _feed_cap(feed) -> float:
+    if feed.get("max_usd") is not None:
+        return float(feed["max_usd"])
+    return float(os.environ.get("CL_DATABENTO_MAX_USD_PER_FEED") or "1.00")
+
+
+def refresh_all(cache_dir, only=None, now=None, ledger_dir=None) -> dict:
     now = pd.Timestamp.now(tz="UTC") if now is None else pd.Timestamp(now)
     os.makedirs(cache_dir, exist_ok=True)
+    ledger_dir = ledger_dir or os.environ.get("CL_SPEND_LEDGER_DIR") or databento_budget.LEDGER_DIR
+    lanes = {}
     out = {"schema": "cl_lab.feeds.manifest/1", "generated_at": now.isoformat(), "feeds": {}}
     for feed in FEEDS:
         if only and feed["name"] not in only:
@@ -190,7 +212,23 @@ def refresh_all(cache_dir, only=None, now=None) -> dict:
             continue
         try:
             old = store.load_frame(path, intraday=intraday) if feed["kind"] != "cftc" else _load_cftc(path)
-            df, used, notes = _fetch(feed, old, now)
+            lane = _corpus_lane(lanes, feed, ledger_dir, cache_dir) if feed["kind"] == "databento" else None
+            cap = charge = None
+            if lane is not None:
+                # Never past the account's uncommitted credit, and never more than the account's reserve in
+                # one run: the sweep reads this ledger from git, so one in-flight run is all it cannot see.
+                acct = databento_budget.account_of(lane.lane)
+                allow = min(lane.remaining, databento_budget.RESERVE_USD.get(acct, 0.0) - lane.run_spent)
+                if allow <= 1e-9:
+                    raise FeedError(f"credit guard: {lane.lane} may not spend more on its account this run; "
+                                    "top-up refused (databento_budget)")
+                cap = min(_feed_cap(feed), allow)
+
+                def charge(est, fn, lane=lane, name=feed["name"]):
+                    lane.run_spent += est
+                    return databento_budget.paid_request(lane, est, f"OHLCV {name}", now.isoformat(), fn,
+                                                         log=est >= 0.05)
+            df, used, notes = _fetch(feed, old, now, max_usd=cap, charge=charge)
             if df is None or df.empty:
                 raise FeedError("no rows")
             store.save_frame(df, path)

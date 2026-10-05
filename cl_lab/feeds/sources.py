@@ -92,6 +92,106 @@ def fetch_cftc_tff(codes=("209742", "209747", "20974+"), limit=20000) -> pd.Data
     return parse_cftc(raw)
 
 
+CFTC_DATASETS = {
+    "tff": "gpe5-46if",
+    "disaggregated": "72hh-3qpy",
+}
+
+CFTC_ID_FIELDS = {
+    "report_date_as_yyyy_mm_dd", "cftc_contract_market_code",
+    "market_and_exchange_names", "contract_market_name", "commodity_name",
+    "commodity_group_name", "commodity_subgroup_name",
+}
+
+def parse_cftc_report(raw: bytes, report_kind: str) -> pd.DataFrame:
+    """Parse a CFTC Socrata report while preserving every numeric research field.
+
+    This intentionally does not hard-code only long/short columns: CFTC also publishes
+    changes, percent-of-open-interest, trader counts and concentration measures. Keeping
+    numeric fields makes the cache forward-compatible with useful CFTC additions.
+    """
+    recs = json.loads(raw)
+    rows = []
+    for r in recs:
+        row = {
+            "date": pd.to_datetime(r.get("report_date_as_yyyy_mm_dd")).normalize(),
+            "code": r.get("cftc_contract_market_code"),
+            "market": r.get("market_and_exchange_names"),
+            "contract_market": r.get("contract_market_name"),
+            "commodity": r.get("commodity_name"),
+            "commodity_group": r.get("commodity_group_name"),
+            "commodity_subgroup": r.get("commodity_subgroup_name"),
+            "report_kind": report_kind,
+        }
+        for k, v in r.items():
+            if k in CFTC_ID_FIELDS:
+                continue
+            n = pd.to_numeric(v, errors="coerce")
+            if pd.notna(n) or v in (None, ""):
+                row[k] = n
+        rows.append(row)
+    out = pd.DataFrame(rows)
+    if len(out):
+        out["code"] = out["code"].astype("string")
+        out = out.sort_values(["date", "code"]).set_index("date")
+    return out
+
+def fetch_cftc_report(report_kind: str, since=None, page_size=50000, max_pages=8) -> pd.DataFrame:
+    """Fetch complete CFTC TFF/disaggregated history, then incremental revision windows.
+
+    Initial TFF fits in one 50k page. Disaggregated history is paginated. Once cached,
+    callers can pass since (normally latest cached report minus 35 days) so weekly
+    refreshes re-read a revision window instead of downloading the entire dataset.
+    """
+    dataset = CFTC_DATASETS[report_kind]
+    frames = []
+    for page in range(max_pages):
+        params = {
+            "$order": "report_date_as_yyyy_mm_dd,cftc_contract_market_code",
+            "$limit": page_size,
+            "$offset": page * page_size,
+        }
+        if since is not None:
+            ds = pd.Timestamp(since).strftime("%Y-%m-%d")
+            params["$where"] = f"report_date_as_yyyy_mm_dd >= '{ds}T00:00:00.000'"
+        raw = get_bytes(f"https://publicreporting.cftc.gov/resource/{dataset}.json", params)
+        recs = json.loads(raw)
+        if not recs:
+            break
+        frames.append(parse_cftc_report(json.dumps(recs).encode(), report_kind))
+        if len(recs) < page_size:
+            break
+    if not frames:
+        return pd.DataFrame()
+    return pd.concat(frames).sort_index()
+
+def derive_cftc_position_features(df: pd.DataFrame) -> pd.DataFrame:
+    """Add generic net/gross/OI-normalized positioning, momentum and acceleration."""
+    if df is None or df.empty:
+        return df
+    out = df.copy().sort_index()
+    oi = pd.to_numeric(out.get("open_interest_all"), errors="coerce")
+    long_cols = [c for c in out.columns if "positions_long" in c]
+    for lc in long_cols:
+        sc = lc.replace("positions_long", "positions_short")
+        if sc not in out.columns:
+            continue
+        tag = lc.replace("_positions_long", "").replace("positions_long", "long")
+        net_col = f"feature_{tag}_net"
+        gross_col = f"feature_{tag}_gross"
+        netoi_col = f"feature_{tag}_net_oi"
+        longv = pd.to_numeric(out[lc], errors="coerce")
+        shortv = pd.to_numeric(out[sc], errors="coerce")
+        out[net_col] = longv - shortv
+        out[gross_col] = longv + shortv
+        out[netoi_col] = out[net_col] / oi.replace(0, np.nan)
+        if "code" in out.columns:
+            g = out.groupby("code", sort=False)[net_col]
+            out[f"{net_col}_1w_change"] = g.diff()
+            out[f"{net_col}_accel"] = g.diff().groupby(out["code"], sort=False).diff()
+    return out
+
+
 # ---------------- Coinbase ----------------
 def parse_coinbase(raw: bytes) -> pd.DataFrame:
     arr = json.loads(raw)

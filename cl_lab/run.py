@@ -157,7 +157,7 @@ def boos_section(out_dir, cache_dir, external_dir):
     p = os.path.join(cache_dir, "databento_hist_nq_5m.csv.gz")
     if not os.path.exists(p):
         return dict(status="UNAVAILABLE", protocol=boos.BOOS_VERSION,
-                    reason="NQ history not cached yet (4th Databento key backfill, cl_lab/feeds/databento_history.py)")
+                    reason="NQ history not cached yet (backfill on key #3, cl_lab/feeds/databento_history.py)")
     closes = external.tiingo_closes(external_dir) if external_dir and os.path.isdir(external_dir) else pd.DataFrame()
     br = external.breadth(closes)
     fp = hashlib.sha256((_sha_file(p) + _code_identity() + store.sha256_frame(br.to_frame()) if len(br) else

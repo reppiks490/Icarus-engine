@@ -120,3 +120,42 @@ def test_profiles_keep_credentials_and_market_lanes_isolated():
     assert {"NQ", "MNQ", "ES", "MES"} <= index_roots
     assert {"GC", "MGC", "VX", "VXM", "ZN", "DX"} <= div_roots
     assert not (index_roots & div_roots)
+
+
+# ---- CL 2026-10-05: end-to-end download path (temp-file bug) and lifetime lane cap ----
+class _SdkLikeHistorical:
+    """Mimics the SDK: get_range(path=...) refuses an existing file, streams bytes, returns iterable records."""
+
+    def __init__(self, cost=4.0):
+        self.cost, self.downloads = cost, 0
+        self.metadata, self.timeseries = self, self
+
+    def get_cost(self, **kw):
+        return self.cost
+
+    def get_range(self, path=None, **kw):
+        if path is not None and os.path.exists(path):
+            raise FileExistsError(f"The file `{path}` already exists.")
+        with open(path, "wb") as f:
+            f.write(b"dbn")
+        self.downloads += 1
+        t0 = int(pd.Timestamp(kw["start"]).value) + 14 * 3_600_000_000_000
+        return [_Rec(t0 + 1_000, "A", "B", 100.0, 4), _Rec(t0 + 2_000, "T", "A", 100.25, 1)]
+
+
+def test_downloads_succeed_and_lifetime_cap_holds_across_runs(tmp_path, monkeypatch):
+    cache, dc, led = str(tmp_path / "cache"), str(tmp_path / "depth"), str(tmp_path / "spend")
+    os.makedirs(cache)
+    for root in ("NQ", "MNQ", "ES", "MES", "RTY", "M2K", "YM", "MYM"):
+        store.save_frame(_bars(40), depth.ohlcv_cache_path(cache, root) if hasattr(depth, "ohlcv_cache_path")
+                         else os.path.join(cache, f"databento_{root.lower()}_5m.csv.gz"))
+    client = _SdkLikeHistorical(cost=4.0)
+    total = 0.0
+    for day in ("2026-10-12", "2026-10-13", "2026-10-14", "2026-10-15"):
+        res = depth.acquire_profile(profile="index", cache_dir=cache, depth_cache=dc, budget_usd=95.0,
+                                    max_request_usd=15.0, now=pd.Timestamp(day + "T12:00:00Z"), client=client,
+                                    ledger_dir=led)
+        assert not any("FileExistsError" in str(r.get("error")) for r in res["requests"])
+        total = res["lane"]["spent_usd"]
+    assert client.downloads > 0 and total <= 93.0 + 1e-9          # depth:index lifetime cap, not 95 per run
+    assert client.downloads * 4.0 == total

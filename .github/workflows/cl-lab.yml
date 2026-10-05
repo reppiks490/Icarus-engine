@@ -51,6 +51,10 @@ jobs:
           restore-keys: cl-feeds-
 
       - name: Refresh public + primary Databento OHLCV corpus
+        # CL 2026-10-04: a slow first Databento pull must not starve the lab cycle. The cache is saved
+        # either way and the next run continues incrementally from the last cached bar.
+        timeout-minutes: 40
+        continue-on-error: true
         env:
           DATABENTO_API_KEY: ${{ secrets.DATABENTO_API_KEY }}
           CL_DATABENTO_OHLCV_ACCOUNT: primary

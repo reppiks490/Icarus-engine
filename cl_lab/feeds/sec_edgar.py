@@ -16,6 +16,10 @@ from .http import FeedError, get_bytes
 SEC_WWW="https://www.sec.gov/"
 SEC_DATA="https://data.sec.gov/"
 DEFAULT_TICKERS=("NVDA","AAPL","MSFT","AVGO","AMZN","META","GOOGL","TSLA")
+DEFAULT_CIKS={
+    "NVDA":"0001045810","AAPL":"0000320193","MSFT":"0000789019","AVGO":"0001730168",
+    "AMZN":"0001018724","META":"0001326801","GOOGL":"0001652044","TSLA":"0001318605",
+}
 FORMS={"10-K","10-K/A","10-Q","10-Q/A","8-K","8-K/A"}
 CONCEPTS={
     "Revenues","SalesRevenueNet","NetIncomeLoss","OperatingIncomeLoss","Assets","Liabilities",
@@ -41,8 +45,17 @@ def _get(url):
     return json.loads(raw)
 
 def ticker_map():
-    raw=_get(urljoin(SEC_WWW,"files/company_tickers.json"))
-    out={}
+    """Return a ticker->CIK map with a cloud-safe seed for the default ICARUS universe.
+
+    SEC's www.sec.gov ticker map can reject hosted-runner traffic even when the
+    data.sec.gov APIs remain usable.  The default CIKs are stable identifiers and
+    are seeded locally; the remote map is used to extend coverage for custom tickers.
+    """
+    out=dict(DEFAULT_CIKS)
+    try:
+        raw=_get(urljoin(SEC_WWW,"files/company_tickers.json"))
+    except Exception:
+        return out
     for row in raw.values():
         ticker=str(row.get("ticker") or "").upper()
         cik=row.get("cik_str")

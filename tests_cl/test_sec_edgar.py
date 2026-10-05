@@ -94,3 +94,24 @@ def test_refresh_seeds_history_once_then_recent_only(monkeypatch,tmp_path):
     assert calls==[8,0]
     cached=pd.read_csv(tmp_path/"sec_edgar"/"filings.csv.gz",compression="gzip")
     assert set(cached["accession"])=={"seed","recent"}
+
+
+def test_ticker_map_falls_back_to_default_ciks_when_sec_www_is_blocked(monkeypatch):
+    def blocked(url):
+        raise RuntimeError("403")
+    monkeypatch.setattr(sec,"_get",blocked)
+    mapping=sec.ticker_map()
+    assert mapping["NVDA"]=="0001045810"
+    assert mapping["AAPL"]=="0000320193"
+    assert mapping["GOOGL"]=="0001652044"
+    assert set(sec.DEFAULT_TICKERS) <= set(mapping)
+
+
+def test_ticker_map_remote_data_can_extend_default_seed(monkeypatch):
+    monkeypatch.setattr(sec,"_get",lambda url: {
+        "0":{"ticker":"NVDA","cik_str":1045810},
+        "1":{"ticker":"AMD","cik_str":2488},
+    })
+    mapping=sec.ticker_map()
+    assert mapping["NVDA"]=="0001045810"
+    assert mapping["AMD"]=="0000002488"

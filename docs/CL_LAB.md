@@ -51,7 +51,12 @@ Specification, amendments and results: `docs/CL_PREREG_R2.md`. Frozen ids: `cl_l
 2. 2026-10-04 — Edge explorer cl-x1, causal conditioners, causality proofs, federation watch.
 3. 2026-10-04 — THE PULSE OF ICARUS gated as an external strategy.
 4. 2026-10-04 — cl-r1 conditional EOD momentum (research rank 1).
+6. 2026-10-04 — Databento MNQ extension of both tapes, so FORWARD evidence accrues; PULSE forward block; R4-1 forward watch; Databento `instrument_id` kept for roll audits.
 5. 2026-10-04 — cl-data-2 roll integrity fix; multi-session simulator; cl-r2 families; cl-ml1 walk-forward ML; R3-1 HOLD confirmation. No new champion. Results are in `docs/CL_PREREG_R2.md`.
+
+## Forward evidence from the Databento corpus (`cl_lab/extend.py`, 2026-10-04)
+
+The committed MNQ tapes end on 2026-09-18. When the Actions cache holds `databento_mnq_5m` (continuous `MNQ.v.0`, unadjusted), every run appends the bars after the committed tape's last bar. Committed history is never replaced. The 20-minute PULSE tape is extended with 20m bars resampled from the same bars. Roll handling (cl-data-2) and the basis check run on the combined tape. The Databento `instrument_id` changes are reported beside the detected switches as an independent cross-check, so a vendor splice inconsistency shows up as `DEGRADED`. THE PULSE now reports FORWARD trades and net per variant. R4-1 tracks ETHUSDT open-30 flow continuation on FORWARD sessions only.
 
 ## Run locally
 

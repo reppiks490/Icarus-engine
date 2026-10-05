@@ -295,6 +295,30 @@ def month_end_twin(sess, sigs, cost) -> dict:
 R3_HOLD_CONFIRM = {"ETHUSDT": ("qce1276a5f9b",)}   # R3-1, registered after R2 TUNE, before its HOLD statistic
 
 
+FORWARD_WATCH = {"ETHUSDT": ("qce1276a5f9b",)}   # R4-1: forward-only monitoring, decided at >= 60 FORWARD trades
+FORWARD_RULE = dict(min_trades=60, nw_t=1.65)
+
+
+def forward_watch(ctx, ids, forward_start):
+    """FORWARD evidence for watched rules (sessions on/after forward_start only)."""
+    out = []
+    mask = (ctx["dates"] >= pd.Timestamp(forward_start)).to_numpy()
+    for rid in ids:
+        if rid not in ctx["ids"]:
+            continue
+        k = ctx["ids"].index(rid)
+        x = ctx["M"][mask, k]
+        t = ctx["trades"][rid]
+        n = int(t["day"].map(lambda d: bool(mask[d])).sum()) if len(t) else 0
+        nw = _nw(x)
+        status = "WATCHING"
+        if n >= FORWARD_RULE["min_trades"]:
+            status = "FORWARD_CONFIRMED" if (nw["t"] or -9) >= FORWARD_RULE["nw_t"] else "FORWARD_REJECTED"
+        out.append(dict(id=rid, protocol="R4-1", after=str(forward_start), sessions=int(mask.sum()), trades=n,
+                        mean=_r(x.mean(), 8) if len(x) else None, nw_t=_r(nw["t"], 3), status=status, rule=FORWARD_RULE))
+    return out
+
+
 def prereg_manifest() -> dict:
     return dict(version=R2_VERSION,
                 eodrev=[c.id for c in A_CANDIDATES], flow=[c.id for c in D_CANDIDATES],

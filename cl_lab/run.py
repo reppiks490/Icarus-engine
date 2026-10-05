@@ -21,11 +21,12 @@ from datetime import date
 import pandas as pd
 
 from . import (EXECUTION_AUTHORIZED, LAB_VERSION, LANE, bars, corpus, costs, explore, grammar, hypotheses,
-               hypotheses_r2, integrity, ml, pulse_track, registry, sessions, store, validate)
+               extend, hypotheses_r2, integrity, ml, pulse_track, registry, sessions, store, validate)
 
 ASSETS = {
     "MNQ": dict(kind="csv", path="data/mnq_5m_full.csv", cost=costs.MNQ, stress=costs.MNQ_STRESS,
-                metric="points", weekdays_only=False, continuous_futures=True, index_feed="fred_nasdaq100"),
+                metric="points", weekdays_only=False, continuous_futures=True, index_feed="fred_nasdaq100",
+                extension_feed="databento_mnq_5m"),
     "BTCUSDT": dict(kind="cache", feed="btcusdt_5m", cost=costs.CRYPTO_PERP, stress=costs.CRYPTO_PERP_STRESS,
                     metric="returns", weekdays_only=True),
     "ETHUSDT": dict(kind="cache", feed="ethusdt_5m", cost=costs.CRYPTO_PERP, stress=costs.CRYPTO_PERP_STRESS,
@@ -33,6 +34,11 @@ ASSETS = {
 }
 FORWARD_START = date(2026, 10, 5)  # first CL registration; sessions on/after this date are never tuned on
 PREREG_R2 = os.path.join(os.path.dirname(os.path.abspath(__file__)), "prereg_r2.json")
+
+
+def _extension(cache_dir, feed):
+    p = os.path.join(cache_dir, f"{feed}.csv.gz")
+    return store.load_frame(p) if os.path.exists(p) else None
 
 
 def _daily_feed(cache_dir, feed, col):
@@ -100,6 +106,13 @@ def load_asset(name, cfg, cache_dir):
         df = bars.load_csv(cfg["path"])
         ident = dict(status="OK", source=cfg["path"], sha256=_sha_file(cfg["path"]))
         tb = None
+        if cfg.get("extension_feed"):
+            ext = _extension(cache_dir, cfg["extension_feed"])
+            df, prov = extend.splice(df, ext)
+            ident["tape"] = prov
+            if prov.get("extension") and prov["extension"].get("rows"):
+                ident["extension_sha256"] = store.sha256_frame(df[df.index > pd.Timestamp(prov["base"]["last"])])
+                ident["instrument_switches"] = extend.instrument_switches(ext)
     else:
         path = os.path.join(cache_dir, f"{cfg['feed']}.csv.gz")
         df = store.load_frame(path) if os.path.exists(path) else pd.DataFrame()
@@ -137,17 +150,21 @@ def load_asset(name, cfg, cache_dir):
     return sess, ident
 
 
-def pulse_section(out_dir, mnq_dates, var_sr, rolls=()):
+def pulse_section(out_dir, mnq_dates, var_sr, rolls=(), cache_dir=None):
     """THE PULSE OF ICARUS through the CL gates; recomputed only when its code, preset or tape change."""
     if not os.path.exists(pulse_track.TAPE):
         return dict(status="UNAVAILABLE", reason=f"missing {pulse_track.TAPE}")
     roll_key = json.dumps(integrity.summary(list(rolls)), sort_keys=True, default=str)
+    from icarus.data import load_csv as load_bars
+    tape = load_bars(pulse_track.TAPE)
+    ext = _extension(cache_dir, ASSETS["MNQ"]["extension_feed"]) if cache_dir else None
+    tape += extend.bars_20m(ext, tape[-1].ts) if tape else []
+    roll_key += f"|{len(tape)}|{tape[-1].ts.isoformat() if tape else ''}"
     fp = hashlib.sha256((pulse_track.fingerprint() + repr(var_sr) + roll_key).encode()).hexdigest()
     cached = _read_json(os.path.join(out_dir, "pulse_latest.json"), {})
     if cached.get("fingerprint") == fp:
         return cached
-    from icarus.data import load_csv as load_bars
-    raw, moved = integrity.back_adjust_bars(load_bars(pulse_track.TAPE), 20, list(rolls))
+    raw, moved = integrity.back_adjust_bars(tape, 20, list(rolls))
     runs = {}
     plan = [("HA_REAL_FILLS", "base"), ("CANDLES", "base"), ("HA_HA_FILLS", "base"),
             ("HA_REAL_FILLS", "stress"), ("CANDLES", "stress"), ("HA_REAL_FILLS", "repo_convention")]
@@ -165,13 +182,17 @@ def pulse_section(out_dir, mnq_dates, var_sr, rolls=()):
             series[variant], counts[variant] = pnl, cnt
         elif cost == "stress":
             stress[variant] = pnl
+    fwd_mask = (pd.to_datetime(pd.Series(dates)) >= pd.Timestamp(FORWARD_START)).to_numpy()
     rec = validate.evaluate_external(dates, series, counts, stress, ("HA_REAL_FILLS", "CANDLES"),
                                      pulse_track.PULSE_TRIALS_ASSUMED, var_sr, forward_start=FORWARD_START)
     conv = runs[("HA_REAL_FILLS", "repo_convention")]
     out = dict(schema="cl_lab.pulse/1", fingerprint=fp, strategy="THE PULSE OF ICARUS v3.1 (repo port)",
                preset=pulse_track.PRESET, preset_source="presets/NQ-20m-ultracoded.json (RECONSTRUCTED)",
                tape=pulse_track.TAPE, costs=pulse_track.COSTS, trials_assumed_for_dsr=pulse_track.PULSE_TRIALS_ASSUMED,
-               var_sr_from_grammar=var_sr, variants=rec, integrity=integrity.summary(moved), repo_convention_ha_real_fills=dict(trades=len(conv), net_usd=round(sum(c.profit for c in conv), 2)),
+               var_sr_from_grammar=var_sr, variants=rec, integrity=integrity.summary(moved),
+               tape_last_bar_close=(tape[-1].ts.isoformat() if tape else None),
+               forward={v: dict(after=str(FORWARD_START), trades=int(counts[v][fwd_mask].sum()), net_usd=round(float(series[v][fwd_mask].sum()), 2))
+                        for v in series}, repo_convention_ha_real_fills=dict(trades=len(conv), net_usd=round(sum(c.profit for c in conv), 2)),
                totals={f"{v}|{c}": dict(trades=len(cl), net_usd=round(sum(x.profit for x in cl), 2)) for (v, c), cl in runs.items()},
                execution_authorized=False)
     _write_json(os.path.join(out_dir, "pulse_latest.json"), out)
@@ -296,6 +317,8 @@ def run_cycle(out_dir, cache_dir=".cl_cache", assets=None, now=None):
             _forward(n, drec, dctx)
             r2["flow"] = dict(available="TB" in sess.cache, diagnostics=ddiag,
                               records=[{k: r.get(k) for k in keep_r} for r in drec.values()])
+            if hypotheses_r2.FORWARD_WATCH.get(n):
+                r2["forward_watch"] = hypotheses_r2.forward_watch(dctx, hypotheses_r2.FORWARD_WATCH[n], FORWARD_START)
             full[n] += list(drec.values())
             hc = [c for c in hypotheses_r2.D_CANDIDATES if c.id in hypotheses_r2.R3_HOLD_CONFIRM.get(n, ())]
             if hc:  # R3-1: TUNE-selected rule decided on HOLD only (registered before its HOLD statistic existed)
@@ -319,9 +342,10 @@ def run_cycle(out_dir, cache_dir=".cl_cache", assets=None, now=None):
                                                  for c in ml.CANDIDATES])
         full[n] += list(mrec.values())
         if n == "MNQ":
-            p = pulse_section(out_dir, list(sess.dates), diag["var_sr"], sess.cache.get("rolls", ()))
+            p = pulse_section(out_dir, list(sess.dates), diag["var_sr"], sess.cache.get("rolls", ()), cache_dir)
             per_asset[n]["pulse"] = {k: p.get(k) for k in ("strategy", "variants", "totals", "trials_assumed_for_dsr",
-                                                           "preset_source", "status", "reason")}
+                                                           "preset_source", "status", "reason", "forward",
+                                                           "tape_last_bar_close")}
 
     payload = dict(schema="cl_lab.run/1", lane=LANE, run_id=run_id, input_fingerprint=fingerprint, inputs=inputs,
                    started_at=at, finished_at=pd.Timestamp.now(tz="UTC").isoformat(), code_commit=_git_commit(),

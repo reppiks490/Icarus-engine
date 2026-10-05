@@ -224,3 +224,42 @@ def test_prereg_registry_matches_code():
     reg = json.load(open(p, encoding="utf-8"))
     assert reg["r2"] == r2.prereg_manifest() and reg["ml"] == ml.prereg_manifest()
     assert reg["data_version"] == integrity.DATA_VERSION and reg["execution_authorized"] is False
+
+
+# ---------------- Databento extension (CL 2026-10-04) ----------------
+def test_extension_appends_only_after_committed_tape_and_builds_20m_bars():
+    from cl_lab import extend
+    f = causality.synth_frame(n_sessions=10)
+    base, ext = f.iloc[:1500], f.iloc[1200:].copy()
+    ext.loc[ext.index[:300], "close"] += 999.0          # overlapping rows must never replace committed history
+    ext["instrument_id"] = np.where(np.arange(len(ext)) < 900, 101, 202)
+    out, prov = extend.splice(base, ext)
+    assert len(out) == len(f) and prov["extension"]["rows"] == len(f) - 1500
+    assert (out.loc[base.index, "close"] == base["close"]).all()
+    sw = extend.instrument_switches(ext)
+    assert len(sw) == 1 and sw[0]["from_id"] == 101 and sw[0]["to_id"] == 202
+    b20 = extend.bars_20m(ext, pd.Timestamp(ext.index[600]))
+    assert b20 and all(b.ts.minute % 20 == 0 for b in b20) and b20[0].ts > ext.index[600]
+    first = b20[0]
+    win = ext[(ext.index >= first.ts - pd.Timedelta(minutes=20)) & (ext.index < first.ts)]
+    assert first.high == win["high"].max() and first.close == win["close"].iloc[-1]
+    assert extend.splice(base, None)[1]["extension"] is None
+
+
+def test_databento_resample_keeps_instrument_id():
+    from cl_lab.feeds import databento as dbf
+    idx = pd.date_range("2026-09-14 13:30", periods=10, freq="1min", tz="UTC")
+    one = pd.DataFrame(dict(open=1.0, high=2.0, low=0.5, close=1.5, volume=1.0,
+                            instrument_id=[7] * 6 + [8] * 4), index=idx)
+    five = dbf.resample_5m(one)
+    assert five["instrument_id"].tolist() == [7, 8]
+
+
+def test_forward_watch_counts_only_forward_sessions():
+    s = sessions.build_sessions(bars.annotate(causality.synth_frame(n_sessions=60, start="2026-08-03")))
+    _tb(s)
+    c = r2.D_CANDIDATES[0]
+    res = r2.run_d(c, s, costs.CRYPTO_PERP)
+    ctx = dict(ids=[c.id], M=res.daily_net_ret[:, None], dates=pd.to_datetime(pd.Series(s.dates)), trades={c.id: res.trades})
+    w = r2.forward_watch(ctx, [c.id], date(2026, 10, 5))[0]
+    assert w["status"] == "WATCHING" and w["sessions"] == int((pd.to_datetime(pd.Series(s.dates)) >= "2026-10-05").sum())

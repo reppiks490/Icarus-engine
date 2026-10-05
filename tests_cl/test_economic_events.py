@@ -1,0 +1,112 @@
+import json
+import pandas as pd
+
+from cl_lab.feeds import economic_events as ev
+
+
+BLS_ICS=b"""BEGIN:VCALENDAR
+BEGIN:VEVENT
+UID:cpi-2026-09@bls.gov
+DTSTART;TZID=America/New_York:20261014T083000
+SUMMARY:Consumer Price Index for September 2026
+DESCRIPTION:September 2026
+END:VEVENT
+BEGIN:VEVENT
+UID:jolts-2026-09@bls.gov
+DTSTART;TZID=America/New_York:20261103T100000
+SUMMARY:Job Openings and Labor Turnover Survey for September 2026
+END:VEVENT
+END:VCALENDAR
+"""
+
+BEA_HTML=b"""<html><body><h1>Release Schedule</h1><div>Year 2026</div><table>
+<tr><th>Date</th><th>Type</th><th>Release</th></tr>
+<tr><td>October 29 8:30 AM</td><td>News</td><td>GDP (Advance Estimate), 3rd Quarter 2026</td></tr>
+<tr><td>October 29 8:30 AM</td><td>News</td><td>Personal Income and Outlays, September 2026</td></tr>
+</table></body></html>"""
+
+CENSUS_HTML=b"""<html><body><table>
+<tr><th>Release</th><th>Date</th><th>Time</th><th>Reference Period</th><th>ID</th></tr>
+<tr><td>Advance Monthly Sales for Retail and Food Services</td><td>October 15, 2026</td><td>8:30 AM</td><td>September 2026</td><td>A202610150830</td></tr>
+<tr><td>New Residential Construction (Building Permits, Housing Starts, and Housing Completions)</td><td>October 20, 2026</td><td>8:30 AM</td><td>September 2026</td><td>A202610200830</td></tr>
+</table></body></html>"""
+
+FOMC_HTML=b"""<html><body><h2>2026 FOMC Meetings</h2>
+<div>January 27-28</div><div>Minutes Released February 18</div>
+<div>March 17-18*</div><div>Minutes Released April 8</div><div>April 28-29</div>
+<div>June 16-17*</div><div>July 28-29</div><div>September 15-16*</div>
+<div>October 27-28</div><div>December 8-9*</div>
+<h2>2027 FOMC Meetings</h2><div>January 26-27</div></body></html>"""
+
+
+def test_bls_ics_preserves_exact_release_time_and_uid():
+    df=ev.parse_bls_ics(BLS_ICS)
+    assert len(df)==2
+    cpi=df[df["title"].str.contains("Consumer Price")].iloc[0]
+    assert cpi["scheduled_at_et"].startswith("2026-10-14T08:30:00")
+    assert cpi["scheduled_at_utc"].startswith("2026-10-14T12:30:00")
+    assert cpi["impact"]=="high"
+    assert cpi["category"]=="inflation"
+    assert cpi["time_known"]
+
+
+def test_bea_and_census_tables_use_eastern_release_times():
+    obs=pd.Timestamp("2026-10-05T12:00:00Z")
+    bea=ev.parse_release_table(BEA_HTML,"BEA",obs)
+    census=ev.parse_release_table(CENSUS_HTML,"CENSUS",obs)
+    assert len(bea)==2 and len(census)==2
+    gdp=bea[bea["title"].str.contains("GDP")].iloc[0]
+    assert gdp["scheduled_at_et"].startswith("2026-10-29T08:30:00")
+    retail=census[census["title"].str.contains("Retail")].iloc[0]
+    assert retail["scheduled_at_utc"].startswith("2026-10-15T12:30:00")
+    assert retail["reference_period"]=="September 2026"
+
+
+def test_fomc_calendar_is_date_only_not_invented_2pm():
+    df=ev.parse_fomc_html(FOMC_HTML,2026)
+    assert len(df)==8
+    sep=df[df["event_date"]=="2026-09-16"].iloc[0]
+    assert sep["scheduled_at_et"] is None
+    assert not sep["time_known"]
+    assert "statement time not asserted" in sep["timing_basis"]
+    assert "SEP meeting" in sep["title"]
+
+
+def test_schedule_history_retains_reschedule_version(monkeypatch,tmp_path):
+    payloads={
+        ev.SOURCES["BLS"]:BLS_ICS,
+        ev.SOURCES["BEA"]:BEA_HTML,
+        ev.SOURCES["CENSUS"]:CENSUS_HTML,
+        ev.SOURCES["FOMC"]:FOMC_HTML,
+    }
+    monkeypatch.setattr(ev,"get_bytes",lambda url: payloads[url])
+    cur,hist,status=ev.collect(tmp_path,pd.Timestamp("2026-10-05T12:00:00Z"))
+    assert all(status[s]["status"]=="ok" for s in ev.SOURCES)
+    old_versions=len(hist)
+
+    payloads[ev.SOURCES["BLS"]]=BLS_ICS.replace(b"20261014T083000",b"20261015T083000")
+    cur2,hist2,status2=ev.collect(tmp_path,pd.Timestamp("2026-10-06T12:00:00Z"))
+    assert len(hist2)==old_versions+1
+    versions=hist2[hist2["stable_id"]=="cpi-2026-09@bls.gov"]
+    assert len(versions)==2
+    assert versions["event_key"].nunique()==1
+    assert versions["schedule_version"].nunique()==2
+
+
+def test_outputs_are_compact_and_causal(tmp_path):
+    obs=pd.Timestamp("2026-10-05T12:00:00Z")
+    cur=pd.concat([
+        ev.parse_bls_ics(BLS_ICS),
+        ev.parse_release_table(BEA_HTML,"BEA",obs),
+    ],ignore_index=True)
+    cur["observed_at"]=obs.isoformat()
+    cur["schedule_version"]=cur.apply(ev._schedule_version,axis=1)
+    hist=cur.copy()
+    hist["first_seen_at"]=obs.isoformat()
+    mp=tmp_path/"manifest.json"; up=tmp_path/"upcoming.json"
+    m=ev.build_outputs(cur,hist,{"BLS":{"status":"ok","rows":2},"BEA":{"status":"ok","rows":2}},obs,mp,up)
+    assert m["current_events"]==4
+    assert m["schedule_versions"]==4
+    p=json.loads(up.read_text())
+    assert p["timezone"]=="America/New_York"
+    assert all("observed_at" not in x for x in p["events"])

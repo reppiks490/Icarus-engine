@@ -1,0 +1,75 @@
+name: official-economic-events
+
+on:
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "cl_lab/feeds/economic_events.py"
+      - "tests_cl/test_economic_events.py"
+      - ".github/workflows/official-economic-events.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: official-economic-events
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: python -m pip install "pandas>=2.2,<3" pytest
+
+      - name: Event-clock fixture tests
+        run: python -m pytest -q tests_cl/test_economic_events.py -p no:cacheprovider
+
+      - name: Restore schedule history cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .economic_events_cache
+          key: economic-events-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: economic-events-
+
+      - name: Collect official release schedules
+        env:
+          ICARUS_EVENTS_CACHE: .economic_events_cache
+          ICARUS_EVENTS_MANIFEST: automation_intelligence/cl_lab/economic_events_manifest.json
+          ICARUS_EVENTS_UPCOMING: automation_intelligence/cl_lab/economic_events_upcoming.json
+        run: python -m cl_lab.feeds.economic_events
+
+      - name: Save schedule history cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .economic_events_cache
+          key: economic-events-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Commit compact event intelligence
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add automation_intelligence/cl_lab/economic_events_manifest.json automation_intelligence/cl_lab/economic_events_upcoming.json 2>/dev/null || true
+          if git diff --cached --quiet; then echo "no economic-event output changes"; exit 0; fi
+          git commit -m "[Events] official economic-event clock [skip ci]"
+          for i in 1 2 3 4 5; do
+            if git pull --rebase --autostash origin main && git push origin HEAD:main; then exit 0; fi
+            sleep $((i * 7))
+          done
+          exit 1

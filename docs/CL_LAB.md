@@ -34,6 +34,25 @@ Every one of the 492 candidates passes cross-day prefix invariance and intraday 
 
 All 492 candidates **REJECTED** on MNQ, BTCUSDT and ETHUSDT. Best MNQ TUNE t = 2.08 (gap fade, 46 trades — below the sample gate); BH-FDR rejections 0; effective trials ≈ 116–125; SPA p = 0.86 (MNQ), 0.99 (BTC), 0.57 (ETH); PBO 0.46 / 0.33 / 0.21. The published intraday rules, at these parameterizations and realistic costs, show no edge distinguishable from data-snooping on 2024–2026 data. The lab is built to keep searching honestly, not to manufacture champions.
 
+## R2: data integrity, multi-session hypotheses, order flow, walk-forward ML (2026-10-04)
+
+Specification, amendments and results: `docs/CL_PREREG_R2.md`. Frozen ids: `cl_lab/prereg_r2.json`.
+
+- `integrity.py` (`cl-data-2`): the MNQ tapes are unadjusted continuous series. Contract switches are detected from the MNQ − NASDAQ-100 basis and Panama back-adjusted. Overnight ranges that may mix contracts are blanked, and holds across an undetected roll are skipped. Every run records the switches and a post-adjustment basis check.
+- `multisession.py`: overnight holds marked to market at each RTH close, plus a daily-weight simulator for index series.
+- `events.py`: verified 2024–2026 FOMC decision dates and month-end positions.
+- `hypotheses_r2.py` (`cl-r2`): EOD reversal under the HOLD-only protocol `cl-hc1`, month-end rebalancing (40 years of NDX daily plus an MNQ execution twin), pre-FOMC event study, and crypto taker-flow imbalance.
+- `ml.py` (`cl-ml1`): an L2 logistic walk-forward model per (asset, decision time). It reports Brier, AUC, calibration, coefficient stability, baselines and a label-permutation control. Prefix, intraday and leaky-control causality tests run in CI.
+- New feed: FRED `NASDAQ100`.
+
+## Changelog (CL lab)
+
+1. 2026-10-03 — cl-g1 grammar (492), cl-gates-1, keyless feeds, registry, persistence invariant.
+2. 2026-10-04 — Edge explorer cl-x1, causal conditioners, causality proofs, federation watch.
+3. 2026-10-04 — THE PULSE OF ICARUS gated as an external strategy.
+4. 2026-10-04 — cl-r1 conditional EOD momentum (research rank 1).
+5. 2026-10-04 — cl-data-2 roll integrity fix; multi-session simulator; cl-r2 families; cl-ml1 walk-forward ML; R3-1 HOLD confirmation. No new champion. Results are in `docs/CL_PREREG_R2.md`.
+
 ## Run locally
 
 ```

@@ -26,7 +26,7 @@ FEEDS = [
     dict(name="ethusdt_5m", kind="binance", symbol="ETHUSDT", interval="5m", intraday=True),
     dict(name="btcusd_cb_5m", kind="coinbase", product="BTC-USD", intraday=True),
     *[dict(name=f"fred_{s.lower()}", kind="fred", series=s, intraday=False)
-      for s in ("DGS10", "DGS2", "T10Y2Y", "DFF", "VIXCLS")],
+      for s in ("DGS10", "DGS2", "T10Y2Y", "DFF", "VIXCLS", "NASDAQ100")],
     *[dict(name=f"cboe_{n.lower()}", kind="cboe", index=n, intraday=False)
       for n in ("VIX", "VIX9D", "VIX3M", "VVIX", "SKEW")],
     dict(name="cftc_tff_nasdaq", kind="cftc", intraday=False),

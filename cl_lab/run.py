@@ -20,18 +20,27 @@ from datetime import date
 
 import pandas as pd
 
-from . import (EXECUTION_AUTHORIZED, LAB_VERSION, LANE, bars, corpus, costs, explore, grammar, hypotheses, pulse_track,
-               registry, sessions, store, validate)
+from . import (EXECUTION_AUTHORIZED, LAB_VERSION, LANE, bars, corpus, costs, explore, grammar, hypotheses,
+               hypotheses_r2, integrity, ml, pulse_track, registry, sessions, store, validate)
 
 ASSETS = {
     "MNQ": dict(kind="csv", path="data/mnq_5m_full.csv", cost=costs.MNQ, stress=costs.MNQ_STRESS,
-                metric="points", weekdays_only=False),
+                metric="points", weekdays_only=False, continuous_futures=True, index_feed="fred_nasdaq100"),
     "BTCUSDT": dict(kind="cache", feed="btcusdt_5m", cost=costs.CRYPTO_PERP, stress=costs.CRYPTO_PERP_STRESS,
                     metric="returns", weekdays_only=True),
     "ETHUSDT": dict(kind="cache", feed="ethusdt_5m", cost=costs.CRYPTO_PERP, stress=costs.CRYPTO_PERP_STRESS,
                     metric="returns", weekdays_only=True),
 }
 FORWARD_START = date(2026, 10, 5)  # first CL registration; sessions on/after this date are never tuned on
+PREREG_R2 = os.path.join(os.path.dirname(os.path.abspath(__file__)), "prereg_r2.json")
+
+
+def _daily_feed(cache_dir, feed, col):
+    p = os.path.join(cache_dir, f"{feed}.csv.gz")
+    if not os.path.exists(p):
+        return None
+    ext = store.load_frame(p, intraday=False)
+    return ext[col].dropna() if col in ext else None
 
 
 def _sha_file(p):
@@ -90,18 +99,35 @@ def load_asset(name, cfg, cache_dir):
             return None, dict(status="UNAVAILABLE", reason=f"missing {cfg['path']}")
         df = bars.load_csv(cfg["path"])
         ident = dict(status="OK", source=cfg["path"], sha256=_sha_file(cfg["path"]))
+        tb = None
     else:
         path = os.path.join(cache_dir, f"{cfg['feed']}.csv.gz")
         df = store.load_frame(path) if os.path.exists(path) else pd.DataFrame()
         if df.empty:
             return None, dict(status="UNAVAILABLE", reason=f"no cached feed {cfg['feed']}")
+        tb = df["taker_buy_volume"].astype(float) if "taker_buy_volume" in df else None
         df = df[list(bars.COLUMNS)].astype(float)
         ident = dict(status="OK", source=f"cache:{cfg['feed']}", sha256=store.sha256_frame(df))
     ident.update(rows=int(len(df)), first=df.index[0].isoformat(), last=df.index[-1].isoformat())
     adf = bars.annotate(df)
+    rolls, index_close = [], None
+    if cfg.get("continuous_futures"):
+        index_close = _daily_feed(cache_dir, cfg["index_feed"], "NASDAQ100")
+        rolls = integrity.detect_rolls(adf, index_close)
+        adf = integrity.back_adjust(adf, rolls)
+        ident["integrity"] = integrity.summary(rolls)
+    if tb is not None:
+        adf["taker_buy_volume"] = tb.reindex(adf.index).to_numpy()
     if cfg["weekdays_only"]:
         adf = adf[pd.to_datetime(adf["session_date"]).dt.dayofweek < 5]
     sess = sessions.build_sessions(adf)
+    sess.cache["ml_kind"] = "futures" if cfg["kind"] == "csv" else "crypto"
+    if cfg.get("continuous_futures"):
+        integrity.mark_sessions(sess, rolls)
+        sess.cache["rolls"] = rolls
+        ident["integrity"]["basis_check"] = integrity.basis_check(sess, index_close)
+    if "taker_buy_volume" in adf:
+        sess.cache["TB"] = sessions.slot_array(sess, adf, "taker_buy_volume")
     for feed, col in (("cboe_vix", "VIX_close"), ("cboe_vix9d", "VIX9D_close")):  # causal day conditioners
         p = os.path.join(cache_dir, f"{feed}.csv.gz")
         if os.path.exists(p):
@@ -111,16 +137,17 @@ def load_asset(name, cfg, cache_dir):
     return sess, ident
 
 
-def pulse_section(out_dir, mnq_dates, var_sr):
+def pulse_section(out_dir, mnq_dates, var_sr, rolls=()):
     """THE PULSE OF ICARUS through the CL gates; recomputed only when its code, preset or tape change."""
     if not os.path.exists(pulse_track.TAPE):
         return dict(status="UNAVAILABLE", reason=f"missing {pulse_track.TAPE}")
-    fp = hashlib.sha256((pulse_track.fingerprint() + repr(var_sr)).encode()).hexdigest()
+    roll_key = json.dumps(integrity.summary(list(rolls)), sort_keys=True, default=str)
+    fp = hashlib.sha256((pulse_track.fingerprint() + repr(var_sr) + roll_key).encode()).hexdigest()
     cached = _read_json(os.path.join(out_dir, "pulse_latest.json"), {})
     if cached.get("fingerprint") == fp:
         return cached
     from icarus.data import load_csv as load_bars
-    raw = load_bars(pulse_track.TAPE)
+    raw, moved = integrity.back_adjust_bars(load_bars(pulse_track.TAPE), 20, list(rolls))
     runs = {}
     plan = [("HA_REAL_FILLS", "base"), ("CANDLES", "base"), ("HA_HA_FILLS", "base"),
             ("HA_REAL_FILLS", "stress"), ("CANDLES", "stress"), ("HA_REAL_FILLS", "repo_convention")]
@@ -144,7 +171,7 @@ def pulse_section(out_dir, mnq_dates, var_sr):
     out = dict(schema="cl_lab.pulse/1", fingerprint=fp, strategy="THE PULSE OF ICARUS v3.1 (repo port)",
                preset=pulse_track.PRESET, preset_source="presets/NQ-20m-ultracoded.json (RECONSTRUCTED)",
                tape=pulse_track.TAPE, costs=pulse_track.COSTS, trials_assumed_for_dsr=pulse_track.PULSE_TRIALS_ASSUMED,
-               var_sr_from_grammar=var_sr, variants=rec, repo_convention_ha_real_fills=dict(trades=len(conv), net_usd=round(sum(c.profit for c in conv), 2)),
+               var_sr_from_grammar=var_sr, variants=rec, integrity=integrity.summary(moved), repo_convention_ha_real_fills=dict(trades=len(conv), net_usd=round(sum(c.profit for c in conv), 2)),
                totals={f"{v}|{c}": dict(trades=len(cl), net_usd=round(sum(x.profit for x in cl), 2)) for (v, c), cl in runs.items()},
                execution_authorized=False)
     _write_json(os.path.join(out_dir, "pulse_latest.json"), out)
@@ -163,7 +190,9 @@ def run_cycle(out_dir, cache_dir=".cl_cache", assets=None, now=None):
                   registration_hash=grammar.registration_hash(cands), gates=validate.GATES_VERSION,
                   thresholds=validate.T, code=_code_identity(), lab=LAB_VERSION,
                   pulse=(pulse_track.fingerprint() if "MNQ" in names else None),
-                  explore=dict(version=explore.EXPLORE_VERSION, per_run=explore.EXPLORE_PER_RUN, day=now.date().isoformat()))
+                  explore=dict(version=explore.EXPLORE_VERSION, per_run=explore.EXPLORE_PER_RUN, day=now.date().isoformat()),
+                  r2=hypotheses_r2.R2_VERSION, ml=ml.ML_VERSION, data_version=integrity.DATA_VERSION,
+                  prereg_r2=(_sha_file(PREREG_R2) if os.path.exists(PREREG_R2) else None))
     fingerprint = hashlib.sha256(json.dumps(inputs, sort_keys=True, default=str).encode()).hexdigest()
     run_id = f"cl-lab-{fingerprint[:16]}"
     latest_path = os.path.join(out_dir, "latest.json")
@@ -178,6 +207,25 @@ def run_cycle(out_dir, cache_dir=".cl_cache", assets=None, now=None):
     ledger_path = os.path.join(out_dir, "explore_ledger.jsonl")
     ledger = explore.load_ledger(ledger_path)
     per_asset, full, new_ledger = {}, {}, []
+
+    def _forward(asset, rec, ctx):
+        for e in reg["entries"].values():
+            if e["asset"] == asset and e["id"] in rec:
+                e["forward"] = validate.forward_stats(ctx, e["id"], max(pd.Timestamp(e["first_registered_at"]).date(),
+                                                                        FORWARD_START - pd.Timedelta(days=1)))
+
+    ndx_c, dgs = _daily_feed(cache_dir, "fred_nasdaq100", "NASDAQ100"), _daily_feed(cache_dir, "fred_dgs10", "DGS10")
+    me_sigs = []
+    if ndx_c is not None and dgs is not None and len(ndx_c) > 300:
+        brec, bdiag, me_sigs = hypotheses_r2.month_end_daily(ndx_c, dgs, FORWARD_START)
+        for v, r in brec.items():
+            r.update(family="monthend", params=dict(variant=v))
+        reg = registry.merge(reg, "NDX", {r["id"]: r for r in brec.values()}, run_id, at, hypotheses_r2.R2_VERSION)
+        calendar_flows = dict(status="EVALUATED", version=hypotheses_r2.R2_VERSION, source="FRED NASDAQ100 + FRED DGS10",
+                              diagnostics=bdiag, records=list(brec.values()), recent_signals=me_sigs[-6:])
+        full["NDX"] = list(brec.values())
+    else:
+        calendar_flows = dict(status="UNAVAILABLE", reason="fred_nasdaq100 or fred_dgs10 not cached")
     for n in names:
         sess, ident = loaded[n]
         if sess is None:
@@ -228,14 +276,57 @@ def run_cycle(out_dir, cache_dir=".cl_cache", assets=None, now=None):
             records=[{k: r.get(k) for k in ("id", "family", "params", "tune_trades", "tune_t", "dsr", "hold_t",
                                             "hold_holm_p", "status")} for r in hrec.values()])
         full[n] += list(hrec.values())
+        r2 = dict(version=hypotheses_r2.R2_VERSION)
+        keep_r = ("id", "family", "params", "tune_trades", "tune_t", "dsr", "hold_trades", "hold_t", "hold_holm_p",
+                  "hold_mean", "hold_mean_stress", "status")
         if n == "MNQ":
-            p = pulse_section(out_dir, list(sess.dates), diag["var_sr"])
+            arec, adiag, actx = hypotheses_r2.hold_confirm(sess, hypotheses_r2.A_CANDIDATES, cfg["cost"], cfg["stress"],
+                                                           hypotheses_r2.run_a, FORWARD_START, cfg["metric"])
+            reg = registry.merge(reg, n, arec, run_id, at, hypotheses_r2.HC_VERSION)
+            _forward(n, arec, actx)
+            r2["eod_reversal"] = dict(diagnostics=adiag, records=list(arec.values()))
+            r2["pre_fomc"] = hypotheses_r2.event_study(sess, cfg["cost"], FORWARD_START)
+            r2["month_end_mnq"] = (hypotheses_r2.month_end_twin(sess, me_sigs, cfg["cost"]) if me_sigs
+                                   else dict(status="UNAVAILABLE"))
+            full[n] += list(arec.values())
+        else:
+            drec, ddiag, dctx = validate.evaluate(sess, hypotheses_r2.D_CANDIDATES, cfg["cost"], cfg["stress"],
+                                                  cfg["metric"], forward_start=FORWARD_START, run_fn=hypotheses_r2.run_d)
+            reg = registry.merge(reg, n, drec, run_id, at, hypotheses_r2.R2_VERSION)
+            _forward(n, drec, dctx)
+            r2["flow"] = dict(available="TB" in sess.cache, diagnostics=ddiag,
+                              records=[{k: r.get(k) for k in keep_r} for r in drec.values()])
+            full[n] += list(drec.values())
+            hc = [c for c in hypotheses_r2.D_CANDIDATES if c.id in hypotheses_r2.R3_HOLD_CONFIRM.get(n, ())]
+            if hc:  # R3-1: TUNE-selected rule decided on HOLD only (registered before its HOLD statistic existed)
+                h3, h3diag, h3ctx = hypotheses_r2.hold_confirm(sess, hc, cfg["cost"], cfg["stress"], hypotheses_r2.run_d,
+                                                               FORWARD_START, cfg["metric"])
+                h3 = {f"{k}@hc1": dict(v, id=f"{k}@hc1", protocol="cl-hc1 (R3-1)") for k, v in h3.items()}
+                h3ctx = dict(h3ctx, ids=[f"{i}@hc1" for i in h3ctx["ids"]],
+                             trades={f"{k}@hc1": v for k, v in h3ctx["trades"].items()})
+                reg = registry.merge(reg, n, h3, run_id, at, "cl-r3")
+                _forward(n, h3, h3ctx)
+                r2["hold_confirmation_r3"] = dict(diagnostics=h3diag, records=list(h3.values()))
+                full[n] += list(h3.values())
+        per_asset[n]["r2"] = r2
+        mrec, mdiag, mctx = validate.evaluate(sess, ml.CANDIDATES, cfg["cost"], cfg["stress"], cfg["metric"],
+                                              forward_start=FORWARD_START, run_fn=ml.run_m)
+        reg = registry.merge(reg, n, mrec, run_id, at, ml.ML_VERSION)
+        _forward(n, mrec, mctx)
+        per_asset[n]["ml"] = dict(version=ml.ML_VERSION, diagnostics=mdiag,
+                                  records=[{k: r.get(k) for k in keep_r} for r in mrec.values()],
+                                  qualification=[ml.qualify(c, sess, cfg["cost"], cfg["metric"], FORWARD_START)
+                                                 for c in ml.CANDIDATES])
+        full[n] += list(mrec.values())
+        if n == "MNQ":
+            p = pulse_section(out_dir, list(sess.dates), diag["var_sr"], sess.cache.get("rolls", ()))
             per_asset[n]["pulse"] = {k: p.get(k) for k in ("strategy", "variants", "totals", "trials_assumed_for_dsr",
                                                            "preset_source", "status", "reason")}
 
     payload = dict(schema="cl_lab.run/1", lane=LANE, run_id=run_id, input_fingerprint=fingerprint, inputs=inputs,
                    started_at=at, finished_at=pd.Timestamp.now(tz="UTC").isoformat(), code_commit=_git_commit(),
                    candidates=len(cands), assets=per_asset, corpus=corpus_state, evidence_class="RESEARCH_ONLY",
+                   calendar_flows=calendar_flows,
                    tune_end=str(validate.TUNE_END), forward_start=str(FORWARD_START),
                    execution_authorized=EXECUTION_AUTHORIZED, production_decision_authorized=False)
     hist_sha = _write_json(os.path.join(out_dir, "history", f"{run_id}.json"), payload)
@@ -258,8 +349,14 @@ def run_cycle(out_dir, cache_dir=".cl_cache", assets=None, now=None):
         corpus={k: corpus_state.get(k) for k in ("status", "dataset", "roll_rule", "minutes",
                                                  "verified_assets", "blocked_assets", "assets")},
         assets={n: {k: v.get(k) for k in ("status", "sessions", "status_counts", "diagnostics", "champions",
-                                          "challengers", "pulse", "explorer", "hypotheses")}
-                for n, v in per_asset.items()}))
+                                          "challengers", "pulse", "explorer", "hypotheses", "r2")}
+                for n, v in per_asset.items()},
+        ml={n: [{k: r.get(k) for k in ("id", "params", "tune_trades", "tune_t", "dsr", "status")}
+                for r in (v.get("ml") or {}).get("records", [])] for n, v in per_asset.items()},
+        calendar_flows={k: calendar_flows.get(k) for k in ("status", "version", "diagnostics", "recent_signals")} |
+        dict(records=[{k: r.get(k) for k in ("id", "variant", "tune_trades", "tune_t", "dsr", "hold_t", "status")}
+                      for r in calendar_flows.get("records", [])]),
+        integrity=(per_asset.get("MNQ") or {}).get("data", {}).get("integrity")))
     _write_json(hb_path, dict(lane=LANE, status="IDLE", last_run_id=run_id, last_completed_at=payload["finished_at"],
                               latest_sha256=latest_sha, execution_authorized=False))
     return dict(status="RUN_PERSISTED", run_id=run_id, latest_sha256=latest_sha)

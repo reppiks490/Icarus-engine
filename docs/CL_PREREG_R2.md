@@ -125,3 +125,30 @@ New trials: R2-A 4, R2-B 3 (B2 is descriptive), R2-C 1 (descriptive), R2-D 8, cl
 2. 2026-10-04 — Pre-evaluation review amendments, made before any R2 evaluation ran. A4 now states its minimum history. Complete-session and last-available-close rules are added. Month-end positions are pinned. ML regularization is set to α = 0.1 on the mean loss with a ±0.02 probability band, and baselines are reported. The permutation flag is raised to \|t\| ≥ 3 so 9 controls do not false-alarm about 37 % of the time. A roll cross-check mismatch now sets `DEGRADED`. The roll anchor uses the unshifted third Friday. The basis check runs on the adjusted tape, so any |Δbasis| above 150 points is an unexplained jump.
 4. 2026-10-04 — R3-1 registered (ETHUSDT open30 flow continuation, HOLD confirmation) after the first R2 run and before its HOLD statistic was computed.
 3. 2026-10-04 — I-1 detector switched to the NDX basis (with the bar jump as fallback) after implementation testing showed data gaps on 3 switch sessions. This is a data-handling rule. No hypothesis had been evaluated.
+
+## Results (run `cl-lab-98ff270de7fe85b5`, 2026-10-04, local, the same inputs and code Actions uses)
+
+Appended after evaluation. The specification above is unchanged by these results.
+
+- **I-1:** 8/8 switches detected by the basis method. The post-adjustment basis check is OK: median |Δbasis| 7.2 points, max 108.9 points (2026-06-26, not a roll session).
+  - On `cl-data-2`, cl-g1 is still 0/492 on all three assets.
+  - THE PULSE moved materially once its tape was back-adjusted. HA real fills went from +$11,915 to +$19,055 net (TUNE t 0.58, HOLD t 0.43, REJECTED). Candles went from +$33,746 to +$49,949 (TUNE t 2.23, HOLD t 0.68, REJECTED). The HA-fill artifact reads +$322,469, which is still not a real result.
+- **R2-A (EOD reversal, HOLD only):** HOLD t = −0.35, 0.28, −0.09 and −0.35 for A1–A4 on 231/101/100/107 trades. All REJECTED. The TUNE mirror (t 1.52/1.20/1.23/0.78) did not carry into HOLD.
+- **R2-B1 (month-end, NDX daily 1986-04 → 2026-09, 486 monthly signals):**
+  - `window5_z1`: TUNE t 1.94 (gate 2.0), DSR 0.68, REJECTED.
+  - `window5_linear`: TUNE t 1.97, DSR 0.69, REJECTED.
+  - `next1_z1`: TUNE t −0.70, REJECTED.
+  - Subsamples for `window5_z1`: 1986–1996 t 0.21 (45 trades), 1997–2023 t 2.03 (106 trades, the paper's own sample), 2024 onward t 0.25 (10 trades). On NDX the effect replicates inside the published sample only.
+- **R2-B2 (MNQ twin, descriptive):** 5 trades, −$811 net.
+- **R2-C (pre-FOMC, 16 events):** mean +6.9 bp, t 0.49, 8/16 positive, 90 % CI [−9.1, +24.1] bp. INSUFFICIENT_SAMPLE by design.
+- **R2-D (taker-flow imbalance):**
+  - BTC: all four variants have TUNE t < 0 or near 0 (best −0.61). REJECTED.
+  - ETH D1 `open30_cont`: TUNE t 2.99, SPA 0.014, PBO 0.002, DSR 0.55 (G4 fail). REJECTED.
+  - ETH D3 `morning_cont`: TUNE t 1.36. REJECTED.
+- **R3-1 (ETH `open30_cont`, HOLD confirmation):** HOLD t = 0.84 on 98 trades. The HOLD mean is +5.6 bp a day net (+1.1 bp at stress cost), which is positive but well short of t 1.65. REJECTED.
+- **cl-ml1 (9 walk-forward models):** all REJECTED. The best is MNQ 15:30 at TUNE t 1.31, DSR 0.69.
+  - Out-of-sample Brier is no better than climatology in 8 of 9 TUNE windows.
+  - AUC is between 0.40 and 0.58, and calibration slopes are below 1 or negative, so the models are overconfident noise.
+  - No permutation control was flagged. The largest was |t| 2.86, below the 3.0 flag, which shows how high pure noise can reach.
+
+**Verdict:** no new champion, challenger or HOLD-confirmed rule. The one live lead (ETH open-30 flow continuation) is positive on unseen data but not significant. It stays in the run output every cycle and gets a forward test only by a new registration.

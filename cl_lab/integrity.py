@@ -121,6 +121,8 @@ def detect_rolls(adf: pd.DataFrame, index_close: pd.Series | None = None) -> lis
     out, covered = _instrument_rolls(adf, sd, jump, basis)
     out = list(out or [])
     for q, tf in quarters(min(sd), max(sd)):
+        if q not in covered and any(r["quarter"] == q and r.get("method") == "instrument_id" for r in out):
+            continue                                     # a quarter cut by the tape's edge: its switch is known
         if q in covered:
             if not any(r["quarter"] == q for r in out):
                 out.append(dict(quarter=q, third_friday=str(tf), method="instrument_id", status="NO_SWITCH"))

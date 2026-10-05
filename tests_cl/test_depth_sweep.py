@@ -115,7 +115,9 @@ def test_corpus_guard_refuses_topups_past_the_account_credit(tmp_path, monkeypat
         calls.append(kw["max_usd"])
         idx = pd.date_range("2026-10-01T14:00Z", periods=3, freq="5min")
         df = pd.DataFrame(dict(open=1.0, high=1.0, low=1.0, close=1.0, volume=1.0), index=idx)
-        return df, dict(request_performed=True, estimated_cost_usd=min(0.75, kw["max_usd"]))
+        est = min(0.75, kw["max_usd"])
+        kw["charge"](est, lambda: None)
+        return df, dict(request_performed=True, estimated_cost_usd=est)
 
     monkeypatch.setattr(registry.databento_feed, "fetch_continuous_5m", fake)
     names = [f["name"] for f in registry.FEEDS if f["kind"] == "databento" and not f.get("account")][:4]
@@ -225,3 +227,50 @@ def test_failed_download_without_bytes_is_reversed_and_retried(tmp_path):
     res2 = sw.run_account("secondary", cache_dir=cache, depth_cache=depth, ledger_dir=led, client=_Client(0.1),
                           now="2026-10-05T13:00Z")
     assert [b["day"] for b in res2["bought"]] == ["2026-10-02"]
+
+
+class _Refused(Exception):
+    def __init__(self, status):
+        super().__init__(f"HTTP {status}")
+        self.http_status = status
+
+
+def test_paid_request_charges_first_and_refunds_only_refusals(tmp_path, monkeypatch):
+    monkeypatch.setattr(budget.time, "sleep", lambda s: None)
+    lane = budget.Lane("history:NQ", str(tmp_path))
+    calls = []
+
+    def flaky():
+        calls.append(1)
+        if len(calls) < 3:
+            raise _Refused(503)
+        return "data"
+
+    assert budget.paid_request(lane, 1.0, "x", "t", flaky) == "data" and len(calls) == 3
+    assert lane.data["spent_usd"] == pytest.approx(1.0)                 # two refusals refunded, one charge stands
+    with pytest.raises(TimeoutError):
+        budget.paid_request(lane, 2.0, "y", "t", lambda: (_ for _ in ()).throw(TimeoutError("read timed out")))
+    assert lane.data["spent_usd"] == pytest.approx(3.0)                 # a timeout may have been served: kept
+    with pytest.raises(_Refused):
+        budget.paid_request(lane, 4.0, "z", "t", lambda: (_ for _ in ()).throw(_Refused(422)))
+    assert lane.data["spent_usd"] == pytest.approx(3.0)                 # 4xx refusal: refunded, not retried
+
+
+def test_failed_reduction_keeps_raw_stops_spending_and_is_retried(tmp_path, monkeypatch):
+    cache, depth, led = str(tmp_path / "c"), str(tmp_path / "d"), str(tmp_path / "s")
+    _corpus(cache, [d.date() for d in pd.bdate_range("2026-09-21", "2026-10-02")])
+    real = sw.acq.summarize_store
+    monkeypatch.setattr(sw.acq, "summarize_store", lambda dbn: (_ for _ in ()).throw(RuntimeError("bug")))
+    cl = _Client(0.01)
+    res = sw.run_account("third", cache_dir=cache, depth_cache=depth, ledger_dir=led, client=cl, now="2026-10-05T12:00Z")
+    assert len(cl.range_calls) == 1 and res["status"].startswith("STOPPED") and res["spent_usd"] > 0   # one day, then stop
+    assert os.listdir(os.path.join(depth, "_retry_raw")) == ["third__2026-10-02.dbn.zst"]
+    cl2 = _Client(0.01)
+    res = sw.run_account("third", cache_dir=cache, depth_cache=depth, ledger_dir=led, client=cl2, now="2026-10-05T13:00Z")
+    assert res["status"].startswith("REDUCTION_PENDING") and cl2.range_calls == []                    # still broken
+    monkeypatch.setattr(sw.acq, "summarize_store", real)
+    res = sw.run_account("third", cache_dir=cache, depth_cache=depth, ledger_dir=led, client=_Client(0.01),
+                         now="2026-10-05T14:00Z")
+    assert res["bought"][0]["day"] == "2026-10-02" and res["bought"][0]["reduced_on_retry"]
+    assert "2026-10-02" not in [b["day"] for b in res["bought"][1:]] and len(res["bought"]) <= 1 + sw.MAX_DAYS_PER_RUN
+    assert not os.listdir(os.path.join(depth, "_retry_raw"))

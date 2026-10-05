@@ -600,13 +600,13 @@ def acquire_profile(
             # a transport failure after request acceptance must not make the ledger
             # look cheaper than the spend we authorized.
             estimated_requested += float(r["estimated_cost_usd"])
+            if lane is not None:   # CL 2026-10-05: charged BEFORE the request, so a killed run cannot under-count
+                lane.record(float(r["estimated_cost_usd"]), f"{c.root} {c.schema} {c.day}",
+                            pd.Timestamp.now(tz="UTC").isoformat())
             # SDK streams the response to path while returning a replayable DBNStore.
             dbn = hist.timeseries.get_range(**request_kwargs(c), path=raw_path)
             raw_sha = _sha256(raw_path)
             raw_bytes = os.path.getsize(raw_path)
-            if lane is not None:
-                lane.record(float(r["estimated_cost_usd"]), f"{c.root} {c.schema} {c.day}",
-                            pd.Timestamp.now(tz="UTC").isoformat())
             features = summarize_store(dbn)
             if features.empty:
                 raise RuntimeError("depth request produced no reducible records")
@@ -627,10 +627,10 @@ def acquire_profile(
                 "feature_last": str(features.index[-1]),
             })
         except Exception as ex:
-            if lane is not None and raw_path and os.path.exists(raw_path) and os.path.getsize(raw_path) > 0 \
-                    and not any(e.get("what") == f"{c.root} {c.schema} {c.day}" for e in lane.data.get("entries", [])):
-                lane.record(float(r["estimated_cost_usd"]), f"{c.root} {c.schema} {c.day} (partial)",
-                            pd.Timestamp.now(tz="UTC").isoformat())   # bytes arrived: count it as spent
+            if lane is not None and any(e.get("what") == f"{c.root} {c.schema} {c.day}" for e in lane.data.get("entries", [])[-1:]) \
+                    and not (raw_path and os.path.exists(raw_path) and os.path.getsize(raw_path) > 0):
+                lane.record(-float(r["estimated_cost_usd"]), f"{c.root} {c.schema} {c.day} reversed: no data received",
+                            pd.Timestamp.now(tz="UTC").isoformat())   # not one byte arrived: nothing was billed
             rows.append({
                 **base,
                 "status": "download_error",

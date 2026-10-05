@@ -38,6 +38,7 @@ FORWARD_START = pd.Timestamp("2026-10-05").date()
 PAST_SHARE = 0.5
 MIN_RTH_BARS = 70
 MAX_DAYS_PRICED = 40
+MAX_DAYS_PER_RUN = 4            # keeps each account's step far inside its 60-minute timeout
 STEP = pd.Timedelta(minutes=15)
 
 
@@ -55,18 +56,29 @@ def kwargs(a: pd.Timestamp, b: pd.Timestamp) -> dict:
 
 def held_days(depth_cache: str, ledger_dir: str | None = None) -> set[str]:
     """Days already bought by ANY account: reduced files in the cache, plus every day with net spend in a
-    sweep ledger (committed to git), so a lost cache can never make a day be bought twice."""
+    sweep ledger (committed to git; the per-day totals are never truncated), so a lost cache can never make
+    a day be bought twice."""
     days = {os.path.basename(p)[:10] for p in glob.glob(os.path.join(depth_cache, "resilience", "*", ROOT.lower(), "*.csv.gz"))}
+    days |= {os.path.basename(p).split("__")[1][:10] for p in glob.glob(os.path.join(depth_cache, "_retry_raw", "*__*.dbn.zst"))}
     for lane in budget.SWEEP_LANES:
         copies = [budget._load(budget._path(b, lane)) for b in (ledger_dir, depth_cache) if b]
         data = max([c for c in copies if c] or [{}], key=lambda c: c.get("spent_usd", 0.0))
-        net: dict[str, float] = {}
-        for e in data.get("entries", []):
-            parts = str(e.get("what", "")).split()
-            if len(parts) >= 3 and parts[0] == ROOT and parts[1] == SCHEMA:
-                net[parts[2]] = net.get(parts[2], 0.0) + float(e.get("usd", 0.0))
+        net: dict[str, float] = dict(data.get("days") or {})
+        if not net:
+            for e in data.get("entries", []):
+                parts = str(e.get("what", "")).split()
+                if len(parts) >= 3 and parts[0] == ROOT and parts[1] == SCHEMA:
+                    net[parts[2]] = net.get(parts[2], 0.0) + float(e.get("usd", 0.0))
         days |= {d for d, v in net.items() if v > 1e-9}
     return days
+
+
+def _charge(lane, day, usd, what, at, is_past):
+    lane.data.setdefault("days", {})
+    lane.data["days"][str(day)] = round(float(lane.data["days"].get(str(day), 0.0)) + usd, 6)
+    if is_past:
+        lane.data["past_spent_usd"] = round(float(lane.data.get("past_spent_usd", 0.0)) + usd, 6)
+    lane.record(usd, what, at)                        # saves the ledger with the per-day totals
 
 
 def trading_days(cache_dir: str, safe_end: pd.Timestamp) -> list:
@@ -111,6 +123,10 @@ def run_account(account: str, *, cache_dir: str, depth_cache: str, ledger_dir: s
     if client is None and not dbf.account_configured(account):
         out["status"] = f"UNCONFIGURED: {dbf.api_key_env(account)} not set"
         return out
+    _clean_tmp(depth_cache)
+    if _retry_pending(account, depth_cache, out):
+        out["status"] = "REDUCTION_PENDING: a paid day could not be reduced; no new day is bought until it is"
+        return out
     lane = budget.Lane(lane_id, ledger_dir, mirror=depth_cache, mirrors=mirrors)
     out.update(cap_usd=lane.cfg["cap_usd"], spent_before_usd=lane.data["spent_usd"])
     if lane.remaining <= 0.01:
@@ -122,9 +138,9 @@ def run_account(account: str, *, cache_dir: str, depth_cache: str, ledger_dir: s
     todo = [d for d in trading_days(cache_dir, safe_end) if str(d) not in held]
     fwd = [d for d in todo if d >= FORWARD_START]
     past = [d for d in todo if d < FORWARD_START]
-    priced = 0
+    priced = bought = 0
     for day in fwd + past:
-        if priced >= MAX_DAYS_PRICED or lane.remaining <= 0.01:
+        if priced >= MAX_DAYS_PRICED or bought >= MAX_DAYS_PER_RUN or lane.remaining <= 0.01:
             break
         is_past = day < FORWARD_START
         allow = min(lane.remaining, max_request_usd)
@@ -153,7 +169,14 @@ def run_account(account: str, *, cache_dir: str, depth_cache: str, ledger_dir: s
                 break
             continue
         res = _buy(hist, account, day, a, b, est, lane, depth_cache, now, is_past)
-        (out["bought"] if res.get("status") == "ok" else out["errors"]).append(res)
+        if res.get("status") == "ok":
+            bought += 1
+            out["bought"].append(res)
+            continue
+        out["errors"].append(res)
+        if res.get("charged"):              # paid but not reduced: stop spending until the cause is known
+            out["status"] = f"STOPPED: {res['status']} on {day}"
+            break
     out["spent_usd"] = lane.data["spent_usd"]
     out["remaining_usd"] = round(lane.remaining, 4)
     out["past_spent_usd"] = float(lane.data.get("past_spent_usd", 0.0))
@@ -161,16 +184,52 @@ def run_account(account: str, *, cache_dir: str, depth_cache: str, ledger_dir: s
     return out
 
 
+def _clean_tmp(depth_cache: str) -> None:
+    """Partial raw files left by a killed run cannot be trusted; they are deleted (their charge stands)."""
+    for p in glob.glob(os.path.join(depth_cache, "_raw_tmp", "*")):
+        try:
+            os.remove(p)
+        except OSError:
+            pass
+
+
+def _reduce(dbn, account: str, day, depth_cache: str) -> dict:
+    from .. import depth_resilience
+    ev = depth_resilience.events(dbn)
+    feats = acq.summarize_store(dbn)
+    if feats.empty:
+        raise RuntimeError("MBP-10 data produced no reducible records")
+    cand = acq.Candidate(ROOT, DATASET, SCHEMA, str(day), "sweep", 1.0, 1)
+    acq._write_features(feats, acq.feature_path(depth_cache, account, cand))
+    rpath = os.path.join(depth_cache, "resilience", account, ROOT.lower(), f"{day}.csv.gz")
+    acq._write_features(ev.set_index("ts") if len(ev) else ev, rpath)
+    return dict(feature_rows=int(len(feats)), resilience_events=int(len(ev)),
+                sweeps_2plus=int((ev["levels_swept"] >= 2).sum()) if len(ev) else 0)
+
+
+def _retry_pending(account: str, depth_cache: str, out: dict) -> bool:
+    """Reduce raw days kept after a failed reduction. True while any of this account's days still fails."""
+    still = False
+    for p in sorted(glob.glob(os.path.join(depth_cache, "_retry_raw", f"{account}__*.dbn.zst"))):
+        day = os.path.basename(p).split("__")[1][:10]
+        try:
+            import databento as db  # type: ignore
+            res = _reduce(db.DBNStore.from_file(p), account, day, depth_cache)
+            os.remove(p)
+            out["bought"].append(dict(day=day, status="ok", reduced_on_retry=True, **res))
+        except Exception as ex:  # noqa: BLE001
+            still = True
+            out["errors"].append(dict(day=day, status="reduction_retry_error", error=f"{type(ex).__name__}: {ex}"[:300]))
+    return still
+
+
 def _buy(hist, account, day, a, b, est, lane, depth_cache, now, is_past) -> dict:
     base = dict(day=str(day), start=a.isoformat(), end=b.isoformat(), estimated_cost_usd=round(est, 6),
                 partial_window=bool(b < window(day)[1]))
     what = f"{ROOT} {SCHEMA} {day} {a.isoformat()[11:16]}-{b.isoformat()[11:16]}Z"
-    # Counted BEFORE the request: a run killed mid-download (step timeout) must not leave paid data off
+    # Charged BEFORE the request: a run killed mid-download (step timeout) must not leave paid data off
     # the ledger. Reversed below only when not one byte arrived.
-    lane.record(est, what, now.isoformat())
-    if is_past:
-        lane.data["past_spent_usd"] = round(float(lane.data.get("past_spent_usd", 0.0)) + est, 6)
-        lane.save()
+    _charge(lane, day, est, what, now.isoformat(), is_past)
     raw = None
     try:
         tmpdir = os.path.join(depth_cache, "_raw_tmp")
@@ -178,28 +237,23 @@ def _buy(hist, account, day, a, b, est, lane, depth_cache, now, is_past) -> dict
         fd, raw = tempfile.mkstemp(prefix=f"{account}-sweep-{day}-", suffix=".dbn.zst", dir=tmpdir)
         os.close(fd)
         os.remove(raw)                                   # the SDK refuses to stream into an existing file
-        dbn = hist.timeseries.get_range(**kwargs(a, b), path=raw)
+        try:
+            dbn = hist.timeseries.get_range(**kwargs(a, b), path=raw)
+        except Exception as ex:  # noqa: BLE001
+            got = bool(raw and os.path.exists(raw) and os.path.getsize(raw) > 0)
+            if not got:
+                _charge(lane, day, -est, what + " reversed: no data received", now.isoformat(), is_past)
+            return dict(base, status="download_error", charged=got, error=f"{type(ex).__name__}: {ex}"[:300])
         raw_sha, raw_bytes = acq._sha256(raw), os.path.getsize(raw)
-        from .. import depth_resilience
-        ev = depth_resilience.events(dbn)
-        feats = acq.summarize_store(dbn)
-        if feats.empty:
-            raise RuntimeError("MBP-10 request produced no reducible records")
-        cand = acq.Candidate(ROOT, DATASET, SCHEMA, str(day), "sweep", 1.0, 1)
-        fpath = acq.feature_path(depth_cache, account, cand)
-        acq._write_features(feats, fpath)
-        rpath = os.path.join(depth_cache, "resilience", account, ROOT.lower(), f"{day}.csv.gz")
-        acq._write_features(ev.set_index("ts") if len(ev) else ev, rpath)
-        return dict(base, status="ok", raw_sha256=raw_sha, raw_bytes=raw_bytes, raw_retained=False,
-                    feature_rows=int(len(feats)), resilience_events=int(len(ev)),
-                    sweeps_2plus=int((ev["levels_swept"] >= 2).sum()) if len(ev) else 0)
-    except Exception as ex:  # noqa: BLE001
-        if not (raw and os.path.exists(raw) and os.path.getsize(raw) > 0):
-            lane.record(-est, what + " reversed: no data received", now.isoformat())
-            if is_past:
-                lane.data["past_spent_usd"] = round(float(lane.data.get("past_spent_usd", 0.0)) - est, 6)
-                lane.save()
-        return dict(base, status="download_error", error=f"{type(ex).__name__}: {ex}"[:300])
+        try:
+            res = _reduce(dbn, account, day, depth_cache)
+        except Exception as ex:  # noqa: BLE001 - paid data: keep the raw file and retry the reduction next run
+            keep = os.path.join(depth_cache, "_retry_raw", f"{account}__{day}.dbn.zst")
+            os.makedirs(os.path.dirname(keep), exist_ok=True)
+            os.replace(raw, keep)
+            return dict(base, status="reduction_error", charged=True, raw_kept_for_retry=True,
+                        error=f"{type(ex).__name__}: {ex}"[:300])
+        return dict(base, status="ok", raw_sha256=raw_sha, raw_bytes=raw_bytes, raw_retained=False, **res)
     finally:
         if raw and os.path.exists(raw):
             try:

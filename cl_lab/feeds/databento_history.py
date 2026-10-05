@@ -62,6 +62,13 @@ def run(cache_dir: str, ledger_dir: str = budget.LEDGER_DIR, *, clients: dict | 
         account = lane.cfg["account"]
         st = out[root] = dict(lane=lane_id, account=account, key_env=dbf.api_key_env(account), status="OK",
                               cap_usd=lane.cfg["cap_usd"], spent_usd=lane.data["spent_usd"], bought=[], trimmed=None)
+        if lane.data.get("finished"):
+            # Its unspent cap already went to the depth sweep: never buy again, even if the cache was lost.
+            path = cache_path(cache_dir, root)
+            frame = store.load_frame(path) if os.path.exists(path) else pd.DataFrame()
+            st.update(status="FINISHED", finished=True,
+                      history_first=frame.index[0].isoformat() if not frame.empty else None)
+            continue
         if account not in clients:
             if not dbf.account_configured(account):
                 st["status"] = f"UNCONFIGURED: {dbf.api_key_env(account)} not set"
@@ -103,14 +110,17 @@ def run(cache_dir: str, ledger_dir: str = budget.LEDGER_DIR, *, clients: dict | 
                 st["status"] = "RUN_LIMIT"                 # continues next run
                 break
             what = f"{root} {kw['start'][:10]}..{kw['end'][:10]}"
-            lane.record(est, what, now.isoformat())       # before the request: a killed run cannot under-count
-            try:
-                part = dbf.resample_5m(dbf._as_ohlcv_1m(dbf._retry(lambda: client.timeseries.get_range(**kw))))
+            run_spent += est
+            try:                                           # charged before the request (budget.paid_request)
+                got = budget.paid_request(lane, est, what, now.isoformat(), lambda: client.timeseries.get_range(**kw))
             except Exception as ex:  # noqa: BLE001
-                lane.record(-est, what + " reversed: request failed", now.isoformat())
                 st["status"] = f"REQUEST_FAILED: {type(ex).__name__}: {ex}"[:200]
                 break
-            run_spent += est
+            try:
+                part = dbf.resample_5m(dbf._as_ohlcv_1m(got))
+            except Exception as ex:  # noqa: BLE001 - served and paid: the charge stands
+                st["status"] = f"PARSE_FAILED: {type(ex).__name__}: {ex}"[:200]
+                break
             frame = store.merge_frames(frame, part)
             store.save_frame(frame, path)
             st["bought"].append(dict(start=kw["start"], end=kw["end"], usd=round(est, 4), rows_5m=int(len(part))))

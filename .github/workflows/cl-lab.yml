@@ -47,7 +47,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: .cl_cache
-          key: cl-feeds-${{ github.run_id }}
+          key: cl-feeds-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: cl-feeds-
 
       - name: Refresh FRED + ALFRED point-in-time macro fabric
@@ -84,7 +84,7 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: .cl_cache
-          key: cl-feeds-${{ github.run_id }}
+          key: cl-feeds-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Restore external data fabric cache (read-only; Tiingo/FMP/EODHD, no API calls)
         continue-on-error: true
@@ -109,6 +109,22 @@ jobs:
           git add automation_intelligence/cl_lab
           if git diff --cached --quiet; then echo "no CL output changes"; exit 0; fi
           git commit -m "[CL] cl-lab: ${RUN_ID} [skip ci]"
+          for i in 1 2 3 4 5; do
+            if git pull --rebase origin main && git push origin HEAD:main; then exit 0; fi
+            sleep $((i * 7))
+          done
+          exit 1
+
+      - name: Commit spend ledgers when the lab cycle failed
+        # CL 2026-10-05: paid Databento spend must reach git even when a later step fails.
+        if: failure()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git reset -q
+          if [ -d automation_intelligence/cl_lab/spend ]; then git add automation_intelligence/cl_lab/spend; fi
+          if git diff --cached --quiet; then echo "no ledger changes"; exit 0; fi
+          git commit -m "[CL] spend ledgers after a failed lab cycle [skip ci]"
           for i in 1 2 3 4 5; do
             if git pull --rebase origin main && git push origin HEAD:main; then exit 0; fi
             sleep $((i * 7))

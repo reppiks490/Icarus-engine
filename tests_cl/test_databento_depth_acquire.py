@@ -2,6 +2,7 @@
 import os
 
 import pandas as pd
+import pytest
 
 from cl_lab import store
 from cl_lab.feeds import databento_depth_acquire as depth
@@ -159,3 +160,27 @@ def test_downloads_succeed_and_lifetime_cap_holds_across_runs(tmp_path, monkeypa
         total = res["lane"]["spent_usd"]
     assert client.downloads > 0 and total <= 93.0 + 1e-9          # depth:index lifetime cap, not 95 per run
     assert client.downloads * 4.0 == total
+
+
+def test_charge_is_recorded_before_download_and_reversed_only_without_bytes(tmp_path):
+    cache, dc, led = str(tmp_path / "cache"), str(tmp_path / "depth"), str(tmp_path / "spend")
+    os.makedirs(cache)
+    for root in ("NQ", "MNQ", "ES", "MES", "RTY", "M2K", "YM", "MYM"):
+        store.save_frame(_bars(40), os.path.join(cache, f"databento_{root.lower()}_5m.csv.gz"))
+
+    class Refused(_SdkLikeHistorical):
+        def get_range(self, path=None, **kw):
+            raise RuntimeError("503 service unavailable")            # nothing streamed
+
+    class CutOff(_SdkLikeHistorical):
+        def get_range(self, path=None, **kw):
+            with open(path, "wb") as f:
+                f.write(b"partial")
+            raise ConnectionResetError("connection reset mid-stream")  # bytes arrived: billed
+
+    res = depth.acquire_profile(profile="index", cache_dir=cache, depth_cache=dc, budget_usd=10.0, max_request_usd=15.0,
+                                now=pd.Timestamp("2026-10-12T12:00:00Z"), client=Refused(cost=4.0), ledger_dir=led)
+    assert res["lane"]["spent_usd"] == pytest.approx(0.0)
+    res = depth.acquire_profile(profile="index", cache_dir=cache, depth_cache=dc, budget_usd=4.0, max_request_usd=15.0,
+                                now=pd.Timestamp("2026-10-12T12:00:00Z"), client=CutOff(cost=4.0), ledger_dir=led)
+    assert res["lane"]["spent_usd"] == pytest.approx(4.0)

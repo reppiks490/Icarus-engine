@@ -28,6 +28,7 @@ from __future__ import annotations
 
 import json
 import os
+import time
 
 LEDGER_DIR = "automation_intelligence/cl_lab/spend"
 
@@ -135,9 +136,11 @@ class Lane:
             self.data["finished"] = True
             self.save()
 
-    def record(self, usd: float, what: str, at: str):
+    def record(self, usd: float, what: str, at: str, log: bool = True):
+        """``log=False`` updates the total without a ledger line (tiny OHLCV top-ups, to keep the file small)."""
         self.data["spent_usd"] = round(float(self.data.get("spent_usd", 0.0)) + float(usd), 6)
-        self.data["entries"] = (self.data.get("entries") or [])[-499:] + [dict(usd=round(float(usd), 6), what=what, at=at)]
+        if log:
+            self.data["entries"] = (self.data.get("entries") or [])[-499:] + [dict(usd=round(float(usd), 6), what=what, at=at)]
         self.save()
 
     def save(self):
@@ -149,3 +152,30 @@ class Lane:
                 json.dump(self.data, f, indent=1, sort_keys=True)
                 f.write("\n")
             os.replace(tmp, p)
+
+
+TRANSIENT_STATUS = (502, 503, 504)
+
+
+def refused(ex) -> bool:
+    """True when the server answered with an HTTP error status: the request was refused, nothing was served."""
+    st = getattr(ex, "http_status", None)
+    return isinstance(st, int) and st >= 400
+
+
+def paid_request(lane: "Lane", est: float, what: str, at: str, fn, attempts: int = 3, waits=(5.0, 20.0), log: bool = True):
+    """Run a paid request with its estimate charged to ``lane`` BEFORE each attempt, so a run killed
+    mid-download can never leave paid data off the ledger. The charge is refunded only when the server
+    refused the attempt with an HTTP error status; only 502/503/504 refusals are retried. Anything else
+    (timeouts, resets, a killed process) keeps the charge: bytes may have been served and billed."""
+    for i in range(attempts):
+        lane.record(est, what, at, log=log)
+        try:
+            return fn()
+        except Exception as ex:  # noqa: BLE001 - classified below
+            if refused(ex):
+                lane.record(-est, f"{what} refunded: HTTP {ex.http_status}", at, log=log)
+                if ex.http_status in TRANSIENT_STATUS and i < attempts - 1:
+                    time.sleep(waits[min(i, len(waits) - 1)])
+                    continue
+            raise

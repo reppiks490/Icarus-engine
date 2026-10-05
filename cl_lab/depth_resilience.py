@@ -7,7 +7,7 @@ aggressor side (B = buyer lifted the ask, A = seller hit the bid). It is kept wh
 traded size >= the resting size at the best price on the side it hit. Measured per event, all in ticks
 of ``tick`` and signed so that positive = in the aggressor's direction:
 
-- pre-event book (the record just before the first trade): spread, touch size, top-5 depth on both sides;
+- pre-event book (the last record flagged F_LAST before the first trade): spread, touch size, top-5 depth;
 - ``levels_swept``: price levels traded through (1 = only the touch, >= 2 = a sweep);
 - post-event book, starting at the record flagged F_LAST that closes the event (the book after the event):
   swept-side top-5 depth relative to before at +1 s / +5 s / +30 s, milliseconds until that depth is back
@@ -81,7 +81,11 @@ def events(store, tick: float = 0.25, chunk: int = 500_000) -> pd.DataFrame:
     lo = np.minimum.reduceat(px[it], starts)
     n_tr = np.diff(np.r_[starts, len(it)])
     dirs = sd[first]
-    pre = first - 1
+    flag_idx = np.flatnonzero((c["flags"] & F_LAST) != 0)
+    # Pre-event book: the last record that closed an earlier event (F_LAST) before the first trade; the
+    # record just before the trade only when no flag precedes it.
+    q0 = np.searchsorted(flag_idx, first) - 1
+    pre = np.where(q0 >= 0, flag_idx[np.maximum(q0, 0)], first - 1)
     ok = pre >= 0
     pre = np.where(ok, pre, 0)
     touch = np.where(dirs > 0, c["as_"][pre], c["bs"][pre])
@@ -91,17 +95,16 @@ def events(store, tick: float = 0.25, chunk: int = 500_000) -> pd.DataFrame:
     through = np.where(dirs > 0, hi - best, best - lo)
     lv = np.where(np.isfinite(through) & (through >= 0), np.floor(np.nan_to_num(through) / tick_ns + 1e-9) + 1, 0)
     keep = ok & np.isfinite(mid[pre]) & (touch > 0) & (traded >= touch) & (lv >= 1) & (d5 > 0)
-    flag_idx = np.flatnonzero((c["flags"] & F_LAST) != 0)
     rows = []
     end_ts = ts[-1]
     for k in np.flatnonzero(keep):
-        f, l, d = int(first[k]), int(last[k]), int(dirs[k])
+        f, l, d, pk = int(first[k]), int(last[k]), int(dirs[k]), int(pre[k])
         q = np.searchsorted(flag_idx, l)
         p = int(flag_idx[q]) if q < len(flag_idx) else l          # the book after the event
         t0 = ts[p]
         depth = c["ad5"] if d > 0 else c["bd5"]
         row = dict(ts=int(ts[f]), dir=d, levels_swept=int(lv[k]), traded=int(traded[k]), n_trades=int(n_tr[k]),
-                   pre_spread=float(spread[f - 1] / tick_ns), pre_touch=int(touch[k]), pre_d5=float(d5[k]),
+                   pre_spread=float(spread[pk] / tick_ns), pre_touch=int(touch[k]), pre_d5=float(d5[k]),
                    pre_d5_opp=float(d5o[k]))
         for h in REFILL_H:
             if t0 + h * NS > end_ts:
@@ -115,13 +118,13 @@ def events(store, tick: float = 0.25, chunk: int = 500_000) -> pd.DataFrame:
         hit = np.flatnonzero(depth[win] >= d5[k])
         row["t_refill_ms"] = (float(ts[p + hit[0]] - t0) / 1e6 if len(hit) else (float(CENSOR_MS) if censored else np.nan))
         sp = spread[win]
-        hit = np.flatnonzero(np.isfinite(sp) & (sp <= spread[f - 1] + 1e-6))
+        hit = np.flatnonzero(np.isfinite(sp) & (sp <= spread[pk] + 1e-6))
         row["t_spread_ms"] = (float(ts[p + hit[0]] - t0) / 1e6 if len(hit) else (float(CENSOR_MS) if censored else np.nan))
         for h in MOVE_H:
             if t0 + h * NS > end_ts:
                 row[f"move_{h}s"] = np.nan
             else:
                 j = int(np.searchsorted(ts, t0 + h * NS, side="right")) - 1
-                row[f"move_{h}s"] = float(d * (mid[j] - mid[f - 1]) / tick_ns)
+                row[f"move_{h}s"] = float(d * (mid[j] - mid[pk]) / tick_ns)
         rows.append(row)
     return pd.DataFrame(rows, columns=COLUMNS)

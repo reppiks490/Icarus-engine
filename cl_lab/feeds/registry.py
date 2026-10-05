@@ -128,7 +128,7 @@ def refresh_binance(old: pd.DataFrame, symbol, interval, now: pd.Timestamp, max_
     return store.merge_frames(old, new), used, notes
 
 
-def _fetch(feed, old, now, max_usd=None):
+def _fetch(feed, old, now, max_usd=None, charge=None):
     k = feed["kind"]
     if k == "binance":
         return refresh_binance(old, feed["symbol"], feed["interval"], now)
@@ -149,7 +149,7 @@ def _fetch(feed, old, now, max_usd=None):
         df, meta = databento_feed.fetch_continuous_5m(
             feed["root"], old, now, dataset=feed.get("dataset") or "GLBX.MDP3",
             account=feed.get("account"), start_default=feed.get("start"),
-            max_usd=max_usd if max_usd is not None else feed.get("max_usd"),
+            max_usd=max_usd if max_usd is not None else feed.get("max_usd"), charge=charge,
         )
         notes = [
             f"symbol={meta.get('symbol')}",
@@ -159,8 +159,6 @@ def _fetch(feed, old, now, max_usd=None):
             f"account={meta.get('account')}",
         ] + ([f"fitted_to_cap_from_estimate={meta['fitted_to_cap']['full_range_estimate_usd']:.4f}"]
              if meta.get("fitted_to_cap") else [])
-        if meta.get("request_performed"):
-            notes.append(f"_spent_usd={float(meta.get('estimated_cost_usd') or 0.0)}")
         return store.merge_frames(old, df), 1 if meta.get("request_performed") else 0, notes
     raise ValueError(k)
 
@@ -174,7 +172,7 @@ def _corpus_lane(lanes, feed, ledger_dir, cache_dir):
         return None
     if lane_id not in lanes:
         lanes[lane_id] = databento_budget.Lane(lane_id, ledger_dir, mirror=cache_dir)
-        lanes[lane_id].pending = 0.0
+        lanes[lane_id].run_spent = 0.0
     return lanes[lane_id]
 
 
@@ -215,21 +213,22 @@ def refresh_all(cache_dir, only=None, now=None, ledger_dir=None) -> dict:
         try:
             old = store.load_frame(path, intraday=intraday) if feed["kind"] != "cftc" else _load_cftc(path)
             lane = _corpus_lane(lanes, feed, ledger_dir, cache_dir) if feed["kind"] == "databento" else None
-            cap = None
+            cap = charge = None
             if lane is not None:
-                allow = lane.remaining - lane.pending
+                # Never past the account's uncommitted credit, and never more than the account's reserve in
+                # one run: the sweep reads this ledger from git, so one in-flight run is all it cannot see.
+                acct = databento_budget.account_of(lane.lane)
+                allow = min(lane.remaining, databento_budget.RESERVE_USD.get(acct, 0.0) - lane.run_spent)
                 if allow <= 1e-9:
-                    raise FeedError(f"credit guard: {lane.lane} has no uncommitted credit left on its account; "
+                    raise FeedError(f"credit guard: {lane.lane} may not spend more on its account this run; "
                                     "top-up refused (databento_budget)")
                 cap = min(_feed_cap(feed), allow)
-            df, used, notes = _fetch(feed, old, now, max_usd=cap)
-            spent = [float(n.split("=", 1)[1]) for n in notes if n.startswith("_spent_usd=")]
-            notes = [n for n in notes if not n.startswith("_spent_usd=")]
-            if lane is not None and spent:
-                lane.pending += spent[0]
-                if spent[0] >= 0.05:                       # a large pull is written at once, not at the end
-                    lane.record(lane.pending, f"OHLCV top-ups through {feed['name']}", now.isoformat())
-                    lane.pending = 0.0
+
+                def charge(est, fn, lane=lane, name=feed["name"]):
+                    lane.run_spent += est
+                    return databento_budget.paid_request(lane, est, f"OHLCV {name}", now.isoformat(), fn,
+                                                         log=est >= 0.05)
+            df, used, notes = _fetch(feed, old, now, max_usd=cap, charge=charge)
             if df is None or df.empty:
                 raise FeedError("no rows")
             store.save_frame(df, path)
@@ -243,9 +242,6 @@ def refresh_all(cache_dir, only=None, now=None, ledger_dir=None) -> dict:
                        research_role=feed.get("research_role"),
                        continuous_symbol=databento_feed.continuous_symbol(feed["root"]))
         out["feeds"][feed["name"]] = ent
-    for lane in lanes.values():
-        if lane.pending > 0:
-            lane.record(lane.pending, "OHLCV top-ups", now.isoformat())
     return out
 
 

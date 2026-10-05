@@ -51,3 +51,14 @@ def test_flip_back_is_two_switches_that_cancel():
         adf.iloc[k3:, adf.columns.get_loc(col)] += 5.0
     det = [r for r in integrity.detect_rolls(adf, None) if r["status"] == "DETECTED"]
     assert len(det) == 3 and abs(sum(r["delta"] for r in det) - 5.0) < 3.0
+
+
+def test_quarter_cut_by_the_tape_start_is_adjusted_once():
+    # tape starts 2010-06-07 (Databento's first week); the June roll falls inside the partial quarter
+    adf = _tape("2010-06-07", "2010-07-30", switch_at="2010-06-10T00:00:00Z", spread=120.0)    # big enough for 40 bp
+    rolls = integrity.detect_rolls(adf, None)
+    det = [r for r in rolls if r["status"] == "DETECTED"]
+    assert len(det) == 1 and det[0]["method"] == "instrument_id"
+    adj = integrity.back_adjust(adf, rolls)
+    k = det[0]["pos"]
+    assert abs(adj["open"].iloc[k] - adj["close"].iloc[k - 1]) < 2.0

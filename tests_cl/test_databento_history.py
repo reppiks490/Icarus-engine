@@ -48,7 +48,7 @@ def test_full_history_fits_and_is_never_bought_twice(tmp_path):
     cache, led = str(tmp_path / "cache"), str(tmp_path / "spend")
     for i in range(4):
         res = dh.run(cache, led, clients=_clients(), now=f"2026-10-0{5 + i}T00:00Z")
-    assert all(v["status"] == "OK" for v in res.values())
+    assert all(v["status"] in ("OK", "FINISHED") and v["finished"] for v in res.values())
     assert res["NQ"]["history_first"].startswith("2010-06-07") and res["ES"]["spent_usd"] < 25.0
     again = _clients()
     dh.run(cache, led, clients=again, now="2026-10-10T00:00Z")
@@ -60,7 +60,7 @@ def test_cap_shortens_only_the_oldest_year(tmp_path):
     for i in range(6):                                            # $3/year: 25 buys ~8.3 of the ~14.2 years
         res = dh.run(cache, led, clients=_clients(rate=3.0), now=f"2026-10-0{1 + i}T00:00Z")
     nq = res["NQ"]
-    assert nq["status"] == "CAP_REACHED" and nq["spent_usd"] <= 25.0 + 1e-9
+    assert nq["status"] in ("CAP_REACHED", "FINISHED") and nq["finished"] and nq["spent_usd"] <= 25.0 + 1e-9
     first = pd.Timestamp(nq["history_first"])
     assert pd.Timestamp("2015-12-01", tz="UTC") < first < pd.Timestamp("2016-12-31", tz="UTC")   # newest kept, oldest cut
     after = _clients(rate=3.0)
@@ -81,3 +81,15 @@ def test_lane_ledger_survives_a_lost_commit(tmp_path):
     (tmp_path / "repo" / "history__NQ.json").unlink()
     again = budget.Lane("history:NQ", str(tmp_path / "repo"), mirror=str(tmp_path / "cache"))
     assert again.data["spent_usd"] == 7.5 and again.remaining == pytest.approx(17.5)
+
+
+def test_finished_lane_never_buys_again_after_cache_loss(tmp_path):
+    import shutil
+    cache, led = str(tmp_path / "cache"), str(tmp_path / "spend")
+    for i in range(4):
+        res = dh.run(cache, led, clients=_clients(), now=f"2026-10-0{5 + i}T00:00Z")
+    assert res["NQ"]["finished"] and budget.committed("history:NQ", led) == pytest.approx(res["NQ"]["spent_usd"])
+    shutil.rmtree(cache)                                          # the freed cap may already be spent by the sweep
+    again = _clients()
+    res = dh.run(cache, led, clients=again, now="2026-10-12T00:00Z")
+    assert res["NQ"]["status"] == "FINISHED" and again["third"].range_calls == [] and again["third"].cost_calls == []

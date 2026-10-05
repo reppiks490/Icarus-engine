@@ -6,7 +6,9 @@ continuous CME OHLCV into the ephemeral CL cache, never commits raw vendor rows,
 and estimates request cost before any historical download.
 
 Environment:
-- DATABENTO_API_KEY: required to activate the feed.
+- DATABENTO_API_KEY: primary credential, required for the broad OHLCV lane.
+- DATABENTO_API_KEY_SECONDARY: optional isolated credential for depth-data planning.
+- CL_DATABENTO_OHLCV_ACCOUNT: primary|secondary (default primary).
 - DATABENTO_DATASET: must remain GLBX.MDP3 (default).
 - DATABENTO_ROLL_RULE: v, n, or c (default v).
 - CL_DATABENTO_START: first uncached timestamp (default 2024-09-01T00:00:00Z).
@@ -37,15 +39,36 @@ def continuous_symbol(root: str, roll_rule: str | None = None) -> str:
     return f"{root}.{rule}.0"
 
 
-def _client(api_key: str | None = None) -> Any:
-    key = (api_key or os.environ.get("DATABENTO_API_KEY") or "").strip()
+def _normalize_account(account: str | None) -> str:
+    value = (account or "primary").strip().lower()
+    if value not in ("primary", "secondary"):
+        raise FeedError("Databento account must be primary or secondary")
+    return value
+
+
+def api_key_env(account: str | None = None) -> str:
+    return "DATABENTO_API_KEY_SECONDARY" if _normalize_account(account) == "secondary" else "DATABENTO_API_KEY"
+
+
+def account_configured(account: str | None = None) -> bool:
+    return bool((os.environ.get(api_key_env(account)) or "").strip())
+
+
+def historical_client(api_key: str | None = None, *, account: str | None = None) -> Any:
+    env_name = api_key_env(account)
+    key = (api_key or os.environ.get(env_name) or "").strip()
     if not key:
-        raise FeedError("DATABENTO_API_KEY not configured")
+        raise FeedError(f"{env_name} not configured")
     try:
         import databento as db  # type: ignore
     except Exception as ex:
         raise FeedError("Databento SDK unavailable; install databento>=0.87,<1") from ex
     return db.Historical(key)
+
+
+def _client(api_key: str | None = None, *, account: str | None = None) -> Any:
+    # Backward-compatible private alias used by older callers/tests.
+    return historical_client(api_key, account=account)
 
 
 def _as_ohlcv_1m(store: Any) -> pd.DataFrame:
@@ -124,7 +147,10 @@ def fetch_continuous_5m(
             "request_performed": False,
         }
 
-    client = client or _client()
+    account = (os.environ.get("CL_DATABENTO_OHLCV_ACCOUNT") or "primary").strip().lower()
+    if account not in ("primary", "secondary"):
+        raise FeedError("CL_DATABENTO_OHLCV_ACCOUNT must be primary or secondary")
+    client = client or historical_client(account=account)
     kwargs = dict(
         dataset=dataset,
         symbols=symbol,
@@ -164,4 +190,6 @@ def fetch_continuous_5m(
         "start": start.isoformat(),
         "end": end.isoformat(),
         "request_performed": True,
+        "account": account,
+        "api_key_env": api_key_env(account),
     }

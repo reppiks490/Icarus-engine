@@ -287,15 +287,22 @@ def parse_fomc_html(raw: bytes, year: int | None = None) -> pd.DataFrame:
     if next_marker: tail=tail[:next_marker.start()]
     matches=list(re.finditer(rf"\b({MONTH_RE})\s+(\d{{1,2}})(?:\s*[-–]\s*(\d{{1,2}}))?(\*)?",tail,re.I))
     out=[]
-    for idx,m in enumerate(matches):
+    meeting_index=0
+    for m in matches:
+        # The page also contains single-date minute-release references inside each
+        # meeting block. Regular scheduled meetings are represented as date ranges;
+        # reject single dates rather than misclassifying minutes as policy decisions.
+        if not m.group(3):
+            continue
+        meeting_index+=1
         mon=MONTHS[m.group(1).title()]
-        decision_day=int(m.group(3) or m.group(2))
+        decision_day=int(m.group(3))
         try: d=date(year,mon,decision_day)
         except ValueError: continue
         sep=bool(m.group(4))
         title="FOMC policy decision" + (" (SEP meeting)" if sep else "")
         out.append(_record(
-            "FOMC",title,event_date=d,stable_id=f"{year}-meeting-{idx+1}",
+            "FOMC",title,event_date=d,stable_id=f"{year}-meeting-{meeting_index}",
             source_url=SOURCES["FOMC"],timing_basis="meeting_end_date; statement time not asserted",
         ))
     return pd.DataFrame(out)

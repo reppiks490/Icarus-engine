@@ -8,7 +8,8 @@ and estimates request cost before any historical download.
 Environment:
 - DATABENTO_API_KEY: primary credential, required for the broad OHLCV lane.
 - DATABENTO_API_KEY_SECONDARY: optional isolated credential for depth-data planning.
-- CL_DATABENTO_OHLCV_ACCOUNT: primary|secondary (default primary).
+- DATABENTO_API_KEY_THIRD: optional third isolated credential for depth-data planning.
+- CL_DATABENTO_OHLCV_ACCOUNT: primary|secondary|third (default primary).
 - DATABENTO_DATASET: must remain GLBX.MDP3 (default).
 - DATABENTO_ROLL_RULE: v, n, or c (default v).
 - CL_DATABENTO_START: first uncached timestamp (default 2024-09-01T00:00:00Z).
@@ -41,13 +42,13 @@ def continuous_symbol(root: str, roll_rule: str | None = None) -> str:
 
 def _normalize_account(account: str | None) -> str:
     value = (account or "primary").strip().lower()
-    if value not in ("primary", "secondary"):
-        raise FeedError("Databento account must be primary or secondary")
+    if value not in ("primary", "secondary", "third"):
+        raise FeedError("Databento account must be primary, secondary, or third")
     return value
 
 
 def api_key_env(account: str | None = None) -> str:
-    return "DATABENTO_API_KEY_SECONDARY" if _normalize_account(account) == "secondary" else "DATABENTO_API_KEY"
+    return {"primary": "DATABENTO_API_KEY", "secondary": "DATABENTO_API_KEY_SECONDARY", "third": "DATABENTO_API_KEY_THIRD"}[_normalize_account(account)]
 
 
 def account_configured(account: str | None = None) -> bool:
@@ -148,8 +149,8 @@ def fetch_continuous_5m(
         }
 
     account = (os.environ.get("CL_DATABENTO_OHLCV_ACCOUNT") or "primary").strip().lower()
-    if account not in ("primary", "secondary"):
-        raise FeedError("CL_DATABENTO_OHLCV_ACCOUNT must be primary or secondary")
+    if account not in ("primary", "secondary", "third"):
+        raise FeedError("CL_DATABENTO_OHLCV_ACCOUNT must be primary, secondary, or third")
     client = client or historical_client(account=account)
     kwargs = dict(
         dataset=dataset,

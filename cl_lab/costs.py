@@ -62,5 +62,6 @@ class PctCostModel:
 MNQ = CostModel("MNQ", 0.25, 0.50, 0.85, 1.0)
 MNQ_STRESS = CostModel("MNQ_STRESS", 0.25, 0.50, 1.70, 2.0)
 NQ = CostModel("NQ", 0.25, 5.00, 2.50, 1.0)
+NQ_STRESS = CostModel("NQ_STRESS", 0.25, 5.00, 5.00, 2.0)  # CL 2026-10-04: doubles both, like MNQ_STRESS
 CRYPTO_PERP = PctCostModel("CRYPTO_PERP", 5.0, 1.0)          # ~taker perp fee + 1 bp slippage per side
 CRYPTO_PERP_STRESS = PctCostModel("CRYPTO_PERP_STRESS", 10.0, 2.0)

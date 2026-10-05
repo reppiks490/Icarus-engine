@@ -77,6 +77,14 @@ jobs:
           path: .cl_cache
           key: cl-feeds-${{ github.run_id }}
 
+      - name: Restore external data fabric cache (read-only; Tiingo/FMP/EODHD, no API calls)
+        continue-on-error: true
+        uses: actions/cache/restore@v4
+        with:
+          path: .external_data_cache
+          key: external-data-read-${{ github.run_id }}
+          restore-keys: external-data-
+
       - name: Run lab cycle
         id: lab
         run: |

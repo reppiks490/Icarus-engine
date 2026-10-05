@@ -20,7 +20,8 @@ from datetime import date
 
 import pandas as pd
 
-from . import (EXECUTION_AUTHORIZED, LAB_VERSION, LANE, bars, corpus, costs, explore, grammar, hypotheses,
+from . import (EXECUTION_AUTHORIZED, LAB_VERSION, LANE, backtest, bars, boos, corpus, costs, explore, external, grammar,
+               hypotheses,
                extend, hypotheses_r2, integrity, ml, pulse_track, registry, sessions, store, validate)
 
 ASSETS = {
@@ -150,6 +151,57 @@ def load_asset(name, cfg, cache_dir):
     return sess, ident
 
 
+def boos_section(out_dir, cache_dir, external_dir):
+    """cl-boos1 (docs/CL_PREREG_R5.md): fixed families re-run on NQ 2010-06 -> 2024-09; recomputed only
+    when the history, the external breadth inputs or the lab code change."""
+    p = os.path.join(cache_dir, "databento_hist_nq_5m.csv.gz")
+    if not os.path.exists(p):
+        return dict(status="UNAVAILABLE", protocol=boos.BOOS_VERSION,
+                    reason="NQ history not cached yet (4th Databento key backfill, cl_lab/feeds/databento_history.py)")
+    closes = external.tiingo_closes(external_dir) if external_dir and os.path.isdir(external_dir) else pd.DataFrame()
+    br = external.breadth(closes)
+    fp = hashlib.sha256((_sha_file(p) + _code_identity() + store.sha256_frame(br.to_frame()) if len(br) else
+                         _sha_file(p) + _code_identity()).encode()).hexdigest()
+    cached = _read_json(os.path.join(out_dir, "boos_latest.json"), {})
+    if cached.get("fingerprint") == fp:
+        return cached
+    df = store.load_frame(p)[list(bars.COLUMNS)].astype(float)
+    adf = bars.annotate(df)
+    ndx = _daily_feed(cache_dir, "fred_nasdaq100", "NASDAQ100")
+    rolls = integrity.detect_rolls(adf, ndx)
+    adf = integrity.back_adjust(adf, rolls)
+    sess = sessions.build_sessions(adf)
+    integrity.mark_sessions(sess, rolls)
+    sess.cache["ml_kind"] = "futures"
+    for feed, col in (("cboe_vix", "VIX_close"), ("cboe_vix9d", "VIX9D_close")):
+        q = os.path.join(cache_dir, f"{feed}.csv.gz")
+        if os.path.exists(q):
+            ext = store.load_frame(q, intraday=False)
+            if col in ext:
+                sess.cache[("ext", col)] = ext[col]
+    if len(br):
+        sess.cache[("ext", "MEGA8_UP_FRAC")] = br
+    fams = [("cl-g1", grammar.enumerate_candidates(), backtest.run), ("cl-r1", hypotheses.CANDIDATES, hypotheses.run_r),
+            ("cl-r2/A", hypotheses_r2.A_CANDIDATES, hypotheses_r2.run_a), ("cl-ml1", ml.CANDIDATES, ml.run_m),
+            ("cl-r6", boos.R6_CANDIDATES, boos.run_r6)]
+    families, lines = {}, []
+    for name, cands, fn in fams:
+        recs, diag = boos.evaluate(sess, cands, fn, costs.NQ, costs.NQ_STRESS, name)
+        families[name] = dict(diagnostics=diag, confirmed=[r for r in recs if r["status"] == "BOOS_CONFIRMED"],
+                              top=sorted(recs, key=lambda r: -(r["nw_t"] if r["nw_t"] is not None else -99))[:10])
+        lines += [json.dumps(r, sort_keys=True, default=str) for r in recs]
+    with open(os.path.join(out_dir, "boos_records.jsonl.tmp"), "w", encoding="utf-8") as f:
+        f.write("\n".join(lines) + "\n")
+    os.replace(os.path.join(out_dir, "boos_records.jsonl.tmp"), os.path.join(out_dir, "boos_records.jsonl"))
+    out = dict(schema="cl_lab.boos/1", status="EVALUATED", protocol=boos.BOOS_VERSION, fingerprint=fp,
+               window=[str(boos.WINDOW[0].date()), str(boos.WINDOW[1].date())], sessions=int(sess.D),
+               first=str(sess.dates[0]), last=str(sess.dates[-1]), breadth_available=bool(len(br)),
+               integrity=dict(integrity.summary(rolls), basis_check=integrity.basis_check(sess, ndx)),
+               families=families, records=len(lines), execution_authorized=False)
+    _write_json(os.path.join(out_dir, "boos_latest.json"), out)
+    return out
+
+
 def pulse_section(out_dir, mnq_dates, var_sr, rolls=(), cache_dir=None):
     """THE PULSE OF ICARUS through the CL gates; recomputed only when its code, preset or tape change."""
     if not os.path.exists(pulse_track.TAPE):
@@ -199,7 +251,7 @@ def pulse_section(out_dir, mnq_dates, var_sr, rolls=(), cache_dir=None):
     return out
 
 
-def run_cycle(out_dir, cache_dir=".cl_cache", assets=None, now=None):
+def run_cycle(out_dir, cache_dir=".cl_cache", assets=None, now=None, external_dir=".external_data_cache"):
     now = pd.Timestamp.now(tz="UTC") if now is None else pd.Timestamp(now)
     at = now.isoformat()
     names = assets or list(ASSETS)
@@ -214,6 +266,8 @@ def run_cycle(out_dir, cache_dir=".cl_cache", assets=None, now=None):
                   explore=dict(version=explore.EXPLORE_VERSION, per_run=explore.EXPLORE_PER_RUN, day=now.date().isoformat()),
                   r2=hypotheses_r2.R2_VERSION, ml=ml.ML_VERSION, data_version=integrity.DATA_VERSION,
                   prereg_r2=(_sha_file(PREREG_R2) if os.path.exists(PREREG_R2) else None))
+    hist = os.path.join(cache_dir, "databento_hist_nq_5m.csv.gz")
+    inputs["nq_history"] = _sha_file(hist) if os.path.exists(hist) else None
     fingerprint = hashlib.sha256(json.dumps(inputs, sort_keys=True, default=str).encode()).hexdigest()
     run_id = f"cl-lab-{fingerprint[:16]}"
     latest_path = os.path.join(out_dir, "latest.json")
@@ -347,10 +401,17 @@ def run_cycle(out_dir, cache_dir=".cl_cache", assets=None, now=None):
                                                            "preset_source", "status", "reason", "forward",
                                                            "tape_last_bar_close")}
 
+    try:  # the backward test must never stop the forward lab from persisting its run
+        boos_out = boos_section(out_dir, cache_dir, external_dir)
+    except Exception as ex:  # noqa: BLE001
+        boos_out = dict(status="ERROR", protocol=boos.BOOS_VERSION, error=f"{type(ex).__name__}: {ex}"[:300])
     payload = dict(schema="cl_lab.run/1", lane=LANE, run_id=run_id, input_fingerprint=fingerprint, inputs=inputs,
                    started_at=at, finished_at=pd.Timestamp.now(tz="UTC").isoformat(), code_commit=_git_commit(),
                    candidates=len(cands), assets=per_asset, corpus=corpus_state, evidence_class="RESEARCH_ONLY",
                    calendar_flows=calendar_flows,
+                   backward_oos={k: v for k, v in boos_out.items() if k not in ("families",)} |
+                   dict(families={f: dict(diagnostics=v["diagnostics"], confirmed=v["confirmed"])
+                                  for f, v in (boos_out.get("families") or {}).items()}),
                    tune_end=str(validate.TUNE_END), forward_start=str(FORWARD_START),
                    execution_authorized=EXECUTION_AUTHORIZED, production_decision_authorized=False)
     hist_sha = _write_json(os.path.join(out_dir, "history", f"{run_id}.json"), payload)
@@ -427,8 +488,9 @@ def main(argv=None):
     ap.add_argument("--cache", default=".cl_cache")
     ap.add_argument("--assets", default="")
     ap.add_argument("--now", default=None)
+    ap.add_argument("--external", default=".external_data_cache")
     a = ap.parse_args(argv)
-    res = run_cycle(a.out, a.cache, [x for x in a.assets.split(",") if x] or None, a.now)
+    res = run_cycle(a.out, a.cache, [x for x in a.assets.split(",") if x] or None, a.now, a.external)
     print(json.dumps(res))
 
 

@@ -28,3 +28,14 @@ For each family, on the full 2010-06 → 2024-08 window:
 ## Reporting
 - Every family's full table goes in the run output, rejections included.
 - Results are appended to this file after the run. The specification above is never edited.
+
+## R6 megacap-breadth conditioners (registered 2026-10-04, before the data exists)
+Breadth comes from the external data fabric's cached Tiingo daily closes (read-only; no API calls). On each date it is the fraction of NVDA, AAPL, MSFT, AVGO, AMZN, META, GOOGL and TSLA that closed up, using only names with a price on both days and requiring at least 5 of them. A session uses the last value dated strictly before it.
+
+The family is `cl-r6`, 4 trials:
+- The base rule is either cl-r1 unconditional end-of-day momentum or its mirror, R2-A A1 reversal.
+- The filter is either previous-day breadth ≥ 0.75 (`high`) or ≤ 0.25 (`low`).
+
+Evaluation uses only `cl-boos1` on NQ 2010-06 → 2024-09, its own family with its own BY and DSR. It is not evaluated on the 2024–2026 MNQ tape, where the unconditional reversal's HOLD was already seen.
+
+Earnings-event conditioners are deferred. The fabric's FMP earnings calendar holds only upcoming dates, so historical megacap earnings dates need a separate, budgeted FMP pull before any such hypothesis can be tested.

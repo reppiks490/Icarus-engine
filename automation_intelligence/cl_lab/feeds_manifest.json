@@ -5,18 +5,18 @@
    "integrity": {
     "dup_index": 0,
     "first": "2026-10-01T18:50:00+00:00",
-    "last": "2026-10-05T03:50:00+00:00",
+    "last": "2026-10-05T04:25:00+00:00",
     "max_gap_minutes": 5.0,
     "non_monotonic": 0,
     "nonpositive": 0,
     "ohlc_violations": 0,
-    "rows": 973
+    "rows": 980
    },
    "kind": "coinbase",
    "name": "btcusd_cb_5m",
    "notes": [],
    "requests": null,
-   "sha256": "768a83dc3cb5155864383e86b999299cd8d4ca8e5feb14673f214777ee8f9fc9",
+   "sha256": "3fa2406910e47ea38afd85668427999f84503c7c780d1ccaf688d3443bb5db21",
    "source": null,
    "status": "ok"
   },
@@ -162,7 +162,8 @@
     "symbol=6A.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-02T20:55:00+00:00..2026-10-04T19:30:00+00:00"
+    "range=2026-10-02T20:55:00+00:00..2026-10-04T20:00:00+00:00",
+    "account=primary"
    ],
    "requests": 1,
    "research_role": "fx",
@@ -191,7 +192,8 @@
     "symbol=6B.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-02T20:55:00+00:00..2026-10-04T19:30:00+00:00"
+    "range=2026-10-02T20:55:00+00:00..2026-10-04T20:00:00+00:00",
+    "account=primary"
    ],
    "requests": 1,
    "research_role": "fx",
@@ -220,7 +222,8 @@
     "symbol=6E.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-02T20:55:00+00:00..2026-10-04T19:30:00+00:00"
+    "range=2026-10-02T20:55:00+00:00..2026-10-04T20:00:00+00:00",
+    "account=primary"
    ],
    "requests": 1,
    "research_role": "fx",
@@ -249,7 +252,8 @@
     "symbol=6J.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-02T20:55:00+00:00..2026-10-04T19:30:00+00:00"
+    "range=2026-10-02T20:55:00+00:00..2026-10-04T20:00:00+00:00",
+    "account=primary"
    ],
    "requests": 1,
    "research_role": "fx",
@@ -265,25 +269,26 @@
    "integrity": {
     "dup_index": 0,
     "first": "2024-09-01T22:00:00+00:00",
-    "last": "2026-10-04T19:25:00+00:00",
+    "last": "2026-10-04T19:30:00+00:00",
     "max_gap_minutes": 4385.0,
     "non_monotonic": 0,
     "nonpositive": 0,
     "ohlc_violations": 0,
-    "rows": 140753
+    "rows": 140754
    },
    "kind": "databento",
    "name": "databento_btc_5m",
    "notes": [
     "symbol=BTC.v.0",
-    "estimated_cost_usd=0.000044",
+    "estimated_cost_usd=0.000033",
     "request_performed=True",
-    "range=2026-10-04T18:55:00+00:00..2026-10-04T19:30:00+00:00"
+    "range=2026-10-04T19:25:00+00:00..2026-10-04T20:00:00+00:00",
+    "account=primary"
    ],
    "requests": 1,
    "research_role": "core",
    "root": "BTC",
-   "sha256": "57206a617d5f62712fd6bde9997a937d24c5735c1a8711144324e8aacee1fe94",
+   "sha256": "182798f814a9497ad78907009901902dea2e7f4fe00a922bb8a0ba4a599b103e",
    "source": null,
    "status": "ok"
   },
@@ -307,7 +312,8 @@
     "symbol=CL.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-02T20:55:00+00:00..2026-10-04T19:30:00+00:00"
+    "range=2026-10-02T20:55:00+00:00..2026-10-04T20:00:00+00:00",
+    "account=primary"
    ],
    "requests": 1,
    "research_role": "energy",
@@ -319,17 +325,32 @@
   "databento_dx_5m": {
    "continuous_symbol": "DX.v.0",
    "dataset": "IFUS.IMPACT",
-   "error": "FeedError: Databento estimated cost $15.134379 for DX.v.0 exceeds CL_DATABENTO_MAX_USD_PER_FEED=$3.00; no data requested",
+   "error": null,
    "integrity": {
-    "rows": 0
+    "dup_index": 0,
+    "first": "2025-07-01T00:00:00+00:00",
+    "last": "2026-10-02T20:55:00+00:00",
+    "max_gap_minutes": 3290.0,
+    "non_monotonic": 0,
+    "nonpositive": 0,
+    "ohlc_violations": 0,
+    "rows": 82358
    },
    "kind": "databento",
    "name": "databento_dx_5m",
+   "notes": [
+    "symbol=DX.v.0",
+    "estimated_cost_usd=8.931827",
+    "request_performed=True",
+    "range=2025-07-01T00:00:00+00:00..2026-10-04T20:00:00+00:00",
+    "account=secondary"
+   ],
+   "requests": 1,
    "research_role": "dollar_index",
    "root": "DX",
-   "sha256": null,
+   "sha256": "fc8745aaae645030a0e8ebd0e1d0c7016e46f8a2bf9b1e3d39fbb0313dd087c1",
    "source": null,
-   "status": "error"
+   "status": "ok"
   },
   "databento_es_5m": {
    "continuous_symbol": "ES.v.0",
@@ -351,7 +372,8 @@
     "symbol=ES.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-02T20:55:00+00:00..2026-10-04T19:30:00+00:00"
+    "range=2026-10-02T20:55:00+00:00..2026-10-04T20:00:00+00:00",
+    "account=primary"
    ],
    "requests": 1,
    "research_role": "core",
@@ -380,7 +402,8 @@
     "symbol=GC.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-02T20:55:00+00:00..2026-10-04T19:30:00+00:00"
+    "range=2026-10-02T20:55:00+00:00..2026-10-04T20:00:00+00:00",
+    "account=primary"
    ],
    "requests": 1,
    "research_role": "core",
@@ -409,7 +432,8 @@
     "symbol=HG.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-02T20:55:00+00:00..2026-10-04T19:30:00+00:00"
+    "range=2026-10-02T20:55:00+00:00..2026-10-04T20:00:00+00:00",
+    "account=primary"
    ],
    "requests": 1,
    "research_role": "industrial_metals",
@@ -438,7 +462,8 @@
     "symbol=M2K.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-02T20:55:00+00:00..2026-10-04T19:30:00+00:00"
+    "range=2026-10-02T20:55:00+00:00..2026-10-04T20:00:00+00:00",
+    "account=primary"
    ],
    "requests": 1,
    "research_role": "core",
@@ -454,25 +479,26 @@
    "integrity": {
     "dup_index": 0,
     "first": "2024-09-01T22:00:00+00:00",
-    "last": "2026-10-04T19:25:00+00:00",
+    "last": "2026-10-04T19:50:00+00:00",
     "max_gap_minutes": 4385.0,
     "non_monotonic": 0,
     "nonpositive": 0,
     "ohlc_violations": 0,
-    "rows": 153249
+    "rows": 153254
    },
    "kind": "databento",
    "name": "databento_mbt_5m",
    "notes": [
     "symbol=MBT.v.0",
-    "estimated_cost_usd=0.000040",
+    "estimated_cost_usd=0.000047",
     "request_performed=True",
-    "range=2026-10-04T18:45:00+00:00..2026-10-04T19:30:00+00:00"
+    "range=2026-10-04T19:25:00+00:00..2026-10-04T20:00:00+00:00",
+    "account=primary"
    ],
    "requests": 1,
    "research_role": "core",
    "root": "MBT",
-   "sha256": "cea4ca8152c750f1ca4825f8ff7338ff1a7eb9f15b6d4781217a98cee07b6a82",
+   "sha256": "84203639906923243117f9c99b806d200e85106df71b6f7badaa16fc9f947312",
    "source": null,
    "status": "ok"
   },
@@ -496,7 +522,8 @@
     "symbol=MCL.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-02T20:55:00+00:00..2026-10-04T19:30:00+00:00"
+    "range=2026-10-02T20:55:00+00:00..2026-10-04T20:00:00+00:00",
+    "account=primary"
    ],
    "requests": 1,
    "research_role": "energy",
@@ -525,7 +552,8 @@
     "symbol=MES.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-02T20:55:00+00:00..2026-10-04T19:30:00+00:00"
+    "range=2026-10-02T20:55:00+00:00..2026-10-04T20:00:00+00:00",
+    "account=primary"
    ],
    "requests": 1,
    "research_role": "core",
@@ -554,7 +582,8 @@
     "symbol=MGC.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-02T20:55:00+00:00..2026-10-04T19:30:00+00:00"
+    "range=2026-10-02T20:55:00+00:00..2026-10-04T20:00:00+00:00",
+    "account=primary"
    ],
    "requests": 1,
    "research_role": "core",
@@ -583,7 +612,8 @@
     "symbol=MNQ.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-02T20:55:00+00:00..2026-10-04T19:30:00+00:00"
+    "range=2026-10-02T20:55:00+00:00..2026-10-04T20:00:00+00:00",
+    "account=primary"
    ],
    "requests": 1,
    "research_role": "core",
@@ -612,7 +642,8 @@
     "symbol=MYM.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-02T20:55:00+00:00..2026-10-04T19:30:00+00:00"
+    "range=2026-10-02T20:55:00+00:00..2026-10-04T20:00:00+00:00",
+    "account=primary"
    ],
    "requests": 1,
    "research_role": "core",
@@ -641,7 +672,8 @@
     "symbol=NG.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-02T20:55:00+00:00..2026-10-04T19:30:00+00:00"
+    "range=2026-10-02T20:55:00+00:00..2026-10-04T20:00:00+00:00",
+    "account=primary"
    ],
    "requests": 1,
    "research_role": "energy",
@@ -670,7 +702,8 @@
     "symbol=NQ.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-02T20:55:00+00:00..2026-10-04T19:30:00+00:00"
+    "range=2026-10-02T20:55:00+00:00..2026-10-04T20:00:00+00:00",
+    "account=primary"
    ],
    "requests": 1,
    "research_role": "core",
@@ -699,7 +732,8 @@
     "symbol=PA.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-02T20:55:00+00:00..2026-10-04T19:30:00+00:00"
+    "range=2026-10-02T20:55:00+00:00..2026-10-04T20:00:00+00:00",
+    "account=primary"
    ],
    "requests": 1,
    "research_role": "core",
@@ -726,14 +760,15 @@
    "name": "databento_pl_5m",
    "notes": [
     "symbol=PL.v.0",
-    "estimated_cost_usd=2.404976",
+    "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2024-09-01T00:00:00+00:00..2026-10-04T19:30:00+00:00"
+    "range=2026-10-02T20:55:00+00:00..2026-10-04T20:00:00+00:00",
+    "account=primary"
    ],
    "requests": 1,
    "research_role": "core",
    "root": "PL",
-   "sha256": "d1f74f8c27272a68c4e76d108de4867d0d08ae63e00c4af50b5569f49a9e239a",
+   "sha256": "922958c7cc4f5d0e02a7d27bb794d995746bb83f16f9acac1c7128294983359f",
    "source": null,
    "status": "ok"
   },
@@ -757,7 +792,8 @@
     "symbol=RTY.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-02T20:55:00+00:00..2026-10-04T19:30:00+00:00"
+    "range=2026-10-02T20:55:00+00:00..2026-10-04T20:00:00+00:00",
+    "account=primary"
    ],
    "requests": 1,
    "research_role": "core",
@@ -786,7 +822,8 @@
     "symbol=SI.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-02T20:55:00+00:00..2026-10-04T19:30:00+00:00"
+    "range=2026-10-02T20:55:00+00:00..2026-10-04T20:00:00+00:00",
+    "account=primary"
    ],
    "requests": 1,
    "research_role": "core",
@@ -815,7 +852,8 @@
     "symbol=SIL.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-02T20:55:00+00:00..2026-10-04T19:30:00+00:00"
+    "range=2026-10-02T20:55:00+00:00..2026-10-04T20:00:00+00:00",
+    "account=primary"
    ],
    "requests": 1,
    "research_role": "core",
@@ -844,7 +882,8 @@
     "symbol=SR3.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-02T20:55:00+00:00..2026-10-04T19:30:00+00:00"
+    "range=2026-10-02T20:55:00+00:00..2026-10-04T20:00:00+00:00",
+    "account=primary"
    ],
    "requests": 1,
    "research_role": "rates",
@@ -853,35 +892,35 @@
    "source": null,
    "status": "ok"
   },
-  "databento_vx_5m": {
-   "continuous_symbol": "VX.v.0",
-   "dataset": "XCBF.PITCH",
-   "error": "FeedError: Databento estimated cost $97.968541 for VX.v.0 exceeds CL_DATABENTO_MAX_USD_PER_FEED=$3.00; no data requested",
-   "integrity": {
-    "rows": 0
-   },
-   "kind": "databento",
-   "name": "databento_vx_5m",
-   "research_role": "volatility",
-   "root": "VX",
-   "sha256": null,
-   "source": null,
-   "status": "error"
-  },
   "databento_vxm_5m": {
    "continuous_symbol": "VXM.v.0",
    "dataset": "XCBF.PITCH",
-   "error": "FeedError: Databento estimated cost $30.479096 for VXM.v.0 exceeds CL_DATABENTO_MAX_USD_PER_FEED=$3.00; no data requested",
+   "error": null,
    "integrity": {
-    "rows": 0
+    "dup_index": 0,
+    "first": "2025-07-01T00:00:00+00:00",
+    "last": "2026-10-02T20:55:00+00:00",
+    "max_gap_minutes": 3395.0,
+    "non_monotonic": 0,
+    "nonpositive": 0,
+    "ohlc_violations": 0,
+    "rows": 58993
    },
    "kind": "databento",
    "name": "databento_vxm_5m",
+   "notes": [
+    "symbol=VXM.v.0",
+    "estimated_cost_usd=17.527025",
+    "request_performed=True",
+    "range=2025-07-01T00:00:00+00:00..2026-10-04T20:00:00+00:00",
+    "account=secondary"
+   ],
+   "requests": 1,
    "research_role": "volatility",
    "root": "VXM",
-   "sha256": null,
+   "sha256": "707f120ea4fbeb3226ad2a74843a5b2cbe3b5c119880c2779cefd0170e6fa9b3",
    "source": null,
-   "status": "error"
+   "status": "ok"
   },
   "databento_ym_5m": {
    "continuous_symbol": "YM.v.0",
@@ -903,7 +942,8 @@
     "symbol=YM.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-02T20:55:00+00:00..2026-10-04T19:30:00+00:00"
+    "range=2026-10-02T20:55:00+00:00..2026-10-04T20:00:00+00:00",
+    "account=primary"
    ],
    "requests": 1,
    "research_role": "core",
@@ -932,7 +972,8 @@
     "symbol=ZB.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-02T20:55:00+00:00..2026-10-04T19:30:00+00:00"
+    "range=2026-10-02T20:55:00+00:00..2026-10-04T20:00:00+00:00",
+    "account=primary"
    ],
    "requests": 1,
    "research_role": "rates",
@@ -961,7 +1002,8 @@
     "symbol=ZC.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-02T18:15:00+00:00..2026-10-04T19:30:00+00:00"
+    "range=2026-10-02T18:15:00+00:00..2026-10-04T20:00:00+00:00",
+    "account=primary"
    ],
    "requests": 1,
    "research_role": "agriculture",
@@ -990,7 +1032,8 @@
     "symbol=ZF.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-02T20:55:00+00:00..2026-10-04T19:30:00+00:00"
+    "range=2026-10-02T20:55:00+00:00..2026-10-04T20:00:00+00:00",
+    "account=primary"
    ],
    "requests": 1,
    "research_role": "rates",
@@ -1019,7 +1062,8 @@
     "symbol=ZN.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-02T20:55:00+00:00..2026-10-04T19:30:00+00:00"
+    "range=2026-10-02T20:55:00+00:00..2026-10-04T20:00:00+00:00",
+    "account=primary"
    ],
    "requests": 1,
    "research_role": "rates",
@@ -1046,14 +1090,15 @@
    "name": "databento_zs_5m",
    "notes": [
     "symbol=ZS.v.0",
-    "estimated_cost_usd=1.752263",
+    "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2024-09-01T00:00:00+00:00..2026-10-04T19:30:00+00:00"
+    "range=2026-10-02T18:15:00+00:00..2026-10-04T20:00:00+00:00",
+    "account=primary"
    ],
    "requests": 1,
    "research_role": "agriculture",
    "root": "ZS",
-   "sha256": "a6a5a7d3706fb530a51a2f3fec08ba86dfd7c368496357510a6c39f0eb7bf04f",
+   "sha256": "9406469c7e4779fd391627d29a6099dd2a9c10c825e8a469edba91661b48050e",
    "source": null,
    "status": "ok"
   },
@@ -1077,7 +1122,8 @@
     "symbol=ZT.v.0",
     "estimated_cost_usd=0.000015",
     "request_performed=True",
-    "range=2026-10-02T20:55:00+00:00..2026-10-04T19:30:00+00:00"
+    "range=2026-10-02T20:55:00+00:00..2026-10-04T20:00:00+00:00",
+    "account=primary"
    ],
    "requests": 1,
    "research_role": "rates",
@@ -1106,7 +1152,8 @@
     "symbol=ZW.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-02T18:15:00+00:00..2026-10-04T19:30:00+00:00"
+    "range=2026-10-02T18:15:00+00:00..2026-10-04T20:00:00+00:00",
+    "account=primary"
    ],
    "requests": 1,
    "research_role": "agriculture",
@@ -1238,6 +1285,6 @@
    "status": "ok"
   }
  },
- "generated_at": "2026-10-05T03:52:56.260056+00:00",
+ "generated_at": "2026-10-05T04:25:21.947369+00:00",
  "schema": "cl_lab.feeds.manifest/1"
 }

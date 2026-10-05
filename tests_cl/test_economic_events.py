@@ -110,3 +110,35 @@ def test_outputs_are_compact_and_causal(tmp_path):
     p=json.loads(up.read_text())
     assert p["timezone"]=="America/New_York"
     assert all("observed_at" not in x for x in p["events"])
+
+
+BLS_YEAR_HTML=b"""<html><body><h1>Schedule of Selected Releases 2026</h1><table>
+<tr><th>Date</th><th>Time</th><th>Release</th></tr>
+<tr><td>Friday, November 6, 2026</td><td>08:30 AM</td><td>Employment Situation for October 2026</td></tr>
+<tr><td>Tuesday, November 10, 2026</td><td>08:30 AM</td><td>Consumer Price Index for October 2026</td></tr>
+<tr><td>Wednesday, November 18, 2026</td><td>08:30 AM</td><td>Producer Price Index for October 2026</td></tr>
+</table></body></html>"""
+
+
+def test_collect_uses_first_party_bls_html_when_ics_is_blocked(monkeypatch,tmp_path):
+    def fake(url):
+        if url==ev.SOURCES["BLS"]:
+            raise ev.FeedError("HTTP 403")
+        if url=="https://www.bls.gov/schedule/2026/":
+            return BLS_YEAR_HTML
+        if url==ev.SOURCES["BEA"]:
+            return BEA_HTML
+        if url==ev.SOURCES["CENSUS"]:
+            return CENSUS_HTML
+        if url==ev.SOURCES["FOMC"]:
+            return FOMC_HTML
+        raise AssertionError(url)
+    monkeypatch.setattr(ev,"get_bytes",fake)
+    cur,hist,status=ev.collect(tmp_path,pd.Timestamp("2026-10-05T12:00:00Z"))
+    assert status["BLS"]["status"]=="ok"
+    assert status["BLS"]["transport"]=="html_fallback"
+    bls=cur[cur["source"]=="BLS"]
+    assert len(bls)==3
+    cpi=bls[bls["title"].str.contains("Consumer Price")].iloc[0]
+    assert cpi["scheduled_at_et"].startswith("2026-11-10T08:30:00")
+    assert cpi["reference_period"]=="October 2026"

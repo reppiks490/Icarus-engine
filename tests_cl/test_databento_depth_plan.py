@@ -24,10 +24,13 @@ class _History:
 def test_secondary_key_selection_is_isolated(monkeypatch):
     monkeypatch.setenv("DATABENTO_API_KEY", "primary-test")
     monkeypatch.setenv("DATABENTO_API_KEY_SECONDARY", "secondary-test")
+    monkeypatch.setenv("DATABENTO_API_KEY_THIRD", "third-test")
     assert dbfeed.api_key_env("primary") == "DATABENTO_API_KEY"
     assert dbfeed.api_key_env("secondary") == "DATABENTO_API_KEY_SECONDARY"
+    assert dbfeed.api_key_env("third") == "DATABENTO_API_KEY_THIRD"
     assert dbfeed.account_configured("primary")
     assert dbfeed.account_configured("secondary")
+    assert dbfeed.account_configured("third")
 
 
 def test_depth_planner_estimates_only_and_never_downloads():
@@ -65,3 +68,23 @@ def test_depth_budget_frontier_is_deterministic_and_nonspending():
     assert front["spend_authorized"] is False
     assert front["execution_authorized"] is False
     assert [r["root"] for r in front["selected"]] == ["ES", "GC"]
+
+
+def test_third_depth_account_is_supported_without_cross_account_fallback(monkeypatch):
+    monkeypatch.delenv("DATABENTO_API_KEY", raising=False)
+    monkeypatch.delenv("DATABENTO_API_KEY_SECONDARY", raising=False)
+    monkeypatch.setenv("DATABENTO_API_KEY_THIRD", "third-test")
+    assert not dbfeed.account_configured("primary")
+    assert not dbfeed.account_configured("secondary")
+    assert dbfeed.account_configured("third")
+    plan = depth.estimate_depth_costs(
+        roots=("GC",),
+        schemas=("mbo",),
+        lookback_days=(1,),
+        now="2026-10-04T20:00:00Z",
+        account="third",
+        client=_History(),
+    )
+    assert plan["status"] == "ok"
+    assert plan["account"] == "third"
+    assert plan["estimates"][0]["root"] == "GC"

@@ -1,0 +1,210 @@
+{
+ "execution_authorized": false,
+ "generated_at": "2026-10-05T02:58:49.593937+00:00",
+ "production_decision_authorized": false,
+ "providers": {
+  "eodhd": {
+   "call_budget": 18,
+   "calls": 16,
+   "credential_env": "EODHD_API_TOKEN",
+   "datasets": {
+    "tick_windows": {
+     "date": "2026-10-02",
+     "failed_requests": 16,
+     "rows": [
+      {
+       "date": "2026-10-02",
+       "error": "EODHD HTTP 403",
+       "status": "error",
+       "symbol": "QQQ",
+       "window": "open"
+      },
+      {
+       "date": "2026-10-02",
+       "error": "EODHD HTTP 403",
+       "status": "error",
+       "symbol": "QQQ",
+       "window": "close"
+      },
+      {
+       "date": "2026-10-02",
+       "error": "EODHD HTTP 403",
+       "status": "error",
+       "symbol": "SPY",
+       "window": "open"
+      },
+      {
+       "date": "2026-10-02",
+       "error": "EODHD HTTP 403",
+       "status": "error",
+       "symbol": "SPY",
+       "window": "close"
+      },
+      {
+       "date": "2026-10-02",
+       "error": "EODHD HTTP 403",
+       "status": "error",
+       "symbol": "NVDA",
+       "window": "open"
+      },
+      {
+       "date": "2026-10-02",
+       "error": "EODHD HTTP 403",
+       "status": "error",
+       "symbol": "NVDA",
+       "window": "close"
+      },
+      {
+       "date": "2026-10-02",
+       "error": "EODHD HTTP 403",
+       "status": "error",
+       "symbol": "AAPL",
+       "window": "open"
+      },
+      {
+       "date": "2026-10-02",
+       "error": "EODHD HTTP 403",
+       "status": "error",
+       "symbol": "AAPL",
+       "window": "close"
+      },
+      {
+       "date": "2026-10-02",
+       "error": "EODHD HTTP 403",
+       "status": "error",
+       "symbol": "MSFT",
+       "window": "open"
+      },
+      {
+       "date": "2026-10-02",
+       "error": "EODHD HTTP 403",
+       "status": "error",
+       "symbol": "MSFT",
+       "window": "close"
+      },
+      {
+       "date": "2026-10-02",
+       "error": "EODHD HTTP 403",
+       "status": "error",
+       "symbol": "AVGO",
+       "window": "open"
+      },
+      {
+       "date": "2026-10-02",
+       "error": "EODHD HTTP 403",
+       "status": "error",
+       "symbol": "AVGO",
+       "window": "close"
+      },
+      {
+       "date": "2026-10-02",
+       "error": "EODHD HTTP 403",
+       "status": "error",
+       "symbol": "AMZN",
+       "window": "open"
+      },
+      {
+       "date": "2026-10-02",
+       "error": "EODHD HTTP 403",
+       "status": "error",
+       "symbol": "AMZN",
+       "window": "close"
+      },
+      {
+       "date": "2026-10-02",
+       "error": "EODHD HTTP 403",
+       "status": "error",
+       "symbol": "META",
+       "window": "open"
+      },
+      {
+       "date": "2026-10-02",
+       "error": "EODHD HTTP 403",
+       "status": "error",
+       "symbol": "META",
+       "window": "close"
+      }
+     ],
+     "status": "error",
+     "strategy": "09:30-10:00 and 15:30-16:00 America/New_York; max 10,000 ticks/window"
+    }
+   },
+   "execution_authorized": false,
+   "generated_at": "2026-10-05T02:58:49.593937+00:00",
+   "production_decision_authorized": false,
+   "provider": "eodhd",
+   "status": "partial",
+   "symbols": [
+    "QQQ",
+    "SPY",
+    "NVDA",
+    "AAPL",
+    "MSFT",
+    "AVGO",
+    "AMZN",
+    "META"
+   ]
+  },
+  "fmp": {
+   "call_budget": 20,
+   "calls": 2,
+   "credential_env": "FMP_API_KEY",
+   "datasets": {
+    "earnings_calendar": {
+     "cache": {
+      "bytes": 467,
+      "sha256": "a18b24ea44f6fa78175b5ea968402da6c84a70d79a54049743c04429a38eb0d1"
+     },
+     "focus": [],
+     "focus_rows": 0,
+     "rows": 21,
+     "status": "ok"
+    },
+    "profile_probe": {
+     "rows": 1,
+     "status": "ok"
+    }
+   },
+   "execution_authorized": false,
+   "generated_at": "2026-10-05T02:58:49.593937+00:00",
+   "production_decision_authorized": false,
+   "provider": "fmp",
+   "status": "ok"
+  },
+  "tiingo": {
+   "calls": 0,
+   "credential_env": "TIINGO_API_TOKEN",
+   "execution_authorized": false,
+   "generated_at": "2026-10-05T02:58:49.593937+00:00",
+   "production_decision_authorized": false,
+   "provider": "tiingo",
+   "status": "unconfigured"
+  }
+ },
+ "raw_storage": "Actions/local cache only; raw vendor payloads are not committed",
+ "schema": "icarus.external_data.fabric/1",
+ "summary": {
+  "equity_tick_pressure": {},
+  "execution_authorized": false,
+  "provider_status": {
+   "eodhd": "partial",
+   "fmp": "ok",
+   "tiingo": "unconfigured"
+  },
+  "research_only": true,
+  "schema": "icarus.external_data.summary/1",
+  "universe": [
+   "QQQ",
+   "SPY",
+   "NVDA",
+   "AAPL",
+   "MSFT",
+   "AVGO",
+   "AMZN",
+   "META",
+   "GOOGL",
+   "TSLA"
+  ],
+  "upcoming_focus_earnings": []
+ }
+}

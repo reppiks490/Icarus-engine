@@ -32,7 +32,8 @@ CENSUS_HTML=b"""<html><body><table>
 </table></body></html>"""
 
 FOMC_HTML=b"""<html><body><h2>2026 FOMC Meetings</h2>
-<div>January 27-28</div><div>March 17-18*</div><div>April 28-29</div>
+<div>January 27-28</div><div>Minutes Released February 18</div>
+<div>March 17-18*</div><div>Minutes Released April 8</div><div>April 28-29</div>
 <div>June 16-17*</div><div>July 28-29</div><div>September 15-16*</div>
 <div>October 27-28</div><div>December 8-9*</div>
 <h2>2027 FOMC Meetings</h2><div>January 26-27</div></body></html>"""

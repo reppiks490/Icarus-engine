@@ -20,8 +20,8 @@ from datetime import date
 
 import pandas as pd
 
-from . import (EXECUTION_AUTHORIZED, LAB_VERSION, LANE, bars, costs, explore, grammar, hypotheses, pulse_track, registry,
-               sessions, store, validate)
+from . import (EXECUTION_AUTHORIZED, LAB_VERSION, LANE, bars, corpus, costs, explore, grammar, hypotheses, pulse_track,
+               registry, sessions, store, validate)
 
 ASSETS = {
     "MNQ": dict(kind="csv", path="data/mnq_5m_full.csv", cost=costs.MNQ, stress=costs.MNQ_STRESS,
@@ -157,7 +157,9 @@ def run_cycle(out_dir, cache_dir=".cl_cache", assets=None, now=None):
     names = assets or list(ASSETS)
     cands = grammar.enumerate_candidates()
     loaded = {n: load_asset(n, ASSETS[n], cache_dir) for n in names}
-    inputs = dict(data={n: v[1] for n, v in loaded.items()}, grammar=grammar.GRAMMAR_VERSION,
+    corpus_state = corpus.inspect()
+    inputs = dict(data={n: v[1] for n, v in loaded.items()}, corpus=corpus_state,
+                  grammar=grammar.GRAMMAR_VERSION,
                   registration_hash=grammar.registration_hash(cands), gates=validate.GATES_VERSION,
                   thresholds=validate.T, code=_code_identity(), lab=LAB_VERSION,
                   pulse=(pulse_track.fingerprint() if "MNQ" in names else None),
@@ -233,7 +235,7 @@ def run_cycle(out_dir, cache_dir=".cl_cache", assets=None, now=None):
 
     payload = dict(schema="cl_lab.run/1", lane=LANE, run_id=run_id, input_fingerprint=fingerprint, inputs=inputs,
                    started_at=at, finished_at=pd.Timestamp.now(tz="UTC").isoformat(), code_commit=_git_commit(),
-                   candidates=len(cands), assets=per_asset, evidence_class="RESEARCH_ONLY",
+                   candidates=len(cands), assets=per_asset, corpus=corpus_state, evidence_class="RESEARCH_ONLY",
                    tune_end=str(validate.TUNE_END), forward_start=str(FORWARD_START),
                    execution_authorized=EXECUTION_AUTHORIZED, production_decision_authorized=False)
     hist_sha = _write_json(os.path.join(out_dir, "history", f"{run_id}.json"), payload)
@@ -253,6 +255,8 @@ def run_cycle(out_dir, cache_dir=".cl_cache", assets=None, now=None):
         schema="cl_lab.ui_feed/1", lane=LANE, run_id=run_id, generated_at=at, evidence_class="RESEARCH_ONLY",
         ui_state="RESEARCH ONLY", execution_authorized=False, production_decision_authorized=False,
         feeds={k: v.get("status") for k, v in feeds.items()},
+        corpus={k: corpus_state.get(k) for k in ("status", "dataset", "roll_rule", "minutes",
+                                                 "verified_assets", "blocked_assets", "assets")},
         assets={n: {k: v.get(k) for k in ("status", "sessions", "status_counts", "diagnostics", "champions",
                                           "challengers", "pulse", "explorer", "hypotheses")}
                 for n, v in per_asset.items()}))

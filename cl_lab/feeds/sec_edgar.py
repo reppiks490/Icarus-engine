@@ -30,8 +30,13 @@ CONCEPTS={
 _last_request=0.0
 
 def _ua():
-    return (os.environ.get("SEC_USER_AGENT") or
-            "ICARUS research bot github.com/reppiks490/Icarus-engine").strip()
+    value=(os.environ.get("SEC_USER_AGENT") or "").strip()
+    if not value:
+        raise FeedError(
+            "SEC_USER_AGENT is required for SEC fair-access requests; set the GitHub Actions "
+            "repository variable to a declared identity such as 'ICARUS Research contact@example.com'"
+        )
+    return value
 
 def _get(url):
     global _last_request
@@ -182,30 +187,45 @@ def refresh(cache_dir,tickers=None):
             status[ticker]={"status":"error","cik":cik,"error":f"{type(e).__name__}: {e}"}
     filings=pd.concat(all_filings,ignore_index=True) if all_filings else pd.DataFrame()
     facts=pd.concat(all_facts,ignore_index=True) if all_facts else pd.DataFrame()
-    if filings.empty:
-        raise FeedError("SEC EDGAR returned zero usable filings")
-    _write(filings,root/"filings.csv.gz")
-    _write(facts,root/"companyfacts.csv.gz")
+    if not filings.empty:
+        _write(filings,root/"filings.csv.gz")
+    if not facts.empty:
+        _write(facts,root/"companyfacts.csv.gz")
     return filings,facts,status
 
 def main():
     cache=os.environ.get("ICARUS_SEC_CACHE",".sec_edgar_cache")
     out=Path(os.environ.get("ICARUS_SEC_MANIFEST","automation_intelligence/cl_lab/sec_edgar_manifest.json"))
     tickers=tuple(x.strip().upper() for x in os.environ.get("ICARUS_SEC_TICKERS",",".join(DEFAULT_TICKERS)).split(",") if x.strip())
+    out.parent.mkdir(parents=True,exist_ok=True)
+    try:
+        _ua()
+    except FeedError as e:
+        manifest={
+            "schema":"icarus.sec_edgar/2","generated_at":pd.Timestamp.now(tz="UTC").isoformat(),
+            "status":"configuration_error","error":str(e),"tickers":{},
+            "filing_rows":0,"fact_rows":0,
+            "causality":"acceptanceDateTime is the availability timestamp; report/end dates are descriptive only",
+        }
+        out.write_text(json.dumps(manifest,indent=2,sort_keys=True))
+        print(json.dumps({"status":"configuration_error","error":str(e)}))
+        raise SystemExit(str(e))
+
     filings,facts,status=refresh(cache,tickers)
+    bad=[k for k,v in status.items() if v.get("status")!="ok"]
     manifest={
-        "schema":"icarus.sec_edgar/1","generated_at":pd.Timestamp.now(tz="UTC").isoformat(),
+        "schema":"icarus.sec_edgar/2","generated_at":pd.Timestamp.now(tz="UTC").isoformat(),
+        "status":"ok" if len(bad)<len(status) and not filings.empty else "error",
         "tickers":status,"filing_rows":len(filings),"fact_rows":len(facts),
-        "filing_sha256":hashlib.sha256(filings.to_csv(index=False).encode()).hexdigest(),
-        "facts_sha256":hashlib.sha256(facts.to_csv(index=False).encode()).hexdigest(),
+        "filing_sha256":hashlib.sha256(filings.to_csv(index=False).encode()).hexdigest() if not filings.empty else None,
+        "facts_sha256":hashlib.sha256(facts.to_csv(index=False).encode()).hexdigest() if not facts.empty else None,
         "causality":"acceptanceDateTime is the availability timestamp; report/end dates are descriptive only",
     }
-    out.parent.mkdir(parents=True,exist_ok=True)
     out.write_text(json.dumps(manifest,indent=2,sort_keys=True))
-    bad=[k for k,v in status.items() if v.get("status")!="ok"]
-    print(json.dumps({"tickers":len(status),"filing_rows":len(filings),"fact_rows":len(facts),"errors":bad}))
-    if len(bad)==len(status):
-        raise SystemExit("SEC EDGAR integrity failure: all configured tickers failed")
+    print(json.dumps({"tickers":len(status),"filing_rows":len(filings),"fact_rows":len(facts),
+                      "errors":{k:status[k].get("error") for k in bad}}))
+    if not status or len(bad)==len(status) or filings.empty:
+        raise SystemExit("SEC EDGAR integrity failure: no configured ticker produced usable filings")
 
 if __name__=="__main__":
     main()

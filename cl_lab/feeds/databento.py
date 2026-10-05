@@ -13,6 +13,8 @@ Environment:
 - DATABENTO_DATASET: must remain GLBX.MDP3 (default).
 - DATABENTO_ROLL_RULE: v, n, or c (default v).
 - CL_DATABENTO_START: first uncached timestamp (default 2024-09-01T00:00:00Z).
+- CL_DATABENTO_HISTORICAL_LAG_MINUTES: safety lag behind the vendor's
+  historical availability watermark (default 500 minutes).
 - CL_DATABENTO_MAX_USD_PER_FEED: hard estimated-cost cap per refresh request
   (default 1.00 USD). Raise only intentionally after reviewing the estimate.
 """
@@ -26,6 +28,7 @@ import pandas as pd
 from .http import FeedError
 
 DATASET = "GLBX.MDP3"
+SUPPORTED_DATASETS = ("GLBX.MDP3", "XCBF.PITCH", "IFUS.IMPACT")
 BAR_COLS = ("open", "high", "low", "close", "volume")
 DEFAULT_START = "2024-09-01T00:00:00Z"
 
@@ -115,24 +118,37 @@ def fetch_continuous_5m(
     now: pd.Timestamp,
     *,
     client: Any = None,
+    dataset: str | None = None,
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
     """Fetch an incremental cost-gated continuous contract and return 5m bars.
 
     Existing cache is deliberately re-fetched from its last 5m bucket so the
     final bucket can be corrected without creating a gap.
     """
-    dataset = (os.environ.get("DATABENTO_DATASET") or DATASET).strip()
-    if dataset != DATASET:
-        raise FeedError(f"CL futures corpus requires {DATASET}, got {dataset!r}")
+    dataset = (dataset or os.environ.get("DATABENTO_DATASET") or DATASET).strip()
+    if dataset not in SUPPORTED_DATASETS:
+        raise FeedError(
+            f"unsupported Databento futures dataset {dataset!r}; "
+            f"supported={','.join(SUPPORTED_DATASETS)}"
+        )
     symbol = continuous_symbol(root)
     now = pd.Timestamp(now)
     if now.tzinfo is None:
         now = now.tz_localize("UTC")
     else:
         now = now.tz_convert("UTC")
-    # Keep historical requests on a complete 10-minute boundary; this avoids
-    # paying for/recording a partially formed terminal 5m bar.
-    end = now.floor("10min")
+    # Historical usage access can lag wall-clock time even when cost estimation
+    # succeeds. Keep a safety margin behind the vendor watermark so a paid request
+    # cannot fail after passing the cost gate merely because the terminal range is
+    # still subscription-only/live. The observed account watermark on 2026-10-04
+    # was ~8 hours; default to 500 minutes (8h20m) and make it configurable.
+    try:
+        historical_lag_minutes = int(os.environ.get("CL_DATABENTO_HISTORICAL_LAG_MINUTES") or "500")
+    except ValueError as ex:
+        raise FeedError("CL_DATABENTO_HISTORICAL_LAG_MINUTES must be an integer") from ex
+    if historical_lag_minutes < 0:
+        raise FeedError("CL_DATABENTO_HISTORICAL_LAG_MINUTES must be >= 0")
+    end = (now - pd.Timedelta(minutes=historical_lag_minutes)).floor("10min")
     if old is not None and not old.empty:
         last = pd.Timestamp(old.index[-1])
         start = last.tz_localize("UTC") if last.tzinfo is None else last.tz_convert("UTC")
@@ -191,6 +207,7 @@ def fetch_continuous_5m(
         "start": start.isoformat(),
         "end": end.isoformat(),
         "request_performed": True,
+        "historical_lag_minutes": historical_lag_minutes,
         "account": account,
         "api_key_env": api_key_env(account),
     }

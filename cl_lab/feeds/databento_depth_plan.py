@@ -11,6 +11,8 @@ Environment:
 - DATABENTO_DEPTH_ACCOUNT: primary|secondary|third (default secondary).
 - DATABENTO_DATASET: must remain GLBX.MDP3.
 - DATABENTO_ROLL_RULE: v, n, or c (default v).
+- CL_DATABENTO_HISTORICAL_LAG_MINUTES: historical watermark safety lag
+  (default 500 minutes).
 
 The output is a research-planning artifact, not a trading signal and not an
 authorization to execute or spend.
@@ -70,7 +72,15 @@ def estimate_depth_costs(
     account = _normalize_account(account)
     now = pd.Timestamp.now(tz="UTC") if now is None else pd.Timestamp(now)
     now = now.tz_localize("UTC") if now.tzinfo is None else now.tz_convert("UTC")
-    end = now.floor("D")
+    try:
+        lag_minutes = int(os.environ.get("CL_DATABENTO_HISTORICAL_LAG_MINUTES") or "500")
+    except ValueError as ex:
+        raise ValueError("CL_DATABENTO_HISTORICAL_LAG_MINUTES must be an integer") from ex
+    if lag_minutes < 0:
+        raise ValueError("CL_DATABENTO_HISTORICAL_LAG_MINUTES must be >= 0")
+    # Only price complete UTC days that are safely behind the historical
+    # availability watermark. This also makes eventual downloads replayable.
+    end = (now - pd.Timedelta(minutes=lag_minutes)).floor("D")
     dataset = (os.environ.get("DATABENTO_DATASET") or dbfeed.DATASET).strip()
     if dataset != dbfeed.DATASET:
         raise ValueError(f"depth planner requires {dbfeed.DATASET}, got {dataset!r}")
@@ -141,6 +151,7 @@ def estimate_depth_costs(
         "account": account,
         "dataset": dataset,
         "roll_rule": (os.environ.get("DATABENTO_ROLL_RULE") or "v").strip().lower(),
+        "historical_lag_minutes": lag_minutes,
         "execution_authorized": False,
         "production_decision_authorized": False,
         "estimates": estimates,

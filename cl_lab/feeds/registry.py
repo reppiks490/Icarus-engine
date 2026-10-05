@@ -14,11 +14,45 @@ from .http import FeedError
 
 BINANCE_START = "2024-09"   # aligns with the committed MNQ tape (2024-09-20 onward)
 
-# Continuous CME corpus families. These feeds are dormant unless DATABENTO_API_KEY
-# is configured. Raw vendor rows remain in the Actions/local cache only.
+# Core continuous-futures corpus. Keep this exact registered ICARUS universe as
+# the first spending priority.
 DATABENTO_FUTURES_ROOTS = (
     "NQ", "MNQ", "ES", "MES", "YM", "MYM", "RTY", "M2K",
     "GC", "MGC", "SI", "SIL", "PL", "PA", "BTC", "MBT",
+)
+
+# Wider market-intelligence corpus. These are not automatically promoted to
+# tradable ICARUS assets; they are context/evidence feeds. The initial 25-month
+# OHLCV pass is still protected by CL_DATABENTO_MAX_USD_PER_FEED. With 16 core +
+# 19 context feeds and the workflow's $3 cap, the hard theoretical maximum for
+# one empty-cache refresh is $105 before any request that exceeds its cap is
+# rejected.
+DATABENTO_INTELLIGENCE_FUTURES = (
+    # CFE volatility term structure / volatility microstructure.
+    ("VX", "XCBF.PITCH", "volatility"),
+    ("VXM", "XCBF.PITCH", "volatility"),
+    # Rates / policy expectations.
+    ("ZN", "GLBX.MDP3", "rates"),
+    ("ZB", "GLBX.MDP3", "rates"),
+    ("ZF", "GLBX.MDP3", "rates"),
+    ("ZT", "GLBX.MDP3", "rates"),
+    ("SR3", "GLBX.MDP3", "rates"),
+    # Energy / inflation / growth.
+    ("CL", "GLBX.MDP3", "energy"),
+    ("MCL", "GLBX.MDP3", "energy"),
+    ("NG", "GLBX.MDP3", "energy"),
+    # Industrial metal / growth sensitivity.
+    ("HG", "GLBX.MDP3", "industrial_metals"),
+    # FX risk / dollar sensitivity.
+    ("6E", "GLBX.MDP3", "fx"),
+    ("6J", "GLBX.MDP3", "fx"),
+    ("6B", "GLBX.MDP3", "fx"),
+    ("6A", "GLBX.MDP3", "fx"),
+    ("DX", "IFUS.IMPACT", "dollar_index"),
+    # Agricultural inflation / broad commodity regime.
+    ("ZC", "GLBX.MDP3", "agriculture"),
+    ("ZS", "GLBX.MDP3", "agriculture"),
+    ("ZW", "GLBX.MDP3", "agriculture"),
 )
 
 FEEDS = [
@@ -30,8 +64,12 @@ FEEDS = [
     *[dict(name=f"cboe_{n.lower()}", kind="cboe", index=n, intraday=False)
       for n in ("VIX", "VIX9D", "VIX3M", "VVIX", "SKEW")],
     dict(name="cftc_tff_nasdaq", kind="cftc", intraday=False),
-    *[dict(name=f"databento_{root.lower()}_5m", kind="databento", root=root, intraday=True)
+    *[dict(name=f"databento_{root.lower()}_5m", kind="databento", root=root,
+           dataset="GLBX.MDP3", research_role="core", intraday=True)
       for root in DATABENTO_FUTURES_ROOTS],
+    *[dict(name=f"databento_{root.lower()}_5m", kind="databento", root=root,
+           dataset=dataset, research_role=role, intraday=True)
+      for root, dataset, role in DATABENTO_INTELLIGENCE_FUTURES],
 ]
 
 
@@ -100,7 +138,9 @@ def _fetch(feed, old, now):
             df = df.set_index("date").sort_index()
         return df, 1, []
     if k == "databento":
-        df, meta = databento_feed.fetch_continuous_5m(feed["root"], old, now)
+        df, meta = databento_feed.fetch_continuous_5m(
+            feed["root"], old, now, dataset=feed.get("dataset") or "GLBX.MDP3"
+        )
         notes = [
             f"symbol={meta.get('symbol')}",
             f"estimated_cost_usd={meta.get('estimated_cost_usd', 0.0):.6f}",
@@ -130,7 +170,9 @@ def refresh_all(cache_dir, only=None, now=None) -> dict:
                 error=None if status == "cached" else "DATABENTO_API_KEY not configured",
                 intraday=True,
             )
-            ent.update(kind="databento", root=feed["root"], dataset="GLBX.MDP3",
+            ent.update(kind="databento", root=feed["root"],
+                       dataset=feed.get("dataset") or "GLBX.MDP3",
+                       research_role=feed.get("research_role"),
                        continuous_symbol=databento_feed.continuous_symbol(feed["root"]))
             out["feeds"][feed["name"]] = ent
             continue
@@ -146,7 +188,8 @@ def refresh_all(cache_dir, only=None, now=None) -> dict:
             ent = store.manifest_entry(feed["name"], None, "error", error=f"{type(e).__name__}: {e}")
         ent["kind"] = feed["kind"]
         if feed["kind"] == "databento":
-            ent.update(root=feed["root"], dataset="GLBX.MDP3",
+            ent.update(root=feed["root"], dataset=feed.get("dataset") or "GLBX.MDP3",
+                       research_role=feed.get("research_role"),
                        continuous_symbol=databento_feed.continuous_symbol(feed["root"]))
         out["feeds"][feed["name"]] = ent
     return out

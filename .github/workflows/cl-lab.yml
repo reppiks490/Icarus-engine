@@ -53,6 +53,11 @@ jobs:
       - name: Refresh public + optional Databento feeds
         env:
           DATABENTO_API_KEY: ${{ secrets.DATABENTO_API_KEY }}
+          CL_DATABENTO_ROOTS: ${{ vars.CL_DATABENTO_ROOTS }}
+          CL_DATABENTO_START: ${{ vars.CL_DATABENTO_START }}
+          CL_DATABENTO_MAX_USD_PER_FEED: ${{ vars.CL_DATABENTO_MAX_USD_PER_FEED }}
+          CL_DATABENTO_MAX_USD_PER_REFRESH: ${{ vars.CL_DATABENTO_MAX_USD_PER_REFRESH }}
+          DATABENTO_ROLL_RULE: ${{ vars.DATABENTO_ROLL_RULE }}
         run: python -m cl_lab.feeds --cache .cl_cache --manifest automation_intelligence/cl_lab/feeds_manifest.json
 
       - name: Save feed cache

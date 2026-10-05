@@ -1,0 +1,43 @@
+{
+  "schema_version": "icarus-hybrid-work-result-v1",
+  "fabric_id": "icarus-account-hybrid-loop-fabric-v1",
+  "request_id": "microstructure_sensor_grid-20261004T213000Z",
+  "lane": "microstructure_sensor_grid",
+  "automation_id": "6abaef8effb48191aa5c959455451681",
+  "started_at_utc": "2026-10-05T15:35:39Z",
+  "completed_at_utc": "2026-10-05T15:35:39Z",
+  "outcome": "BLOCKED",
+  "substantive_work_performed": false,
+  "summary": "Backfill closed without fabricating point-in-time microstructure evidence. The request for the 2026-10-04T21:30:00Z due slot was not durably created until 2026-10-04T21:39:17Z, so the missed slot's contemporaneous trades, quotes, depth/order-book state, liquidity, sweep, absorption, imbalance and venue/session observations cannot be truthfully reconstructed from this request.",
+  "evidence": [
+    {
+      "type": "hybrid_request",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/requests/microstructure_sensor_grid/microstructure_sensor_grid-20261004T213000Z.json",
+      "due_slot_utc": "2026-10-04T21:30:00Z",
+      "requested_at_utc": "2026-10-04T21:39:17Z",
+      "workflow_run_id": "37236956029",
+      "workflow_run_attempt": "1"
+    },
+    {
+      "type": "flow_durability_state",
+      "path": "automation_intelligence/flow/finalization_state.json",
+      "observed_run_id": "flow-20261005T143500Z",
+      "note": "Existing specialist durability evidence preserved; it does not reconstruct the missed 2026-10-04T21:30:00Z market observation."
+    },
+    {
+      "type": "flow_heartbeat",
+      "path": "automation_intelligence/flow/heartbeat.json",
+      "observed_run_id": "flow-20261005T143500Z",
+      "note": "Liveness/durability evidence only; not substantive completion evidence for the historical request."
+    }
+  ],
+  "research_receipt_paths": [],
+  "event_paths": [],
+  "blockers": [
+    "The request was created 9 minutes 17 seconds after its nominal due slot. No durable point-in-time observation for the missed slot is established by the request or current flow receipts; outage-period market microstructure evidence must not be fabricated."
+  ],
+  "backfilled_request_ids": [
+    "microstructure_sensor_grid-20261004T213000Z"
+  ],
+  "execution_authorized": false
+}

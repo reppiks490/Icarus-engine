@@ -63,8 +63,18 @@ jobs:
           DATABENTO_DEPTH_ACCOUNT: secondary
         run: >-
           python -m cl_lab.feeds.databento_depth_plan
-          --out automation_intelligence/cl_lab/databento_depth_costs.json
-          --budget-usd 125
+          --out automation_intelligence/cl_lab/databento_depth_costs_secondary.json
+          --budget-usd 110
+          --horizon-days 20
+
+      - name: Preflight third Databento MBO and MBP-10 costs
+        env:
+          DATABENTO_API_KEY_THIRD: ${{ secrets.DATABENTO_API_KEY_THIRD }}
+          DATABENTO_DEPTH_ACCOUNT: third
+        run: >-
+          python -m cl_lab.feeds.databento_depth_plan
+          --out automation_intelligence/cl_lab/databento_depth_costs_third.json
+          --budget-usd 110
           --horizon-days 20
 
       - name: Save feed cache

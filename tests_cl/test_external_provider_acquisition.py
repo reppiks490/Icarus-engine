@@ -28,7 +28,7 @@ def test_source_times_are_conservative_for_point_in_time():
     )
     assert event == "2026-10-01T00:00:00Z"
     assert publication == "2026-10-04T00:00:00Z"
-    assert availability == "2026-10-06T20:00:00Z"  # date-only publication time is unknown
+    assert availability == "2026-10-06T20:00:00Z"  # date-only disclosure time is unknown; stay conservative
 
     event, publication, availability = source_times(
         {"report_date": "2025-12-31"}, "2026-10-06T20:00:00Z"
@@ -85,6 +85,7 @@ def test_collect_json_pages_persists_raw_and_silver_and_follows_next_page(tmp_pa
 
 def test_budget_stops_with_checkpoint_cursor(tmp_path, monkeypatch):
     monkeypatch.setenv("ICARUS_DATA_FABRIC_FORCE_JSONL", "1")
+
     def requester(url, headers, params):
         cursor = params.get("next_page") if params else None
         nxt = "b" if cursor is None else "c"
@@ -119,9 +120,11 @@ def test_http_error_redacts_secret(tmp_path):
 
 def test_binary_date_downloader_skips_weekends_and_persists_exact_bytes(tmp_path):
     calls = []
+
     def requester(url, headers, params):
         calls.append(url)
         return 200, {"content-type": "application/zip"}, b"PK-test-bytes"
+
     out = download_binary_dates(
         provider="unusual_whales", dataset="option_full_tape",
         url_template="https://example.test/{date}", headers={}, start_date="2026-10-02", end_date="2026-10-05",
@@ -133,3 +136,22 @@ def test_binary_date_downloader_skips_weekends_and_persists_exact_bytes(tmp_path
     stored = list((tmp_path / "bronze" / "unusual_whales" / "option_full_tape").rglob("*.gz"))
     assert len(stored) == 1  # content-addressed exact duplicate body is de-duplicated
     assert gzip.decompress(stored[0].read_bytes()) == b"PK-test-bytes"
+
+
+def test_completed_checkpoint_restarts_from_first_page_for_future_refresh(tmp_path, monkeypatch):
+    monkeypatch.setenv("ICARUS_DATA_FABRIC_FORCE_JSONL", "1")
+    cp = tmp_path / "checkpoint.json"
+    cp.write_text(json.dumps({"complete": True, "next_page_index": 9, "next_offset": 900, "next_cursor": "old"}))
+    seen = []
+
+    def requester(url, headers, params):
+        seen.append(dict(params))
+        return 200, {}, json.dumps({"data": [], "next_page": None}).encode()
+
+    collect_json_pages(
+        provider="unusual_whales", dataset="refresh", endpoint="/x", url="https://x",
+        headers={}, params={"limit": 50}, pagination="page", output_root=tmp_path,
+        requester=requester, budget=AcquisitionBudget(1), retrieval_time="2026-10-06T21:00:00Z",
+        checkpoint_path=cp,
+    )
+    assert seen == [{"limit": 50, "page": 0}]

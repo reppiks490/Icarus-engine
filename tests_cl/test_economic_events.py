@@ -36,7 +36,10 @@ FOMC_HTML=b"""<html><body><h2>2026 FOMC Meetings</h2>
 <div>March 17-18*</div><div>Minutes Released April 8</div><div>April 28-29</div>
 <div>June 16-17*</div><div>July 28-29</div><div>September 15-16*</div>
 <div>October 27-28</div><div>December 8-9*</div>
-<h2>2027 FOMC Meetings</h2><div>January 26-27</div></body></html>"""
+<h2>2025 FOMC Meetings</h2>
+<div>January 28-29</div><div>March 18-19*</div><div>June 17-18*</div>
+<div>September 16-17*</div><div>October 28-29</div><div>December 9-10*</div>
+</body></html>"""
 
 
 def test_bls_ics_preserves_exact_release_time_and_uid():
@@ -65,6 +68,10 @@ def test_bea_and_census_tables_use_eastern_release_times():
 def test_fomc_calendar_is_date_only_not_invented_2pm():
     df=ev.parse_fomc_html(FOMC_HTML,2026)
     assert len(df)==8
+    assert set(df["event_date"])=={
+        "2026-01-28","2026-03-18","2026-04-29","2026-06-17",
+        "2026-07-29","2026-09-16","2026-10-28","2026-12-09",
+    }
     sep=df[df["event_date"]=="2026-09-16"].iloc[0]
     assert sep["scheduled_at_et"] is None
     assert not sep["time_known"]

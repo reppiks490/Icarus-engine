@@ -279,12 +279,20 @@ def parse_release_table(raw: bytes, source: str, observed_at: pd.Timestamp | Non
 def parse_fomc_html(raw: bytes, year: int | None = None) -> pd.DataFrame:
     _,text=_table_rows(raw)
     year=year or pd.Timestamp.now(tz="UTC").year
-    marker=f"{year} FOMC Meetings"
-    start=text.find(marker)
-    if start<0: return pd.DataFrame()
-    tail=text[start+len(marker):]
-    next_marker=re.search(rf"\b{year+1}\s+FOMC Meetings\b",tail)
-    if next_marker: tail=tail[:next_marker.start()]
+    # The Fed page is not chronological by heading: the current year is followed by
+    # prior years, while a future-year section may appear elsewhere. Bound the target
+    # section by the *next FOMC heading in document order*, not by year+1.
+    headings=list(re.finditer(r"\b(20\d{2})\s+FOMC Meetings\b",text,re.I))
+    target=None
+    for i,h in enumerate(headings):
+        if int(h.group(1))==int(year):
+            target=(i,h)
+            break
+    if target is None:
+        return pd.DataFrame()
+    i,h=target
+    end=headings[i+1].start() if i+1<len(headings) else len(text)
+    tail=text[h.end():end]
     matches=list(re.finditer(rf"\b({MONTH_RE})\s+(\d{{1,2}})(?:\s*[-–]\s*(\d{{1,2}}))?(\*)?",tail,re.I))
     out=[]
     meeting_index=0
@@ -321,17 +329,39 @@ def collect(cache_dir: str | Path, observed_at: pd.Timestamp | None = None) -> t
     root.mkdir(parents=True,exist_ok=True)
     current=[]; status={}
     fetchers={
-        "BLS": lambda raw: parse_bls_ics(raw),
         "BEA": lambda raw: parse_release_table(raw,"BEA",observed_at),
         "CENSUS": lambda raw: parse_release_table(raw,"CENSUS",observed_at),
         "FOMC": lambda raw: parse_fomc_html(raw,observed_at.year),
     }
     for source,url in SOURCES.items():
         try:
-            df=fetchers[source](get_bytes(url))
+            note=None
+            if source=="BLS":
+                try:
+                    df=parse_bls_ics(get_bytes(url))
+                    if df.empty:
+                        raise FeedError("BLS ICS returned zero usable events")
+                    note="ics"
+                except Exception as ics_error:
+                    # GitHub-hosted runners can receive 403 on BLS's text/calendar
+                    # endpoint while the first-party HTML schedule remains available.
+                    # Stay on BLS as source-of-record rather than substituting a
+                    # third-party economic calendar.
+                    html_url=f"https://www.bls.gov/schedule/{observed_at.year}/"
+                    df=parse_release_table(get_bytes(html_url),"BLS",observed_at)
+                    if df.empty:
+                        raise FeedError(
+                            f"BLS ICS failed ({type(ics_error).__name__}: {ics_error}); "
+                            "BLS HTML fallback returned zero usable events"
+                        )
+                    note="html_fallback"
+            else:
+                df=fetchers[source](get_bytes(url))
             if df.empty: raise FeedError(f"{source} calendar returned zero usable events")
             current.append(df)
             status[source]={"status":"ok","rows":int(len(df))}
+            if note:
+                status[source]["transport"]=note
         except Exception as e:
             status[source]={"status":"error","rows":0,"error":f"{type(e).__name__}: {e}"}
     if not current:

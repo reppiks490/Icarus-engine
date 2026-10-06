@@ -1,11 +1,11 @@
 {
   "causality": "schedule_history records the first observed version of each scheduled event; use only versions first_seen_at <= decision time",
-  "current_events": 230,
-  "current_sha256": "822e5dd8e2e76572b5b92dcc47262ba2fe07d7e6a66d89ef9734a694f24815d1",
-  "generated_at": "2026-10-06T01:19:14.762284+00:00",
-  "high_impact_current": 105,
-  "history_sha256": "dbd9e5b68b21f2b03bac85890c94d58f550cab801e813169f32b5580829d9df9",
-  "schedule_versions": 268,
+  "current_events": 255,
+  "current_sha256": "da348cbc51be28538de1198cef19c54859917912a0d59e69347de2785ab54103",
+  "generated_at": "2026-10-06T01:29:11.592310+00:00",
+  "high_impact_current": 115,
+  "history_sha256": "a172d7fd78c9973e5b066209ffd75b879cc7eff4747696813d1842b29d58ac84",
+  "schedule_versions": 255,
   "schema": "icarus.economic_events/1",
   "sources": {
     "BEA": {
@@ -13,19 +13,23 @@
       "status": "ok"
     },
     "BLS": {
-      "error": "FeedError: HTTP 403 for https://www.bls.gov/schedule/2026/",
-      "rows": 0,
-      "status": "error"
+      "error": "live BLS transports unavailable: ICS FeedError: HTTP 403 for https://www.bls.gov/schedule/news_release/bls.ics; HTML FeedError: HTTP 403 for https://www.bls.gov/schedule/2026/",
+      "rows": 25,
+      "snapshot_as_of": "2026-10-06",
+      "source_url": "https://www.bls.gov/schedule/2026/",
+      "status": "degraded",
+      "transport": "official_snapshot"
     },
     "CENSUS": {
       "rows": 159,
       "status": "ok"
     },
     "FOMC": {
+      "history_invalid_rows_removed": 38,
       "rows": 8,
       "status": "ok"
     }
   },
-  "time_known_current": 222,
-  "upcoming_rows": 55
+  "time_known_current": 247,
+  "upcoming_rows": 79
 }

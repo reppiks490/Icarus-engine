@@ -177,9 +177,12 @@ def collect_json_pages(
     if checkpoint_path and Path(checkpoint_path).exists():
         try:
             cp = json.loads(Path(checkpoint_path).read_text())
-            cursor = cp.get("next_cursor")
-            page = int(cp.get("next_page_index", page))
-            offset = int(cp.get("next_offset", offset))
+            # Incomplete runs resume; completed runs are future refreshes and must
+            # restart from the head so newly arrived records are discoverable.
+            if not bool(cp.get("complete")):
+                cursor = cp.get("next_cursor")
+                page = int(cp.get("next_page_index", page))
+                offset = int(cp.get("next_offset", offset))
         except Exception:
             pass
 

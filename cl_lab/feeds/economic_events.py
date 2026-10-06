@@ -377,6 +377,23 @@ def _schedule_version(row: pd.Series) -> str:
                  ("source","event_key","event_date","scheduled_at_et","title","reference_period"))
     return hashlib.sha256(raw.encode()).hexdigest()[:24]
 
+def _sanitize_schedule_history(df: pd.DataFrame) -> tuple[pd.DataFrame,int]:
+    """Remove rows that could only have been emitted by the retired FOMC spill parser.
+
+    The official regular-meeting section has eight meetings per year.  The previous
+    parser could continue into older year sections and label those ranges as meeting
+    9, 10, ... of the current year.  Meeting IDs 1-8 are retained, including multiple
+    schedule versions for legitimate reschedules.
+    """
+    if df is None or df.empty or not {"source","stable_id"} <= set(df.columns):
+        return df,0
+    source=df["source"].astype("string")
+    sid=df["stable_id"].astype("string").fillna("")
+    bad=source.eq("FOMC") & ~sid.str.match(r"^20\d{2}-meeting-[1-8]$")
+    removed=int(bad.sum())
+    return df.loc[~bad].copy(),removed
+
+
 def collect(cache_dir: str | Path, observed_at: pd.Timestamp | None = None) -> tuple[pd.DataFrame,pd.DataFrame,dict]:
     observed_at=pd.Timestamp.now(tz="UTC") if observed_at is None else pd.Timestamp(observed_at)
     root=Path(cache_dir)/"economic_events"
@@ -448,6 +465,9 @@ def collect(cache_dir: str | Path, observed_at: pd.Timestamp | None = None) -> t
 
     hp=root/"schedule_history.csv.gz"
     old=pd.read_csv(hp,compression="gzip") if hp.exists() else pd.DataFrame()
+    old,removed_history=_sanitize_schedule_history(old)
+    if removed_history:
+        status.setdefault("FOMC",{})["history_invalid_rows_removed"]=removed_history
     add=cur.copy()
     add["first_seen_at"]=observed_at.isoformat()
     hist=pd.concat([old,add],ignore_index=True) if not old.empty else add

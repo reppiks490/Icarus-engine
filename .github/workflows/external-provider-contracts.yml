@@ -11,6 +11,7 @@ on:
       - "tests_cl/test_intrinio_provider.py"
       - "tests_cl/test_unusual_whales_provider.py"
       - "tests_cl/test_external_provider_orchestrator.py"
+      - "tests_cl/test_external_provider_acquisition.py"
       - ".github/workflows/external-provider-contracts.yml"
   pull_request:
     paths:
@@ -20,6 +21,7 @@ on:
       - "tests_cl/test_intrinio_provider.py"
       - "tests_cl/test_unusual_whales_provider.py"
       - "tests_cl/test_external_provider_orchestrator.py"
+      - "tests_cl/test_external_provider_acquisition.py"
       - ".github/workflows/external-provider-contracts.yml"
   workflow_dispatch:
 
@@ -48,4 +50,5 @@ jobs:
           tests_cl/test_intrinio_provider.py
           tests_cl/test_unusual_whales_provider.py
           tests_cl/test_external_provider_orchestrator.py
+          tests_cl/test_external_provider_acquisition.py
           -p no:cacheprovider

@@ -123,7 +123,7 @@ BLS_YEAR_HTML=b"""<html><body><h1>Schedule of Selected Releases 2026</h1><table>
 <tr><th>Date</th><th>Time</th><th>Release</th></tr>
 <tr><td>Friday, November 6, 2026</td><td>08:30 AM</td><td>Employment Situation for October 2026</td></tr>
 <tr><td>Tuesday, November 10, 2026</td><td>08:30 AM</td><td>Consumer Price Index for October 2026</td></tr>
-<tr><td>Wednesday, November 18, 2026</td><td>08:30 AM</td><td>Producer Price Index for October 2026</td></tr>
+<tr><td>Friday, November 13, 2026</td><td>08:30 AM</td><td>Producer Price Index for October 2026</td></tr>
 </table></body></html>"""
 
 
@@ -149,3 +149,47 @@ def test_collect_uses_first_party_bls_html_when_ics_is_blocked(monkeypatch,tmp_p
     cpi=bls[bls["title"].str.contains("Consumer Price")].iloc[0]
     assert cpi["scheduled_at_et"].startswith("2026-11-10T08:30:00")
     assert cpi["reference_period"]=="October 2026"
+
+
+def test_bls_event_identity_is_transport_independent():
+    obs=pd.Timestamp("2026-10-05T12:00:00Z")
+    html=b"""<html><body><table>
+    <tr><th>Date</th><th>Time</th><th>Release</th></tr>
+    <tr><td>Wednesday, October 14, 2026</td><td>08:30 AM</td>
+        <td>Consumer Price Index for September 2026</td></tr>
+    </table></body></html>"""
+    ics=ev.parse_bls_ics(BLS_ICS)
+    table=ev.parse_release_table(html,"BLS",obs)
+    a=ics[ics["title"].str.contains("Consumer Price")].iloc[0]
+    b=table[table["title"].str.contains("Consumer Price")].iloc[0]
+    assert a["event_key"]==b["event_key"]
+    assert a["stable_id"]=="cpi-2026-09@bls.gov"
+
+
+def test_collect_uses_degraded_official_bls_snapshot_when_live_transports_blocked(monkeypatch,tmp_path):
+    def fake(url):
+        if url in (ev.SOURCES["BLS"],"https://www.bls.gov/schedule/2026/"):
+            raise ev.FeedError("HTTP 403")
+        if url==ev.SOURCES["BEA"]:
+            return BEA_HTML
+        if url==ev.SOURCES["CENSUS"]:
+            return CENSUS_HTML
+        if url==ev.SOURCES["FOMC"]:
+            return FOMC_HTML
+        raise AssertionError(url)
+    monkeypatch.setattr(ev,"get_bytes",fake)
+    cur,hist,status=ev.collect(tmp_path,pd.Timestamp("2026-10-06T01:20:00Z"))
+    bls=cur[cur["source"]=="BLS"]
+    assert status["BLS"]["status"]=="degraded"
+    assert status["BLS"]["transport"]=="official_snapshot"
+    assert status["BLS"]["snapshot_as_of"]==ev.BLS_SNAPSHOT_CAPTURED_AT
+    assert len(bls)==len(ev.BLS_SNAPSHOT_2026)
+    cpi=bls[(bls["event_date"]=="2026-10-14") & bls["title"].str.contains("Consumer Price")].iloc[0]
+    assert cpi["scheduled_at_et"].startswith("2026-10-14T08:30:00")
+    assert cpi["scheduled_at_utc"].startswith("2026-10-14T12:30:00")
+    assert cpi["reference_period"]=="September 2026"
+    assert "HTTP 403" in status["BLS"]["error"]
+
+
+def test_bls_snapshot_does_not_claim_other_years():
+    assert not ev.bls_official_snapshot(2027).shape[0]

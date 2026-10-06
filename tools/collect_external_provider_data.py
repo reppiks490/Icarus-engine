@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""CLI for the ICARUS external provider entitlement/backfill fabric.
+"""CLI for the ICARUS external provider entitlement/backfill/stream fabric.
 
 Research-data authority only. Secrets are read from environment and are never
 written to manifests or command-line arguments.
@@ -8,11 +8,12 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 from pathlib import Path
-import sys
 
 from cl_lab.data_fabric.backfill import run_backfill_cycle
 from cl_lab.data_fabric.orchestrator import run_probe_cycle
+from cl_lab.data_fabric.streaming import run_uw_stream_capture
 
 
 def _providers(value: str) -> tuple[str, ...]:
@@ -23,20 +24,43 @@ def _providers(value: str) -> tuple[str, ...]:
 
 def parse_args(argv=None):
     p = argparse.ArgumentParser(description="ICARUS external provider data fabric")
-    p.add_argument("mode", choices=("probe", "backfill", "incremental"))
+    p.add_argument("mode", choices=("probe", "backfill", "incremental", "stream"))
     p.add_argument("--provider", choices=("all", "intrinio", "unusual_whales"), default="all")
     p.add_argument("--cache", default=".external_data_cache")
     p.add_argument("--max-calls", type=int, default=200)
     p.add_argument("--historical-floor", default="2024-01-01")
     p.add_argument("--include-uw-full-tape", action="store_true")
+    p.add_argument("--channels", default="market_tide,stock_screener,flow-alerts,contract_screener")
+    p.add_argument("--max-seconds", type=float, default=900.0)
+    p.add_argument("--max-messages", type=int, default=10000)
     return p.parse_args(argv)
 
 
 def main(argv=None) -> int:
     args = parse_args(argv)
-    providers = _providers(args.provider)
     root = Path(args.cache)
 
+    if args.mode == "stream":
+        if args.provider not in ("all", "unusual_whales"):
+            raise SystemExit("stream mode currently supports unusual_whales only")
+        channels = tuple(ch.strip() for ch in args.channels.split(",") if ch.strip())
+        manifest = run_uw_stream_capture(
+            api_token=os.environ.get("UNUSUAL_WHALES_API_TOKEN", ""),
+            channels=channels,
+            output_root=root,
+            max_seconds=max(1.0, args.max_seconds),
+            max_messages=max(1, args.max_messages),
+        )
+        print(json.dumps({
+            "schema": manifest.get("schema"),
+            "generated_at": manifest.get("generated_at"),
+            "status": manifest.get("status"),
+            "channels": manifest.get("channels"),
+            "summary": manifest.get("summary"),
+        }, sort_keys=True))
+        return 0
+
+    providers = _providers(args.provider)
     if args.mode == "probe":
         manifest = run_probe_cycle(providers=providers, output_dir=root)
     else:

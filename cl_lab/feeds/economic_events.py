@@ -191,6 +191,15 @@ def _parse_ics_dt(prop: str, value: str) -> tuple[datetime | None,date | None]:
             zone=ET
     return dt.replace(tzinfo=zone), None
 
+def _bls_reference_period(title: str, description: str | None = None) -> str | None:
+    # BLS release titles conventionally end in "for <reference period>". Prefer
+    # that stable semantic field over ICS DESCRIPTION, which may gain boilerplate.
+    m=re.search(r"\bfor\s+(.+)$",_norm(title),re.I)
+    if m and re.search(r"\b20\d{2}\b",m.group(1)):
+        return _norm(m.group(1))
+    return _norm(description) or None
+
+
 def _bls_record(title: str, *, scheduled=None, event_date=None, reference_period=None,
                 stable_id=None, source_url=None) -> dict:
     # Identity must be transport-independent.  BLS ICS UID is preserved as metadata,
@@ -229,7 +238,7 @@ def parse_bls_ics(raw: bytes) -> pd.DataFrame:
                 if title and (dt is not None or d is not None):
                     rows.append(_bls_record(
                         title,scheduled=dt,event_date=d,
-                        reference_period=cur.get("DESCRIPTION"),
+                        reference_period=_bls_reference_period(title,cur.get("DESCRIPTION")),
                         stable_id=cur.get("UID"),source_url=SOURCES["BLS"],
                     ))
             cur=None

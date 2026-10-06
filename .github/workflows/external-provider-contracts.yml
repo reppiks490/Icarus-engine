@@ -7,23 +7,27 @@ on:
     paths:
       - "cl_lab/data_fabric/**"
       - "cl_lab/providers/**"
+      - "tools/collect_external_provider_data.py"
       - "tests_cl/test_data_fabric_contracts.py"
       - "tests_cl/test_intrinio_provider.py"
       - "tests_cl/test_unusual_whales_provider.py"
       - "tests_cl/test_external_provider_orchestrator.py"
       - "tests_cl/test_external_provider_acquisition.py"
       - "tests_cl/test_external_provider_backfill.py"
+      - "tests_cl/test_external_provider_streaming.py"
       - ".github/workflows/external-provider-contracts.yml"
   pull_request:
     paths:
       - "cl_lab/data_fabric/**"
       - "cl_lab/providers/**"
+      - "tools/collect_external_provider_data.py"
       - "tests_cl/test_data_fabric_contracts.py"
       - "tests_cl/test_intrinio_provider.py"
       - "tests_cl/test_unusual_whales_provider.py"
       - "tests_cl/test_external_provider_orchestrator.py"
       - "tests_cl/test_external_provider_acquisition.py"
       - "tests_cl/test_external_provider_backfill.py"
+      - "tests_cl/test_external_provider_streaming.py"
       - ".github/workflows/external-provider-contracts.yml"
   workflow_dispatch:
 
@@ -54,4 +58,5 @@ jobs:
           tests_cl/test_external_provider_orchestrator.py
           tests_cl/test_external_provider_acquisition.py
           tests_cl/test_external_provider_backfill.py
+          tests_cl/test_external_provider_streaming.py
           -p no:cacheprovider

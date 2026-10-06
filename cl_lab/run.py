@@ -151,11 +151,17 @@ def _economic_events_ui(out_dir, now, limit=12):
     next_high = high[0] if high else None
     exact_24h = [x for x in high if x.get("minutes_to_event") is not None and 0 <= x["minutes_to_event"] <= 1440]
     source_status = {
-        k: {kk: vv for kk, vv in v.items() if kk in ("status", "rows", "transport", "error")}
+        k: {kk: vv for kk, vv in v.items()
+            if kk in ("status", "rows", "transport", "error", "snapshot_as_of", "source_url")}
         for k, v in (manifest.get("sources") or {}).items()
     }
+    states=[v.get("status") for v in source_status.values()]
+    source_health=("ok" if states and all(x=="ok" for x in states)
+                   else "degraded" if states else "unavailable")
     return dict(
         status="ok",
+        source_health=source_health,
+        degraded_sources=sorted(k for k,v in source_status.items() if v.get("status")!="ok"),
         generated_at=manifest.get("generated_at"),
         source_status=source_status,
         current_events=manifest.get("current_events"),

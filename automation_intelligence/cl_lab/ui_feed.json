@@ -6,7 +6,7 @@
    "diagnostics": {
     "bh_rejections": 0,
     "candidates": 492,
-    "forward_sessions": 0,
+    "forward_sessions": 1,
     "hold_sessions": 263,
     "m_eff": 125.0,
     "metric": "returns",
@@ -21,103 +21,101 @@
     "batch": 24,
     "best": [
      {
-      "dsr": 0.0,
-      "family": "noise",
-      "id": "x65d8fafcce1",
-      "params": {
-       "check": 60,
-       "cond": "dow_mon",
-       "lookback": 30,
-       "mult": 1.25,
-       "regime": "all",
-       "trail": "band_vwap"
-      },
-      "status": "REJECTED",
-      "tune_t": 0.181,
-      "tune_trades": 23
-     },
-     {
-      "dsr": 0.0,
-      "family": "orb",
-      "id": "x655684b626a",
+      "dsr": 0.0006,
+      "family": "tod",
+      "id": "xcff43678ee5",
       "params": {
        "cond": "gap_down",
-       "entry_mode": "breakout_close",
-       "or_min": 60,
-       "regime": "vol_lo",
-       "side": "long",
-       "stop": "atr10",
-       "target": "2R"
+       "lookback": 60,
+       "regime": "vol_hi",
+       "which": "first"
       },
       "status": "REJECTED",
-      "tune_t": 0.124,
-      "tune_trades": 33
+      "tune_t": 1.174,
+      "tune_trades": 28
      },
      {
       "dsr": 0.0,
       "family": "sweep",
-      "id": "x8fbc7a0e226",
+      "id": "x721ace29529",
       "params": {
-       "cond": "dow_fri",
-       "depth_ticks": 2,
-       "exit": "2R",
-       "level": "pd",
+       "cond": "dow_mon",
+       "depth_ticks": 8,
+       "exit": "eod",
+       "level": "on",
        "mode": "continue",
-       "regime": "vol_lo",
+       "regime": "vol_hi",
        "window": "am"
       },
       "status": "REJECTED",
-      "tune_t": -0.003,
-      "tune_trades": 23
+      "tune_t": 0.278,
+      "tune_trades": 8
      },
      {
       "dsr": 0.0,
       "family": "noise",
-      "id": "x40e18d567fa",
+      "id": "x3c16d3e9489",
       "params": {
-       "check": 15,
-       "cond": "gap_down",
-       "lookback": 20,
-       "mult": 1.25,
+       "check": 60,
+       "cond": "dow_mon",
+       "lookback": 14,
+       "mult": 1.0,
        "regime": "vol_hi",
        "trail": "band"
       },
       "status": "REJECTED",
-      "tune_t": -0.389,
+      "tune_t": -0.592,
+      "tune_trades": 5
+     },
+     {
+      "dsr": 0.0,
+      "family": "sweep",
+      "id": "x5e0662c32c6",
+      "params": {
+       "cond": "on_wide",
+       "depth_ticks": 4,
+       "exit": "2R",
+       "level": "pd",
+       "mode": "reverse",
+       "regime": "vol_hi",
+       "window": "day"
+      },
+      "status": "REJECTED",
+      "tune_t": -0.596,
       "tune_trades": 16
      },
      {
       "dsr": 0.0,
       "family": "noise",
-      "id": "xe556ca30941",
+      "id": "x503fbbb0eea",
       "params": {
-       "check": 15,
-       "cond": "vix_low",
-       "lookback": 14,
+       "check": 30,
+       "cond": "gap_up",
+       "lookback": 30,
        "mult": 1.5,
-       "regime": "vol_lo",
-       "trail": "band"
+       "regime": "all",
+       "trail": "band_vwap"
       },
       "status": "REJECTED",
-      "tune_t": -0.622,
-      "tune_trades": 54
+      "tune_t": -0.713,
+      "tune_trades": 62
      }
     ],
     "diagnostics": {
      "bh_rejections": 0,
      "candidates": 24,
-     "forward_sessions": 0,
+     "forward_sessions": 1,
      "hold_sessions": 263,
-     "m_eff": 21.0,
+     "m_eff": 19.0,
      "metric": "returns",
-     "pbo": 0.3315,
-     "prior_trials": 629,
+     "pbo": 0.2745,
+     "prior_trials": 653,
      "reached_hold": 0,
-     "spa_p": 0.998,
+     "spa_p": 0.765,
      "tune_sessions": 282,
-     "var_sr": 0.00942063
+     "var_sr": 0.00617765
     },
-    "explored_before": 504,
+    "explored_before": 528,
     "promoted": [],
     "status_counts": {
      "REJECTED": 24
@@ -128,7 +126,7 @@
     "diagnostics": {
      "bh_rejections": 0,
      "candidates": 3,
-     "forward_sessions": 0,
+     "forward_sessions": 1,
      "hold_sessions": 263,
      "m_eff": 3.0,
      "metric": "returns",
@@ -189,7 +187,7 @@
      "diagnostics": {
       "bh_rejections": 0,
       "candidates": 4,
-      "forward_sessions": 0,
+      "forward_sessions": 1,
       "hold_sessions": 263,
       "m_eff": 3.0,
       "metric": "returns",
@@ -273,7 +271,7 @@
     },
     "version": "cl-r2"
    },
-   "sessions": 545,
+   "sessions": 546,
    "status": "EVALUATED",
    "status_counts": {
     "REJECTED": 492
@@ -285,7 +283,7 @@
    "diagnostics": {
     "bh_rejections": 0,
     "candidates": 492,
-    "forward_sessions": 0,
+    "forward_sessions": 1,
     "hold_sessions": 263,
     "m_eff": 118.0,
     "metric": "returns",
@@ -300,103 +298,102 @@
     "batch": 24,
     "best": [
      {
-      "dsr": 0.0004,
-      "family": "noise",
-      "id": "x2d798738528",
-      "params": {
-       "check": 30,
-       "cond": "vix_high",
-       "lookback": 30,
-       "mult": 1.0,
-       "regime": "vol_lo",
-       "trail": "band"
-      },
-      "status": "REJECTED",
-      "tune_t": 1.388,
-      "tune_trades": 14
-     },
-     {
-      "dsr": 0.0004,
-      "family": "sweep",
-      "id": "x64644d3c78d",
-      "params": {
-       "cond": "vix_low",
-       "depth_ticks": 4,
-       "exit": "eod",
-       "level": "pd",
-       "mode": "continue",
-       "regime": "vol_lo",
-       "window": "day"
-      },
-      "status": "REJECTED",
-      "tune_t": 1.23,
-      "tune_trades": 54
-     },
-     {
-      "dsr": 0.0003,
-      "family": "orb",
-      "id": "x0760f9c3079",
-      "params": {
-       "cond": "dow_fri",
-       "entry_mode": "breakout_close",
-       "or_min": 15,
-       "regime": "vol_lo",
-       "side": "both",
-       "stop": "or_opposite",
-       "target": "eod"
-      },
-      "status": "REJECTED",
-      "tune_t": 1.04,
-      "tune_trades": 16
-     },
-     {
-      "dsr": 0.0008,
-      "family": "orb",
-      "id": "x4ef69731c5c",
-      "params": {
-       "cond": "none",
-       "entry_mode": "breakout_close",
-       "or_min": 10,
-       "regime": "vol_lo",
-       "side": "both",
-       "stop": "atr10",
-       "target": "10R"
-      },
-      "status": "REJECTED",
-      "tune_t": 0.957,
-      "tune_trades": 76
-     },
-     {
       "dsr": 0.0,
-      "family": "vwap",
-      "id": "x5def2e82427",
+      "family": "noise",
+      "id": "x0131c487f44",
       "params": {
        "check": 30,
        "cond": "vix_inverted",
-       "regime": "vol_lo",
-       "side": "long",
-       "start": "10:30"
+       "lookback": 10,
+       "mult": 1.5,
+       "regime": "all",
+       "trail": "band_vwap"
       },
       "status": "REJECTED",
-      "tune_t": 0.811,
-      "tune_trades": 9
+      "tune_t": 1.186,
+      "tune_trades": 27
+     },
+     {
+      "dsr": 0.0,
+      "family": "noise",
+      "id": "x87ab220ea22",
+      "params": {
+       "check": 30,
+       "cond": "vix_high",
+       "lookback": 20,
+       "mult": 1.5,
+       "regime": "all",
+       "trail": "band"
+      },
+      "status": "REJECTED",
+      "tune_t": 1.051,
+      "tune_trades": 55
+     },
+     {
+      "dsr": 0.0,
+      "family": "orb",
+      "id": "x9864ac80d0b",
+      "params": {
+       "cond": "vix_inverted",
+       "entry_mode": "first_candle_dir",
+       "or_min": 5,
+       "regime": "all",
+       "side": "long",
+       "stop": "candle",
+       "target": "2R"
+      },
+      "status": "REJECTED",
+      "tune_t": 0.77,
+      "tune_trades": 22
+     },
+     {
+      "dsr": 0.0,
+      "family": "noise",
+      "id": "x47b120f4ca0",
+      "params": {
+       "check": 30,
+       "cond": "on_wide",
+       "lookback": 30,
+       "mult": 1.0,
+       "regime": "vol_lo",
+       "trail": "band_vwap"
+      },
+      "status": "REJECTED",
+      "tune_t": 0.695,
+      "tune_trades": 42
+     },
+     {
+      "dsr": 0.0,
+      "family": "imom",
+      "id": "x466571f8ab2",
+      "params": {
+       "base": "prevclose",
+       "cond": "dow_fri",
+       "entry": "14:30",
+       "min_abs": "q50",
+       "regime": "vol_lo",
+       "t1": "10:30"
+      },
+      "status": "REJECTED",
+      "tune_t": 0.374,
+      "tune_trades": 8
      }
     ],
     "diagnostics": {
      "bh_rejections": 0,
      "candidates": 24,
-     "forward_sessions": 0,
+     "forward_sessions": 1,
      "hold_sessions": 263,
-     "m_eff": 19.0,
+     "m_eff": 20.0,
      "metric": "returns",
-     "pbo": 0.5676,
-     "prior_trials": 622,
+     "pbo": 0.478,
+     "prior_trials": 646,
      "reached_hold": 0,
-     "spa_p": 0.698,
+     "spa_p": 0.861,
      "tune_sessions": 282,
-     "var_sr": 0.00486606
+     "var_sr": 0.01244962
     },
-    "explored_before": 504,
+    "explored_before": 528,
     "promoted": [],
     "status_counts": {
      "REJECTED": 24
@@ -407,7 +404,7 @@
     "diagnostics": {
      "bh_rejections": 0,
      "candidates": 3,
-     "forward_sessions": 0,
+     "forward_sessions": 1,
      "hold_sessions": 263,
      "m_eff": 2.0,
      "metric": "returns",
@@ -468,7 +465,7 @@
      "diagnostics": {
       "bh_rejections": 1,
       "candidates": 4,
-      "forward_sessions": 0,
+      "forward_sessions": 1,
       "hold_sessions": 263,
       "m_eff": 3.0,
       "metric": "returns",
@@ -554,14 +551,14 @@
      {
       "after": "2026-10-05",
       "id": "qce1276a5f9b",
-      "mean": null,
+      "mean": 0.0,
       "nw_t": null,
       "protocol": "R4-1",
       "rule": {
        "min_trades": 60,
        "nw_t": 1.65
       },
-      "sessions": 0,
+      "sessions": 1,
       "status": "WATCHING",
       "trades": 0
      }
@@ -603,7 +600,7 @@
     },
     "version": "cl-r2"
    },
-   "sessions": 545,
+   "sessions": 546,
    "status": "EVALUATED",
    "status_counts": {
     "REJECTED": 492
@@ -615,7 +612,7 @@
    "diagnostics": {
     "bh_rejections": 0,
     "candidates": 492,
-    "forward_sessions": 0,
+    "forward_sessions": 1,
     "hold_sessions": 260,
     "m_eff": 114.0,
     "metric": "points",
@@ -630,99 +627,104 @@
     "batch": 24,
     "best": [
      {
-      "dsr": 0.0018,
-      "family": "tod",
-      "id": "x48612a14c3b",
-      "params": {
-       "cond": "vix_high",
-       "lookback": 10,
-       "regime": "vol_lo",
-       "which": "last"
-      },
-      "status": "REJECTED",
-      "tune_t": 1.55,
-      "tune_trades": 11
-     },
-     {
-      "dsr": 0.0003,
-      "family": "noise",
-      "id": "xcc23f683aa4",
-      "params": {
-       "check": 30,
-       "cond": "none",
-       "lookback": 10,
-       "mult": 1.5,
-       "regime": "vol_hi",
-       "trail": "band"
-      },
-      "status": "REJECTED",
-      "tune_t": 1.26,
-      "tune_trades": 41
-     },
-     {
-      "dsr": 0.0,
-      "family": "noise",
-      "id": "x820842c436e",
-      "params": {
-       "check": 60,
-       "cond": "vix_low",
-       "lookback": 30,
-       "mult": 2.0,
-       "regime": "vol_hi",
-       "trail": "band"
-      },
-      "status": "REJECTED",
-      "tune_t": 1.01,
-      "tune_trades": 1
-     },
-     {
-      "dsr": 0.0012,
+      "dsr": 0.0318,
       "family": "imom",
-      "id": "x497bb3aa03f",
+      "id": "x12ffb05a225",
       "params": {
        "base": "open",
-       "cond": "vix_contango",
+       "cond": "gap_down",
        "entry": "15:30",
-       "min_abs": "q50",
+       "min_abs": "none",
        "regime": "vol_hi",
-       "t1": "11:30"
+       "t1": "11:00"
       },
       "status": "REJECTED",
-      "tune_t": 0.943,
-      "tune_trades": 23
+      "tune_t": 2.084,
+      "tune_trades": 45
+     },
+     {
+      "dsr": 0.0097,
+      "family": "orb",
+      "id": "x7d17ff0ee95",
+      "params": {
+       "cond": "dow_mid",
+       "entry_mode": "breakout_close",
+       "or_min": 5,
+       "regime": "all",
+       "side": "long",
+       "stop": "atr10",
+       "target": "2R"
+      },
+      "status": "REJECTED",
+      "tune_t": 1.568,
+      "tune_trades": 108
+     },
+     {
+      "dsr": 0.0004,
+      "family": "sweep",
+      "id": "xb33d73533aa",
+      "params": {
+       "cond": "dow_fri",
+       "depth_ticks": 2,
+       "exit": "eod",
+       "level": "on",
+       "mode": "reverse",
+       "regime": "all",
+       "window": "am"
+      },
+      "status": "REJECTED",
+      "tune_t": 1.122,
+      "tune_trades": 31
+     },
+     {
+      "dsr": 0.0025,
+      "family": "orb",
+      "id": "x055fc469cd3",
+      "params": {
+       "cond": "gap_up",
+       "entry_mode": "breakout_close",
+       "or_min": 10,
+       "regime": "vol_lo",
+       "side": "long",
+       "stop": "atr10",
+       "target": "2R"
+      },
+      "status": "REJECTED",
+      "tune_t": 1.024,
+      "tune_trades": 43
      },
      {
       "dsr": 0.0001,
       "family": "noise",
-      "id": "xea238bc34d5",
+      "id": "x3973f312c52",
       "params": {
-       "check": 60,
-       "cond": "vix_low",
-       "lookback": 5,
-       "mult": 1.0,
-       "regime": "vol_hi",
-       "trail": "band"
+       "check": 30,
+       "cond": "on_wide",
+       "lookback": 14,
+       "mult": 1.25,
+       "regime": "all",
+       "trail": "band_vwap"
       },
       "status": "REJECTED",
-      "tune_t": 0.916,
-      "tune_trades": 7
+      "tune_t": 0.999,
+      "tune_trades": 82
      }
     ],
     "diagnostics": {
      "bh_rejections": 0,
      "candidates": 24,
-     "forward_sessions": 0,
+     "forward_sessions": 1,
      "hold_sessions": 260,
-     "m_eff": 18.0,
+     "m_eff": 22.0,
      "metric": "points",
-     "pbo": 0.3826,
-     "prior_trials": 618,
+     "pbo": 0.2459,
+     "prior_trials": 642,
      "reached_hold": 0,
-     "spa_p": 0.595,
+     "spa_p": 0.359,
      "tune_sessions": 264,
-     "var_sr": 0.00517374
+     "var_sr": 0.00541962
     },
-    "explored_before": 504,
+    "explored_before": 528,
     "promoted": [],
     "status_counts": {
      "REJECTED": 24
@@ -733,7 +735,7 @@
     "diagnostics": {
      "bh_rejections": 0,
      "candidates": 3,
-     "forward_sessions": 0,
+     "forward_sessions": 1,
      "hold_sessions": 260,
      "m_eff": 2.0,
      "metric": "points",
@@ -791,49 +793,49 @@
     "forward": {
      "CANDLES": {
       "after": "2026-10-05",
-      "net_usd": 55.1,
-      "trades": 2
+      "net_usd": 2040.6,
+      "trades": 4
      },
      "HA_HA_FILLS": {
       "after": "2026-10-05",
-      "net_usd": 0.0,
-      "trades": 0
+      "net_usd": 1985.5,
+      "trades": 2
      },
      "HA_REAL_FILLS": {
       "after": "2026-10-05",
-      "net_usd": 0.0,
-      "trades": 0
+      "net_usd": 1985.5,
+      "trades": 2
      }
     },
     "preset_source": "presets/NQ-20m-ultracoded.json (RECONSTRUCTED)",
     "reason": null,
     "status": null,
     "strategy": "THE PULSE OF ICARUS v3.1 (repo port)",
-    "tape_last_bar_close": "2026-10-05T12:40:00+00:00",
+    "tape_last_bar_close": "2026-10-06T10:40:00+00:00",
     "totals": {
      "CANDLES|base": {
-      "net_usd": 46532.06,
-      "trades": 574
+      "net_usd": 48517.56,
+      "trades": 576
      },
      "CANDLES|stress": {
-      "net_usd": 35870.16,
-      "trades": 569
+      "net_usd": 37838.66,
+      "trades": 571
      },
      "HA_HA_FILLS|base": {
-      "net_usd": 328982.0,
-      "trades": 550
+      "net_usd": 330967.5,
+      "trades": 552
      },
      "HA_REAL_FILLS|base": {
-      "net_usd": 15187.4,
-      "trades": 491
+      "net_usd": 17172.9,
+      "trades": 493
      },
      "HA_REAL_FILLS|repo_convention": {
-      "net_usd": 14044.6,
-      "trades": 493
+      "net_usd": 16039.7,
+      "trades": 495
      },
      "HA_REAL_FILLS|stress": {
-      "net_usd": 6543.4,
-      "trades": 493
+      "net_usd": 8511.9,
+      "trades": 495
      }
     },
     "trials_assumed_for_dsr": 100,
@@ -1137,7 +1139,7 @@
     },
     "version": "cl-r2"
    },
-   "sessions": 524,
+   "sessions": 525,
    "status": "EVALUATED",
    "status_counts": {
     "REJECTED": 492
@@ -1149,12 +1151,12 @@
    "cost_bp_rt": 1.0,
    "first": "1986-01-02",
    "first_signal": "1986-04",
-   "last": "2026-10-02",
+   "last": "2026-10-05",
    "last_signal": "2026-09",
    "n_trials": 3,
    "signals": 486,
    "stress_bp_rt": 3.0,
-   "trading_days": 10269,
+   "trading_days": 10270,
    "var_sr": 0.000178758
   },
   "recent_signals": [
@@ -1200,7 +1202,7 @@
     "r_bd": -0.015577295935825908,
     "r_eq": -0.06016379120997073,
     "t": 10224,
-    "z": -0.7990566870503198
+    "z": -0.7990566870503197
    },
    {
     "entry": 10240,
@@ -1211,7 +1213,7 @@
     "r_bd": 0.007213333841523006,
     "r_eq": 0.03659378514688294,
     "t": 10245,
-    "z": 0.49766844783916653
+    "z": 0.4976684478391665
    },
    {
     "entry": 10261,
@@ -1270,9 +1272,9 @@
   "diversifier": {
    "account": "third",
    "budget_usd": 0.7365759999999995,
-   "cached_slices": 60,
-   "downloaded_slices": 0,
-   "estimated_requested_usd": 0.0,
+   "cached_slices": 53,
+   "downloaded_slices": 3,
+   "estimated_requested_usd": 0.704120725394,
    "feature_resolution": "1 minute",
    "max_request_usd": 15.0,
    "profile": "diversifier",
@@ -1294,19 +1296,19 @@
      "ok": 0
     },
     "MBT": {
-     "cached": 4,
+     "cached": 3,
      "errors": 0,
      "ok": 0
     },
     "MGC": {
-     "cached": 8,
+     "cached": 6,
      "errors": 0,
-     "ok": 0
+     "ok": 1
     },
     "PA": {
-     "cached": 4,
+     "cached": 3,
      "errors": 0,
-     "ok": 0
+     "ok": 1
     },
     "PL": {
      "cached": 4,
@@ -1314,17 +1316,17 @@
      "ok": 0
     },
     "SI": {
-     "cached": 6,
+     "cached": 5,
      "errors": 0,
      "ok": 0
     },
     "SIL": {
-     "cached": 6,
+     "cached": 5,
      "errors": 0,
-     "ok": 0
+     "ok": 1
     },
     "VX": {
-     "cached": 5,
+     "cached": 4,
      "errors": 0,
      "ok": 0
     },
@@ -1345,51 +1347,51 @@
   "index": {
    "account": "secondary",
    "budget_usd": 1.2059579999999954,
-   "cached_slices": 54,
-   "downloaded_slices": 0,
-   "estimated_requested_usd": 0.0,
+   "cached_slices": 40,
+   "downloaded_slices": 1,
+   "estimated_requested_usd": 0.937064494193,
    "feature_resolution": "1 minute",
    "max_request_usd": 15.0,
    "profile": "index",
    "raw_retention": "none; temporary DBN is hashed, reduced, and deleted",
    "roots": {
     "ES": {
-     "cached": 8,
-     "errors": 0,
-     "ok": 0
-    },
-    "M2K": {
      "cached": 6,
      "errors": 0,
-     "ok": 0
+     "ok": 1
     },
-    "MES": {
-     "cached": 8,
-     "errors": 0,
-     "ok": 0
-    },
-    "MNQ": {
+    "M2K": {
      "cached": 4,
      "errors": 0,
      "ok": 0
     },
-    "MYM": {
-     "cached": 5,
-     "errors": 0,
-     "ok": 0
-    },
-    "NQ": {
-     "cached": 12,
-     "errors": 0,
-     "ok": 0
-    },
-    "RTY": {
+    "MES": {
      "cached": 6,
      "errors": 0,
      "ok": 0
     },
-    "YM": {
+    "MNQ": {
+     "cached": 2,
+     "errors": 0,
+     "ok": 0
+    },
+    "MYM": {
+     "cached": 3,
+     "errors": 0,
+     "ok": 0
+    },
+    "NQ": {
+     "cached": 10,
+     "errors": 0,
+     "ok": 0
+    },
+    "RTY": {
      "cached": 5,
+     "errors": 0,
+     "ok": 0
+    },
+    "YM": {
+     "cached": 4,
      "errors": 0,
      "ok": 0
     }
@@ -1397,6 +1399,226 @@
    "selection_method": "breadth-first then regime-weighted information-per-dollar",
    "status": "ok"
   }
+ },
+ "economic_events": {
+  "causality": "schedule_history records the first observed version of each scheduled event; use only versions first_seen_at <= decision time",
+  "current_events": 245,
+  "degraded_sources": [
+   "BLS"
+  ],
+  "generated_at": "2026-10-06T18:22:58.011715+00:00",
+  "high_impact_current": 109,
+  "high_impact_within_24h": 0,
+  "next_high_impact": {
+   "category": "inflation",
+   "event_date": "2026-10-14",
+   "event_key": "4f3276ffeae564d103ef7595",
+   "impact": "high",
+   "minutes_to_event": 11113.9,
+   "reference_period": "September 2026",
+   "scheduled_at_et": "2026-10-14T08:30:00-04:00",
+   "scheduled_at_utc": "2026-10-14T12:30:00+00:00",
+   "source": "BLS",
+   "time_known": true,
+   "timing_basis": "source_schedule",
+   "title": "Consumer Price Index for September 2026"
+  },
+  "schedule_versions": 404,
+  "source_health": "degraded",
+  "source_status": {
+   "BEA": {
+    "rows": 63,
+    "status": "ok"
+   },
+   "BLS": {
+    "error": "live BLS transports unavailable: ICS FeedError: HTTP 403 for https://www.bls.gov/schedule/news_release/bls.ics; HTML FeedError: HTTP 403 for https://www.bls.gov/schedule/2026/",
+    "rows": 25,
+    "snapshot_as_of": "2026-10-06",
+    "source_url": "https://www.bls.gov/schedule/2026/",
+    "status": "degraded",
+    "transport": "official_snapshot"
+   },
+   "CENSUS": {
+    "rows": 149,
+    "status": "ok"
+   },
+   "FOMC": {
+    "rows": 8,
+    "status": "ok"
+   }
+  },
+  "status": "ok",
+  "time_known_current": 237,
+  "upcoming": [
+   {
+    "category": "inflation",
+    "event_date": "2026-10-14",
+    "event_key": "4f3276ffeae564d103ef7595",
+    "impact": "high",
+    "minutes_to_event": 11113.9,
+    "reference_period": "September 2026",
+    "scheduled_at_et": "2026-10-14T08:30:00-04:00",
+    "scheduled_at_utc": "2026-10-14T12:30:00+00:00",
+    "source": "BLS",
+    "time_known": true,
+    "timing_basis": "source_schedule",
+    "title": "Consumer Price Index for September 2026"
+   },
+   {
+    "category": "labor",
+    "event_date": "2026-10-14",
+    "event_key": "e7fcfea076fb18b21904ea40",
+    "impact": "low",
+    "minutes_to_event": 11113.9,
+    "reference_period": "September 2026",
+    "scheduled_at_et": "2026-10-14T08:30:00-04:00",
+    "scheduled_at_utc": "2026-10-14T12:30:00+00:00",
+    "source": "BLS",
+    "time_known": true,
+    "timing_basis": "source_schedule",
+    "title": "Real Earnings for September 2026"
+   },
+   {
+    "category": "inflation",
+    "event_date": "2026-10-15",
+    "event_key": "d732362e8ee58c26c2020b77",
+    "impact": "high",
+    "minutes_to_event": 12553.9,
+    "reference_period": "September 2026",
+    "scheduled_at_et": "2026-10-15T08:30:00-04:00",
+    "scheduled_at_utc": "2026-10-15T12:30:00+00:00",
+    "source": "BLS",
+    "time_known": true,
+    "timing_basis": "source_schedule",
+    "title": "Producer Price Index for September 2026"
+   },
+   {
+    "category": "inflation",
+    "event_date": "2026-10-16",
+    "event_key": "193a05ff8bfd8bf270158025",
+    "impact": "medium",
+    "minutes_to_event": 13993.9,
+    "reference_period": "September 2026",
+    "scheduled_at_et": "2026-10-16T08:30:00-04:00",
+    "scheduled_at_utc": "2026-10-16T12:30:00+00:00",
+    "source": "BLS",
+    "time_known": true,
+    "timing_basis": "source_schedule",
+    "title": "U.S. Import and Export Price Indexes for September 2026"
+   },
+   {
+    "category": "labor",
+    "event_date": "2026-10-20",
+    "event_key": "58a658f3649c0f14360bdd3b",
+    "impact": "low",
+    "minutes_to_event": 19843.9,
+    "reference_period": "September 2026",
+    "scheduled_at_et": "2026-10-20T10:00:00-04:00",
+    "scheduled_at_utc": "2026-10-20T14:00:00+00:00",
+    "source": "BLS",
+    "time_known": true,
+    "timing_basis": "source_schedule",
+    "title": "State Employment and Unemployment (Monthly) for September 2026"
+   },
+   {
+    "category": "labor",
+    "event_date": "2026-10-21",
+    "event_key": "d6c2f9b79b43b3ff3906135a",
+    "impact": "low",
+    "minutes_to_event": 21283.9,
+    "reference_period": "Third Quarter 2026",
+    "scheduled_at_et": "2026-10-21T10:00:00-04:00",
+    "scheduled_at_utc": "2026-10-21T14:00:00+00:00",
+    "source": "BLS",
+    "time_known": true,
+    "timing_basis": "source_schedule",
+    "title": "Usual Weekly Earnings of Wage and Salary Workers for Third Quarter 2026"
+   },
+   {
+    "category": "policy",
+    "event_date": "2026-10-28",
+    "event_key": "136ae1f8523b1767067bb5db",
+    "impact": "high",
+    "minutes_to_event": null,
+    "reference_period": null,
+    "scheduled_at_et": null,
+    "scheduled_at_utc": null,
+    "source": "FOMC",
+    "time_known": false,
+    "timing_basis": "meeting_end_date; statement time not asserted",
+    "title": "FOMC policy decision"
+   },
+   {
+    "category": "growth",
+    "event_date": "2026-10-29",
+    "event_key": "94a8ce417025684a43beb002",
+    "impact": "high",
+    "minutes_to_event": 32713.9,
+    "reference_period": "3rd Quarter 2026",
+    "scheduled_at_et": "2026-10-29T08:30:00-04:00",
+    "scheduled_at_utc": "2026-10-29T12:30:00+00:00",
+    "source": "BEA",
+    "time_known": true,
+    "timing_basis": "source_schedule",
+    "title": "GDP (Advance Estimate), 3rd Quarter 2026"
+   },
+   {
+    "category": "growth",
+    "event_date": "2026-10-29",
+    "event_key": "bde7eff99e812613f7d79043",
+    "impact": "high",
+    "minutes_to_event": 32713.9,
+    "reference_period": "September 2026",
+    "scheduled_at_et": "2026-10-29T08:30:00-04:00",
+    "scheduled_at_utc": "2026-10-29T12:30:00+00:00",
+    "source": "BEA",
+    "time_known": true,
+    "timing_basis": "source_schedule",
+    "title": "Personal Income and Outlays, September 2026"
+   },
+   {
+    "category": "labor",
+    "event_date": "2026-10-30",
+    "event_key": "da62544b492c7d2b68c3d4ac",
+    "impact": "high",
+    "minutes_to_event": 34153.9,
+    "reference_period": "Third Quarter 2026",
+    "scheduled_at_et": "2026-10-30T08:30:00-04:00",
+    "scheduled_at_utc": "2026-10-30T12:30:00+00:00",
+    "source": "BLS",
+    "time_known": true,
+    "timing_basis": "source_schedule",
+    "title": "Employment Cost Index for Third Quarter 2026"
+   },
+   {
+    "category": "labor",
+    "event_date": "2026-11-03",
+    "event_key": "7a01bddf79a629fd85f4518b",
+    "impact": "medium",
+    "minutes_to_event": 40063.9,
+    "reference_period": "September 2026",
+    "scheduled_at_et": "2026-11-03T10:00:00-05:00",
+    "scheduled_at_utc": "2026-11-03T15:00:00+00:00",
+    "source": "BLS",
+    "time_known": true,
+    "timing_basis": "source_schedule",
+    "title": "Job Openings and Labor Turnover Survey for September 2026"
+   },
+   {
+    "category": "growth",
+    "event_date": "2026-11-04",
+    "event_key": "c66cab6cdcd0d82e02b01e47",
+    "impact": "high",
+    "minutes_to_event": 41413.9,
+    "reference_period": "September 2026",
+    "scheduled_at_et": "2026-11-04T08:30:00-05:00",
+    "scheduled_at_utc": "2026-11-04T13:30:00+00:00",
+    "source": "BEA",
+    "time_known": true,
+    "timing_basis": "source_schedule",
+    "title": "U.S. International Trade in Goods and Services, September 2026"
+   }
+  ]
  },
  "evidence_class": "RESEARCH_ONLY",
  "execution_authorized": false,
@@ -1477,13 +1699,13 @@
   "treasury_debt_to_penny": "ok",
   "treasury_operating_cash": "ok"
  },
- "generated_at": "2026-10-05T21:31:04.447772+00:00",
+ "generated_at": "2026-10-06T19:16:05.512929+00:00",
  "integrity": {
   "basis_check": {
    "jumps": [],
    "max_abs_dbasis": 108.92,
-   "median_abs_dbasis": 7.17,
-   "sessions": 510,
+   "median_abs_dbasis": 7.16,
+   "sessions": 511,
    "status": "OK",
    "threshold_points": 150.0
   },
@@ -1689,7 +1911,7 @@
   ]
  },
  "production_decision_authorized": false,
- "run_id": "cl-lab-0ac332961de7b24d",
+ "run_id": "cl-lab-3e55921980a42b87",
  "schema": "cl_lab.ui_feed/1",
  "ui_state": "RESEARCH ONLY"
 }

@@ -9,7 +9,9 @@ def test_economic_events_ui_keeps_exact_countdowns_and_date_only_events(tmp_path
     manifest={
         "generated_at":"2026-10-05T20:00:00+00:00",
         "sources":{
-            "BLS":{"status":"ok","rows":120,"transport":"html_fallback"},
+            "BLS":{"status":"degraded","rows":25,"transport":"official_snapshot",
+                   "snapshot_as_of":"2026-10-06","source_url":"https://www.bls.gov/schedule/2026/",
+                   "error":"live BLS transports unavailable"},
             "BEA":{"status":"ok","rows":63},
             "CENSUS":{"status":"ok","rows":159},
             "FOMC":{"status":"ok","rows":8},
@@ -51,7 +53,11 @@ def test_economic_events_ui_keeps_exact_countdowns_and_date_only_events(tmp_path
     assert fomc["minutes_to_event"] is None
     assert fomc["time_known"] is False
     assert "statement time not asserted" in fomc["timing_basis"]
-    assert out["source_status"]["BLS"]["transport"]=="html_fallback"
+    assert out["source_health"]=="degraded"
+    assert out["degraded_sources"]==["BLS"]
+    assert out["source_status"]["BLS"]["transport"]=="official_snapshot"
+    assert out["source_status"]["BLS"]["snapshot_as_of"]=="2026-10-06"
+    assert out["source_status"]["BLS"]["source_url"]=="https://www.bls.gov/schedule/2026/"
 
 
 def test_economic_events_ui_is_explicit_when_clock_missing(tmp_path):

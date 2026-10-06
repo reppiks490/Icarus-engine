@@ -193,3 +193,17 @@ def test_collect_uses_degraded_official_bls_snapshot_when_live_transports_blocke
 
 def test_bls_snapshot_does_not_claim_other_years():
     assert not ev.bls_official_snapshot(2027).shape[0]
+
+
+def test_schedule_history_sanitizer_removes_only_impossible_fomc_spill_rows():
+    df=pd.DataFrame([
+        {"source":"FOMC","stable_id":"2026-meeting-1","event_date":"2026-01-28"},
+        {"source":"FOMC","stable_id":"2026-meeting-8","event_date":"2026-12-09"},
+        {"source":"FOMC","stable_id":"2026-meeting-9","event_date":"2026-10-29"},
+        {"source":"FOMC","stable_id":"2026-meeting-46","event_date":"2026-12-18"},
+        {"source":"BEA","stable_id":None,"event_date":"2026-10-29"},
+    ])
+    clean,removed=ev._sanitize_schedule_history(df)
+    assert removed==2
+    assert set(clean["stable_id"].dropna())=={"2026-meeting-1","2026-meeting-8"}
+    assert (clean["source"]=="BEA").sum()==1

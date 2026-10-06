@@ -9,7 +9,7 @@ BEGIN:VEVENT
 UID:cpi-2026-09@bls.gov
 DTSTART;TZID=America/New_York:20261014T083000
 SUMMARY:Consumer Price Index for September 2026
-DESCRIPTION:September 2026
+DESCRIPTION:Official BLS scheduled release; reference period September 2026
 END:VEVENT
 BEGIN:VEVENT
 UID:jolts-2026-09@bls.gov

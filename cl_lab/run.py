@@ -100,6 +100,75 @@ def _read_json(path, default=None):
         return default
 
 
+def _economic_events_ui(out_dir, now, limit=12):
+    """Compact, causal event-clock projection for the ICARUS UI feed.
+
+    Exact countdowns are emitted only when the official source supplied a timestamp.
+    Date-only events (notably FOMC decisions in the current source) remain date-only.
+    """
+    manifest = _read_json(os.path.join(out_dir, "economic_events_manifest.json"), {}) or {}
+    payload = _read_json(os.path.join(out_dir, "economic_events_upcoming.json"), {}) or {}
+    events = payload.get("events") or []
+    if not manifest or not events:
+        return dict(status="UNAVAILABLE", reason="economic event clock has not produced a usable manifest yet",
+                    source_status=(manifest.get("sources") or {}))
+
+    now = pd.Timestamp(now)
+    if now.tzinfo is None:
+        now = now.tz_localize("UTC")
+    else:
+        now = now.tz_convert("UTC")
+    local_day = now.tz_convert("America/New_York").date()
+    future = []
+    for raw in events:
+        row = {k: raw.get(k) for k in (
+            "source", "event_key", "title", "category", "impact", "reference_period",
+            "event_date", "scheduled_at_et", "scheduled_at_utc", "time_known", "timing_basis")}
+        exact = pd.to_datetime(row.get("scheduled_at_utc"), errors="coerce", utc=True)
+        if pd.notna(exact):
+            if exact < now:
+                continue
+            minutes = (exact - now).total_seconds() / 60.0
+            row["minutes_to_event"] = round(float(minutes), 1)
+            row["_sort"] = exact.value
+        else:
+            try:
+                d = pd.Timestamp(row.get("event_date")).date()
+            except Exception:
+                continue
+            if d < local_day:
+                continue
+            row["minutes_to_event"] = None
+            # Date-only events sort after exact events on the same UTC day.
+            row["_sort"] = pd.Timestamp(d, tz="America/New_York").tz_convert("UTC").value + 86_399_000_000_000
+        future.append(row)
+
+    future.sort(key=lambda x: (x["_sort"], x.get("source") or "", x.get("title") or ""))
+    for row in future:
+        row.pop("_sort", None)
+    focus = future[:int(limit)]
+    high = [x for x in future if x.get("impact") == "high"]
+    next_high = high[0] if high else None
+    exact_24h = [x for x in high if x.get("minutes_to_event") is not None and 0 <= x["minutes_to_event"] <= 1440]
+    source_status = {
+        k: {kk: vv for kk, vv in v.items() if kk in ("status", "rows", "transport", "error")}
+        for k, v in (manifest.get("sources") or {}).items()
+    }
+    return dict(
+        status="ok",
+        generated_at=manifest.get("generated_at"),
+        source_status=source_status,
+        current_events=manifest.get("current_events"),
+        schedule_versions=manifest.get("schedule_versions"),
+        high_impact_current=manifest.get("high_impact_current"),
+        time_known_current=manifest.get("time_known_current"),
+        causality=manifest.get("causality"),
+        next_high_impact=next_high,
+        high_impact_within_24h=len(exact_24h),
+        upcoming=focus,
+    )
+
+
 def load_asset(name, cfg, cache_dir):
     if cfg["kind"] == "csv":
         if not os.path.exists(cfg["path"]):
@@ -469,6 +538,7 @@ def run_cycle(out_dir, cache_dir=".cl_cache", assets=None, now=None, external_di
             "equity_tick_pressure": external_summary.get("equity_tick_pressure", {}),
             "upcoming_focus_earnings": external_summary.get("upcoming_focus_earnings", []),
         },
+        economic_events=_economic_events_ui(out_dir, now),
         corpus={k: corpus_state.get(k) for k in ("status", "dataset", "roll_rule", "minutes",
                                                  "verified_assets", "blocked_assets", "assets")},
         assets={n: {k: v.get(k) for k in ("status", "sessions", "status_counts", "diagnostics", "champions",

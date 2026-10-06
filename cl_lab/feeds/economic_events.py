@@ -34,6 +34,38 @@ SOURCES = {
     "FOMC": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
 }
 
+BLS_SNAPSHOT_SOURCE = "https://www.bls.gov/schedule/2026/"
+BLS_SNAPSHOT_CAPTURED_AT = "2026-10-06"
+# High-value releases copied from the official BLS 2026 release calendar.  This is
+# a last-resort cloud-runner fallback only; live BLS ICS/HTML are attempted first.
+BLS_SNAPSHOT_2026 = (
+    ("2026-10-02","08:30","Employment Situation for September 2026","September 2026"),
+    ("2026-10-14","08:30","Consumer Price Index for September 2026","September 2026"),
+    ("2026-10-14","08:30","Real Earnings for September 2026","September 2026"),
+    ("2026-10-15","08:30","Producer Price Index for September 2026","September 2026"),
+    ("2026-10-16","08:30","U.S. Import and Export Price Indexes for September 2026","September 2026"),
+    ("2026-10-20","10:00","State Employment and Unemployment (Monthly) for September 2026","September 2026"),
+    ("2026-10-21","10:00","Usual Weekly Earnings of Wage and Salary Workers for Third Quarter 2026","Third Quarter 2026"),
+    ("2026-10-30","08:30","Employment Cost Index for Third Quarter 2026","Third Quarter 2026"),
+    ("2026-11-03","10:00","Job Openings and Labor Turnover Survey for September 2026","September 2026"),
+    ("2026-11-05","08:30","Productivity and Costs (P) for Third Quarter 2026","Third Quarter 2026"),
+    ("2026-11-06","08:30","Employment Situation for October 2026","October 2026"),
+    ("2026-11-10","08:30","Consumer Price Index for October 2026","October 2026"),
+    ("2026-11-10","08:30","Real Earnings for October 2026","October 2026"),
+    ("2026-11-13","08:30","Producer Price Index for October 2026","October 2026"),
+    ("2026-11-17","08:30","U.S. Import and Export Price Indexes for October 2026","October 2026"),
+    ("2026-11-20","10:00","State Employment and Unemployment (Monthly) for October 2026","October 2026"),
+    ("2026-12-01","10:00","Job Openings and Labor Turnover Survey for October 2026","October 2026"),
+    ("2026-12-04","08:30","Employment Situation for November 2026","November 2026"),
+    ("2026-12-08","08:30","Productivity and Costs (R) for Third Quarter 2026","Third Quarter 2026"),
+    ("2026-12-10","08:30","Consumer Price Index for November 2026","November 2026"),
+    ("2026-12-10","08:30","Real Earnings for November 2026","November 2026"),
+    ("2026-12-15","08:30","Producer Price Index for November 2026","November 2026"),
+    ("2026-12-16","10:00","Employer Costs for Employee Compensation for September 2026","September 2026"),
+    ("2026-12-17","08:30","U.S. Import and Export Price Indexes for November 2026","November 2026"),
+    ("2026-12-18","10:00","State Employment and Unemployment (Monthly) for November 2026","November 2026"),
+)
+
 MONTHS = {
     name: i for i, name in enumerate(
         ("January","February","March","April","May","June",
@@ -159,6 +191,37 @@ def _parse_ics_dt(prop: str, value: str) -> tuple[datetime | None,date | None]:
             zone=ET
     return dt.replace(tzinfo=zone), None
 
+def _bls_reference_period(title: str, description: str | None = None) -> str | None:
+    # BLS release titles conventionally end in "for <reference period>". Prefer
+    # that stable semantic field over ICS DESCRIPTION, which may gain boilerplate.
+    m=re.search(r"\bfor\s+(.+)$",_norm(title),re.I)
+    if m and re.search(r"\b20\d{2}\b",m.group(1)):
+        return _norm(m.group(1))
+    return _norm(description) or None
+
+
+def _bls_record(title: str, *, scheduled=None, event_date=None, reference_period=None,
+                stable_id=None, source_url=None) -> dict:
+    # Identity must be transport-independent.  BLS ICS UID is preserved as metadata,
+    # but event_key is derived from title + reference period so ICS, HTML and the
+    # official snapshot all resolve to the same release identity.
+    rec=_record("BLS",title,scheduled=scheduled,event_date=event_date,
+                reference_period=reference_period,stable_id=None,
+                source_url=source_url or SOURCES["BLS"])
+    rec["stable_id"]=stable_id
+    return rec
+
+
+def bls_official_snapshot(year: int) -> pd.DataFrame:
+    if int(year)!=2026:
+        return pd.DataFrame()
+    rows=[]
+    for ds,hm,title,ref in BLS_SNAPSHOT_2026:
+        d=datetime.strptime(f"{ds} {hm}","%Y-%m-%d %H:%M").replace(tzinfo=ET)
+        rows.append(_bls_record(title,scheduled=d,reference_period=ref,source_url=BLS_SNAPSHOT_SOURCE))
+    return pd.DataFrame(rows)
+
+
 def parse_bls_ics(raw: bytes) -> pd.DataFrame:
     text=raw.decode("utf-8-sig",errors="replace")
     rows=[]
@@ -173,9 +236,9 @@ def parse_bls_ics(raw: bytes) -> pd.DataFrame:
                 d=cur.get("_date")
                 title=_ics_unescape(cur.get("SUMMARY") or "")
                 if title and (dt is not None or d is not None):
-                    rows.append(_record(
-                        "BLS",title,scheduled=dt,event_date=d,
-                        reference_period=cur.get("DESCRIPTION"),
+                    rows.append(_bls_record(
+                        title,scheduled=dt,event_date=d,
+                        reference_period=_bls_reference_period(title,cur.get("DESCRIPTION")),
                         stable_id=cur.get("UID"),source_url=SOURCES["BLS"],
                     ))
             cur=None
@@ -279,12 +342,20 @@ def parse_release_table(raw: bytes, source: str, observed_at: pd.Timestamp | Non
 def parse_fomc_html(raw: bytes, year: int | None = None) -> pd.DataFrame:
     _,text=_table_rows(raw)
     year=year or pd.Timestamp.now(tz="UTC").year
-    marker=f"{year} FOMC Meetings"
-    start=text.find(marker)
-    if start<0: return pd.DataFrame()
-    tail=text[start+len(marker):]
-    next_marker=re.search(rf"\b{year+1}\s+FOMC Meetings\b",tail)
-    if next_marker: tail=tail[:next_marker.start()]
+    # The Fed page is not chronological by heading: the current year is followed by
+    # prior years, while a future-year section may appear elsewhere. Bound the target
+    # section by the *next FOMC heading in document order*, not by year+1.
+    headings=list(re.finditer(r"\b(20\d{2})\s+FOMC Meetings\b",text,re.I))
+    target=None
+    for i,h in enumerate(headings):
+        if int(h.group(1))==int(year):
+            target=(i,h)
+            break
+    if target is None:
+        return pd.DataFrame()
+    i,h=target
+    end=headings[i+1].start() if i+1<len(headings) else len(text)
+    tail=text[h.end():end]
     matches=list(re.finditer(rf"\b({MONTH_RE})\s+(\d{{1,2}})(?:\s*[-–]\s*(\d{{1,2}}))?(\*)?",tail,re.I))
     out=[]
     meeting_index=0
@@ -315,23 +386,82 @@ def _schedule_version(row: pd.Series) -> str:
                  ("source","event_key","event_date","scheduled_at_et","title","reference_period"))
     return hashlib.sha256(raw.encode()).hexdigest()[:24]
 
+def _sanitize_schedule_history(df: pd.DataFrame) -> tuple[pd.DataFrame,int]:
+    """Remove rows that could only have been emitted by the retired FOMC spill parser.
+
+    The official regular-meeting section has eight meetings per year.  The previous
+    parser could continue into older year sections and label those ranges as meeting
+    9, 10, ... of the current year.  Meeting IDs 1-8 are retained, including multiple
+    schedule versions for legitimate reschedules.
+    """
+    if df is None or df.empty or not {"source","stable_id"} <= set(df.columns):
+        return df,0
+    source=df["source"].astype("string")
+    sid=df["stable_id"].astype("string").fillna("")
+    bad=source.eq("FOMC") & ~sid.str.match(r"^20\d{2}-meeting-[1-8]$")
+    removed=int(bad.sum())
+    return df.loc[~bad].copy(),removed
+
+
 def collect(cache_dir: str | Path, observed_at: pd.Timestamp | None = None) -> tuple[pd.DataFrame,pd.DataFrame,dict]:
     observed_at=pd.Timestamp.now(tz="UTC") if observed_at is None else pd.Timestamp(observed_at)
     root=Path(cache_dir)/"economic_events"
     root.mkdir(parents=True,exist_ok=True)
     current=[]; status={}
     fetchers={
-        "BLS": lambda raw: parse_bls_ics(raw),
         "BEA": lambda raw: parse_release_table(raw,"BEA",observed_at),
         "CENSUS": lambda raw: parse_release_table(raw,"CENSUS",observed_at),
         "FOMC": lambda raw: parse_fomc_html(raw,observed_at.year),
     }
     for source,url in SOURCES.items():
         try:
-            df=fetchers[source](get_bytes(url))
+            note=None
+            if source=="BLS":
+                try:
+                    df=parse_bls_ics(get_bytes(url))
+                    if df.empty:
+                        raise FeedError("BLS ICS returned zero usable events")
+                    note="ics"
+                except Exception as ics_error:
+                    # GitHub-hosted runners can receive 403 from BLS even though the
+                    # public calendar is reachable elsewhere.  Try first-party HTML,
+                    # then a checked-in first-party snapshot for the high-value 2026
+                    # releases.  The snapshot path is explicitly degraded and never
+                    # represented as live.
+                    html_url=f"https://www.bls.gov/schedule/{observed_at.year}/"
+                    try:
+                        df=parse_release_table(get_bytes(html_url),"BLS",observed_at)
+                        if df.empty:
+                            raise FeedError("BLS HTML fallback returned zero usable events")
+                        note="html_fallback"
+                    except Exception as html_error:
+                        df=bls_official_snapshot(observed_at.year)
+                        if df.empty:
+                            raise FeedError(
+                                f"BLS ICS failed ({type(ics_error).__name__}: {ics_error}); "
+                                f"BLS HTML failed ({type(html_error).__name__}: {html_error}); "
+                                "no official snapshot exists for this year"
+                            )
+                        current.append(df)
+                        status[source]={
+                            "status":"degraded",
+                            "rows":int(len(df)),
+                            "transport":"official_snapshot",
+                            "snapshot_as_of":BLS_SNAPSHOT_CAPTURED_AT,
+                            "source_url":BLS_SNAPSHOT_SOURCE,
+                            "error":(
+                                f"live BLS transports unavailable: ICS {type(ics_error).__name__}: {ics_error}; "
+                                f"HTML {type(html_error).__name__}: {html_error}"
+                            )[:500],
+                        }
+                        continue
+            else:
+                df=fetchers[source](get_bytes(url))
             if df.empty: raise FeedError(f"{source} calendar returned zero usable events")
             current.append(df)
             status[source]={"status":"ok","rows":int(len(df))}
+            if note:
+                status[source]["transport"]=note
         except Exception as e:
             status[source]={"status":"error","rows":0,"error":f"{type(e).__name__}: {e}"}
     if not current:
@@ -344,6 +474,9 @@ def collect(cache_dir: str | Path, observed_at: pd.Timestamp | None = None) -> t
 
     hp=root/"schedule_history.csv.gz"
     old=pd.read_csv(hp,compression="gzip") if hp.exists() else pd.DataFrame()
+    old,removed_history=_sanitize_schedule_history(old)
+    if removed_history:
+        status.setdefault("FOMC",{})["history_invalid_rows_removed"]=removed_history
     add=cur.copy()
     add["first_seen_at"]=observed_at.isoformat()
     hist=pd.concat([old,add],ignore_index=True) if not old.empty else add

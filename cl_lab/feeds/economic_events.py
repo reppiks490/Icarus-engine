@@ -34,6 +34,38 @@ SOURCES = {
     "FOMC": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
 }
 
+BLS_SNAPSHOT_SOURCE = "https://www.bls.gov/schedule/2026/"
+BLS_SNAPSHOT_CAPTURED_AT = "2026-10-06"
+# High-value releases copied from the official BLS 2026 release calendar.  This is
+# a last-resort cloud-runner fallback only; live BLS ICS/HTML are attempted first.
+BLS_SNAPSHOT_2026 = (
+    ("2026-10-02","08:30","Employment Situation for September 2026","September 2026"),
+    ("2026-10-14","08:30","Consumer Price Index for September 2026","September 2026"),
+    ("2026-10-14","08:30","Real Earnings for September 2026","September 2026"),
+    ("2026-10-15","08:30","Producer Price Index for September 2026","September 2026"),
+    ("2026-10-16","08:30","U.S. Import and Export Price Indexes for September 2026","September 2026"),
+    ("2026-10-20","10:00","State Employment and Unemployment (Monthly) for September 2026","September 2026"),
+    ("2026-10-21","10:00","Usual Weekly Earnings of Wage and Salary Workers for Third Quarter 2026","Third Quarter 2026"),
+    ("2026-10-30","08:30","Employment Cost Index for Third Quarter 2026","Third Quarter 2026"),
+    ("2026-11-03","10:00","Job Openings and Labor Turnover Survey for September 2026","September 2026"),
+    ("2026-11-05","08:30","Productivity and Costs (P) for Third Quarter 2026","Third Quarter 2026"),
+    ("2026-11-06","08:30","Employment Situation for October 2026","October 2026"),
+    ("2026-11-10","08:30","Consumer Price Index for October 2026","October 2026"),
+    ("2026-11-10","08:30","Real Earnings for October 2026","October 2026"),
+    ("2026-11-13","08:30","Producer Price Index for October 2026","October 2026"),
+    ("2026-11-17","08:30","U.S. Import and Export Price Indexes for October 2026","October 2026"),
+    ("2026-11-20","10:00","State Employment and Unemployment (Monthly) for October 2026","October 2026"),
+    ("2026-12-01","10:00","Job Openings and Labor Turnover Survey for October 2026","October 2026"),
+    ("2026-12-04","08:30","Employment Situation for November 2026","November 2026"),
+    ("2026-12-08","08:30","Productivity and Costs (R) for Third Quarter 2026","Third Quarter 2026"),
+    ("2026-12-10","08:30","Consumer Price Index for November 2026","November 2026"),
+    ("2026-12-10","08:30","Real Earnings for November 2026","November 2026"),
+    ("2026-12-15","08:30","Producer Price Index for November 2026","November 2026"),
+    ("2026-12-16","10:00","Employer Costs for Employee Compensation for September 2026","September 2026"),
+    ("2026-12-17","08:30","U.S. Import and Export Price Indexes for November 2026","November 2026"),
+    ("2026-12-18","10:00","State Employment and Unemployment (Monthly) for November 2026","November 2026"),
+)
+
 MONTHS = {
     name: i for i, name in enumerate(
         ("January","February","March","April","May","June",
@@ -159,6 +191,28 @@ def _parse_ics_dt(prop: str, value: str) -> tuple[datetime | None,date | None]:
             zone=ET
     return dt.replace(tzinfo=zone), None
 
+def _bls_record(title: str, *, scheduled=None, event_date=None, reference_period=None,
+                stable_id=None, source_url=None) -> dict:
+    # Identity must be transport-independent.  BLS ICS UID is preserved as metadata,
+    # but event_key is derived from title + reference period so ICS, HTML and the
+    # official snapshot all resolve to the same release identity.
+    rec=_record("BLS",title,scheduled=scheduled,event_date=event_date,
+                reference_period=reference_period,stable_id=None,
+                source_url=source_url or SOURCES["BLS"])
+    rec["stable_id"]=stable_id
+    return rec
+
+
+def bls_official_snapshot(year: int) -> pd.DataFrame:
+    if int(year)!=2026:
+        return pd.DataFrame()
+    rows=[]
+    for ds,hm,title,ref in BLS_SNAPSHOT_2026:
+        d=datetime.strptime(f"{ds} {hm}","%Y-%m-%d %H:%M").replace(tzinfo=ET)
+        rows.append(_bls_record(title,scheduled=d,reference_period=ref,source_url=BLS_SNAPSHOT_SOURCE))
+    return pd.DataFrame(rows)
+
+
 def parse_bls_ics(raw: bytes) -> pd.DataFrame:
     text=raw.decode("utf-8-sig",errors="replace")
     rows=[]
@@ -173,8 +227,8 @@ def parse_bls_ics(raw: bytes) -> pd.DataFrame:
                 d=cur.get("_date")
                 title=_ics_unescape(cur.get("SUMMARY") or "")
                 if title and (dt is not None or d is not None):
-                    rows.append(_record(
-                        "BLS",title,scheduled=dt,event_date=d,
+                    rows.append(_bls_record(
+                        title,scheduled=dt,event_date=d,
                         reference_period=cur.get("DESCRIPTION"),
                         stable_id=cur.get("UID"),source_url=SOURCES["BLS"],
                     ))
@@ -343,18 +397,38 @@ def collect(cache_dir: str | Path, observed_at: pd.Timestamp | None = None) -> t
                         raise FeedError("BLS ICS returned zero usable events")
                     note="ics"
                 except Exception as ics_error:
-                    # GitHub-hosted runners can receive 403 on BLS's text/calendar
-                    # endpoint while the first-party HTML schedule remains available.
-                    # Stay on BLS as source-of-record rather than substituting a
-                    # third-party economic calendar.
+                    # GitHub-hosted runners can receive 403 from BLS even though the
+                    # public calendar is reachable elsewhere.  Try first-party HTML,
+                    # then a checked-in first-party snapshot for the high-value 2026
+                    # releases.  The snapshot path is explicitly degraded and never
+                    # represented as live.
                     html_url=f"https://www.bls.gov/schedule/{observed_at.year}/"
-                    df=parse_release_table(get_bytes(html_url),"BLS",observed_at)
-                    if df.empty:
-                        raise FeedError(
-                            f"BLS ICS failed ({type(ics_error).__name__}: {ics_error}); "
-                            "BLS HTML fallback returned zero usable events"
-                        )
-                    note="html_fallback"
+                    try:
+                        df=parse_release_table(get_bytes(html_url),"BLS",observed_at)
+                        if df.empty:
+                            raise FeedError("BLS HTML fallback returned zero usable events")
+                        note="html_fallback"
+                    except Exception as html_error:
+                        df=bls_official_snapshot(observed_at.year)
+                        if df.empty:
+                            raise FeedError(
+                                f"BLS ICS failed ({type(ics_error).__name__}: {ics_error}); "
+                                f"BLS HTML failed ({type(html_error).__name__}: {html_error}); "
+                                "no official snapshot exists for this year"
+                            )
+                        current.append(df)
+                        status[source]={
+                            "status":"degraded",
+                            "rows":int(len(df)),
+                            "transport":"official_snapshot",
+                            "snapshot_as_of":BLS_SNAPSHOT_CAPTURED_AT,
+                            "source_url":BLS_SNAPSHOT_SOURCE,
+                            "error":(
+                                f"live BLS transports unavailable: ICS {type(ics_error).__name__}: {ics_error}; "
+                                f"HTML {type(html_error).__name__}: {html_error}"
+                            )[:500],
+                        }
+                        continue
             else:
                 df=fetchers[source](get_bytes(url))
             if df.empty: raise FeedError(f"{source} calendar returned zero usable events")

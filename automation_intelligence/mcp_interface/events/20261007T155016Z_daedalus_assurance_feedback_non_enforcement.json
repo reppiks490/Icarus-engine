@@ -1,0 +1,85 @@
+{
+  "schema_version": "icarus-mcp-event-v1",
+  "event_id": "20261007T155016Z-daedalus-assurance-feedback-non-enforcement",
+  "at_utc": "2026-10-07T15:50:16.659Z",
+  "category": "AUDIT",
+  "status": "BLOCKING",
+  "severity": "HIGH",
+  "summary": "The first persisted material Flow artifact after DAEDALUS's 2026-10-07T14:56:36Z high-severity temporal-witness regression event repeats the prohibited shape: Bybit spot, Bybit linear, Twelve Data, and Bybit orderbook share one retrieval interval, while three Massive futures requests share another, with no batch_capture_id or request-membership record. Repository search finds the prior remediation only in audit/receipt artifacts and no live validator or test path. This falsifies any claim that the assurance feedback is an operating gate: the finding is durable as prose but not wired to reject recurrence.",
+  "net_new_delta": "The defect itself was already known; the net-new finding is that the immediate next Flow persistence ignored the recorded high-severity remediation, proving DAEDALUS-to-Flow assurance feedback is non-enforcing.",
+  "surface": [
+    "DAEDALUS-to-FLOW assurance feedback and admission control",
+    "FLOW/ARGUS/NEXUS provider-specific retrieval provenance",
+    "AEGIS temporal-witness rejection gate",
+    "icarus-mcp event/evidence contract and validator coverage"
+  ],
+  "source": "DAEDALUS_AUTOMATION",
+  "paths": [
+    "automation_intelligence/mcp_interface/events/20261007T145636Z_daedalus_flow_shared_interval_temporal_regression.json",
+    "automation_intelligence/mcp_interface/research_runs/daedalus/20261007T145718Z_daedalus.json",
+    "automation_intelligence/mcp_interface/events/20261007T152752Z_flow_btc_joint_burst_normalized.json",
+    "automation_intelligence/mcp_interface/research_runs/flow/20261007T152833Z_flow.json",
+    "automation_intelligence/mcp_interface/contract.json"
+  ],
+  "evidence": [
+    {
+      "classification": "FACT",
+      "path": "automation_intelligence/mcp_interface/events/20261007T145636Z_daedalus_flow_shared_interval_temporal_regression.json",
+      "blob_sha": "526bd514b5e05049d321208d680d9c0c3fb0859b",
+      "finding": "At 14:56:36Z DAEDALUS classified unexplained shared retrieval intervals as a recurring HIGH defect, required distinct per-response intervals or explicit batch identity/membership, and required an automatic rejection validator."
+    },
+    {
+      "classification": "FACT",
+      "path": "automation_intelligence/mcp_interface/events/20261007T152752Z_flow_btc_joint_burst_normalized.json",
+      "blob_sha": "fcbaa91795870690210a796414678921c9685e8e",
+      "finding": "The next persisted material Flow event assigns 15:26:11.853Z–15:26:13.930Z to four distinct BTC observations and 15:26:46.389Z–15:27:01.202Z to NQZ6/GCZ6/SIZ6, with no batch_capture_id or request-membership record."
+    },
+    {
+      "classification": "FACT",
+      "path": "automation_intelligence/mcp_interface/research_runs/flow/20261007T152833Z_flow.json",
+      "blob_sha": "05e81ce6549cb8adfd7a60bd819bf7a65976c977",
+      "finding": "The exact-read-back receipt repeats the shared intervals. Completed-bar ordering remains valid, but provider-specific response availability is not attested."
+    },
+    {
+      "classification": "NEGATIVE_ORACLE",
+      "query": "GitHub code search on main for the prior event_id, 'rejecting unexplained shared witnesses', and 'mcp event validator temporal witness'",
+      "finding": "The exact prior event_id occurs only in its event record; remediation language and validator terms resolve only to audit events and research receipts. No live validator, test, workflow, or event-construction implementation path was found."
+    },
+    {
+      "classification": "FACT",
+      "path": "automation_intelligence/mcp_interface/contract.json",
+      "blob_sha": "991b157fd82b3dd9e7e49356fefb06dd89c22579",
+      "finding": "The active v1 interface contract requires only generic event fields and does not require per-query retrieval witnesses, explicit batch membership, or causal-order validation."
+    },
+    {
+      "classification": "MODEL_INFERENCE",
+      "finding": "Because the very next eligible Flow artifact repeated the forbidden shape after the audit was persisted, repository event persistence is functioning as reporting but not as enforcement. Raw connector logs remain unavailable, so this does not prove the market values are wrong or that backdating occurred."
+    }
+  ],
+  "conflicts": [
+    "The Flow normalization statistics may be numerically correct; this audit does not invalidate them.",
+    "Each completed bar ends before the shared retrieval interval, so broad causal ordering is plausible.",
+    "Parallel batching could justify a shared interval only if batch identity and complete request membership are persisted; neither is present."
+  ],
+  "limitations": [
+    "Raw connector invocation logs and monotonic-clock attestations were unavailable.",
+    "No trading, deployment, scheduler, publication, contract, or code mutation was authorized."
+  ],
+  "required_remediation": [
+    "Make temporal-witness validation a pre-persistence admission gate for Flow events and receipts, not an audit-only recommendation.",
+    "Reject distinct provider/request observations that reuse a retrieval interval unless an explicit batch_capture_id, batch start/end, and complete request-membership list are present.",
+    "Enforce completed_bar_end_utc <= retrieved_at_start_utc <= retrieved_at_end_utc <= assertion_created_at_utc.",
+    "Add the 14:31 and 15:26 artifacts as negative fixtures and the distinct-interval recovery artifacts as positive fixtures; prove the gate on the live event-construction path.",
+    "Wire verified DAEDALUS/AEGIS BLOCKING findings into owner-lane admission state with an independently testable clearance path."
+  ],
+  "next_independent_verification_target": "Trace the live Flow event-construction and persistence entry point and demonstrate a failing test that rejects the 15:26 artifact shape before any event or receipt is committed; then verify one subsequent live run uses distinct per-request intervals or explicit batch membership.",
+  "daedalus": {
+    "status": "DEGRADED",
+    "finding": "The audit correctly recorded the recurrence, but its remediation is not connected to a live admission mechanism; scientific promotion discipline is informational rather than preventive on this surface."
+  },
+  "aegis": {
+    "status": "BLOCKING",
+    "finding": "The first subsequent Flow persistence reproduced the exact shared-witness attack surface, and repository search found no rejection oracle wired into the live path."
+  },
+  "execution_authorized": false
+}

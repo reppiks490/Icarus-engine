@@ -1,0 +1,80 @@
+{
+  "schema_version": "icarus-mcp-event-v1",
+  "event_id": "macro-20261006-eia-october-steo-oil-diesel-forecast-reset",
+  "at_utc": "2026-10-07T04:23:14.711Z",
+  "source_time_utc": "2026-10-06",
+  "retrieval_time_utc": "2026-10-07T04:23:14.711Z",
+  "category": "EVOLUTION",
+  "status": "VERIFIED",
+  "severity": "MEDIUM",
+  "summary": "The U.S. EIA's October 6, 2026 Short-Term Energy Outlook materially raised its oil-price and refined-product tightness baseline. EIA now forecasts Brent at $105/b in 4Q26, $14/b above its September forecast, and reports East Coast distillate inventories 32% below their five-year seasonal average in September. This strengthens the existing energy-inflation regime but is a forecast-state update, not proof of a new realized supply outage.",
+  "surface": [
+    "ORACLE energy-inflation and macro regime context",
+    "SUPERMESH-X primary-source freshness and forecast-vs-observation routing",
+    "ICARUS Brent/WTI and refined-products assumptions",
+    "ICARUS rates, DXY, NQ/MNQ, GC/MGC and inflation-risk context"
+  ],
+  "source": "MACRO_AUTOMATION",
+  "paths": [
+    "automation_intelligence/mcp_interface/contract.json",
+    "automation_intelligence/mcp_interface/research_runs/macro/20261004T171143943Z_macro.json",
+    "automation_intelligence/hybrid_loop_fabric_v1/registry.json"
+  ],
+  "evidence": [
+    {
+      "classification": "FACT",
+      "source_name": "U.S. Energy Information Administration",
+      "source_type": "PRIMARY_OFFICIAL",
+      "url": "https://www.eia.gov/outlooks/steo/",
+      "source_time": "2026-10-06",
+      "forecast_completed": "2026-10-01",
+      "retrieved_at_utc": "2026-10-07T04:23:14.711Z",
+      "finding": "EIA raised its 4Q26 Brent forecast to $105/b, $14/b above the prior STEO; annual Brent forecasts rose to $96 for 2026 and $84 for 2027. EIA reports September U.S. retail diesel at $6.29/gal and East Coast distillate inventories 32% below the five-year seasonal average."
+    },
+    {
+      "classification": "FACT",
+      "source_name": "U.S. Energy Information Administration",
+      "source_type": "PRIMARY_OFFICIAL",
+      "url": "https://www.eia.gov/outlooks/steo/",
+      "source_time": "2026-10-06",
+      "forecast_completed": "2026-10-01",
+      "retrieved_at_utc": "2026-10-07T04:23:14.711Z",
+      "finding": "EIA assumes Middle East flows remain constrained through 4Q26 but increase through the forecast period via Hormuz convoys, bypass routes and ship-to-ship transfers. The forecast excludes additional market supply from the G7 October 2 announcement because inputs were finalized October 1."
+    },
+    {
+      "classification": "SOURCE_CLAIM",
+      "source_name": "Reuters",
+      "source_type": "INDEPENDENT_NEWS_WIRE_WITH_MARKET_CONTEXT",
+      "url": "https://www.reuters.com/business/energy/us-eia-hikes-oil-price-forecasts-again-as-iran-war-drains-global-stockpile-2026-10-06/",
+      "source_time": "2026-10-06",
+      "retrieved_at_utc": "2026-10-07T04:21:00Z",
+      "finding": "Reuters independently contextualized the EIA revision as driven by inventory withdrawals and tight diesel markets while noting Gulf exports outside Iran had recovered above 81% of pre-war levels."
+    },
+    {
+      "classification": "MODEL_INFERENCE",
+      "source_name": "MACRO_AUTOMATION",
+      "source_type": "RESEARCH_INFERENCE",
+      "finding": "Promote a time-valid EIA forecast state of elevated energy-inflation persistence. Do not promote it to a new physical supply shock: the official forecast simultaneously assumes improving Middle East flows, and its October 1 information cutoff omits the October 2 G7 release announcement."
+    }
+  ],
+  "contradiction_status": {
+    "status": "FORECAST_TIGHTNESS_WITH_PARTIAL_FLOW_RECOVERY",
+    "details": "The forecast raises price and distillate-tightness baselines while assuming regional production/export recovery. These are compatible but prevent interpreting the revision as evidence of worsening physical flows after October 1."
+  },
+  "known_unknowns": [
+    "EIA publishes the release date but the exact release timestamp was not established in this run; at_utc is the retrieval/assertion time and source_time_utc is date-only.",
+    "Realized October Middle East exports, aggregate Hormuz throughput, diesel inventories, cracks and freight/insurance were not independently measured in a synchronized window.",
+    "The forecast excludes supply effects from the October 2 G7 announcement and therefore is not a complete post-October-2 nowcast.",
+    "No causal cross-asset price reaction is attributed because the official forecast and market observations were not synchronized to an exact release timestamp."
+  ],
+  "next_decisive_check": "Compare subsequent weekly distillate inventories, physical Middle East export/Hormuz throughput and actual Brent/diesel prices with the October STEO baseline; reassess after EIA's November 10 release or an earlier material physical-flow change.",
+  "oracle": {
+    "status": "MATERIAL_DELTA",
+    "finding": "The official baseline now embeds higher and more persistent oil/refined-product inflation risk: 4Q26 Brent $105/b and materially depleted East Coast distillate inventories. Treat this as a forecast-regime update, not a realized new outage."
+  },
+  "supermesh_x": {
+    "status": "MATERIAL_DELTA",
+    "finding": "Primary EIA data outranks headline summaries. Preserve the October 1 forecast cutoff, date-only release time, and the exclusion of the October 2 G7 supply announcement; route later physical observations separately."
+  },
+  "execution_authorized": false
+}

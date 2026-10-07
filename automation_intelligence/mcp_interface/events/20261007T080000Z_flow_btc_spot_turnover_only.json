@@ -1,0 +1,130 @@
+{
+  "schema_version": "icarus-mcp-event-v1",
+  "event_id": "flow-btc-spot-turnover-only-20261007T080000Z",
+  "at_utc": "2026-10-07T08:00:00Z",
+  "category": "AUDIT",
+  "status": "VERIFIED",
+  "severity": "MEDIUM",
+  "summary": "BTC/USD Bybit spot turnover was an authenticated robust outlier in the completed 08:00 UTC hour while the price range remained ordinary across Bybit spot, Bybit linear, and Twelve Data; this is a representation-specific turnover anomaly, not evidence of a broad volatility or directional-order-flow shock.",
+  "surface": "ARGUS authenticated market evidence and NEXUS cross-representation/source-health state",
+  "source": "FLOW_AUTOMATION",
+  "paths": [
+    "automation_intelligence/mcp_interface/contract.json",
+    "automation_intelligence/mcp_interface/research_runs/flow/20261007T063403976Z_flow.json"
+  ],
+  "evidence": [
+    {
+      "type": "authenticated_candle_observation",
+      "instrument": "BTCUSDT spot",
+      "provider": "Bybit",
+      "representation": "spot_1h_kline",
+      "event_time_utc": "2026-10-07T08:00:00Z",
+      "retrieval_time_utc": "2026-10-07T09:32:08.616Z",
+      "completed_bar": true,
+      "open": 84145.5,
+      "high": 84188.6,
+      "low": 83946,
+      "close": 83954.8,
+      "range_usd": 242.6,
+      "base_volume_btc": 1203.317647,
+      "return_pct": -0.2266,
+      "baseline_completed_hours": 28,
+      "baseline_volume_median_btc": 312.908846,
+      "baseline_volume_mad_btc": 94.0203235,
+      "robust_z_volume": 6.3878,
+      "baseline_range_median_usd": 290.2,
+      "baseline_range_mad_usd": 91.9,
+      "robust_z_range": -0.3494,
+      "url": "https://api.bybit.com/v5/market/kline?category=spot&symbol=BTCUSDT&interval=60&limit=60"
+    },
+    {
+      "type": "cross_representation_check",
+      "instrument": "BTCUSDT linear",
+      "provider": "Bybit",
+      "representation": "linear_1h_kline",
+      "event_time_utc": "2026-10-07T08:00:00Z",
+      "retrieval_time_utc": "2026-10-07T09:32:08.616Z",
+      "completed_bar": true,
+      "range_usd": 237.9,
+      "volume_contracts": 1841.396,
+      "robust_z_volume": 0.2628,
+      "robust_z_range": -0.4351,
+      "url": "https://api.bybit.com/v5/market/kline?category=linear&symbol=BTCUSDT&interval=60&limit=60"
+    },
+    {
+      "type": "independent_price_representation_check",
+      "instrument": "BTC/USD",
+      "provider": "Twelve Data",
+      "representation": "spot_1h_ohlc",
+      "event_time_utc": "2026-10-07T08:00:00Z",
+      "retrieval_time_utc": "2026-10-07T09:32:50.998Z",
+      "completed_bar": true,
+      "range_usd": 227.19,
+      "robust_z_range": -0.4289,
+      "volume_unavailable": true,
+      "url": "https://api.twelvedata.com/time_series?symbol=BTC/USD&interval=1h&outputsize=60"
+    },
+    {
+      "type": "point_in_time_orderbook",
+      "instrument": "BTCUSDT spot",
+      "provider": "Bybit",
+      "source_time_utc": "2026-10-07T09:32:09.152Z",
+      "retrieval_time_utc": "2026-10-07T09:32:09.152Z",
+      "best_bid": 83829.5,
+      "best_ask": 83829.6,
+      "spread_usd": 0.1,
+      "semantics": "single snapshot only; no persistence or directional-flow inference",
+      "url": "https://api.bybit.com/v5/market/orderbook?category=spot&symbol=BTCUSDT&limit=25"
+    },
+    {
+      "type": "source_freshness_check",
+      "provider": "Massive",
+      "instruments": [
+        "NQZ6",
+        "GCZ6",
+        "SIZ6"
+      ],
+      "representation": "licensed futures trade aggregates, 1h",
+      "latest_event_time_utc": "2026-10-07T01:00:00Z",
+      "retrieval_time_utc": "2026-10-07T09:32:50.998Z",
+      "observed_lag_hours_approx": 8.5,
+      "disposition": "excluded from contemporaneous cross-market corroboration",
+      "urls": [
+        "https://api.massive.com/futures/v1/aggs/NQZ6",
+        "https://api.massive.com/futures/v1/aggs/GCZ6",
+        "https://api.massive.com/futures/v1/aggs/SIZ6"
+      ]
+    }
+  ],
+  "conflicts": [
+    "The spot-volume outlier is not confirmed by Bybit linear volume (robust z +0.2628).",
+    "All three observable BTC price representations show ordinary hourly ranges, so the evidence does not support a broad volatility shock."
+  ],
+  "data_gaps": [
+    "No authenticated historical trade-sign or depth sequence was available; directional order flow, absorption, liquidation, and persistent-liquidity claims remain UNKNOWN.",
+    "Twelve Data supplied OHLC but no comparable volume.",
+    "Massive NQ/GC/SI aggregates were stale relative to the 08:00 UTC BTC event and were excluded.",
+    "Fresh DXY, rates/Treasury, and volatility-index observations were unavailable in this cycle."
+  ],
+  "affected_instruments": [
+    "BTC/USD",
+    "BTCUSDT spot",
+    "BTCUSDT linear"
+  ],
+  "regime_implication": "Treat as isolated elevated spot turnover without price-range expansion. Do not widen the claim to cross-market stress, execution-liquidity deterioration, or directional flow unless later completed bars and authenticated trade/depth data confirm it.",
+  "confidence": {
+    "classification": "HIGH",
+    "mechanism": "LOW",
+    "rationale": "The spot-volume statistic is direct and reproducible, but the causal mechanism is not observable and cross-representation volume does not confirm it."
+  },
+  "next_decisive_check": "After 2026-10-07T10:00:00Z, evaluate the next fully completed BTC hour for persistence or conversion into range expansion; refresh direct NQ/GC/SI bars and require current event timestamps before any cross-asset inference.",
+  "argus": {
+    "status": "VERIFIED",
+    "finding": "Bybit spot volume at 08:00 UTC was +6.3878 robust z over the preceding 28 completed hours while range z was -0.3494; no directional-order-flow or persistent-liquidity mechanism is claimed."
+  },
+  "nexus": {
+    "status": "DEGRADED",
+    "finding": "Three BTC price representations reconciled on ordinary range, but the turnover anomaly was spot-specific and the licensed NQ/GC/SI aggregate feed lagged to 01:00 UTC, so cross-market corroboration was unavailable."
+  },
+  "execution_authorized": false
+}

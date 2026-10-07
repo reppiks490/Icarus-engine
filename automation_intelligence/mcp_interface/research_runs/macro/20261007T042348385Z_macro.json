@@ -1,0 +1,79 @@
+{
+  "schema_version": "icarus-research-run-v1",
+  "run_id": "macro-20261007T042348385Z",
+  "lane": "macro",
+  "automation_id": "6ab8174517b48191b67ac472205a28d3",
+  "started_at_utc": "2026-10-07T04:21:17Z",
+  "completed_at_utc": "2026-10-07T04:23:48.383Z",
+  "outcome": "MATERIAL_DELTA",
+  "substantive_work_performed": true,
+  "summary": "Verified a material official forecast-state change in the October 6 EIA Short-Term Energy Outlook. EIA raised its 4Q26 Brent forecast to $105/b, $14/b above September, and reports East Coast distillate inventories 32% below their five-year seasonal average. ORACLE treats this as stronger energy-inflation persistence, not a new realized physical outage, because EIA simultaneously assumes recovering Middle East flows. SUPERMESH-X preserves the October 1 model-input cutoff and the fact that the forecast excludes the October 2 G7 supply announcement. A separate control-plane check found the active Macro automation identity is absent from the current registry, the registered replacement is historical-disabled/absent from live inventory, and both candidate request namespaces are missing; therefore no hybrid result was fabricated.",
+  "evidence": [
+    {
+      "type": "PRIMARY_OFFICIAL",
+      "url": "https://www.eia.gov/outlooks/steo/",
+      "source_time": "2026-10-06",
+      "retrieved_at_utc": "2026-10-07T04:23:14.711Z",
+      "observed_finding": "October STEO release; 4Q26 Brent forecast $105/b, $14/b above September; September diesel $6.29/gal; East Coast distillate inventories 32% below five-year seasonal average; inputs finalized October 1."
+    },
+    {
+      "type": "INDEPENDENT_NEWS_CONTEXT",
+      "url": "https://www.reuters.com/business/energy/us-eia-hikes-oil-price-forecasts-again-as-iran-war-drains-global-stockpile-2026-10-06/",
+      "source_time": "2026-10-06",
+      "retrieved_at_utc": "2026-10-07T04:21:00Z",
+      "observed_finding": "Reuters contextualized the EIA revision with inventory withdrawals, tight diesel and partial Gulf export recovery."
+    },
+    {
+      "type": "MARKET_CONTEXT",
+      "url": "https://www.reuters.com/world/china/global-markets-global-markets-2026-10-06/",
+      "source_time": "2026-10-06",
+      "retrieved_at_utc": "2026-10-07T04:21:00Z",
+      "observed_finding": "Brent near $100.6, WTI near $89.44, easing Treasury yields and record U.S. equities show the official forecast reset did not map to a synchronized new cross-asset shock in the checked market window."
+    },
+    {
+      "type": "GITHUB_EVENT",
+      "path": "automation_intelligence/mcp_interface/events/20261007T042314714Z_macro_eia_october_steo_oil_diesel_forecast_reset.json",
+      "blob_sha": "55c4f9a18f5f6f9a62e03667dfa55deaf2506b65",
+      "commit_sha": "732e17e6b740e663be05932a0bcb841cb8bc76c1",
+      "observed_finding": "Material EVOLUTION event persisted and exact-read-back verified."
+    },
+    {
+      "type": "PRIOR_RECEIPT",
+      "path": "automation_intelligence/mcp_interface/research_runs/macro/20261004T171143943Z_macro.json",
+      "blob_sha": "862f3da59e3b902e7277ba798fef73bf1bd546ed",
+      "observed_finding": "Loaded latest discoverable Macro receipt before learning claim."
+    },
+    {
+      "type": "HYBRID_REGISTRY",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/registry.json",
+      "blob_sha": "ce3e6cd23abaf28f913d1b62178416699587fa4a",
+      "observed_finding": "No entry for active automation 6ab8174517b48191b67ac472205a28d3; macro_shock_sentinel replacement 6abb101aecf8819180edb577bb098364 is HISTORICAL_DISABLED/MANUAL_GITHUB_REQUEST_ONLY."
+    },
+    {
+      "type": "PRIVATE_AUTOMATION_INVENTORY",
+      "observed_at_utc": "2026-10-07T04:21:30Z",
+      "observed_finding": "6ab8174517b48191b67ac472205a28d3 is enabled and last ran at 2026-10-07T03:19:28.903999Z; replacement 6abb101aecf8819180edb577bb098364 is absent."
+    },
+    {
+      "type": "GITHUB_PATH_CHECK",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/requests/macro/latest.json",
+      "result": "404_NOT_FOUND"
+    },
+    {
+      "type": "GITHUB_PATH_CHECK",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/requests/macro_shock_sentinel/latest.json",
+      "result": "404_NOT_FOUND"
+    }
+  ],
+  "prior_receipt_path": "automation_intelligence/mcp_interface/research_runs/macro/20261004T171143943Z_macro.json",
+  "event_paths": [
+    "automation_intelligence/mcp_interface/events/20261007T042314714Z_macro_eia_october_steo_oil_diesel_forecast_reset.json"
+  ],
+  "blockers": [
+    "No valid hybrid request_id or required_result_path exists for lane macro or macro_shock_sentinel, so HYBRID_RESULT cannot be created truthfully.",
+    "Active Macro automation identity 6ab8174517b48191b67ac472205a28d3 is absent from registry; registered replacement 6abb101aecf8819180edb577bb098364 is absent from live inventory and marked HISTORICAL_DISABLED.",
+    "Exact EIA release time was unavailable; source time is date-only and event at_utc is the retrieval/assertion time.",
+    "EIA's October forecast excludes the October 2 G7 supply announcement and is not a complete post-October-2 nowcast."
+  ],
+  "execution_authorized": false
+}

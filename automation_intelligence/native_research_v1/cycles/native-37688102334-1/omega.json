@@ -1,0 +1,53 @@
+{
+  "automation_id": "github-native-research-v1",
+  "blockers": [],
+  "chatgpt_tokens_used": 0,
+  "code_revision": "d449265214cdc901663e2330a2ce813dd43ed151",
+  "completed_at_utc": "2026-10-07T21:16:44.047588Z",
+  "event_paths": [],
+  "evidence": [
+    "automation_intelligence/native_research_v1/cycles/native-37688102334-1/evidence.json"
+  ],
+  "execution_authorized": false,
+  "input_sha256": "61653e593ae9db67578a264aaa6075a536e8d6103be9486ca94f5f239d21bfed",
+  "lane": "omega",
+  "local_interpretation": {
+    "authority": "UNVERIFIED_MODEL_INFERENCE",
+    "model": "Qwen/Qwen3-1.7B-GGUF@90862c4:Q8_0",
+    "payload": {
+      "conflicts": [
+        "conflict between aion and daedalus"
+      ],
+      "data_gaps": [
+        "gap in flow data"
+      ],
+      "execution_authorized": false,
+      "lane": "omega",
+      "net_new_delta": "MEASURED_DELTA",
+      "summary": "Measured lane results reconciled; no blocking measurement defects. Falsifiable next test: Is the flow data gap consistent with the measured delta?"
+    },
+    "response_id": "local-70707c74e0c61785f6d48876",
+    "status": "GENERATED"
+  },
+  "measurements": {
+    "blockers": [],
+    "lane_status": {
+      "aion": "VERIFIED",
+      "daedalus": "VERIFIED",
+      "flow": "VERIFIED",
+      "macro": "VERIFIED"
+    },
+    "limits": "Synthesis does not grant promotion, strategy or execution authority.",
+    "status": "VERIFIED",
+    "summary": "Measured lane results reconciled; no blocking measurement defects."
+  },
+  "outcome": "NO_MATERIAL_DELTA",
+  "paid_model_calls": 0,
+  "prior_receipt_path": "automation_intelligence/native_research_v1/cycles/native-37687170031-1/omega.json",
+  "run_id": "native-37688102334-1-omega",
+  "schema_version": "icarus-research-run-v1",
+  "started_at_utc": "2026-10-07T21:15:56.950106Z",
+  "substantive_work_performed": true,
+  "summary": "Measured lane results reconciled; no blocking measurement defects.",
+  "worker": "GITHUB_ACTIONS"
+}

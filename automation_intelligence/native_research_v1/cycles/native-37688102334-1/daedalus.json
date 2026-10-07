@@ -1,0 +1,63 @@
+{
+  "automation_id": "github-native-research-v1",
+  "blockers": [],
+  "chatgpt_tokens_used": 0,
+  "code_revision": "d449265214cdc901663e2330a2ce813dd43ed151",
+  "completed_at_utc": "2026-10-07T21:16:34.981501Z",
+  "event_paths": [],
+  "evidence": [
+    "automation_intelligence/native_research_v1/cycles/native-37688102334-1/evidence.json"
+  ],
+  "execution_authorized": false,
+  "input_sha256": "61653e593ae9db67578a264aaa6075a536e8d6103be9486ca94f5f239d21bfed",
+  "lane": "daedalus",
+  "local_interpretation": {
+    "authority": "UNVERIFIED_MODEL_INFERENCE",
+    "model": "Qwen/Qwen3-1.7B-GGUF@90862c4:Q8_0",
+    "payload": {
+      "conflicts": [
+        "Conflicts between measurement methods not resolved"
+      ],
+      "data_gaps": [
+        "Missing calibration data for sensor X"
+      ],
+      "execution_authorized": false,
+      "lane": "daedalus",
+      "net_new_delta": "MEASURED_DELTA",
+      "summary": "2 audits completed; 1 data gap identified."
+    },
+    "response_id": "local-211a15eea99a54e72867a031",
+    "status": "GENERATED"
+  },
+  "measurements": {
+    "checks": [
+      {
+        "baseline_count": 28,
+        "future_excluded": true,
+        "oracle": "independently coded sorted scalar MAD",
+        "range_and_volume_checked": true,
+        "representation": "coinbase_spot"
+      },
+      {
+        "baseline_count": 28,
+        "future_excluded": true,
+        "oracle": "independently coded sorted scalar MAD",
+        "range_and_volume_checked": true,
+        "representation": "kraken_spot"
+      }
+    ],
+    "defects": [],
+    "scope": "Current cycle statistics/time integrity only; not certification of the entire ICARUS system.",
+    "status": "VERIFIED",
+    "summary": "2 independent measurement audits; 0 defects."
+  },
+  "outcome": "NO_MATERIAL_DELTA",
+  "paid_model_calls": 0,
+  "prior_receipt_path": "automation_intelligence/native_research_v1/cycles/native-37687170031-1/daedalus.json",
+  "run_id": "native-37688102334-1-daedalus",
+  "schema_version": "icarus-research-run-v1",
+  "started_at_utc": "2026-10-07T21:15:56.950106Z",
+  "substantive_work_performed": true,
+  "summary": "2 independent measurement audits; 0 defects.",
+  "worker": "GITHUB_ACTIONS"
+}

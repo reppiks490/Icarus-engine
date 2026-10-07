@@ -1,0 +1,114 @@
+{
+  "schema_version": "icarus-research-run-v1",
+  "run_id": "20261007T192823Z_flow",
+  "lane": "flow",
+  "automation_id": "6ab817544e68819197b5db21eb2cbe2b",
+  "started_at_utc": "2026-10-07T19:27:18Z",
+  "completed_at_utc": "2026-10-07T19:28:23.236Z",
+  "outcome": "NO_MATERIAL_DELTA",
+  "substantive_work_performed": true,
+  "summary": "Fresh licensed/public cross-asset snapshots did not establish a net-new Flow regime beyond the prior 15:00 UTC BTC range re-expansion. BTC was $83,392, down 2.42% on the day with an $82,846-$85,646 daily range, while QQQ was down 0.38%, UUP up 0.42%, GLD down 1.51%, SLV down 2.76%, and TLT down 0.16% around 19:12 UTC. The pattern is consistent with macro risk pressure but does not prove a synchronized liquidity, order-flow, or microstructure shock. Direct Bybit hourly candle and order-book endpoints were inaccessible through the available retrieval tool, so no per-hour robust-z update, displayed-depth claim, or persistence conclusion was made. No MCP event was created.",
+  "evidence": [
+    {
+      "type": "hybrid_registry",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/registry.json",
+      "blob_sha": "ce3e6cd23abaf28f913d1b62178416699587fa4a",
+      "result": "Validated before substantive work; current automation_id is absent and flow_velocity is historical-disabled under a different ID."
+    },
+    {
+      "type": "hybrid_contract",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/CONTRACT.md",
+      "blob_sha": "a2aa7059288144217691a419bb7e9e47289c2056",
+      "result": "Validated before substantive work; exact request identity is mandatory."
+    },
+    {
+      "type": "prior_research_receipt",
+      "path": "automation_intelligence/mcp_interface/research_runs/flow/20261007T163005Z_flow.json",
+      "blob_sha": "df22af67452504869e47c4c1cf2b44386ff45efc",
+      "comparison": "Prior run verified 15:00 UTC BTC range re-expansion across Bybit spot, Bybit linear, and Twelve Data. Current evidence did not supply authenticated completed-hour candles needed to test persistence against that baseline."
+    },
+    {
+      "type": "licensed_market_snapshot",
+      "classification": "FACT",
+      "provider": "structured finance feed",
+      "retrieved_at_utc": "2026-10-07T19:12:54Z",
+      "observations": {
+        "BTC_USD": {
+          "price": 83392,
+          "day_change_pct": -2.41642,
+          "day_high": 85646,
+          "day_low": 82846
+        },
+        "QQQ": {
+          "price": 756.78,
+          "day_change_pct": -0.37912,
+          "trade_time_utc": "2026-10-07T19:12:23Z"
+        },
+        "GLD": {
+          "price": 376.5,
+          "day_change_pct": -1.5094,
+          "trade_time_utc": "2026-10-07T19:12:54Z"
+        },
+        "SLV": {
+          "price": 53.92,
+          "day_change_pct": -2.75924,
+          "trade_time_utc": "2026-10-07T19:12:54Z"
+        },
+        "UUP": {
+          "price": 29.02,
+          "day_change_pct": 0.41522,
+          "trade_time_utc": "2026-10-07T19:05:54Z"
+        },
+        "TLT": {
+          "price": 77.16,
+          "day_change_pct": -0.15528,
+          "trade_time_utc": "2026-10-07T19:12:47Z"
+        }
+      },
+      "finding": "BTC and metals were weaker while the dollar proxy firmed, but QQQ and long-duration Treasuries moved modestly; breadth was insufficient for a new synchronized-flow shock."
+    },
+    {
+      "type": "news_context",
+      "classification": "SOURCE_CLAIM",
+      "source": "Reuters",
+      "published_date": "2026-10-07",
+      "url": "https://www.reuters.com/business/us-30-year-bond-yield-hits-fresh-24-year-high-2026-10-07/",
+      "finding": "Reuters reported 10-year and 30-year Treasury yields at fresh 24-year highs amid oil-driven inflation concerns; this is macro context, not authenticated market-flow evidence."
+    },
+    {
+      "type": "provider_access_check",
+      "provider": "Bybit",
+      "representations": [
+        "BTCUSDT spot 1h candles",
+        "BTCUSDT linear 1h candles",
+        "BTCUSDT spot displayed order book"
+      ],
+      "retrieved_at_utc": "2026-10-07T19:27:40Z",
+      "result": "The available web retrieval tool returned inaccessible/internal-error responses for all three direct API URLs; no observations were fabricated."
+    },
+    {
+      "type": "model_inference",
+      "classification": "MODEL_INFERENCE",
+      "finding": "Retain the prior episodic BTC-volatility state without promotion. Current daily and ETF snapshots show macro risk pressure but do not identify completed-hour persistence, authenticated turnover, depth, bid/ask, directional order flow, liquidations, funding, basis, or broad cross-market dislocation."
+    }
+  ],
+  "prior_receipt_path": "automation_intelligence/mcp_interface/research_runs/flow/20261007T163005Z_flow.json",
+  "event_paths": [],
+  "blockers": [
+    "HYBRID_RESULT UNVERIFIED: automation_intelligence/hybrid_loop_fabric_v1/requests/flow/latest.json returned GitHub 404, so no request_id or required_result_path could be validated.",
+    "The current automation_id is absent from the validated registry; no schedule or topology mutation was attempted.",
+    "Direct Bybit hourly candle and order-book endpoints were inaccessible through the available retrieval tool, preventing completed-hour robust-baseline and displayed-depth checks.",
+    "No authenticated trade-sign/depth history, open interest, liquidations, funding, basis, or current direct NQ/GC/SI futures observations were available."
+  ],
+  "subsystem_assessment": {
+    "argus": {
+      "status": "NO_MATERIAL_DELTA",
+      "finding": "No authenticated completed-hour candle, trade, or depth evidence justified a new microstructure or execution-physics anomaly."
+    },
+    "nexus": {
+      "status": "DEGRADED",
+      "finding": "Fresh cross-asset snapshots preserved representation identity and timestamps, but direct hourly BTC and futures-source coverage was incomplete; the prior regime state was retained without interpolation."
+    }
+  },
+  "execution_authorized": false
+}

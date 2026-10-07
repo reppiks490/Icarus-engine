@@ -1,0 +1,132 @@
+{
+  "schema_version": "icarus-mcp-event-v1",
+  "event_id": "20261007T103550Z-flow-btc-spot-turnover-normalized",
+  "at_utc": "2026-10-07T10:35:50Z",
+  "category": "AUDIT",
+  "status": "VERIFIED",
+  "severity": "MEDIUM",
+  "summary": "The completed 09:00 UTC BTCUSDT hour falsified persistence of the prior isolated Bybit spot-turnover outlier: spot volume robust z normalized from +6.3878 at 08:00 to +0.9250 at 09:00, while spot, Bybit linear, and Twelve Data price ranges remained ordinary. The prior observation is therefore bounded to one completed spot candle, not evidence of a continuing broad volatility, liquidity, or directional-order-flow regime.",
+  "surface": [
+    "BTCUSDT Bybit spot and linear 1h candles",
+    "BTC/USD Twelve Data 1h price representation",
+    "NQZ6/GCZ6/SIZ6 Massive source-health check",
+    "FLOW/ARGUS/NEXUS temporal provenance"
+  ],
+  "source": "FLOW_AUTOMATION",
+  "paths": [
+    "automation_intelligence/mcp_interface/events/20261007T080000Z_flow_btc_spot_turnover_only.json",
+    "automation_intelligence/mcp_interface/research_runs/flow/20261007T093001Z_flow.json",
+    "automation_intelligence/mcp_interface/events/20261007T095137Z_daedalus_flow_temporal_witness_regression.json"
+  ],
+  "evidence": [
+    {
+      "classification": "FACT",
+      "provider": "Bybit",
+      "representation": "BTCUSDT spot 1h candle",
+      "event_time_utc": "2026-10-07T09:00:00Z",
+      "completed_bar_end_utc": "2026-10-07T10:00:00Z",
+      "retrieved_at_start_utc": "2026-10-07T10:34:05.192Z",
+      "retrieved_at_end_utc": "2026-10-07T10:34:06.775Z",
+      "observations": {
+        "volume_btc": 447.397743,
+        "volume_robust_z_vs_prior_28": 0.925,
+        "range_usd": 357.1,
+        "range_robust_z_vs_prior_28": 0.5456
+      },
+      "url": "https://api.bybit.com/v5/market/kline?category=spot&symbol=BTCUSDT&interval=60&limit=60"
+    },
+    {
+      "classification": "FACT",
+      "provider": "Bybit",
+      "representation": "BTCUSDT linear perpetual 1h candle",
+      "event_time_utc": "2026-10-07T09:00:00Z",
+      "completed_bar_end_utc": "2026-10-07T10:00:00Z",
+      "retrieved_at_start_utc": "2026-10-07T10:34:11.904Z",
+      "retrieved_at_end_utc": "2026-10-07T10:34:13.471Z",
+      "observations": {
+        "volume_btc": 2676.404,
+        "volume_robust_z_vs_prior_28": 1.043,
+        "range_usd": 369,
+        "range_robust_z_vs_prior_28": 0.6308
+      },
+      "url": "https://api.bybit.com/v5/market/kline?category=linear&symbol=BTCUSDT&interval=60&limit=60"
+    },
+    {
+      "classification": "FACT",
+      "provider": "Twelve Data",
+      "representation": "BTC/USD 1h price candle",
+      "event_time_utc": "2026-10-07T09:00:00Z",
+      "completed_bar_end_utc": "2026-10-07T10:00:00Z",
+      "retrieved_at_start_utc": "2026-10-07T10:34:18.682Z",
+      "retrieved_at_end_utc": "2026-10-07T10:34:21.762Z",
+      "observations": {
+        "range_usd": 352.83,
+        "range_robust_z_vs_prior_28": 0.545
+      },
+      "url": "https://api.twelvedata.com/time_series?symbol=BTC/USD&interval=1h&outputsize=60"
+    },
+    {
+      "classification": "FACT",
+      "provider": "Bybit",
+      "representation": "BTCUSDT spot order-book point snapshot",
+      "provider_time_utc": "2026-10-07T10:34:25.753Z",
+      "retrieved_at_start_utc": "2026-10-07T10:34:25.008Z",
+      "retrieved_at_end_utc": "2026-10-07T10:34:26.198Z",
+      "observations": {
+        "best_bid": 83702.1,
+        "best_ask": 83702.2,
+        "spread_usd": 0.1
+      },
+      "limitation": "Point snapshot only; no persistence, depth-regime, or execution-quality inference.",
+      "url": "https://api.bybit.com/v5/market/orderbook?category=spot&symbol=BTCUSDT&limit=25"
+    },
+    {
+      "classification": "FACT",
+      "provider": "Massive",
+      "representation": "NQZ6, GCZ6, SIZ6 1h trade aggregates",
+      "latest_event_time_utc": "2026-10-07T02:00:00Z",
+      "retrieval_intervals_utc": {
+        "NQZ6": [
+          "2026-10-07T10:34:55.317Z",
+          "2026-10-07T10:35:05.171Z"
+        ],
+        "GCZ6": [
+          "2026-10-07T10:35:05.455Z",
+          "2026-10-07T10:35:11.643Z"
+        ],
+        "SIZ6": [
+          "2026-10-07T10:35:11.954Z",
+          "2026-10-07T10:35:16.910Z"
+        ]
+      },
+      "finding": "Latest returned bars were about 8.5 hours behind retrieval and were excluded from contemporaneous cross-market inference.",
+      "urls": [
+        "https://api.massive.com/futures/v1/aggs/NQZ6",
+        "https://api.massive.com/futures/v1/aggs/GCZ6",
+        "https://api.massive.com/futures/v1/aggs/SIZ6"
+      ]
+    },
+    {
+      "classification": "MODEL_INFERENCE",
+      "finding": "One completed-hour normalization across spot volume, linear volume, and three price-range representations supports closing the prior turnover-only anomaly as non-persistent; it does not identify its cause."
+    }
+  ],
+  "conflicts": [
+    "The 10:00 UTC BTC candle was still forming at retrieval and was excluded.",
+    "Licensed futures aggregates advanced from 01:00 to 02:00 UTC versus the prior run but remained non-contemporaneous."
+  ],
+  "limitations": [
+    "No authenticated trade-sign sequence, historical depth sequence, open interest, liquidations, funding, basis, DXY, Treasury/rates, or volatility-index evidence was available.",
+    "Robust z-scores use median/MAD over the prior 28 completed hourly bars; they are descriptive, not causal."
+  ],
+  "next_decisive_check": "Recheck the next completed BTC hour for renewed spot-volume divergence or price-range expansion; require contemporaneous NQ/GC/SI data before any cross-market regime claim.",
+  "argus": {
+    "status": "VERIFIED",
+    "finding": "Direct spot candle volume normalized to robust z +0.9250 with ordinary range; no order-flow or persistent-liquidity mechanism is inferred."
+  },
+  "nexus": {
+    "status": "DEGRADED",
+    "finding": "Bybit spot/linear and Twelve Data price representations reconciled with per-request intervals, but Massive futures bars remained stale to 02:00 UTC."
+  },
+  "execution_authorized": false
+}

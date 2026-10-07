@@ -139,3 +139,30 @@ def test_failed_local_generation_retried_on_unchanged_measurements(tmp_path,monk
     nr.run_cycle(tmp_path,{}, {'headlines':[],'series':[],'gaps':[]},now=0,run_id='one',code_revision='fixed',binary=Path('binary'),model=Path('model'))
     second=nr.run_cycle(tmp_path,{}, {'headlines':[],'series':[],'gaps':[]},now=1,run_id='two',code_revision='fixed',binary=Path('binary'),model=Path('model'))
     assert all(v['local_model_status']=='GENERATED' for v in second['lanes'].values())
+
+
+def test_model_prompt_is_bounded_and_requests_next_test(monkeypatch,tmp_path):
+    nr=module()
+    import tools.github_native_local_model as lm
+    from tools.github_native_ai_openai import ModelResponse
+    observed={}
+    def fake(request,**kwargs):
+        observed['request']=request
+        observed['kwargs']=kwargs
+        return ModelResponse('local-test','completed',{'lane':'aion','summary':'Next test: collect more outcomes.','net_new_delta':'MEASURED_DELTA','data_gaps':[],'conflicts':[],'execution_authorized':False})
+    monkeypatch.setattr(lm,'run_local_model',fake)
+    nr.model_commentary('aion',{'summary':'measured','experiments':[{'representation':'venue','test':{'event_count':3,'control_count':90,'difference':.01},'qualification':'INSUFFICIENT_EVENTS','notes':'x'*5000}]*4},Path('bin'),Path('model'))
+    assert len(observed['request'].input_text)<3000
+    assert 'next test' in observed['request'].instructions.lower()
+    assert observed['kwargs']['max_output_tokens']==384
+
+
+def test_transport_failure_is_diagnosed_without_raw_model_text(monkeypatch):
+    nr=module()
+    import tools.github_native_local_model as lm
+    from tools.github_native_ai_openai import TransportError
+    def fail(*args,**kwargs):
+        raise TransportError('local model runtime timed out')
+    monkeypatch.setattr(lm,'run_local_model',fail)
+    result=nr.model_commentary('aion',{'summary':'x'},Path('bin'),Path('model'))
+    assert result['failure_code']=='TIMEOUT'

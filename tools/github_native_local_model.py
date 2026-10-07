@@ -62,7 +62,10 @@ def build_local_model_command(
     request: ModelRequest,
     *,
     output_file: Path | None = None,
+    max_output_tokens: int = 768,
 ) -> list[str]:
+    if type(max_output_tokens) is not int or not 64 <= max_output_tokens <= 768:
+        raise ValueError("local output budget must be 64..768")
     is_completion = binary.name == "llama-completion"
     command = [
         str(binary),
@@ -84,7 +87,7 @@ def build_local_model_command(
         "-c",
         "4096",
         "-n",
-        "768",
+        str(max_output_tokens),
         "--temp",
         "0",
         "-co",
@@ -181,6 +184,7 @@ def run_local_model(
     model: Path,
     executor: Executor = _default_executor,
     timeout_seconds: int = 180,
+    max_output_tokens: int = 768,
 ) -> ModelResponse:
     if not binary.is_file():
         raise TransportError("local model runtime is missing")
@@ -196,6 +200,7 @@ def run_local_model(
             model,
             request,
             output_file=output_file,
+            max_output_tokens=max_output_tokens,
         )
         exit_code, stdout, stderr = executor(command, timeout_seconds)
         if exit_code != 0:

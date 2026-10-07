@@ -216,20 +216,45 @@ def macro_research(raw, now):
 
 
 def model_commentary(lane, measured, binary, model):
-    from tools.github_native_ai_openai import ModelRequest, OutputValidationError
+    from tools.github_native_ai_openai import ModelRequest, OutputValidationError, TransportError
     from tools.github_native_local_model import LOCAL_MODEL_ID,run_local_model
+    # Bounded factual snapshot; keep full measurements in the separate immutable receipt.
+    compact=dict(lane=lane,status=measured.get('status'),summary=measured.get('summary'),
+                 data_gaps=(measured.get('gaps') or measured.get('blockers') or [])[:3],
+                 conflicts=measured.get('conflicts',[])[:2])
+    if lane=='flow':
+        compact['observations']=[{k:v.get(k) for k in ('lane_key','state','range_z','volume_z')} for v in measured.get('current',[])]
+    elif lane=='aion':
+        compact['experiments']=[{k:e.get(k) for k in ('representation','qualification','test')} for e in measured.get('experiments',[])[:4]]
+    elif lane=='daedalus':
+        compact['defects']=measured.get('defects',[])[:3]
+        compact['checks_completed']=len(measured.get('checks',[]))
+    elif lane=='macro':
+        compact['series']=measured.get('series',[])[:3]
+        compact['recent_release_count']=len(measured.get('releases',[]))
+    elif lane=='omega':
+        compact['lane_status']=measured.get('lane_status',{})
+    input_text=json.dumps(compact,sort_keys=True,allow_nan=False)
+    if len(input_text)>2800:
+        compact.pop('experiments',None)
+        compact.pop('series',None)
+        input_text=json.dumps(compact,sort_keys=True,allow_nan=False)
     try:
-        request = ModelRequest(lane,LOCAL_MODEL_ID,'none',
-            f'You are the {lane} research assistant. The JSON lane must be exactly {lane!r}. Use only supplied measurements. Return the required JSON. '
-            'Do not invent numbers, causes, missing data or execution authority. Suggest a falsifiable next test. '
-            'This output is unverified interpretation and cannot change measured facts. execution_authorized=false.',
-            json.dumps(measured,sort_keys=True,allow_nan=False)[:8500])
-        response=run_local_model(request,binary=binary,model=model,timeout_seconds=120)
+        request=ModelRequest(lane,LOCAL_MODEL_ID,'none',
+            f'You are the {lane} research assistant. Return ONLY the required JSON, with lane exactly {lane!r}. '
+            'Use supplied facts only. Keep summary under 40 words and include one falsifiable next test. '
+            'Set net_new_delta to "MEASURED_DELTA". data_gaps and conflicts: at most two short strings each. '
+            'execution_authorized=false. Do not invent numbers, causal direction, missing data or authority. '
+            'Your interpretation is unverified and cannot clear a defect.',input_text)
+        response=run_local_model(request,binary=binary,model=model,timeout_seconds=120,max_output_tokens=384)
         return dict(status='GENERATED',authority='UNVERIFIED_MODEL_INFERENCE',model=LOCAL_MODEL_ID,
                     response_id=response.response_id,payload=response.payload)
     except OutputValidationError as exc:
-        return dict(status='BLOCKED',authority='UNVERIFIED_MODEL_INFERENCE',error_type=type(exc).__name__,
-                    validation_error=str(exc))
+        return dict(status='BLOCKED',authority='UNVERIFIED_MODEL_INFERENCE',error_type=type(exc).__name__,validation_error=str(exc))
+    except TransportError as exc:
+        message=str(exc)
+        code='TIMEOUT' if 'timed out' in message else 'INVALID_JSON' if 'structured JSON' in message else 'RUNTIME_FAILURE'
+        return dict(status='BLOCKED',authority='UNVERIFIED_MODEL_INFERENCE',error_type=type(exc).__name__,failure_code=code)
     except Exception as exc:
         return dict(status='BLOCKED',authority='UNVERIFIED_MODEL_INFERENCE',error_type=type(exc).__name__)
 

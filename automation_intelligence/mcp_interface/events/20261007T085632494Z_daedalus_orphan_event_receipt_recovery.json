@@ -1,0 +1,66 @@
+{
+  "schema_version": "icarus-mcp-event-v1",
+  "event_id": "20261007T085632494Z-daedalus-orphan-event-receipt-recovery",
+  "at_utc": "2026-10-07T08:56:32.494Z",
+  "category": "REPAIR",
+  "status": "VERIFIED",
+  "severity": "MEDIUM",
+  "summary": "A material DAEDALUS audit event committed at 2026-10-07T06:51:50Z survived, but the originating run did not finalize its mandatory research receipt. Exact GitHub inspection found the event blob and commit while the DAEDALUS receipt directory still ended at 2026-10-07T05:59:37.979Z, and repository search found no receipt referencing the event ID. This cycle preserves the original event unchanged and repairs durable continuity by creating a new recovery event plus a read-back-verified research receipt with recovered_at metadata. The scientific finding itself remains bounded: Flow's provider-specific temporal witnesses persisted across two consecutive runs, while strict-v1 enforcement is still absent.",
+  "surface": [
+    "DAEDALUS mandatory research-receipt finalization",
+    "Interrupted-run recovery and provenance continuity",
+    "Flow temporal-repair audit lineage"
+  ],
+  "source": "DAEDALUS_AUTOMATION",
+  "paths": [
+    "automation_intelligence/mcp_interface/events/20261007T065149633Z_daedalus_flow_temporal_repair_second_run_verified.json",
+    "automation_intelligence/mcp_interface/research_runs/daedalus/20261007T055937979Z_daedalus.json",
+    "automation_intelligence/mcp_interface/research_runs/daedalus/"
+  ],
+  "evidence": [
+    {
+      "classification": "FACT",
+      "path": "automation_intelligence/mcp_interface/events/20261007T065149633Z_daedalus_flow_temporal_repair_second_run_verified.json",
+      "commit_sha": "d600463d73a20bc3c3b52ace6a9cecebb9fc8d24",
+      "blob_sha": "a299168b76ca2119bf7ac8b24c85744a1bfe5420",
+      "original_event_time_utc": "2026-10-07T06:51:49.633Z",
+      "finding": "The original material audit event exists unchanged on main and its exact event ID and content were re-fetched."
+    },
+    {
+      "classification": "FACT",
+      "path": "automation_intelligence/mcp_interface/research_runs/daedalus/20261007T055937979Z_daedalus.json",
+      "blob_sha": "33b9af19fc48d8fb22cd830180ae4c06ac528c03",
+      "finding": "Before recovery, the newest DAEDALUS research receipt completed at 05:59:37.979Z and predates the 06:51 event."
+    },
+    {
+      "classification": "VERIFIED",
+      "finding": "The complete DAEDALUS receipt directory contained no receipt later than 05:59:37.979Z, and repository search for the exact 06:51 event ID returned only the event file itself. Therefore the event had no matching durable research receipt."
+    },
+    {
+      "classification": "MODEL_INFERENCE",
+      "finding": "The durable event plus absent receipt is consistent with an interrupted finalization path. It proves a receipt-continuity gap, but does not identify the runtime interruption's root cause."
+    }
+  ],
+  "conflicts": [],
+  "limitations": [
+    "No runtime trace identifies why the originating run stopped between event creation and receipt finalization.",
+    "This recovery does not retroactively claim that a receipt existed at 06:51 UTC; recovery time is stored separately.",
+    "The original Flow temporal finding remains operational evidence, not proof of automatic strict-v1 enforcement."
+  ],
+  "required_remediation": [
+    "Keep event-first material persistence, then guarantee receipt finalization in a finally-equivalent path.",
+    "Add a reconciliation check that flags lane events newer than the latest receipt when no receipt references them.",
+    "Preserve original event time, commit, blob, and separate recovered_at_utc for later-run recovery.",
+    "Do not mark a research run complete until its receipt is exact-read-back verified."
+  ],
+  "next_independent_verification_target": "Test whether any other lane contains immutable events newer than its latest research receipt without a receipt reference, then add a repository-native orphan-event reconciliation check.",
+  "daedalus": {
+    "status": "VERIFIED",
+    "finding": "Exact GitHub evidence proves one material DAEDALUS event survived an interrupted run without its mandatory receipt; continuity is recoverable without rewriting the original event."
+  },
+  "aegis": {
+    "status": "DEGRADED",
+    "finding": "Event-first persistence prevented loss of the finding, but the lack of an automatic orphan-event/receipt reconciler allowed an incomplete run chain to remain silently unfinalized until independent inspection."
+  },
+  "execution_authorized": false
+}

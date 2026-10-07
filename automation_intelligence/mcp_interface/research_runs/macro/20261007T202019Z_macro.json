@@ -1,0 +1,93 @@
+{
+  "schema_version": "icarus-research-run-v1",
+  "run_id": "macro-20261007T202019Z",
+  "lane": "macro",
+  "automation_id": "6ab8174517b48191b67ac472205a28d3",
+  "started_at_utc": "2026-10-07T20:17:53Z",
+  "completed_at_utc": "2026-10-07T20:20:19.236Z",
+  "outcome": "MATERIAL_DELTA",
+  "substantive_work_performed": true,
+  "summary": "Official September FOMC minutes resolved the prior run's decisive check. All participants supported the September 25 bp hike and most judged another increase likely appropriate by year-end, but officials split over whether tightening was precautionary insurance against energy/supply shocks or required to restrain demand. With October hike odds below 20%, December odds near 83%, and the long end still stressed, the durable state becomes DIVIDED_CONDITIONAL_TIGHTENING_WITH_LONG_END_STRESS rather than a mechanical every-meeting hiking cycle.",
+  "evidence": [
+    {
+      "type": "hybrid_registry",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/registry.json",
+      "blob_sha": "ce3e6cd23abaf28f913d1b62178416699587fa4a",
+      "result": "Validated before substantive work; current automation_id is absent and registered macro_shock_sentinel is historical-disabled under a different ID."
+    },
+    {
+      "type": "hybrid_contract",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/CONTRACT.md",
+      "blob_sha": "a2aa7059288144217691a419bb7e9e47289c2056",
+      "result": "Validated before substantive work; exact request identity and exact read-back are mandatory."
+    },
+    {
+      "type": "prior_research_receipt",
+      "path": "automation_intelligence/mcp_interface/research_runs/macro/20261007T161716Z_macro.json",
+      "blob_sha": "3937a1ad2a733d5df5cbc384ceb07ca0e2161590",
+      "comparison": "Prior durable state was REACCELERATING_NEAR_TERM_WITH_LONG_RUN_ANCHOR_INTACT and explicitly named the FOMC minutes as the next decisive check."
+    },
+    {
+      "type": "official_source",
+      "classification": "FACT",
+      "source": "Federal Reserve Board",
+      "event_time": "2026-09-15/2026-09-16",
+      "published_at_utc": "2026-10-07T18:00:00Z",
+      "retrieved_at_utc": "2026-10-07T20:19:29.260Z",
+      "url": "https://www.federalreserve.gov/monetarypolicy/fomcminutes20260916.htm",
+      "finding": "All participants supported the 25 bp hike to 3.75%-4.00%; most saw another increase likely appropriate by year-end; several viewed policy as not restrictive or only mildly restrictive. Staff raised the 2026-2028 inflation forecast, strengthened the growth outlook, and saw inflation risks skewed upward."
+    },
+    {
+      "type": "independent_report",
+      "classification": "SOURCE_CLAIM",
+      "source": "Reuters",
+      "retrieved_at_utc": "2026-10-07T20:19:29.260Z",
+      "url": "https://www.reuters.com/business/fed-policymakers-divided-over-rate-hike-logic-september-minutes-show-2026-10-07/",
+      "finding": "The September hike rationale split between insurance against spreading supply shocks and a more restrictive response to demand inflation; investors expected an October hold followed by a likely December hike."
+    },
+    {
+      "type": "market_repricing",
+      "classification": "FACT",
+      "source": "Reuters/CME FedWatch",
+      "retrieved_at_utc": "2026-10-07T20:19:29.260Z",
+      "url": "https://www.reuters.com/world/asia-pacific/dollar-holds-losses-markets-await-fed-minutes-speakers-2026-10-07/",
+      "finding": "October hike odds were 19.4%, down from about 38% a week earlier, while December hike odds were 83%; the dollar index was up 0.32% at 102.24."
+    },
+    {
+      "type": "cross_asset_snapshot",
+      "classification": "FACT",
+      "source": "Structured market quotes",
+      "event_time": "2026-10-07T20:00:00Z/2026-10-07T20:04:05Z",
+      "retrieved_at_utc": "2026-10-07T20:19:29.260Z",
+      "finding": "QQQ -0.24%, TLT -0.15%, UUP +0.48%, GLD -1.68%, and BTC/USD -2.47%. These observations establish contemporaneous state, not minutes-only causality."
+    },
+    {
+      "type": "material_event",
+      "path": "automation_intelligence/mcp_interface/events/20261007T201929Z_macro_fomc_divided_conditional_tightening.json",
+      "blob_sha": "07d821724c00164cc410c7733d8fe5d6d75dd485",
+      "commit_sha": "bd68de6c695912775894d1ae35d5600ab7dd2cab",
+      "exact_readback_verified": true
+    }
+  ],
+  "prior_receipt_path": "automation_intelligence/mcp_interface/research_runs/macro/20261007T161716Z_macro.json",
+  "event_paths": [
+    "automation_intelligence/mcp_interface/events/20261007T201929Z_macro_fomc_divided_conditional_tightening.json"
+  ],
+  "blockers": [
+    "HYBRID_RESULT UNVERIFIED: automation_intelligence/hybrid_loop_fabric_v1/requests/macro/latest.json returns 404 on main, so no request_id or required_result_path can be validated and no hybrid result was fabricated.",
+    "The current automation_id is absent from the validated hybrid registry; no schedule or topology mutation was attempted.",
+    "A secondary Reuters market-close publication-time display was inconsistent across retrieval surfaces; the regime finding therefore relies on the official minutes, separately time-stamped Reuters policy-path reporting, and contemporaneous structured quotes rather than precise attribution to that article's availability clock.",
+    "Cross-asset movements have overlapping oil, fiscal, issuance, term-premium, European sovereign-risk, and positioning drivers; minutes-only causality remains UNKNOWN."
+  ],
+  "subsystem_assessment": {
+    "oracle": {
+      "status": "MATERIAL_DELTA",
+      "finding": "Promote DIVIDED_CONDITIONAL_TIGHTENING_WITH_LONG_END_STRESS: another 2026 hike is broadly supported, but timing depends on evidence that inflation is broadening beyond energy and other supply shocks."
+    },
+    "supermesh_x": {
+      "status": "MATERIAL_DELTA",
+      "finding": "The official minutes supersede pre-release interpretation; cross-source reconciliation supports an October-pause/December-hike path while preserving clock uncertainty and refusing cross-asset causal overreach."
+    }
+  },
+  "execution_authorized": false
+}

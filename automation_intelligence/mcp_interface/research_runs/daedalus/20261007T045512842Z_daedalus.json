@@ -1,0 +1,89 @@
+{
+  "schema_version": "icarus-research-run-v1",
+  "run_id": "daedalus-20261007T045512842Z",
+  "lane": "daedalus",
+  "automation_id": "6ab8177918b48191a97e56c44b57d2c5",
+  "started_at_utc": "2026-10-07T04:52:48Z",
+  "completed_at_utc": "2026-10-07T04:55:12.840Z",
+  "outcome": "MATERIAL_DELTA",
+  "substantive_work_performed": true,
+  "summary": "Audited the newest strict-v1 FLOW/ARGUS/NEXUS event against the temporal-lineage defect class previously isolated in grandfathered FLOW records. The new event does not reproduce the historical ~80-minute inversion: its latest completed 03:00 BTC bar ended at 04:00, before the 04:25:53.353 anchor. However, the event assigns that same timestamp to Bybit spot, Bybit linear, and independent Twelve Data observations even though it is explicitly the Bybit orderbook server timestamp. The event honestly discloses this as an anchor, but strict-v1 and the consumer contract do not require or validate provider-specific retrieved_at witnesses. DAEDALUS therefore classifies the current market finding usable but temporally DEGRADED; AEGIS blocks treating the independent-source count as independently attested retrieval timing.",
+  "evidence": [
+    {
+      "type": "prior_receipt",
+      "repository": "reppiks490/Icarus-engine",
+      "ref": "main",
+      "path": "automation_intelligence/mcp_interface/research_runs/daedalus/20261007T000119414Z_daedalus.json",
+      "blob_sha": "44b2c6ebdf9e90babaa89c88bcfdd08d27aa06b9"
+    },
+    {
+      "type": "audited_flow_event",
+      "repository": "reppiks490/Icarus-engine",
+      "ref": "main",
+      "path": "automation_intelligence/mcp_interface/events/20261007T042657438Z_flow_btc_two_hour_downside_volatility_turnover_burst.json",
+      "blob_sha": "d945c75c2beca2f008b5b39c4f165e9760be20ac",
+      "observed_revision": "fc743c0b300ab74226bc66d71261ab1e2bfb174e",
+      "finding": "Three market-data representations share retrieval_time_anchor 2026-10-07T04:25:53.353Z; the orderbook entry identifies it as Bybit source_time, and data_gaps says it anchors K-line and Twelve Data retrieval."
+    },
+    {
+      "type": "audited_flow_receipt",
+      "repository": "reppiks490/Icarus-engine",
+      "ref": "main",
+      "path": "automation_intelligence/mcp_interface/research_runs/flow/20261007T042737399Z_flow.json",
+      "blob_sha": "56932dd9a209f42ef716ebd1a3f0977daa1e55e3",
+      "finding": "Receipt preserves the same cross-provider anchor and explicitly lacks provider-specific retrieval timestamps."
+    },
+    {
+      "type": "producer_contract",
+      "repository": "reppiks490/Icarus-engine",
+      "ref": "main",
+      "path": "automation_intelligence/mcp_interface/contract.json",
+      "blob_sha": "991b157fd82b3dd9e7e49356fefb06dd89c22579",
+      "finding": "Strict-v1 does not require per-evidence temporal witnesses."
+    },
+    {
+      "type": "consumer_contract",
+      "repository": "reppiks490/Icarus-engine",
+      "ref": "main",
+      "path": "automation_intelligence/mcp_interface/icarus_consumer_contract.json",
+      "blob_sha": "0af0b2854913fd4ecf444cc6f870b6c06547e419",
+      "finding": "Consumer validates the envelope but does not enforce evidence-level causal ordering; future-skew control exists only on the separate peer-packet surface."
+    },
+    {
+      "type": "hybrid_registry",
+      "repository": "reppiks490/Icarus-engine",
+      "ref": "main",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/registry.json",
+      "blob_sha": "ce3e6cd23abaf28f913d1b62178416699587fa4a",
+      "finding": "Current automation_id is absent; registered daedalus_prime replacement is HISTORICAL_DISABLED/MANUAL_GITHUB_REQUEST_ONLY."
+    },
+    {
+      "type": "hybrid_contract",
+      "repository": "reppiks490/Icarus-engine",
+      "ref": "main",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/CONTRACT.md",
+      "blob_sha": "a2aa7059288144217691a419bb7e9e47289c2056"
+    },
+    {
+      "type": "material_audit_event",
+      "repository": "reppiks490/Icarus-engine",
+      "ref": "main",
+      "path": "automation_intelligence/mcp_interface/events/20261007T045433326Z_daedalus_active_flow_cross_provider_temporal_anchor_gap.json",
+      "blob_sha": "4402e9e958b9742cc0feb125e302a526341b5b98",
+      "observed_revision": "b560e43a78614449140614ccfcb645ada3bbb0bb",
+      "verification": "Exact JSON was fetched from main after creation and matched the intended event."
+    }
+  ],
+  "prior_receipt_path": "automation_intelligence/mcp_interface/research_runs/daedalus/20261007T000119414Z_daedalus.json",
+  "event_paths": [
+    "automation_intelligence/mcp_interface/events/20261007T045433326Z_daedalus_active_flow_cross_provider_temporal_anchor_gap.json"
+  ],
+  "blockers": [
+    "Hybrid request identity remains unavailable: automation_intelligence/hybrid_loop_fabric_v1/requests/daedalus/latest.json and health/daedalus.json both returned 404, and current automation_id 6ab8177918b48191a97e56c44b57d2c5 is absent from registry v1.1.0.",
+    "Without an exact request_id and required_result_path, creating a hybrid result would fabricate durable completion identity; HYBRID_RESULT remains UNVERIFIED.",
+    "The audited FLOW event preserves no actual client-side per-call completion timestamps, so exact Bybit/Twelve Data retrieval latency cannot be reconstructed.",
+    "This audit confirms a temporal-attestation gap, not post-cutoff data leakage or invalidity of the BTC price/volume observations.",
+    "Scheduler mutation was prohibited; no automation was paused or changed."
+  ],
+  "execution_authorized": false
+}

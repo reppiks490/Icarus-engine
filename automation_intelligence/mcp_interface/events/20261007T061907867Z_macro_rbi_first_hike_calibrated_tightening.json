@@ -1,0 +1,106 @@
+{
+  "schema_version": "icarus-mcp-event-v1",
+  "event_id": "macro-20261007-rbi-first-hike-calibrated-tightening",
+  "at_utc": "2026-10-07T04:33:00Z",
+  "category": "EVOLUTION",
+  "status": "VERIFIED",
+  "severity": "HIGH",
+  "summary": "India's Reserve Bank raised the repo rate 25 basis points to 5.50%, its first increase in nearly four years, and shifted its stance from neutral to calibrated tightening. The size was broadly expected, but the stance change signalled a new tightening-cycle regime conditional on inflation and growth. Immediate market reaction was material but contained: India's 10-year yield rose modestly, the rupee remained near 96.43 per dollar, and rate-sensitive equities weakened. This updates regional and global tightening context without establishing a synchronized global risk shock.",
+  "surface": [
+    "ORACLE global and emerging-market monetary-regime state",
+    "SUPERMESH-X official-policy versus market-expectation provenance",
+    "India rates, INR, Nifty and global discount-rate transmission"
+  ],
+  "source": "MACRO_AUTOMATION",
+  "paths": [
+    "automation_intelligence/mcp_interface/research_runs/macro/20261007T052040293Z_macro.json",
+    "automation_intelligence/mcp_interface/events/20261007T042314714Z_macro_eia_october_steo_oil_diesel_forecast_reset.json"
+  ],
+  "evidence": [
+    {
+      "classification": "FACT",
+      "source": "Reuters",
+      "source_type": "CREDIBLE_DIRECT_POLICY_REPORTING",
+      "url": "https://www.reuters.com/world/india/india-raises-policy-rate-by-25-bps-first-hike-nearly-four-years-2026-10-07/",
+      "source_time": "2026-10-07T04:33:00Z",
+      "retrieved_at_utc": "2026-10-07T06:19:07.867Z",
+      "finding": "The RBI unanimously raised its benchmark repo rate by 25 basis points to 5.50%, its first increase in nearly four years, and changed the policy stance from neutral to calibrated tightening."
+    },
+    {
+      "classification": "SOURCE_CLAIM",
+      "source": "RBI Governor Sanjay Malhotra via Reuters",
+      "source_type": "PRIMARY_OFFICIAL_STATEMENT_REPORTED_BY_REUTERS",
+      "url": "https://www.reuters.com/world/india/india-raises-policy-rate-by-25-bps-first-hike-nearly-four-years-2026-10-07/",
+      "source_time": "2026-10-07T04:33:00Z",
+      "retrieved_at_utc": "2026-10-07T06:19:07.867Z",
+      "finding": "The governor said inflation had broadened and the outlook had worsened; further tightening would depend on realized inflation and growth. RBI raised its FY27 inflation forecast to 5.2% from 5.0% and GDP growth forecast to 7.1% from 6.7%."
+    },
+    {
+      "classification": "FACT",
+      "source": "Reuters market reaction",
+      "source_type": "CREDIBLE_MARKET_REPORTING",
+      "url": "https://www.reuters.com/world/india/india-raises-policy-rate-by-25-bps-first-hike-nearly-four-years-2026-10-07/",
+      "source_time": "2026-10-07T04:33:00Z",
+      "retrieved_at_utc": "2026-10-07T06:19:07.867Z",
+      "finding": "India's benchmark 10-year yield was slightly higher at 7.2269%, the rupee hovered near 96.43 per dollar, and Nifty 50 was down about 0.3% but had recovered from its lows."
+    },
+    {
+      "classification": "FACT",
+      "source": "Economic Times",
+      "source_type": "INDEPENDENT_MARKET_REPORTING",
+      "url": "https://economictimes.indiatimes.com/markets/stocks/news/rbi-to-hike-repo-rate-by-25-bps-these-rate-sensitive-sectors-will-be-in-focus-on-wednesday/articleshow/134754911.cms",
+      "source_time": "2026-10-07T05:01:00Z",
+      "retrieved_at_utc": "2026-10-07T06:19:07.867Z",
+      "finding": "Independent reporting corroborated the 25 bp hike and stance change and reported weakness in Indian banks, NBFCs, realty, autos and the broader Nifty/Sensex after the announcement."
+    },
+    {
+      "classification": "FACT",
+      "source": "Reuters pre-decision expectations",
+      "source_type": "MARKET_EXPECTATION_BASELINE",
+      "url": "https://www.reuters.com/world/india/swaps-signal-risk-outsized-india-rbi-rate-hike-usher-global-rate-catch-up-2026-10-06/",
+      "source_time": "2026-10-06",
+      "retrieved_at_utc": "2026-10-07T06:19:07.867Z",
+      "finding": "Before the decision, a 25 bp increase was fully priced in swaps and was the majority economist forecast; the principal surprise was therefore the stance change, not the rate increment."
+    },
+    {
+      "classification": "MODEL_INFERENCE",
+      "source": "MACRO_AUTOMATION",
+      "finding": "The decision establishes an RBI calibrated-tightening regime and strengthens evidence of broad global monetary tightening under energy and food inflation pressure. It does not by itself establish a synchronized global rates shock, a rupee crisis, or direct causation for NQ/MNQ, DXY, gold, or U.S. Treasury moves."
+    }
+  ],
+  "conflicts": [
+    "The hike confirms tightening, but the 25 bp size was largely priced before the announcement.",
+    "The stance change was hawkish, yet the initial rupee and bond reaction was modest and Nifty recovered from its lows.",
+    "RBI raised both inflation and growth forecasts, combining stronger nominal pressure with resilient real activity rather than a simple stagflation signal."
+  ],
+  "data_gaps": [
+    "The exact official decision timestamp was not available from an accessible RBI release; 04:33 UTC is the earliest verified Reuters publication time.",
+    "No direct RBI source page was accessible in the search results during this run; primary statements are attributed through Reuters.",
+    "Persistence of INR, Indian yield-curve and equity-sector reactions beyond the immediate session remains unknown.",
+    "No synchronized live NQ/MNQ, DXY, GC/MGC or U.S. Treasury response was established."
+  ],
+  "affected_instruments": [
+    "India repo and sovereign yield curve",
+    "USD/INR",
+    "Nifty 50 and Indian banks/NBFCs/realty/autos",
+    "DXY/USD and global EM FX as secondary transmission",
+    "Global sovereign yields and NQ/MNQ duration context as secondary transmission"
+  ],
+  "regime_implication": "Promote RBI from neutral/hold to CALIBRATED_TIGHTENING. Treat this as a regional monetary-regime change and an additional confirmation of global tightening breadth, not as an independently sufficient global risk-off or financial-stability event.",
+  "confidence": {
+    "policy_decision": "HIGH",
+    "stance_change": "HIGH",
+    "additional_hikes": "MEDIUM",
+    "broader_global_market_transmission": "LOW_TO_MEDIUM"
+  },
+  "next_decisive_check": "Track the next completed Indian session and subsequent RBI liquidity operations: INR, the Indian 2s/10s curve, bank/realty breadth, inflation expectations and foreign flows. Escalate global relevance only if the move converges with renewed U.S./European/Japanese yield pressure and broad EM-FX deterioration.",
+  "oracle": {
+    "status": "MATERIAL_DELTA",
+    "finding": "RBI moved from neutral to calibrated tightening with its first hike in nearly four years; update the India monetary regime while keeping the global-transmission claim conditional."
+  },
+  "supermesh_x": {
+    "status": "MATERIAL_DELTA",
+    "finding": "Reuters and independent Indian market reporting corroborate the decision and reaction; preserve the unavailable direct RBI release as a provenance gap and separate expected rate size from surprising stance guidance."
+  },
+  "execution_authorized": false
+}

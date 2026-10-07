@@ -1,0 +1,204 @@
+{
+  "schema_version": "icarus-mcp-event-v1",
+  "event_id": "20261007T203533Z-flow-btc-episodic-range-pulses-normalized",
+  "at_utc": "2026-10-07T20:35:33.841Z",
+  "category": "EVOLUTION",
+  "status": "MATERIAL_DELTA",
+  "severity": "MEDIUM",
+  "source": "FLOW_AUTOMATION",
+  "summary": "Fresh direct Bybit spot, Bybit linear, and Twelve Data hourly evidence resolves the prior access gap and bounds the 15:00 UTC BTC range re-expansion. The burst normalized at 16:00 UTC, produced a borderline range-only pulse at 17:00 UTC, and returned to ordinary ranges and turnover at 18:00 and 19:00 UTC. The evidence supports EPISODIC_ALTERNATING_VOLATILITY_NORMALIZED, not persistent volatility, directional order flow, or sustained liquidity stress.",
+  "net_new_delta": "The previously unresolved persistence question is now answered: the 15:00 UTC BTC range expansion did not persist. Three price representations agree on normalization, with only a sub-threshold 17:00 pulse before ordinary 18:00-19:00 intervals.",
+  "surface": [
+    "ARGUS BTC execution-physics classification",
+    "NEXUS source/representation and event-clock reconciliation",
+    "BTC/USD and BTCUSDT spot/linear volatility state",
+    "Cross-market confirmation coverage"
+  ],
+  "paths": [
+    "automation_intelligence/mcp_interface/research_runs/flow/20261007T163005Z_flow.json",
+    "automation_intelligence/mcp_interface/research_runs/flow/20261007T192823Z_flow.json",
+    "automation_intelligence/hybrid_loop_fabric_v1/registry.json",
+    "automation_intelligence/hybrid_loop_fabric_v1/CONTRACT.md"
+  ],
+  "evidence": [
+    {
+      "classification": "FACT",
+      "source": "Bybit public market data",
+      "representation": "BTCUSDT spot 1-hour candles",
+      "event_interval_utc": "2026-10-07T15:00:00Z/2026-10-07T20:00:00Z",
+      "retrieved_interval_utc": "2026-10-07T20:34:27.496Z/2026-10-07T20:34:28.539Z",
+      "baseline": "28 completed preceding 1-hour candles per tested interval; median/MAD robust z with 1.4826 scale",
+      "observations": [
+        {
+          "start_utc": "2026-10-07T15:00:00Z",
+          "range_usd": 639.2,
+          "range_robust_z": 2.6679,
+          "reported_volume_btc": 747.654419,
+          "volume_robust_z": 2.1853
+        },
+        {
+          "start_utc": "2026-10-07T16:00:00Z",
+          "range_usd": 355.5,
+          "range_robust_z": 0.4429,
+          "reported_volume_btc": 519.970451,
+          "volume_robust_z": 0.8895
+        },
+        {
+          "start_utc": "2026-10-07T17:00:00Z",
+          "range_usd": 577.6,
+          "range_robust_z": 2.1211,
+          "reported_volume_btc": 478.41163,
+          "volume_robust_z": 0.5076
+        },
+        {
+          "start_utc": "2026-10-07T18:00:00Z",
+          "range_usd": 332.8,
+          "range_robust_z": 0.21,
+          "reported_volume_btc": 347.923236,
+          "volume_robust_z": -0.3164
+        },
+        {
+          "start_utc": "2026-10-07T19:00:00Z",
+          "range_usd": 204.4,
+          "range_robust_z": -0.8574,
+          "reported_volume_btc": 387.986653,
+          "volume_robust_z": -0.0723
+        }
+      ]
+    },
+    {
+      "classification": "FACT",
+      "source": "Bybit public market data",
+      "representation": "BTCUSDT linear 1-hour candles",
+      "event_interval_utc": "2026-10-07T15:00:00Z/2026-10-07T20:00:00Z",
+      "retrieved_interval_utc": "2026-10-07T20:34:27.496Z/2026-10-07T20:34:28.539Z",
+      "observations": [
+        {
+          "start_utc": "2026-10-07T15:00:00Z",
+          "range_usd": 653.9,
+          "range_robust_z": 2.9275,
+          "reported_volume_btc": 3479.085,
+          "volume_robust_z": 1.0648
+        },
+        {
+          "start_utc": "2026-10-07T16:00:00Z",
+          "range_usd": 335.7,
+          "range_robust_z": 0.1761,
+          "reported_volume_btc": 2569.693,
+          "volume_robust_z": 0.2981
+        },
+        {
+          "start_utc": "2026-10-07T17:00:00Z",
+          "range_usd": 586.1,
+          "range_robust_z": 1.9208,
+          "reported_volume_btc": 2155.931,
+          "volume_robust_z": 0.0748
+        },
+        {
+          "start_utc": "2026-10-07T18:00:00Z",
+          "range_usd": 339.8,
+          "range_robust_z": 0.1209,
+          "reported_volume_btc": 1053.911,
+          "volume_robust_z": -0.6095
+        },
+        {
+          "start_utc": "2026-10-07T19:00:00Z",
+          "range_usd": 220.3,
+          "range_robust_z": -0.8458,
+          "reported_volume_btc": 850.885,
+          "volume_robust_z": -0.8359
+        }
+      ]
+    },
+    {
+      "classification": "FACT",
+      "source": "Twelve Data licensed market data",
+      "representation": "BTC/USD 1-hour OHLC",
+      "event_interval_utc": "2026-10-07T15:00:00Z/2026-10-07T20:00:00Z",
+      "retrieved_interval_utc": "2026-10-07T20:34:27.496Z/2026-10-07T20:34:28.539Z",
+      "range_robust_z_sequence": [
+        {
+          "start_utc": "2026-10-07T15:00:00Z",
+          "range_usd": 643.39,
+          "range_robust_z": 2.6917
+        },
+        {
+          "start_utc": "2026-10-07T16:00:00Z",
+          "range_usd": 326.69,
+          "range_robust_z": 0.2486
+        },
+        {
+          "start_utc": "2026-10-07T17:00:00Z",
+          "range_usd": 568.02,
+          "range_robust_z": 1.9702
+        },
+        {
+          "start_utc": "2026-10-07T18:00:00Z",
+          "range_usd": 327.04,
+          "range_robust_z": 0.1777
+        },
+        {
+          "start_utc": "2026-10-07T19:00:00Z",
+          "range_usd": 211.76,
+          "range_robust_z": -0.759
+        }
+      ]
+    },
+    {
+      "classification": "FACT",
+      "source": "Bybit public order book",
+      "representation": "BTCUSDT spot displayed depth at retrieval",
+      "event_time_utc": "2026-10-07T20:35:22.552Z",
+      "retrieved_interval_utc": "2026-10-07T20:35:22.515Z/2026-10-07T20:35:22.882Z",
+      "finding": "Best displayed bid was 83,340.0 x 0.289586 BTC and best displayed ask was 83,340.1 x 1.662785 BTC, a $0.10 spread. This is a point-in-time displayed quote only; no historical depth baseline or liquidity-recovery inference is made."
+    },
+    {
+      "classification": "FACT",
+      "source": "Massive licensed futures aggregates",
+      "representations": [
+        "NQZ6",
+        "GCZ6",
+        "SIZ6"
+      ],
+      "retrieved_interval_utc": "2026-10-07T20:34:54.473Z/2026-10-07T20:35:08.881Z",
+      "finding": "Latest returned 1-hour aggregates began at 12:00 UTC, approximately 8.5 hours behind retrieval. They were excluded from contemporaneous cross-market inference."
+    },
+    {
+      "classification": "MODEL_INFERENCE",
+      "source": "FLOW_AUTOMATION",
+      "finding": "Promote EPISODIC_ALTERNATING_VOLATILITY_NORMALIZED. The 17:00 pulse was near but below the prior material threshold across all three price representations and lacked abnormal turnover; 18:00 and 19:00 were clearly ordinary."
+    }
+  ],
+  "affected_instruments": [
+    "BTC/USD",
+    "BTCUSDT spot",
+    "BTCUSDT linear"
+  ],
+  "conflicts": [
+    "The 17:00 UTC price range was borderline across representations, but not accompanied by abnormal reported volume.",
+    "Current displayed depth is observable, but no historical depth baseline exists; spread and queue sizes cannot prove normalized liquidity.",
+    "NQZ6, GCZ6, and SIZ6 aggregates were stale and cannot confirm or refute synchronized cross-market propagation."
+  ],
+  "unknowns": [
+    "Directional aggressor flow and trade-sign imbalance",
+    "Liquidations, open interest, funding, and basis during the range pulses",
+    "Historical depth and execution-cost behavior",
+    "Contemporaneous NQ, gold, silver, DXY, rates, and volatility-index propagation"
+  ],
+  "confidence": {
+    "btc_range_normalization": "HIGH",
+    "persistent_volatility_regime": "LOW",
+    "liquidity_normalization": "UNKNOWN",
+    "cross_market_propagation": "UNKNOWN"
+  },
+  "next_decisive_check": "Test the next completed BTC hour for renewed range or turnover expansion, and require futures/USD/rates/volatility observations with event clocks within the same hour before any broad-risk regime claim.",
+  "argus": {
+    "status": "MATERIAL_DELTA",
+    "finding": "Authenticated candles show the 15:00 range burst did not persist; the 17:00 pulse was range-only and sub-threshold. No directional order-flow, liquidation, absorption, or liquidity-recovery claim is supported."
+  },
+  "nexus": {
+    "status": "MATERIAL_DELTA",
+    "finding": "Three BTC price representations reconcile the normalization sequence and direct Bybit access recovered, while Massive NQ/GC/SI data remained about 8.5 hours stale and was correctly quarantined."
+  },
+  "execution_authorized": false
+}

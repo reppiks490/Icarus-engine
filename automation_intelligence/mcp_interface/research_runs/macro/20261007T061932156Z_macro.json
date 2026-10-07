@@ -1,0 +1,82 @@
+{
+  "schema_version": "icarus-research-run-v1",
+  "run_id": "macro-20261007T061932156Z",
+  "lane": "macro",
+  "automation_id": "6ab8174517b48191b67ac472205a28d3",
+  "started_at_utc": "2026-10-07T06:16:59Z",
+  "completed_at_utc": "2026-10-07T06:19:32.156Z",
+  "outcome": "MATERIAL_DELTA",
+  "substantive_work_performed": true,
+  "summary": "Loaded the newest durable Macro receipt, validated the Hybrid registry/contract and missing request pointers, screened fresh global macro/rates/FX/commodity evidence, and identified one material policy-regime change. The Reserve Bank of India raised the repo rate 25 basis points to 5.50%, its first increase in nearly four years, and changed its stance from neutral to calibrated tightening. The rate size was largely priced, but the stance shift was the material surprise. Immediate reaction was contained in Indian bonds, INR and rate-sensitive equities. ORACLE promotes an RBI calibrated-tightening regime but not a global crisis state; SUPERMESH-X records two reporting origins, the expectation baseline and the unavailable direct RBI release.",
+  "evidence": [
+    {
+      "type": "PRIOR_RECEIPT",
+      "path": "automation_intelligence/mcp_interface/research_runs/macro/20261007T052040293Z_macro.json",
+      "blob_sha": "c0f3c08cbff451e9a70f07be766b550499544649",
+      "finding": "The immediately prior durable run found no new material delta and did not contain the subsequently published RBI decision."
+    },
+    {
+      "type": "HYBRID_REGISTRY",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/registry.json",
+      "blob_sha": "ce3e6cd23abaf28f913d1b62178416699587fa4a",
+      "finding": "Current automation_id is absent; macro_shock_sentinel replacement remains HISTORICAL_DISABLED/MANUAL_GITHUB_REQUEST_ONLY."
+    },
+    {
+      "type": "HYBRID_CONTRACT",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/CONTRACT.md",
+      "blob_sha": "a2aa7059288144217691a419bb7e9e47289c2056"
+    },
+    {
+      "type": "GITHUB_PATH_CHECK",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/requests/macro/latest.json",
+      "result": "404_NOT_FOUND"
+    },
+    {
+      "type": "GITHUB_PATH_CHECK",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/health/macro.json",
+      "result": "404_NOT_FOUND"
+    },
+    {
+      "type": "FACT",
+      "source": "Reuters",
+      "url": "https://www.reuters.com/world/india/india-raises-policy-rate-by-25-bps-first-hike-nearly-four-years-2026-10-07/",
+      "source_time": "2026-10-07T04:33:00Z",
+      "retrieved_at_utc": "2026-10-07T06:18:00Z",
+      "finding": "RBI unanimously raised repo 25 bps to 5.50%, changed stance from neutral to calibrated tightening, raised FY27 inflation forecast to 5.2% and growth forecast to 7.1%, and reported a modest immediate bond/rupee/equity reaction."
+    },
+    {
+      "type": "INDEPENDENT_CORROBORATION",
+      "source": "Economic Times",
+      "url": "https://economictimes.indiatimes.com/markets/stocks/news/rbi-to-hike-repo-rate-by-25-bps-these-rate-sensitive-sectors-will-be-in-focus-on-wednesday/articleshow/134754911.cms",
+      "source_time": "2026-10-07T05:01:00Z",
+      "retrieved_at_utc": "2026-10-07T06:18:00Z",
+      "finding": "Corroborated the policy decision and reported weakness in banks, NBFCs, realty, autos and broader Indian equities after the stance change."
+    },
+    {
+      "type": "EXPECTATION_BASELINE",
+      "source": "Reuters",
+      "url": "https://www.reuters.com/world/india/swaps-signal-risk-outsized-india-rbi-rate-hike-usher-global-rate-catch-up-2026-10-06/",
+      "source_time": "2026-10-06",
+      "retrieved_at_utc": "2026-10-07T06:18:00Z",
+      "finding": "A 25 bp hike was fully priced and was the majority forecast; the stance change, not the rate increment, was the key surprise."
+    },
+    {
+      "type": "PERSISTED_EVENT",
+      "path": "automation_intelligence/mcp_interface/events/20261007T061907867Z_macro_rbi_first_hike_calibrated_tightening.json",
+      "commit_sha": "04a0a3b3824f562cc4a7a89c3cf17d93c10785e7",
+      "blob_sha": "9f0019c4d0759f2e69963f9debfda74c4a06cbc3",
+      "verification": "Exact text and semantic JSON read-back matched intended event."
+    }
+  ],
+  "prior_receipt_path": "automation_intelligence/mcp_interface/research_runs/macro/20261007T052040293Z_macro.json",
+  "event_paths": [
+    "automation_intelligence/mcp_interface/events/20261007T061907867Z_macro_rbi_first_hike_calibrated_tightening.json"
+  ],
+  "blockers": [
+    "No valid hybrid request_id or required_result_path exists for lane macro; requests/macro/latest.json and health/macro.json returned 404, so HYBRID_RESULT cannot be created truthfully.",
+    "Active Macro automation identity 6ab8174517b48191b67ac472205a28d3 is absent from registry; registered replacement 6abb101aecf8819180edb577bb098364 is historical-disabled/manual-only.",
+    "The exact official RBI decision timestamp and direct RBI release URL were unavailable; 04:33 UTC is the earliest verified Reuters publication time and primary official statements are attributed through Reuters.",
+    "No synchronized live NQ/MNQ, DXY, GC/MGC or U.S. Treasury response was established; global transmission remains conditional."
+  ],
+  "execution_authorized": false
+}

@@ -1,0 +1,62 @@
+{
+  "schema_version": "icarus-research-run-v1",
+  "run_id": "omega-20261007T000050Z",
+  "lane": "omega",
+  "automation_id": "6abb57443c0c81919676c71d87493353",
+  "started_at_utc": "2026-10-07T00:00:04Z",
+  "completed_at_utc": "2026-10-07T00:00:50.984Z",
+  "outcome": "BLOCKED",
+  "substantive_work_performed": false,
+  "summary": "Hybrid contract validation failed before substantive work. Current registry v2/fabric 1.1.0 does not contain lane omega or automation_id 6abb57443c0c81919676c71d87493353. The only OMEGA lane is historical omega_fusion with automation_id 6abb1012ff408191a6da245488f87dc2 and MANUAL_GITHUB_REQUEST_ONLY dispatch. requests/omega/latest.json returned 404. No exact request_id, unresolved backlog, or required_result_path exists, so no specialist synthesis, brain event, or hybrid result was fabricated.",
+  "evidence": [
+    {
+      "type": "hybrid_registry",
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/registry.json",
+      "observed_blob_sha": "ce3e6cd23abaf28f913d1b62178416699587fa4a",
+      "url": "https://github.com/reppiks490/Icarus-engine/blob/main/automation_intelligence/hybrid_loop_fabric_v1/registry.json",
+      "observation": "Registry schema icarus-hybrid-loop-registry-v2/fabric 1.1.0 exposes four active lanes; lane omega and automation_id 6abb57443c0c81919676c71d87493353 are absent. omega_fusion is HISTORICAL_DISABLED under a different automation_id."
+    },
+    {
+      "type": "hybrid_contract",
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/CONTRACT.md",
+      "observed_blob_sha": "a2aa7059288144217691a419bb7e9e47289c2056",
+      "url": "https://github.com/reppiks490/Icarus-engine/blob/main/automation_intelligence/hybrid_loop_fabric_v1/CONTRACT.md",
+      "observation": "Contract requires exact lane/automation/repository validation and an immutable request identity before substantive work or result completion."
+    },
+    {
+      "type": "missing_request_pointer",
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/requests/omega/latest.json",
+      "url": "https://github.com/reppiks490/Icarus-engine/blob/main/automation_intelligence/hybrid_loop_fabric_v1/requests/omega/latest.json",
+      "observation": "GitHub returned 404 Not Found; no request_id, prior_unresolved_request_ids, or required_result_path could be read."
+    },
+    {
+      "type": "historical_migration_evidence",
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/contracts/historical_originals/omega_and_apex_scheduler_prompts_20261004.json",
+      "observed_revision": "00200f386bd54257c25b7cf09cc77c07b7ef7702",
+      "url": "https://github.com/reppiks490/Icarus-engine/commit/00200f386bd54257c25b7cf09cc77c07b7ef7702",
+      "observation": "Migration snapshot records the repository's historical OMEGA Fusion Core automation as 6abb1012ff408191a6da245488f87dc2, not this worker's automation ID."
+    },
+    {
+      "type": "prior_research_receipt",
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/mcp_interface/research_runs/omega/20261004T170455Z.json",
+      "observed_revision": "ce34b581f3ec985cd851ea1eca8791ab13e1180f",
+      "observed_blob_sha": "1a9045cd8157eaf0491f44bd43bf6d896288c63e",
+      "url": "https://github.com/reppiks490/Icarus-engine/commit/ce34b581f3ec985cd851ea1eca8791ab13e1180f",
+      "observation": "Latest accessible prior OMEGA research receipt was read; no later omega research-receipt commit was returned by connected GitHub commit search."
+    }
+  ],
+  "prior_receipt_path": "automation_intelligence/mcp_interface/research_runs/omega/20261004T170455Z.json",
+  "event_paths": [],
+  "blockers": [
+    "Current Hybrid Loop Fabric registry has no lane omega and no automation_id 6abb57443c0c81919676c71d87493353.",
+    "The only registered OMEGA lane is historical omega_fusion with a different automation_id and manual-only dispatch.",
+    "automation_intelligence/hybrid_loop_fabric_v1/requests/omega/latest.json does not exist on main.",
+    "Without an exact immutable request_id and required_result_path, hybrid completion cannot be formed truthfully."
+  ],
+  "execution_authorized": false
+}

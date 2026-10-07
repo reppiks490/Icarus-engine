@@ -1,0 +1,92 @@
+{
+  "schema_version": "icarus-research-run-v1",
+  "run_id": "20261007T155041Z_daedalus",
+  "lane": "daedalus",
+  "automation_id": "6ab8177918b48191a97e56c44b57d2c5",
+  "started_at_utc": "2026-10-07T15:48:27Z",
+  "completed_at_utc": "2026-10-07T15:50:41.155Z",
+  "outcome": "MATERIAL_DELTA",
+  "substantive_work_performed": true,
+  "summary": "Audited the first material Flow persistence after the prior HIGH DAEDALUS temporal-witness recurrence. The new Flow event and receipt again reuse one interval for four distinct BTC observations and another for three Massive futures requests without batch identity or membership. Repository search found the prior remediation only in audit/receipt artifacts and no live validator/test path. NET_NEW_DELTA: this immediate recurrence falsifies any claim that DAEDALUS/AEGIS findings operate as an admission gate; persistence is reporting-only on this surface. DAEDALUS is DEGRADED and AEGIS is BLOCKING. The market normalization statistics are not declared numerically false.",
+  "evidence": [
+    {
+      "type": "hybrid_registry",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/registry.json",
+      "blob_sha": "ce3e6cd23abaf28f913d1b62178416699587fa4a",
+      "result": "Validated before substantive work. The supplied automation_id is absent; daedalus_prime is historical-disabled under automation_id 6abb103472608191b72f9eaa522b772b."
+    },
+    {
+      "type": "hybrid_contract",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/CONTRACT.md",
+      "blob_sha": "a2aa7059288144217691a419bb7e9e47289c2056",
+      "result": "Validated before substantive work. Exact request identity is mandatory and liveness artifacts are not completion."
+    },
+    {
+      "type": "prior_research_receipt",
+      "path": "automation_intelligence/mcp_interface/research_runs/daedalus/20261007T145718Z_daedalus.json",
+      "blob_sha": "161b529876cb50c948f5c91f72c415e35284b07c",
+      "comparison": "The prior audit established a second shared-interval recurrence and required an automatic validator; it left DAEDALUS DEGRADED and AEGIS BLOCKING."
+    },
+    {
+      "type": "prior_material_audit_event",
+      "path": "automation_intelligence/mcp_interface/events/20261007T145636Z_daedalus_flow_shared_interval_temporal_regression.json",
+      "blob_sha": "526bd514b5e05049d321208d680d9c0c3fb0859b",
+      "result": "Recorded HIGH-severity required remediation before the audited Flow artifact was created."
+    },
+    {
+      "type": "audited_flow_event",
+      "path": "automation_intelligence/mcp_interface/events/20261007T152752Z_flow_btc_joint_burst_normalized.json",
+      "blob_sha": "fcbaa91795870690210a796414678921c9685e8e",
+      "result": "The first later material Flow event repeats 15:26:11.853Z–15:26:13.930Z across Bybit spot, Bybit linear, Twelve Data, and Bybit orderbook, and one interval across NQZ6/GCZ6/SIZ6; no batch identity or membership exists."
+    },
+    {
+      "type": "audited_flow_receipt",
+      "path": "automation_intelligence/mcp_interface/research_runs/flow/20261007T152833Z_flow.json",
+      "blob_sha": "05e81ce6549cb8adfd7a60bd819bf7a65976c977",
+      "result": "The exact-read-back receipt repeats the same intervals; broad completed-bar ordering remains valid but per-response availability is unattested."
+    },
+    {
+      "type": "negative_code_search",
+      "queries": [
+        "20261007T145636Z-daedalus-flow-shared-interval-temporal-regression",
+        "rejecting unexplained shared witnesses",
+        "mcp event validator temporal witness",
+        "batch_capture_id"
+      ],
+      "result": "The prior event ID occurs only in its immutable event; remediation and validator terms return audit events/research receipts only. No live validator, test, workflow, or Flow event-construction enforcement path was found."
+    },
+    {
+      "type": "contract_check",
+      "path": "automation_intelligence/mcp_interface/contract.json",
+      "blob_sha": "991b157fd82b3dd9e7e49356fefb06dd89c22579",
+      "result": "The active v1 contract requires generic event fields only and does not require provider-query retrieval witnesses, explicit batch membership, or causal-order validation."
+    },
+    {
+      "type": "material_audit_event",
+      "path": "automation_intelligence/mcp_interface/events/20261007T155016Z_daedalus_assurance_feedback_non_enforcement.json",
+      "blob_sha": "a81312646edb80e4485e2dcfa42295519db898ef",
+      "commit_sha": "e22d2ab7d918d6a5596731db5f8908dc6ebadcd6",
+      "exact_readback_verified": true
+    }
+  ],
+  "prior_receipt_path": "automation_intelligence/mcp_interface/research_runs/daedalus/20261007T145718Z_daedalus.json",
+  "event_paths": [
+    "automation_intelligence/mcp_interface/events/20261007T155016Z_daedalus_assurance_feedback_non_enforcement.json"
+  ],
+  "blockers": [
+    "HYBRID_RESULT UNVERIFIED: automation_intelligence/hybrid_loop_fabric_v1/requests/daedalus/latest.json is absent on main, so no exact request_id or required_result_path can be preserved.",
+    "The hybrid registry does not contain automation_id 6ab8177918b48191a97e56c44b57d2c5; daedalus_prime is historical-disabled under a different ID.",
+    "Raw provider invocation logs and monotonic-clock attestations were unavailable; numerical market claims were not independently re-fetched in this control-plane audit."
+  ],
+  "subsystem_assessment": {
+    "daedalus": {
+      "status": "DEGRADED",
+      "finding": "The audit finding is durably recorded but not wired to a live admission gate; the immediate next Flow event repeated the forbidden evidence shape."
+    },
+    "aegis": {
+      "status": "BLOCKING",
+      "finding": "No rejection oracle prevents unexplained shared temporal witnesses from being persisted after a HIGH-severity recurrence finding."
+    }
+  },
+  "execution_authorized": false
+}

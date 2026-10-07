@@ -1,0 +1,96 @@
+{
+  "schema_version": "icarus-mcp-event-v1",
+  "event_id": "20261007T151550Z-macro-us-near-term-inflation-expectations-reaccelerate",
+  "at_utc": "2026-10-07T15:15:50Z",
+  "recovered_at_utc": "2026-10-07T16:16:27.010Z",
+  "category": "EVOLUTION",
+  "status": "MATERIAL_DELTA",
+  "severity": "HIGH",
+  "source": "MACRO_AUTOMATION",
+  "summary": "Recovered a material finding from the blocked 2026-10-07T15:13:32Z Macro run. The New York Fed September Survey of Consumer Expectations raised median one-year inflation expectations to 3.9% from 3.6%, the highest since May 2023; three-year expectations rose to 3.3% from 3.2%, while five-year expectations remained 3.0%. This supports REACCELERATING_NEAR_TERM_WITH_LONG_RUN_ANCHOR_INTACT, not full de-anchoring. Long-duration Treasury yields simultaneously remained near 24-year highs, increasing the relevance of the expectation shift for discount-rate assumptions.",
+  "net_new_delta": "A verified consumer-inflation-expectations state change: near-term expectations reaccelerated materially while the five-year anchor held.",
+  "surface": [
+    "ORACLE U.S. inflation-expectations and rates regime",
+    "SUPERMESH-X official-source routing and recovery provenance",
+    "Treasury duration, DXY, NQ/MNQ, GC/MGC, and energy-inflation transmission"
+  ],
+  "paths": [
+    "automation_intelligence/mcp_interface/research_runs/macro/20261007T141956Z_macro.json",
+    "automation_intelligence/hybrid_loop_fabric_v1/registry.json",
+    "automation_intelligence/hybrid_loop_fabric_v1/CONTRACT.md"
+  ],
+  "evidence": [
+    {
+      "classification": "FACT",
+      "source": "Federal Reserve Bank of New York",
+      "event_time": "September 2026 survey",
+      "published_at_utc": "2026-10-07T15:00:00Z",
+      "retrieved_at_utc": "2026-10-07T16:16:27.010Z",
+      "url": "https://www.newyorkfed.org/microeconomics/sce",
+      "finding": "Median inflation expectations increased 0.3 percentage point to 3.9% at one year and 0.1 point to 3.3% at three years; five-year expectations were unchanged at 3.0%. The one-year reading is the highest since May 2023."
+    },
+    {
+      "classification": "SOURCE_CLAIM",
+      "source": "Reuters reporting the New York Fed survey",
+      "source_time_utc": "2026-10-07T15:01:25Z",
+      "original_retrieved_at_utc": "2026-10-07T15:16:24.275Z",
+      "url": "https://www.reuters.com/world/us/ny-fed-september-survey-finds-public-expecting-more-near-term-inflation-2026-10-07/",
+      "finding": "Households expected higher price gains across gas, food, rent, medical care, and college costs and downgraded current and future finances; labor-market expectations were more constructive."
+    },
+    {
+      "classification": "FACT",
+      "source": "Reuters market report",
+      "source_time_utc": "2026-10-07T10:01:28Z",
+      "original_retrieved_at_utc": "2026-10-07T15:16:24.275Z",
+      "url": "https://www.reuters.com/business/us-30-year-bond-yield-hits-fresh-24-year-high-2026-10-07/",
+      "finding": "The U.S. 30-year Treasury yield touched 5.7041%, a 24-year high, with global yields pressured by inflation and fiscal concerns."
+    },
+    {
+      "classification": "FACT",
+      "source": "Reuters reporting EIA data",
+      "source_time_utc": "2026-10-07T14:36:00Z",
+      "original_retrieved_at_utc": "2026-10-07T15:16:24.275Z",
+      "url": "https://www.reuters.com/business/energy/us-crude-stocks-distillate-inventories-fall-gasoline-inventories-rise-eia-says-2026-10-07/",
+      "finding": "Crude inventories fell 3.2 million barrels, gasoline rose 0.4 million, and distillates were little changed; mixed products and muted price response did not establish a separate oil-inventory regime."
+    },
+    {
+      "classification": "MODEL_INFERENCE",
+      "source": "MACRO_AUTOMATION",
+      "finding": "Update research context to REACCELERATING_NEAR_TERM_WITH_LONG_RUN_ANCHOR_INTACT. The one-year rise matters for nominal-rate and equity-duration assumptions, but the unchanged five-year reading does not support full expectation de-anchoring."
+    }
+  ],
+  "affected_instruments": [
+    "U.S. Treasury duration",
+    "NQ/MNQ",
+    "DXY/USD",
+    "GC/MGC",
+    "Brent/WTI and refined products",
+    "broad U.S. equity indices"
+  ],
+  "conflicts": [
+    "Five-year expectations remained at 3.0%, contradicting a claim of broad long-run de-anchoring.",
+    "The Treasury selloff predates the survey release and also reflects fiscal, oil, issuance, and term-premium concerns; causality cannot be assigned to the survey alone.",
+    "Mixed EIA product inventories and muted incremental oil response do not establish a separate inventory shock."
+  ],
+  "unknowns": [
+    "Persistence of the one-year expectation increase",
+    "FOMC interpretation in the pending September meeting minutes",
+    "Decomposition of long yields between policy expectations, inflation compensation, term premium, and fiscal premium",
+    "Magnitude of transmission into realized inflation and consumer spending"
+  ],
+  "confidence": {
+    "near_term_reacceleration": "HIGH",
+    "long_run_deanchoring": "LOW",
+    "survey_to_market_causality": "LOW"
+  },
+  "next_decisive_check": "Read the September FOMC minutes after official publication at 18:00 UTC and compare committee inflation-risk language with the New York Fed survey, then observe the 10-year auction and subsequent curve response.",
+  "oracle": {
+    "status": "MATERIAL_DELTA",
+    "finding": "Promote REACCELERATING_NEAR_TERM_WITH_LONG_RUN_ANCHOR_INTACT; do not infer full de-anchoring or silently retune strategy parameters."
+  },
+  "supermesh_x": {
+    "status": "MATERIAL_DELTA",
+    "finding": "The official New York Fed page now independently confirms the previously Reuters-sourced survey figures; preserve the original failed-run timestamps and this recovery time separately."
+  },
+  "execution_authorized": false
+}

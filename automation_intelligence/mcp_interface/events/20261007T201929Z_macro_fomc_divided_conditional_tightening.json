@@ -1,0 +1,105 @@
+{
+  "schema_version": "icarus-mcp-event-v1",
+  "event_id": "20261007T201929Z-macro-fomc-divided-conditional-tightening",
+  "at_utc": "2026-10-07T20:19:29.260Z",
+  "category": "EVOLUTION",
+  "status": "MATERIAL_DELTA",
+  "severity": "HIGH",
+  "source": "MACRO_AUTOMATION",
+  "summary": "The September 15-16 FOMC minutes convert the prior inflation-expectations alert into a divided, data-dependent tightening regime. All participants supported the September 25 bp hike, most judged another increase likely appropriate by year-end, and several viewed the current rate as not restrictive or only mildly restrictive. But the rationale split between risk-management insurance against supply shocks and a modal need to restrain demand. Markets now price an October pause with a December hike still likely. The durable research state is DIVIDED_CONDITIONAL_TIGHTENING_WITH_LONG_END_STRESS, not a mechanical every-meeting hiking cycle.",
+  "net_new_delta": "Official minutes released after the prior receipt show broad support for one more 2026 hike but no consensus on urgency or mechanism; the immediate policy-path assumption shifts from generic hawkishness to October-pause/December-hike conditionality while long-duration stress remains elevated.",
+  "surface": [
+    "ORACLE Federal Reserve reaction function and inflation-regime state",
+    "SUPERMESH-X official-minute provenance and cross-source market reconciliation",
+    "U.S. Treasury duration and curve assumptions",
+    "DXY/USD, NQ/MNQ, GC/MGC, BTC/USD, and broad U.S. equity indices"
+  ],
+  "paths": [
+    "automation_intelligence/mcp_interface/research_runs/macro/20261007T161716Z_macro.json",
+    "automation_intelligence/mcp_interface/events/20261007T151550Z_macro_us_near_term_inflation_expectations_reaccelerate.json",
+    "automation_intelligence/hybrid_loop_fabric_v1/registry.json",
+    "automation_intelligence/hybrid_loop_fabric_v1/CONTRACT.md"
+  ],
+  "evidence": [
+    {
+      "classification": "FACT",
+      "source": "Federal Reserve Board",
+      "event_time": "2026-09-15/2026-09-16",
+      "published_at_utc": "2026-10-07T18:00:00Z",
+      "retrieved_at_utc": "2026-10-07T20:19:29.260Z",
+      "url": "https://www.federalreserve.gov/monetarypolicy/fomcminutes20260916.htm",
+      "finding": "All participants supported raising the federal funds target range 25 basis points to 3.75%-4.00%; most assessed another increase would likely be appropriate by year-end. Several viewed the current rate as not restrictive or only mildly restrictive. The staff raised its 2026-2028 inflation forecast, strengthened its growth outlook, and judged inflation risks skewed upward."
+    },
+    {
+      "classification": "SOURCE_CLAIM",
+      "source": "Reuters",
+      "source_time_utc": "2026-10-07T18:00:00Z",
+      "retrieved_at_utc": "2026-10-07T20:19:29.260Z",
+      "url": "https://www.reuters.com/business/fed-policymakers-divided-over-rate-hike-logic-september-minutes-show-2026-10-07/",
+      "finding": "Policymakers split between a precautionary hike to prevent energy and other supply shocks from spreading and a more restrictive stance aimed at demand-driven inflation; investors expected an October hold and a December hike."
+    },
+    {
+      "classification": "FACT",
+      "source": "Reuters/CME FedWatch",
+      "source_time_utc": "2026-10-07T19:14:00Z",
+      "retrieved_at_utc": "2026-10-07T20:19:29.260Z",
+      "url": "https://www.reuters.com/world/asia-pacific/dollar-holds-losses-markets-await-fed-minutes-speakers-2026-10-07/",
+      "finding": "The October hike probability was 19.4%, down from about 38% a week earlier, while the December hike probability was 83%; the dollar index was up 0.32% at 102.24."
+    },
+    {
+      "classification": "FACT",
+      "source": "Reuters market close",
+      "source_time_utc": "2026-10-07T20:36:00Z",
+      "retrieved_at_utc": "2026-10-07T20:19:29.260Z",
+      "url": "https://www.reuters.com/business/wall-st-futures-slip-yields-oil-rebound-fed-minutes-focus-2026-10-07/",
+      "finding": "Long-dated Treasury yields remained under pressure, the 30-year yield touched a 24-year high, and U.S. equities closed modestly lower; crude later reversed earlier gains after the IEA accelerated stock releases."
+    },
+    {
+      "classification": "FACT",
+      "source": "Structured market quotes",
+      "event_time": "2026-10-07T20:00:00Z/2026-10-07T20:04:05Z",
+      "retrieved_at_utc": "2026-10-07T20:19:29.260Z",
+      "finding": "QQQ -0.24%, TLT -0.15%, UUP +0.48%, GLD -1.68%, and BTC/USD -2.47% on the day. These are contemporaneous cross-asset observations, not proof that the minutes alone caused the moves."
+    },
+    {
+      "classification": "MODEL_INFERENCE",
+      "source": "MACRO_AUTOMATION",
+      "finding": "Promote DIVIDED_CONDITIONAL_TIGHTENING_WITH_LONG_END_STRESS. The minutes strengthen the case for another hike in 2026 while weakening any assumption of automatic consecutive hikes; long-end stress remains driven by overlapping inflation, energy, issuance, fiscal, and term-premium forces."
+    }
+  ],
+  "affected_instruments": [
+    "U.S. Treasury curve and duration",
+    "NQ/MNQ",
+    "DXY/USD",
+    "GC/MGC",
+    "BTC/USD",
+    "broad U.S. equity indices",
+    "Brent/WTI and refined products"
+  ],
+  "conflicts": [
+    "A unanimous September vote masks disagreement over whether policy is countering temporary supply shocks or persistent demand inflation.",
+    "Most participants favored another hike by year-end, but market pricing assigns less than 20% to October and high probability to December.",
+    "Long-end yields rose even as near-term October hike odds fell, consistent with fiscal, issuance, term-premium, energy, and inflation channels beyond the policy path."
+  ],
+  "unknowns": [
+    "Whether September CPI confirms broader demand inflation or easing underlying pressure",
+    "Whether the October 27-28 meeting pauses as markets currently expect",
+    "How much of the long-end selloff is inflation compensation versus real term premium and fiscal supply",
+    "Persistence of the New York Fed one-year inflation-expectations increase"
+  ],
+  "confidence": {
+    "official_policy_path_signal": "HIGH",
+    "october_pause_december_hike_state": "MEDIUM_HIGH",
+    "minutes_to_cross_asset_causality": "LOW"
+  },
+  "next_decisive_check": "Compare the September CPI release and intervening Fed communication with the minutes' supply-shock versus demand-inflation split; then test whether October hike odds, the 2s10s/5s30s curves, and DXY move coherently before the October 27-28 FOMC meeting.",
+  "oracle": {
+    "status": "MATERIAL_DELTA",
+    "finding": "Promote DIVIDED_CONDITIONAL_TIGHTENING_WITH_LONG_END_STRESS: another 2026 hike is broadly supported, but timing depends on evidence that inflation is broadening beyond energy and other supply shocks."
+  },
+  "supermesh_x": {
+    "status": "MATERIAL_DELTA",
+    "finding": "The official minutes now supersede pre-release interpretation; Reuters and market quotes reconcile an October-pause/December-hike path with continued long-end stress, while causality remains explicitly unassigned."
+  },
+  "execution_authorized": false
+}

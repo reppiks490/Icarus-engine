@@ -1,0 +1,80 @@
+{
+  "schema_version": "icarus-mcp-event-v1",
+  "event_id": "20261007T065149633Z-daedalus-flow-temporal-repair-second-run-verified",
+  "at_utc": "2026-10-07T06:51:49.633Z",
+  "category": "AUDIT",
+  "status": "VERIFIED",
+  "severity": "MEDIUM",
+  "summary": "A second consecutive FLOW research receipt preserves the provider-specific temporal-lineage repair previously verified by DAEDALUS. The newest receipt independently brackets Bybit spot, Bybit linear, Twelve Data, and Bybit orderbook calls with local UTC retrieval intervals; each completed 05:00 UTC bar was available by 06:00 UTC before retrieval began; every retrieval ended before assertion completion; and the Bybit orderbook source timestamp remained inside its own retrieval interval. This materially strengthens the repair from a one-run observation to repeated operational behavior. System-wide assurance remains DEGRADED because strict-v1 still does not require these witnesses or reject missing, borrowed, inverted, or post-assertion timestamps.",
+  "surface": [
+    "FLOW/ARGUS/NEXUS temporal provenance across consecutive runs",
+    "DAEDALUS repair-durability assurance",
+    "Strict-v1 temporal-lineage enforcement gap"
+  ],
+  "source": "DAEDALUS_AUTOMATION",
+  "paths": [
+    "automation_intelligence/mcp_interface/research_runs/flow/20261007T053502818Z_flow.json",
+    "automation_intelligence/mcp_interface/research_runs/flow/20261007T063403976Z_flow.json",
+    "automation_intelligence/mcp_interface/events/20261007T055902600Z_daedalus_flow_provider_retrieval_witness_repair_verified.json",
+    "automation_intelligence/mcp_interface/contract.json"
+  ],
+  "evidence": [
+    {
+      "classification": "FACT",
+      "path": "automation_intelligence/mcp_interface/research_runs/flow/20261007T063403976Z_flow.json",
+      "blob_sha": "84b396aa55470f8455eb0414364ce6e772831dbd",
+      "finding": "The newest Flow receipt stores separate retrieval start/end fields for Bybit spot, Bybit linear, Twelve Data, and Bybit orderbook. All three completed 05:00 UTC bars record availability_time_utc=2026-10-07T06:00:00Z, earlier than retrieval_start_utc=2026-10-07T06:33:07.915Z; every retrieval ends before completed_at_utc=2026-10-07T06:34:03.976Z."
+    },
+    {
+      "classification": "VERIFIED",
+      "path": "automation_intelligence/mcp_interface/research_runs/flow/20261007T063403976Z_flow.json",
+      "blob_sha": "84b396aa55470f8455eb0414364ce6e772831dbd",
+      "finding": "The Bybit orderbook source_time_utc=2026-10-07T06:33:08.753Z lies inside its own retrieval interval 06:33:07.915-06:33:08.973Z and is not reused as the timestamp for independent Twelve Data evidence."
+    },
+    {
+      "classification": "FACT",
+      "path": "automation_intelligence/mcp_interface/research_runs/flow/20261007T053502818Z_flow.json",
+      "blob_sha": "0123583f3f47ba647e1e2035b863bb7536c936cd",
+      "finding": "The preceding Flow receipt already satisfied the same causal ordering with four provider-specific retrieval intervals, making the newest receipt the second consecutive operational instance."
+    },
+    {
+      "classification": "FACT",
+      "path": "automation_intelligence/mcp_interface/events/20261007T055902600Z_daedalus_flow_provider_retrieval_witness_repair_verified.json",
+      "blob_sha": "6e6a9921f0ac792a5ebfc56aae99b92191caacfe",
+      "finding": "The prior DAEDALUS event explicitly limited its VERIFIED finding to a single run and required subsequent enforcement or repeated evidence before broader confidence."
+    },
+    {
+      "classification": "FACT",
+      "path": "automation_intelligence/mcp_interface/contract.json",
+      "blob_sha": "991b157fd82b3dd9e7e49356fefb06dd89c22579",
+      "finding": "Strict-v1 still requires only the event envelope fields and does not require per-evidence event time, availability/completion time, provider time, or retrieval time."
+    },
+    {
+      "classification": "MODEL_INFERENCE",
+      "finding": "Repeated operational compliance lowers the probability that the earlier Flow fix was a one-off manual artifact, but it does not establish automatic enforcement or repository-wide causal-time safety."
+    }
+  ],
+  "conflicts": [],
+  "limitations": [
+    "The two compliant Flow receipts are operational artifacts, not evidence of an automatic validator.",
+    "The newest calls were launched concurrently, so several retrieval_start_utc values are identical; their per-call response end times and payload identities remain distinct.",
+    "Raw connector logs and monotonic-clock measurements were unavailable; the audit relies on exact persisted receipt bytes and ordering checks.",
+    "The current DAEDALUS automation remains absent from registry v1.1.0 and has no valid hybrid request identity."
+  ],
+  "required_remediation": [
+    "Version the evidence contract to require event/availability, provider/source, retrieval-start, retrieval-end, and assertion timestamps for time-sensitive evidence.",
+    "Reject completed-bar evidence unless availability_time <= retrieval_start <= retrieval_end <= assertion completion.",
+    "Reject provider timestamps materially outside their retrieval interval under documented skew tolerances.",
+    "Add the prior borrowed-clock defect and historical timestamp inversions as permanent negative fixtures."
+  ],
+  "next_independent_verification_target": "Inspect the Flow event-construction implementation or add a contract validator test proving that missing, borrowed, inverted, and post-assertion temporal witnesses are rejected automatically.",
+  "daedalus": {
+    "status": "VERIFIED",
+    "finding": "Exact Git blobs prove the Flow temporal repair persisted across two consecutive research receipts with correct causal ordering."
+  },
+  "aegis": {
+    "status": "DEGRADED",
+    "finding": "The repeated repair remains procedural: strict-v1 still permits future evidence to omit or borrow timestamps, and no automatic rejection test is evidenced."
+  },
+  "execution_authorized": false
+}

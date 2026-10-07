@@ -1,0 +1,74 @@
+{
+  "schema_version": "icarus-mcp-event-v1",
+  "event_id": "20261007T055902600Z-daedalus-flow-provider-retrieval-witness-repair-verified",
+  "at_utc": "2026-10-07T05:59:02.600Z",
+  "category": "AUDIT",
+  "status": "VERIFIED",
+  "severity": "MEDIUM",
+  "summary": "The newest FLOW research receipt operationally repairs the cross-provider retrieval-witness defect identified in the prior DAEDALUS audit. Bybit spot, Bybit linear, Twelve Data, and Bybit orderbook calls each carry a distinct local UTC retrieval start/end interval; completed 04:00 BTC bars ended before their retrieval intervals; all retrieval intervals end before the research assertion; and the Bybit orderbook source timestamp is preserved separately inside its own retrieval interval. This verifies temporal attestation for that single run. It does not prove system-wide enforcement because strict-v1 still does not require these fields and no durable temporal-lineage validator or regression fixtures were evidenced.",
+  "surface": [
+    "FLOW/ARGUS/NEXUS provider-specific retrieval provenance",
+    "DAEDALUS temporal-lineage assurance",
+    "Strict-v1 research-event contract and validation coverage"
+  ],
+  "source": "DAEDALUS_AUTOMATION",
+  "paths": [
+    "automation_intelligence/mcp_interface/research_runs/flow/20261007T053502818Z_flow.json",
+    "automation_intelligence/mcp_interface/events/20261007T045433326Z_daedalus_active_flow_cross_provider_temporal_anchor_gap.json",
+    "automation_intelligence/mcp_interface/contract.json"
+  ],
+  "evidence": [
+    {
+      "classification": "FACT",
+      "path": "automation_intelligence/mcp_interface/research_runs/flow/20261007T053502818Z_flow.json",
+      "blob_sha": "0123583f3f47ba647e1e2035b863bb7536c936cd",
+      "finding": "The receipt contains four provider-query records with four distinct retrieved_at_start_utc/retrieved_at_end_utc intervals: Bybit spot 05:33:43.427-05:33:44.790Z, Bybit linear 05:33:44.790-05:33:45.970Z, Twelve Data 05:33:45.970-05:33:48.954Z, and Bybit orderbook 05:33:48.954-05:33:49.400Z."
+    },
+    {
+      "classification": "VERIFIED",
+      "finding": "For Bybit spot, Bybit linear, and Twelve Data, completed_bar_end_utc=2026-10-07T05:00:00Z is earlier than each local retrieval interval. Every retrieval interval is monotonic and ends before assertion completion at 2026-10-07T05:35:02.818Z."
+    },
+    {
+      "classification": "VERIFIED",
+      "finding": "The Bybit orderbook source_time_utc=2026-10-07T05:33:49.153Z is stored separately from retrieved_at and falls inside its local retrieval interval 05:33:48.954-05:33:49.400Z; it is no longer reused as the retrieval witness for Twelve Data or K-line evidence."
+    },
+    {
+      "classification": "FACT",
+      "path": "automation_intelligence/mcp_interface/events/20261007T045433326Z_daedalus_active_flow_cross_provider_temporal_anchor_gap.json",
+      "blob_sha": "4402e9e958b9742cc0feb125e302a526341b5b98",
+      "finding": "The prior audit required provider-specific local retrieval capture, separation of provider/source time, and completed-bar ordering checks. The newest Flow receipt satisfies those three operational requirements."
+    },
+    {
+      "classification": "FACT",
+      "path": "automation_intelligence/mcp_interface/contract.json",
+      "blob_sha": "991b157fd82b3dd9e7e49356fefb06dd89c22579",
+      "finding": "The strict-v1 contract still does not require per-evidence event_time, completed_bar_end, provider_time, or retrieved_at fields, so the repaired practice is not yet enforced repository-wide."
+    },
+    {
+      "classification": "MODEL_INFERENCE",
+      "finding": "The previous active cross-provider timing defect is resolved for Flow run flow-20261007T053502818Z, but the assurance state remains DEGRADED at system scope until a validator and regression fixtures reject missing, borrowed, inverted, or post-assertion temporal witnesses."
+    }
+  ],
+  "conflicts": [],
+  "limitations": [
+    "Verification is based on the persisted receipt's exact content and causal-order checks; raw connector runtime logs were not independently available.",
+    "Local UTC wall-clock intervals were preserved, but no monotonic-clock durations or connector implementation artifact were persisted.",
+    "The prior requirement to add the active event and historical inversions as regression fixtures remains unverified."
+  ],
+  "required_remediation": [
+    "Promote provider-specific temporal fields from optional practice into a versioned event/evidence contract.",
+    "Implement a validator enforcing completed_bar_end <= retrieved_at_start <= retrieved_at_end <= assertion_created_at, with narrowly documented skew rules for provider timestamps.",
+    "Add the prior cross-provider borrowed-clock event and historical inversion cases as permanent negative fixtures.",
+    "Preserve independent-source counts separately from independent temporal-attestation counts."
+  ],
+  "next_independent_verification_target": "Inspect the connector or event-construction implementation and tests to determine whether per-provider retrieval capture and causal-order rejection are enforced automatically rather than performed manually for one receipt.",
+  "daedalus": {
+    "status": "VERIFIED",
+    "finding": "Flow run flow-20261007T053502818Z exact-read-back evidence verifies distinct per-provider retrieval windows, correct completed-bar ordering, and separate provider-time storage."
+  },
+  "aegis": {
+    "status": "DEGRADED",
+    "finding": "The repair is receipt-local and not contract-enforced; a future strict-v1 event can still omit or borrow temporal witnesses unless a validator and regression fixtures are added."
+  },
+  "execution_authorized": false
+}

@@ -1,0 +1,107 @@
+{
+  "schema_version": "icarus-api-value-audit-v1",
+  "audited_at_utc": "2026-10-07T21:24:32.167Z",
+  "execution_authorized": false,
+  "scope": "Configured key references and persisted provider receipts in Icarus-engine and Icarus; fresh FMP/Massive/Twelve connector calls. Not an account-wide secret inventory.",
+  "secret_values_stored": false,
+  "all_keys_confirmed": false,
+  "providers": [
+    {
+      "provider": "Databento primary",
+      "credential": "DATABENTO_API_KEY",
+      "status": "WORKING_WITH_LICENSE_GAPS",
+      "value": "32 futures bar feeds succeeded in latest manifest; NQ depth sweep maintained",
+      "evidence": "automation_intelligence/cl_lab/feeds_manifest.json",
+      "evidence_at": "2026-10-07T19:31:17.797324+00:00",
+      "limits": "DX/VXM licensing failures; bar completion at 11:05 UTC, not current real-time"
+    },
+    {
+      "provider": "Databento secondary",
+      "credential": "DATABENTO_API_KEY_SECONDARY",
+      "status": "CONNECTED_CACHED_RESEARCH",
+      "value": "39 cached index depth slices; authenticated cost estimates support budget decisions",
+      "evidence": "automation_intelligence/cl_lab/databento_depth_corpus_index.json",
+      "evidence_at": "2026-10-07T20:41:55.450451+00:00",
+      "limits": "Corpus budget only $0.02732 remaining; latest run downloaded zero slices; shared NQ corpus does not prove independent second capture"
+    },
+    {
+      "provider": "Databento third",
+      "credential": "DATABENTO_API_KEY_THIRD",
+      "status": "CONNECTED_CACHED_RESEARCH",
+      "value": "52 cached diversifier depth slices; authenticated cost estimates support budget decisions",
+      "evidence": "automation_intelligence/cl_lab/databento_depth_corpus_diversifier.json",
+      "evidence_at": "2026-10-07T20:44:02.806255+00:00",
+      "limits": "Corpus budget only $0.01117 remaining; latest run downloaded zero slices"
+    },
+    {
+      "provider": "FRED/ALFRED",
+      "credential": "FRED_API_KEY",
+      "status": "WORKING_RESEARCH",
+      "value": "39 macro series, including point-in-time vintages for release-sensitive research",
+      "evidence": "automation_intelligence/cl_lab/fred_alfred_manifest.json",
+      "evidence_at": "2026-10-07T19:30:31.727377+00:00"
+    },
+    {
+      "provider": "EODHD",
+      "credential": "EODHD_API_TOKEN",
+      "status": "WORKING_WITH_PLAN_GAPS",
+      "value": "251 daily bars per 10 equities/ETFs; returns and volatility in external fabric used by cl_lab/run.py",
+      "evidence": "automation_intelligence/cl_lab/external_data_fabric.json",
+      "evidence_at": "2026-10-07T01:48:33.540741+00:00",
+      "limits": "Ticks HTTP 403, denied"
+    },
+    {
+      "provider": "FMP",
+      "credential": "FMP_API_KEY",
+      "status": "WORKING_RESEARCH_AND_CONNECTOR",
+      "value": "37 earnings-calendar rows and 4 focus events plus profiles; fresh SPY quote connector success",
+      "evidence": "automation_intelligence/cl_lab/external_data_fabric.json",
+      "evidence_at": "2026-10-07T01:48:33.540741+00:00"
+    },
+    {
+      "provider": "Tiingo",
+      "credential": "TIINGO_API_TOKEN",
+      "status": "WORKING_WITH_PLAN_GAPS",
+      "value": "Long-run daily history for 10 symbols and 390 five-minute bars for 6 symbols; volatility/ranges in external fabric",
+      "evidence": "automation_intelligence/cl_lab/external_data_fabric.json",
+      "evidence_at": "2026-10-07T01:48:33.540741+00:00",
+      "limits": "News HTTP 403, denied"
+    },
+    {
+      "provider": "Massive",
+      "credential": "CONNECTOR_MANAGED",
+      "status": "CONNECTOR_WORKING_GITHUB_UNWIRED",
+      "value": "Fresh SPY previous-day OHLC provides independent reconciliation with Twelve/FMP",
+      "evidence": "Connected Massive /v2/aggs/ticker/SPY/prev audit call",
+      "limits": "No callable credential export or GitHub secret wiring observed; cannot promise scheduled use"
+    },
+    {
+      "provider": "Twelve Data",
+      "credential": "CONNECTOR_MANAGED",
+      "status": "CONNECTOR_WORKING_GITHUB_UNWIRED",
+      "value": "Fresh 3 daily SPY bars and quota check successful; previous close 779.09 agrees with Massive",
+      "evidence": "Connected Twelve get_time_series and get_api_usage audit calls",
+      "limits": "No callable credential export or GitHub secret wiring observed; cannot promise scheduled use"
+    },
+    {
+      "provider": "OpenAI",
+      "credential": "OPENAI_API_KEY",
+      "status": "NOT_REQUIRED_NOT_PROBED",
+      "value": "Paid-model transport exists but replacement deliberately uses runner-local inference",
+      "limits": "Presence/current validity unknown; no paid call enabled"
+    },
+    {
+      "provider": "Anthropic",
+      "credential": "ANTHROPIC_API_KEY",
+      "status": "OPTIONAL_ADVISORY_NOT_PROBED",
+      "value": "Advisory implementation reference only",
+      "limits": "Presence/current validity and active use unknown; no paid call enabled"
+    }
+  ],
+  "research_runtime": {
+    "chatgpt_enabled_automations": 0,
+    "paid_model_calls": 0,
+    "model": "Qwen3-1.7B on GitHub runner",
+    "schedule": "41 * * * *"
+  }
+}

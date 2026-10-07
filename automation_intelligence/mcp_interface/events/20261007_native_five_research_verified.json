@@ -1,0 +1,53 @@
+{
+  "schema_version": "icarus-mcp-event-v1",
+  "event_id": "20261007-native-five-research-verified",
+  "at_utc": "2026-10-07T21:25:25.849Z",
+  "category": "REPAIR",
+  "status": "VERIFIED",
+  "severity": "MEDIUM",
+  "source": "OMEGA_AUTOMATION",
+  "surface": [
+    "Research automation",
+    "MCP / Automation",
+    "Provider audit"
+  ],
+  "summary": "Five ChatGPT research schedules remain paused; actual GitHub run 37688973128 persisted substantive measurements and grounded local next-test selection for all five lanes. API audit reports productive providers and remaining gaps.",
+  "paths": [
+    "automation_intelligence/native_research_v1/latest.json",
+    "automation_intelligence/native_research_v1/api_value_audit_20261007.json",
+    "automation_intelligence/native_research_v1/cycles/native-37688973128-1/aion.json",
+    "automation_intelligence/native_research_v1/cycles/native-37688973128-1/daedalus.json",
+    "automation_intelligence/native_research_v1/cycles/native-37688973128-1/flow.json",
+    "automation_intelligence/native_research_v1/cycles/native-37688973128-1/macro.json",
+    "automation_intelligence/native_research_v1/cycles/native-37688973128-1/omega.json"
+  ],
+  "evidence": [
+    {
+      "classification": "FACT",
+      "workflow_run_id": 37688973128,
+      "conclusion": "success",
+      "code_revision": "50a102bbc439dcd12847e6fcfbc66fd936053300",
+      "interpretation_policy": "grounded-next-test-v1",
+      "substantive_lanes": 5,
+      "grounded_selections": 5,
+      "chatgpt_tokens_used": 0,
+      "paid_model_calls": 0,
+      "enabled_chatgpt_automations": 0,
+      "full_ci_run_id": 37688973170,
+      "full_ci_conclusion": "success"
+    },
+    {
+      "classification": "FACT",
+      "finding": "Earlier free-text local interpretations in run 37688102334 contained unsupported statements and remain unverified historical outputs. Grounded-next-test-v1 restricts future local output; measured findings remain script-derived."
+    }
+  ],
+  "infrastructure": {
+    "status": "VERIFIED",
+    "finding": "Hourly bounded research, replay evidence, independent measurement audit and local next-test selection persisted on GitHub; no paid fallback."
+  },
+  "janus": {
+    "status": "DEGRADED",
+    "finding": "Provider audit confirms useful licensed/public datasets, but connector-only Massive/Twelve are unwired for GitHub; license/plan gaps persist."
+  },
+  "execution_authorized": false
+}

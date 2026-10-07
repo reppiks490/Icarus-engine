@@ -1,0 +1,71 @@
+{
+  "schema_version": "icarus-research-run-v1",
+  "run_id": "20261007T115354Z_daedalus",
+  "lane": "daedalus",
+  "automation_id": "6ab8177918b48191a97e56c44b57d2c5",
+  "started_at_utc": "2026-10-07T11:51:56Z",
+  "completed_at_utc": "2026-10-07T11:53:54.472Z",
+  "outcome": "NO_MATERIAL_DELTA",
+  "substantive_work_performed": true,
+  "summary": "Independently audited the newest Flow receipt after the prior DAEDALUS temporal-witness recovery. Exact Git evidence shows the 10:00 UTC completed BTC bar precedes distinct Bybit spot, Bybit linear, and Twelve Data retrieval intervals; the point orderbook and each Massive request also carry separate retrieval intervals. All available causal inequalities are valid and the stale Massive futures data were explicitly excluded. This is useful additional positive evidence but does not materially change assurance state: GitHub code search still finds no validator or regression-test implementation enforcing these fields, and the active MCP contract still does not require them. DAEDALUS therefore verifies the latest artifact while AEGIS remains DEGRADED; no material event is created.",
+  "evidence": [
+    {
+      "type": "hybrid_registry",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/registry.json",
+      "blob_sha": "ce3e6cd23abaf28f913d1b62178416699587fa4a",
+      "result": "Schema/version validated; current automation_id remains absent and daedalus_prime maps to a different historical-disabled automation."
+    },
+    {
+      "type": "hybrid_contract",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/CONTRACT.md",
+      "blob_sha": "a2aa7059288144217691a419bb7e9e47289c2056",
+      "result": "Validated before substantive work; exact request identity is mandatory for hybrid completion."
+    },
+    {
+      "type": "prior_research_receipt",
+      "path": "automation_intelligence/mcp_interface/research_runs/daedalus/20261007T105117Z_daedalus.json",
+      "blob_sha": "7075dd2293bff63915b443a468cf1e2b937f719f",
+      "comparison": "Prior audit verified one repaired Flow run but left durable contract/validator enforcement DEGRADED."
+    },
+    {
+      "type": "audited_flow_receipt",
+      "path": "automation_intelligence/mcp_interface/research_runs/flow/20261007T113425Z_flow.json",
+      "blob_sha": "bf61e8290bb68dc0c9477d4270c097f766ba4fb9",
+      "result": "Bybit spot, Bybit linear, Twelve Data, Bybit orderbook, and each Massive query have distinct retrieval intervals; completed BTC bars end at 11:00 UTC before all 11:33 UTC retrievals; stale Massive bars were excluded."
+    },
+    {
+      "type": "negative_code_search",
+      "queries": [
+        "retrieval_started_at_utc",
+        "completed_bar_end_utc",
+        "temporal witness validator"
+      ],
+      "result": "No implementation or test path was returned for retrieval_started_at_utc; completed_bar_end_utc and temporal-witness searches returned evidence artifacts only, not an enforcement implementation."
+    },
+    {
+      "type": "contract_check",
+      "path": "automation_intelligence/mcp_interface/contract.json",
+      "blob_sha": "991b157fd82b3dd9e7e49356fefb06dd89c22579",
+      "result": "icarus-mcp-interface-contract-v1 still does not require per-query retrieval intervals, completed-bar witnesses, or causal-order validation."
+    }
+  ],
+  "prior_receipt_path": "automation_intelligence/mcp_interface/research_runs/daedalus/20261007T105117Z_daedalus.json",
+  "event_paths": [],
+  "blockers": [
+    "automation_intelligence/hybrid_loop_fabric_v1/requests/daedalus/latest.json returned GitHub 404; no exact request_id, unresolved backlog, or required_result_path exists, so no hybrid result was fabricated.",
+    "Registry v1.1.0 does not map automation_id 6ab8177918b48191a97e56c44b57d2c5; no schedule or topology was changed.",
+    "No automatic temporal-lineage validator or regression-test implementation was found through GitHub code search.",
+    "Raw connector invocation logs and monotonic-clock attestations remain unavailable."
+  ],
+  "subsystem_assessment": {
+    "daedalus": {
+      "status": "VERIFIED",
+      "finding": "The latest Flow receipt preserves distinct provider-query intervals and valid completed-bar causal ordering."
+    },
+    "aegis": {
+      "status": "DEGRADED",
+      "finding": "Temporal-witness correctness remains artifact-local because the active contract and searched implementation paths do not enforce it automatically."
+    }
+  },
+  "execution_authorized": false
+}

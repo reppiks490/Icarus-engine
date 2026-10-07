@@ -1,0 +1,83 @@
+{
+  "schema_version": "icarus-research-run-v1",
+  "run_id": "daedalus-20261007T085705450Z",
+  "lane": "daedalus",
+  "automation_id": "6ab8177918b48191a97e56c44b57d2c5",
+  "started_at_utc": "2026-10-07T08:54:57Z",
+  "completed_at_utc": "2026-10-07T08:57:05.450Z",
+  "outcome": "MATERIAL_DELTA",
+  "substantive_work_performed": true,
+  "summary": "Audited the DAEDALUS event-to-receipt finalization chain and found one recoverable orphaned material event. The exact event committed at 06:51:50 UTC survived with blob a299168b76ca2119bf7ac8b24c85744a1bfe5420, but the DAEDALUS research-receipt directory still ended at 05:59:37.979 UTC and repository search found no receipt referencing the exact event ID. This run preserves the original event and timestamp unchanged, records recovery separately, creates an immutable REPAIR event for the persistence defect, and finalizes this read-back-verified recovery receipt. DAEDALUS classifies the recovery VERIFIED; AEGIS keeps finalization assurance DEGRADED until orphan-event reconciliation is automatic.",
+  "evidence": [
+    {
+      "type": "hybrid_registry",
+      "repository": "reppiks490/Icarus-engine",
+      "ref": "main",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/registry.json",
+      "blob_sha": "ce3e6cd23abaf28f913d1b62178416699587fa4a",
+      "result": "The current automation_id remains absent; daedalus_prime is mapped to a different historical-disabled automation."
+    },
+    {
+      "type": "hybrid_contract",
+      "repository": "reppiks490/Icarus-engine",
+      "ref": "main",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/CONTRACT.md",
+      "blob_sha": "a2aa7059288144217691a419bb7e9e47289c2056"
+    },
+    {
+      "type": "recovered_original_event",
+      "repository": "reppiks490/Icarus-engine",
+      "ref": "main",
+      "path": "automation_intelligence/mcp_interface/events/20261007T065149633Z_daedalus_flow_temporal_repair_second_run_verified.json",
+      "original_event_time_utc": "2026-10-07T06:51:49.633Z",
+      "commit_sha": "d600463d73a20bc3c3b52ace6a9cecebb9fc8d24",
+      "blob_sha": "a299168b76ca2119bf7ac8b24c85744a1bfe5420",
+      "recovered_at_utc": "2026-10-07T08:57:05.450Z",
+      "verification": "Exact event content was re-fetched from main; the original event was not modified."
+    },
+    {
+      "type": "prior_research_receipt",
+      "repository": "reppiks490/Icarus-engine",
+      "ref": "main",
+      "path": "automation_intelligence/mcp_interface/research_runs/daedalus/20261007T055937979Z_daedalus.json",
+      "blob_sha": "33b9af19fc48d8fb22cd830180ae4c06ac528c03",
+      "result": "This was the newest DAEDALUS receipt before recovery and predates the 06:51 material event."
+    },
+    {
+      "type": "negative_oracle",
+      "repository": "reppiks490/Icarus-engine",
+      "ref": "main",
+      "search": "exact event_id 20261007T065149633Z-daedalus-flow-temporal-repair-second-run-verified",
+      "result": "Repository search returned only the event file; the complete DAEDALUS receipt directory contained no later receipt."
+    },
+    {
+      "type": "recovery_event",
+      "repository": "reppiks490/Icarus-engine",
+      "ref": "main",
+      "path": "automation_intelligence/mcp_interface/events/20261007T085632494Z_daedalus_orphan_event_receipt_recovery.json",
+      "commit_sha": "dd97df3b53e17fcd8e11fc9d65d6556e54ac8ee3",
+      "blob_sha": "2eda326728c32104144f3dd5502d60ccb036e33d",
+      "verification": "Exact text read-back matched the intended recovery event."
+    }
+  ],
+  "prior_receipt_path": "automation_intelligence/mcp_interface/research_runs/daedalus/20261007T055937979Z_daedalus.json",
+  "event_paths": [
+    "automation_intelligence/mcp_interface/events/20261007T065149633Z_daedalus_flow_temporal_repair_second_run_verified.json",
+    "automation_intelligence/mcp_interface/events/20261007T085632494Z_daedalus_orphan_event_receipt_recovery.json"
+  ],
+  "blockers": [
+    "Hybrid request identity remains unavailable: requests/daedalus/latest.json and health/daedalus.json returned GitHub 404, so no request_id or required_result_path exists and no hybrid result was fabricated.",
+    "Registry v1.1.0 does not map this automation_id; no schedule or topology was changed.",
+    "The originating runtime interruption's root cause is unavailable; only the durable event/receipt discontinuity is proven.",
+    "No automatic repository check currently proves every material event is referenced by a finalized lane receipt."
+  ],
+  "recovered_artifacts": [
+    {
+      "path": "automation_intelligence/mcp_interface/events/20261007T065149633Z_daedalus_flow_temporal_repair_second_run_verified.json",
+      "original_at_utc": "2026-10-07T06:51:49.633Z",
+      "recovered_at_utc": "2026-10-07T08:57:05.450Z",
+      "classification": "RECOVERED_VALID"
+    }
+  ],
+  "execution_authorized": false
+}

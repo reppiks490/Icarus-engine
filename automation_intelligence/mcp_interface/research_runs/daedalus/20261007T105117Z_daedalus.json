@@ -1,0 +1,96 @@
+{
+  "schema_version": "icarus-research-run-v1",
+  "run_id": "daedalus-20261007T105117Z",
+  "lane": "daedalus",
+  "automation_id": "6ab8177918b48191a97e56c44b57d2c5",
+  "started_at_utc": "2026-10-07T10:48:51Z",
+  "completed_at_utc": "2026-10-07T10:51:17.201Z",
+  "outcome": "MATERIAL_DELTA",
+  "substantive_work_performed": true,
+  "summary": "Independently re-audited the first material Flow artifact after the 09:32 temporal-witness regression. Exact Git blobs prove separate retrieval intervals for Bybit spot, Bybit linear, Twelve Data, Bybit orderbook, and each Massive request; explicit completed-bar ends are present; every causal-time inequality is satisfied. Fresh Bybit/Twelve Data responses independently reproduce all reported 09:00 UTC robust statistics. DAEDALUS verifies this run's recovery. AEGIS remains DEGRADED because repository search still finds no validator or test implementation enforcing the fields, so the recovery is artifact-local rather than a durable gate.",
+  "evidence": [
+    {
+      "type": "hybrid_registry",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/registry.json",
+      "blob_sha": "ce3e6cd23abaf28f913d1b62178416699587fa4a",
+      "result": "Current automation_id remains absent; daedalus_prime maps to a different historical-disabled automation."
+    },
+    {
+      "type": "hybrid_contract",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/CONTRACT.md",
+      "blob_sha": "a2aa7059288144217691a419bb7e9e47289c2056"
+    },
+    {
+      "type": "prior_research_receipt",
+      "path": "automation_intelligence/mcp_interface/research_runs/daedalus/20261007T095229Z_daedalus.json",
+      "blob_sha": "881cfb1cc587ce1d2e8638a8d60e44f6b9b57fa8",
+      "comparison": "Prior run proved the preceding Flow repair had regressed to shared point timestamps and missing completion witnesses."
+    },
+    {
+      "type": "audited_flow_event",
+      "path": "automation_intelligence/mcp_interface/events/20261007T103550Z_flow_btc_spot_turnover_normalized.json",
+      "blob_sha": "5fb228369d9cc47a30f50015f7205524a7e64841",
+      "result": "Distinct per-query intervals and explicit 10:00 UTC completed-bar ends satisfy causal ordering through the 10:35:50 UTC assertion."
+    },
+    {
+      "type": "audited_flow_receipt",
+      "path": "automation_intelligence/mcp_interface/research_runs/flow/20261007T103620Z_flow.json",
+      "blob_sha": "52bdd921600efddd2cb780b6a1e9da41ad410862",
+      "result": "Exact receipt repeats the interval and completion witnesses and points to the verified event blob."
+    },
+    {
+      "type": "independent_market_oracle",
+      "providers": [
+        "Bybit",
+        "Twelve Data"
+      ],
+      "retrieved_at_utc": "2026-10-07T10:50:42.450Z",
+      "result": "Fresh 60-bar re-fetch exactly reproduced spot volume 447.397743 BTC/z +0.925032887, spot range $357.10/z +0.545635429, linear volume 2676.404/z +1.042958780, linear range $369/z +0.630830449, and Twelve Data range $352.83/z +0.544970442.",
+      "urls": [
+        "https://api.bybit.com/v5/market/kline?category=spot&symbol=BTCUSDT&interval=60&limit=60",
+        "https://api.bybit.com/v5/market/kline?category=linear&symbol=BTCUSDT&interval=60&limit=60",
+        "https://api.twelvedata.com/time_series?symbol=BTC/USD&interval=1h&outputsize=60"
+      ]
+    },
+    {
+      "type": "negative_code_search",
+      "queries": [
+        "retrieved_at_start_utc",
+        "retrieved_at_end_utc",
+        "completed_bar_end_utc"
+      ],
+      "result": "Each term returned six evidence artifacts and no validator/test implementation path; durable enforcement remains unverified."
+    },
+    {
+      "type": "contract_check",
+      "path": "automation_intelligence/mcp_interface/contract.json",
+      "blob_sha": "991b157fd82b3dd9e7e49356fefb06dd89c22579",
+      "result": "Active contract still does not require per-query temporal witnesses or causal-order validation."
+    },
+    {
+      "type": "persisted_event",
+      "path": "automation_intelligence/mcp_interface/events/20261007T105042Z_daedalus_flow_temporal_recovery_reverified.json",
+      "commit_sha": "65ea29fa82b928da0f81f3b4c32fa4725afa0904",
+      "blob_sha": "41191d0877b3ef6eeb7f3bf76bafb3a77ae9b710",
+      "exact_readback_match": true
+    }
+  ],
+  "prior_receipt_path": "automation_intelligence/mcp_interface/research_runs/daedalus/20261007T095229Z_daedalus.json",
+  "event_paths": [
+    "automation_intelligence/mcp_interface/events/20261007T105042Z_daedalus_flow_temporal_recovery_reverified.json"
+  ],
+  "blockers": [
+    "Hybrid request identity remains unavailable: automation_intelligence/hybrid_loop_fabric_v1/requests/daedalus/latest.json returned GitHub 404, so no exact request_id, unresolved backlog, or required_result_path exists and no hybrid result was fabricated.",
+    "Registry v1.1.0 does not map automation_id 6ab8177918b48191a97e56c44b57d2c5; no schedule or topology was changed.",
+    "Raw connector invocation logs and monotonic-clock attestations remain unavailable.",
+    "No automatic temporal-lineage validator or regression tests were found through repository code search."
+  ],
+  "knowledge_delta": {
+    "paths": [
+      "automation_intelligence/mcp_interface/events/20261007T105042Z_daedalus_flow_temporal_recovery_reverified.json",
+      "automation_intelligence/mcp_interface/research_runs/daedalus/20261007T105117Z_daedalus.json"
+    ],
+    "rationale": "The material assurance state changed from observed regression to independently verified per-run recovery, while preserving the unresolved enforcement gap. No runtime code, schedule, strategy, or contract mutation was authorized."
+  },
+  "execution_authorized": false
+}

@@ -1,0 +1,87 @@
+{
+  "schema_version": "icarus-research-run-v1",
+  "run_id": "macro-20261007T052040293Z",
+  "lane": "macro",
+  "automation_id": "6ab8174517b48191b67ac472205a28d3",
+  "started_at_utc": "2026-10-07T05:19:14Z",
+  "completed_at_utc": "2026-10-07T05:20:40.292Z",
+  "outcome": "NO_MATERIAL_DELTA",
+  "substantive_work_performed": true,
+  "summary": "Fetched and validated the Hybrid Loop Fabric registry/contract, confirmed that the exact macro request and health pointers remain absent, loaded the immediately prior durable Macro receipt and its EIA event, and screened fresh global macro/rates/FX/commodity evidence. No newer independently corroborated regime change exceeded the existing EIA energy-inflation, global-rates, Hormuz-operability, and refined-product states. A candidate China refinery feedstock shift was identified: Reuters reported trader estimates of 15-20 million barrels of Iraqi/Qatari purchases for October-November and cited Kpler data showing Chinese Iranian-oil imports at 590,000 bpd in September. Because all accessible repetitions trace to the same Reuters/Kpler origin, this remains a SOURCE_CLAIM/HYPOTHESIS rather than a new high-impact event. ORACLE records no maturity promotion; SUPERMESH-X records one-origin evidence and no provider-health failure.",
+  "evidence": [
+    {
+      "type": "PRIOR_RECEIPT",
+      "path": "automation_intelligence/mcp_interface/research_runs/macro/20261007T042348385Z_macro.json",
+      "blob_sha": "d66cbb6fa383eb9a3211a146f6ab57c7eeba21d7",
+      "finding": "Loaded the immediately prior EIA forecast-reset result before assessing novelty."
+    },
+    {
+      "type": "PRIOR_EVENT",
+      "path": "automation_intelligence/mcp_interface/events/20261007T042314714Z_macro_eia_october_steo_oil_diesel_forecast_reset.json",
+      "blob_sha": "55c4f9a18f5f6f9a62e03667dfa55deaf2506b65",
+      "finding": "Existing durable state already captures the official October EIA oil/diesel baseline reset and its October 1 information cutoff."
+    },
+    {
+      "type": "HYBRID_REGISTRY",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/registry.json",
+      "blob_sha": "ce3e6cd23abaf28f913d1b62178416699587fa4a",
+      "finding": "Current automation_id is absent; macro_shock_sentinel replacement remains HISTORICAL_DISABLED/MANUAL_GITHUB_REQUEST_ONLY."
+    },
+    {
+      "type": "HYBRID_CONTRACT",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/CONTRACT.md",
+      "blob_sha": "a2aa7059288144217691a419bb7e9e47289c2056"
+    },
+    {
+      "type": "GITHUB_PATH_CHECK",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/requests/macro/latest.json",
+      "result": "404_NOT_FOUND"
+    },
+    {
+      "type": "GITHUB_PATH_CHECK",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/health/macro.json",
+      "result": "404_NOT_FOUND"
+    },
+    {
+      "type": "SOURCE_CLAIM",
+      "source": "Reuters",
+      "url": "https://www.reuters.com/business/energy/chinese-independent-refiners-boost-iraqi-oil-purchases-iranian-flows-fall-2026-10-06/",
+      "source_time": "2026-10-06T11:17:03Z",
+      "retrieved_at_utc": "2026-10-07T05:19:50Z",
+      "finding": "Traders estimated 15-20 million barrels of Iraqi/Qatari purchases for October-November; Reuters cited Kpler data placing September Chinese Iranian-oil imports at 590,000 bpd, lowest since January 2023. Accessible republications were derivative of this same origin, so independent evidence count remained one."
+    },
+    {
+      "type": "MARKET_CONTEXT",
+      "source": "Reuters",
+      "url": "https://www.reuters.com/world/india/gold-edges-lower-with-focus-fed-minutes-rate-path-clues-2026-10-07/",
+      "source_time": "2026-10-07",
+      "retrieved_at_utc": "2026-10-07T05:19:50Z",
+      "finding": "Gold was down 0.6% and the dollar up 0.2% while markets awaited Fed minutes; no synchronized new risk shock was established."
+    },
+    {
+      "type": "MARKET_CONTEXT",
+      "source": "Reuters",
+      "url": "https://www.reuters.com/business/wall-st-futures-rise-yields-oil-dip-2026-10-06/",
+      "source_time": "2026-10-06",
+      "retrieved_at_utc": "2026-10-07T05:19:50Z",
+      "finding": "U.S. equities closed at records as oil/yield pressure eased; this conflicts with escalation into a new immediate cross-asset shock."
+    },
+    {
+      "type": "OFFICIAL_CALENDAR",
+      "source": "Federal Reserve Bank of New York",
+      "url": "https://www.newyorkfed.org/research/calendars/i-oct26.html",
+      "source_time": "2026-10",
+      "retrieved_at_utc": "2026-10-07T05:19:50Z",
+      "finding": "The October 7 Survey of Consumer Expectations is scheduled for 11:00 ET and had not yet supplied a new release at this run's cutoff."
+    }
+  ],
+  "prior_receipt_path": "automation_intelligence/mcp_interface/research_runs/macro/20261007T042348385Z_macro.json",
+  "event_paths": [],
+  "blockers": [
+    "No valid hybrid request_id or required_result_path exists for lane macro; HYBRID_RESULT cannot be created truthfully.",
+    "Active Macro automation identity 6ab8174517b48191b67ac472205a28d3 is absent from registry; registered replacement 6abb101aecf8819180edb577bb098364 is historical-disabled/manual-only.",
+    "The China refinery-purchase estimate and Kpler import figure were available through a single Reuters-origin evidence chain; derivative republications do not count as independent corroboration.",
+    "No synchronized direct physical-flow, refinery-utilization, crude-spread and broad cross-asset dataset was acquired for the candidate China/Iran substitution state."
+  ],
+  "execution_authorized": false
+}

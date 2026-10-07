@@ -1,0 +1,55 @@
+{
+  "schema_version": "icarus-research-run-v1",
+  "run_id": "omega-20261007T040423Z",
+  "lane": "omega",
+  "automation_id": "6abb57443c0c81919676c71d87493353",
+  "started_at_utc": "2026-10-07T04:03:02Z",
+  "completed_at_utc": "2026-10-07T04:04:23.220Z",
+  "outcome": "BLOCKED",
+  "substantive_work_performed": false,
+  "summary": "Hybrid contract validation failed before substantive work. Registry v2/fabric 1.1.0 still does not contain lane omega or automation_id 6abb57443c0c81919676c71d87493353; its only OMEGA entry is historical omega_fusion under automation_id 6abb1012ff408191a6da245488f87dc2 with manual-only dispatch. requests/omega/latest.json returned 404, so no exact request_id, unresolved backlog, or required_result_path exists. The prior blocked receipt was read and confirms this is a persistent identity mismatch, not a new specialist delta. No synthesis, MCP event, Brain feed, or hybrid result was fabricated.",
+  "evidence": [
+    {
+      "type": "hybrid_registry",
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/registry.json",
+      "observed_blob_sha": "ce3e6cd23abaf28f913d1b62178416699587fa4a",
+      "observed_main_revision": "c566f0df60035ec37e8eecd96b7c0ef4b73b14b2",
+      "url": "https://github.com/reppiks490/Icarus-engine/blob/main/automation_intelligence/hybrid_loop_fabric_v1/registry.json",
+      "observation": "No lane omega or automation_id 6abb57443c0c81919676c71d87493353. omega_fusion is HISTORICAL_DISABLED under automation_id 6abb1012ff408191a6da245488f87dc2 and MANUAL_GITHUB_REQUEST_ONLY."
+    },
+    {
+      "type": "hybrid_contract",
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/CONTRACT.md",
+      "observed_blob_sha": "a2aa7059288144217691a419bb7e9e47289c2056",
+      "url": "https://github.com/reppiks490/Icarus-engine/blob/main/automation_intelligence/hybrid_loop_fabric_v1/CONTRACT.md",
+      "observation": "Requires exact lane/automation/repository validation and immutable request identity before substantive work or result completion."
+    },
+    {
+      "type": "missing_request_pointer",
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/requests/omega/latest.json",
+      "url": "https://github.com/reppiks490/Icarus-engine/blob/main/automation_intelligence/hybrid_loop_fabric_v1/requests/omega/latest.json",
+      "observation": "GitHub returned 404 Not Found; no request_id, prior_unresolved_request_ids, or required_result_path was available."
+    },
+    {
+      "type": "prior_research_receipt",
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/mcp_interface/research_runs/omega/20261007T000050Z.json",
+      "observed_blob_sha": "698442bff5b49092851b9c4761e42521cb9c61dd",
+      "url": "https://github.com/reppiks490/Icarus-engine/blob/main/automation_intelligence/mcp_interface/research_runs/omega/20261007T000050Z.json",
+      "observation": "Exact prior BLOCKED receipt was read; it records the same identity and request-pointer failure."
+    }
+  ],
+  "prior_receipt_path": "automation_intelligence/mcp_interface/research_runs/omega/20261007T000050Z.json",
+  "event_paths": [],
+  "blockers": [
+    "Current Hybrid Loop Fabric registry has no lane omega and no automation_id 6abb57443c0c81919676c71d87493353.",
+    "The only registered OMEGA lane is historical omega_fusion with a different automation_id and manual-only dispatch.",
+    "automation_intelligence/hybrid_loop_fabric_v1/requests/omega/latest.json does not exist on main.",
+    "Without an exact immutable request_id and required_result_path, hybrid completion cannot be formed truthfully.",
+    "The identity mismatch persisted from the prior verified blocked receipt; recurring execution would only create duplicate blocked receipts."
+  ],
+  "execution_authorized": false
+}

@@ -1,3 +1,9 @@
+## 2026-10-07 — GitHub-native bounded research
+
+- Add hourly Flow, Macro, AION, DAEDALUS and OMEGA measurements with immutable evidence and MCP events.
+- Reuse pinned local inference; no ChatGPT schedules or paid inference transport.
+- Preserve explicit access gaps, OOS qualification limits and independent temporal/statistical controls.
+
 # Icarus Engine — Changelog
 
 A numbered record of the system's progression. One strategy, refined forward.

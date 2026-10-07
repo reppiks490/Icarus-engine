@@ -1,0 +1,108 @@
+name: native-five-research
+
+on:
+  schedule:
+    - cron: '41 * * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/native_research.py'
+      - 'tools/native_research_sources.py'
+      - 'tests/test_native_research.py'
+      - 'tests/test_native_research_sources.py'
+      - '.github/workflows/native-five-research.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: native-five-research
+  cancel-in-progress: false
+
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install test dependency
+        run: python -m pip install 'pytest>=8,<10'
+      - name: Verify research invariants
+        run: python -m pytest tests/test_native_research.py tests/test_native_research_sources.py -q
+      - name: Restore pinned local runtime
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/icarus-local-model
+          key: local-model-Qwen3-1.7B-Q8_0-061b54da-llama-b10978-98020bb5
+      - name: Prepare local model without any paid inference
+        id: runtime
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          CACHE="$HOME/.cache/icarus-local-model"
+          RUNTIME_DIR="$CACHE/llama-b10978"
+          MODEL_PATH="$CACHE/Qwen3-1.7B-Q8_0.gguf"
+          mkdir -p "$RUNTIME_DIR"
+          LLAMA_BINARY="$(find "$RUNTIME_DIR" -type f -name llama-completion -print -quit)"
+          if [ -z "$LLAMA_BINARY" ]; then
+            curl --fail --location --retry 2 --max-time 180 'https://github.com/ggml-org/llama.cpp/releases/download/b10978/llama-b10978-bin-ubuntu-x64.tar.gz' -o /tmp/native-llama.tar.gz
+            echo '98020bb5a2a9e0284110e5c110158e18dca984a547d5afde1631fef0f03dd826  /tmp/native-llama.tar.gz' | sha256sum -c -
+            tar -xzf /tmp/native-llama.tar.gz -C "$RUNTIME_DIR"
+            LLAMA_BINARY="$(find "$RUNTIME_DIR" -type f -name llama-completion -print -quit)"
+          fi
+          test -n "$LLAMA_BINARY"
+          chmod +x "$LLAMA_BINARY"
+          if [ ! -f "$MODEL_PATH" ]; then
+            curl --fail --location --retry 2 --max-time 240 'https://huggingface.co/Qwen/Qwen3-1.7B-GGUF/resolve/90862c4b9d2787eaed51d12237eafdfe7c5f6077/Qwen3-1.7B-Q8_0.gguf' -o "$MODEL_PATH"
+          fi
+          echo '061b54daade076b5d3362dac252678d17da8c68f07560be70818cace6590cb1a  '"$MODEL_PATH" | sha256sum -c -
+          echo "LLAMA_BINARY=$LLAMA_BINARY" >> "$GITHUB_ENV"
+          echo "LOCAL_MODEL_PATH=$MODEL_PATH" >> "$GITHUB_ENV"
+      - name: Acquire fresh evidence and perform five research lanes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git pull --rebase origin main
+          args=(--root . --run-id "native-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}")
+          if [ -n "${LLAMA_BINARY:-}" ] && [ -n "${LOCAL_MODEL_PATH:-}" ]; then
+            args+=(--binary "$LLAMA_BINARY" --model "$LOCAL_MODEL_PATH")
+          fi
+          python -m tools.native_research "${args[@]}"
+      - name: Retain run evidence on persistence failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-five-${{ github.run_id }}-${{ github.run_attempt }}
+          path: automation_intelligence/native_research_v1/cycles/native-${{ github.run_id }}-${{ github.run_attempt }}/
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Persist measured receipts and compatible ICARUS events
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add automation_intelligence/native_research_v1
+          git add automation_intelligence/mcp_interface/events/*native*.json
+          if git diff --cached --quiet; then exit 0; fi
+          invalid="$(git diff --cached --name-only | grep -Ev '^(automation_intelligence/native_research_v1/|automation_intelligence/mcp_interface/events/native-[0-9]+-[0-9]+_native_(flow|macro|aion|daedalus|omega)\.json$)' || true)"
+          if [ -n "$invalid" ]; then echo 'Out-of-scope paths staged'; exit 1; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m "research: native five ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT} [skip ci]"
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            if ! git rebase origin/main; then
+              git rebase --abort
+              exit 1
+            fi
+            if git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt * 2))
+          done
+          exit 1

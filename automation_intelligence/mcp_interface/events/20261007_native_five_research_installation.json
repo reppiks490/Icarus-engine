@@ -1,0 +1,41 @@
+{
+  "at_utc": "2026-10-07T21:03:00Z",
+  "category": "INTEGRATION",
+  "event_id": "20261007-native-five-research-installed",
+  "evidence": [
+    {
+      "classification": "FACT",
+      "file_sha256": {
+        ".github/workflows/native-five-research.yml": "91a06b62d3e1eb19f35802b2ec3ca223e61888b32571d6ba6522958afecfa94d",
+        "docs/research/native-five-research.md": "13d71698a616afd5cd7ab36bd6a79f0bc2555724097ba67050c9bbf9f1df579d",
+        "tests/test_native_research.py": "aa8246bd071b399c5f0ef6b2aeb79ae871b8c3a4b5f408ef1fbf5521bbf6fbe6",
+        "tests/test_native_research_sources.py": "111883ff346e54f2bd74bc68ded0e6f4410fbcb8f514ce830afdfb8c13ede0ce",
+        "tools/native_research.py": "27464d5ce805e2db2cc133782fb6819ac1fc2b1a8d049a2d0ec6c6e339d48d6e",
+        "tools/native_research_sources.py": "d390e507760335772c6fcb32198ff9a1dd3b3c44d2e4c3d5471814b22ab92723"
+      },
+      "finding": "Full repository suite: 1021 passed before safe-run-ID hardening; scoped suite: 34 passed after hardening. Public live check: two BTC venue feeds, seven official macro release headlines, three daily macro series, two chronological experiments and two independent audits. Local inference awaits GitHub runtime check."
+    }
+  ],
+  "execution_authorized": false,
+  "infrastructure": {
+    "finding": "New research workflow; no ChatGPT automation or paid-model fallback.",
+    "status": "IMPLEMENTED_RUNTIME_PENDING"
+  },
+  "paths": [
+    "tools/native_research.py",
+    "tools/native_research_sources.py",
+    ".github/workflows/native-five-research.yml",
+    "tests/test_native_research.py",
+    "tests/test_native_research_sources.py",
+    "docs/research/native-five-research.md"
+  ],
+  "schema_version": "icarus-mcp-event-v1",
+  "severity": "MEDIUM",
+  "source": "OMEGA_AUTOMATION",
+  "status": "IMPLEMENTED_RUNTIME_PENDING",
+  "summary": "Install hourly GitHub-native five-lane bounded research and pinned local-only interpretation. ChatGPT schedules remain paused; runtime persistence must be confirmed by actual Actions outputs.",
+  "surface": [
+    "Research automation",
+    "MCP / Automation"
+  ]
+}

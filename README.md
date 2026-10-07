@@ -263,3 +263,6 @@ CHANGELOG.md             numbered progression of the system
 ```
 
 See `CHANGELOG.md` for the numbered record of every refinement.
+### Native research without ChatGPT schedules
+
+The five bounded research lanes now have a GitHub-native worker with local-only interpretation. See [native research operations and qualification limits](docs/research/native-five-research.md). Scheduler receipts alone remain insufficient evidence of research.

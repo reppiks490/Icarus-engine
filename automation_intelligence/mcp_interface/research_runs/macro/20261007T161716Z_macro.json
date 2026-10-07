@@ -1,0 +1,97 @@
+{
+  "schema_version": "icarus-research-run-v1",
+  "run_id": "macro-20261007T161716Z",
+  "lane": "macro",
+  "automation_id": "6ab8174517b48191b67ac472205a28d3",
+  "started_at_utc": "2026-10-07T16:14:33Z",
+  "completed_at_utc": "2026-10-07T16:17:16.727Z",
+  "outcome": "MATERIAL_DELTA",
+  "substantive_work_performed": true,
+  "summary": "Recovered the prior unsaved material Macro result with preserved original timestamps and provenance. The New York Fed official survey page independently confirmed that one-year inflation expectations rose to 3.9% from 3.6%, the highest since May 2023; three-year rose to 3.3%, and five-year held at 3.0%. The recovered state is REACCELERATING_NEAR_TERM_WITH_LONG_RUN_ANCHOR_INTACT, not full de-anchoring. The immutable event and historical blocked receipt were exact-read-back verified. Fresh checks found no later official FOMC-minutes outcome before cutoff.",
+  "evidence": [
+    {
+      "type": "hybrid_registry",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/registry.json",
+      "blob_sha": "ce3e6cd23abaf28f913d1b62178416699587fa4a",
+      "result": "Validated before substantive work; current automation_id is absent and registered macro_shock_sentinel is historical-disabled under a different ID."
+    },
+    {
+      "type": "hybrid_contract",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/CONTRACT.md",
+      "blob_sha": "a2aa7059288144217691a419bb7e9e47289c2056",
+      "result": "Validated before substantive work; exact request identity is mandatory."
+    },
+    {
+      "type": "prior_research_receipt",
+      "path": "automation_intelligence/mcp_interface/research_runs/macro/20261007T141956Z_macro.json",
+      "blob_sha": "c06218811d5a95ff589adad4d36bcc8bd280d995",
+      "comparison": "Prior durable state recorded no material delta before the New York Fed survey and named FOMC minutes as a decisive next check."
+    },
+    {
+      "type": "official_source",
+      "classification": "FACT",
+      "source": "Federal Reserve Bank of New York Survey of Consumer Expectations",
+      "url": "https://www.newyorkfed.org/microeconomics/sce",
+      "retrieved_at_utc": "2026-10-07T16:16:27.010Z",
+      "finding": "One-year median inflation expectations increased 0.3 point to 3.9%, three-year increased 0.1 point to 3.3%, and five-year remained 3.0%; the one-year reading is highest since May 2023."
+    },
+    {
+      "type": "independent_report",
+      "classification": "SOURCE_CLAIM",
+      "source": "Reuters",
+      "source_time_utc": "2026-10-07T15:01:25Z",
+      "url": "https://www.reuters.com/world/us/ny-fed-september-survey-finds-public-expecting-more-near-term-inflation-2026-10-07/",
+      "finding": "Corroborated survey figures and reported broader expected price increases alongside weaker household financial assessments."
+    },
+    {
+      "type": "cross_asset_context",
+      "classification": "FACT",
+      "source": "Reuters",
+      "source_time_utc": "2026-10-07T10:01:28Z",
+      "url": "https://www.reuters.com/business/us-30-year-bond-yield-hits-fresh-24-year-high-2026-10-07/",
+      "finding": "U.S. 30-year Treasury yield touched 5.7041%, a 24-year high; this confirms an elevated duration regime but does not establish survey-to-yield causality."
+    },
+    {
+      "type": "recovered_material_event",
+      "path": "automation_intelligence/mcp_interface/events/20261007T151550Z_macro_us_near_term_inflation_expectations_reaccelerate.json",
+      "blob_sha": "d4c3e3f231aaf1f870594cf882b22875347c80d0",
+      "commit_sha": "5ffeca778e428b64217b4b24b375d44178d88f39",
+      "exact_readback_verified": true,
+      "original_at_utc": "2026-10-07T15:15:50Z",
+      "recovered_at_utc": "2026-10-07T16:16:27.010Z"
+    },
+    {
+      "type": "recovered_historical_receipt",
+      "path": "automation_intelligence/mcp_interface/research_runs/macro/20261007T151624Z_macro.json",
+      "blob_sha": "b65584fb1d6c2b0b23eb16355aee4cb53d64cb05",
+      "commit_sha": "286044d4fb2c0f1d17637844981d2ae727505119",
+      "exact_readback_verified": true,
+      "result": "Original BLOCKED outcome and execution timestamps preserved; recovery provenance added without rewriting history."
+    },
+    {
+      "type": "release_cutoff",
+      "classification": "UNKNOWN",
+      "finding": "The September FOMC minutes were scheduled for 18:00 UTC, after this run's evidence cutoff; no minutes content was inferred."
+    }
+  ],
+  "prior_receipt_path": "automation_intelligence/mcp_interface/research_runs/macro/20261007T151624Z_macro.json",
+  "event_paths": [
+    "automation_intelligence/mcp_interface/events/20261007T151550Z_macro_us_near_term_inflation_expectations_reaccelerate.json"
+  ],
+  "blockers": [
+    "HYBRID_RESULT UNVERIFIED: automation_intelligence/hybrid_loop_fabric_v1/requests/macro/latest.json is absent on main, so no request_id or required_result_path can be validated.",
+    "The current automation_id is absent from the validated hybrid registry; no schedule or topology mutation was attempted.",
+    "The FOMC minutes were not yet officially available at the evidence cutoff."
+  ],
+  "subsystem_assessment": {
+    "oracle": {
+      "status": "MATERIAL_DELTA",
+      "finding": "Recovered and officially verified REACCELERATING_NEAR_TERM_WITH_LONG_RUN_ANCHOR_INTACT; affected research context includes Treasury duration, NQ/MNQ, DXY, gold, and energy-inflation transmission."
+    },
+    "supermesh_x": {
+      "status": "MATERIAL_DELTA",
+      "finding": "Upgraded provenance from a failed Reuters-only persistence attempt to official New York Fed confirmation while preserving original source/retrieval times and separate recovery time."
+    }
+  },
+  "execution_authorized": false
+}

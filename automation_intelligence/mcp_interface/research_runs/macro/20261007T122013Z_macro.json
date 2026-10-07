@@ -1,0 +1,106 @@
+{
+  "schema_version": "icarus-research-run-v1",
+  "run_id": "macro-20261007T122013Z",
+  "lane": "macro",
+  "automation_id": "6ab8174517b48191b67ac472205a28d3",
+  "started_at_utc": "2026-10-07T12:17:08Z",
+  "completed_at_utc": "2026-10-07T12:20:13.645Z",
+  "outcome": "NO_MATERIAL_DELTA",
+  "substantive_work_performed": true,
+  "summary": "Loaded the latest durable Macro receipt and screened fresh IEA reserve-policy, Fed-policy, sovereign-rates, FX, gold, oil and equity-index evidence. No official IEA implementation decision or incremental volume was found after the 11:00 UTC informal discussion; the October 14-15 detail-setting window remains the next decisive energy-policy checkpoint. September FOMC minutes remain scheduled for 18:00 UTC, outside this cutoff. Brent above $100, U.S. 10-year/30-year yields near 5.33%/5.71%, a firmer dollar, weaker gold and modestly lower U.S. futures extend already-persisted energy-inflation and global discount-rate regimes without establishing a new synchronized shock. ORACLE preserves existing states; SUPERMESH-X records that current reporting is timely but decisive primary outcomes are unavailable.",
+  "evidence": [
+    {
+      "type": "PRIOR_RECEIPT",
+      "path": "automation_intelligence/mcp_interface/research_runs/macro/20261007T111954Z_macro.json",
+      "blob_sha": "7679d9ab79e5e24ab069654b57a225f6b16141c8",
+      "finding": "The immediately prior run already preserved the long-duration/fiscal-risk and energy-inflation regimes and identified the IEA decision and FOMC minutes as decisive checks."
+    },
+    {
+      "type": "HYBRID_REGISTRY",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/registry.json",
+      "blob_sha": "ce3e6cd23abaf28f913d1b62178416699587fa4a",
+      "finding": "Current automation_id remains absent; the registered macro_shock_sentinel replacement is historical-disabled/manual-only."
+    },
+    {
+      "type": "HYBRID_CONTRACT",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/CONTRACT.md",
+      "blob_sha": "a2aa7059288144217691a419bb7e9e47289c2056"
+    },
+    {
+      "type": "GITHUB_PATH_CHECK",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/requests/macro/latest.json",
+      "result": "404_NOT_FOUND"
+    },
+    {
+      "type": "FRESH_ENERGY_POLICY_EVIDENCE",
+      "classification": "SOURCE_CLAIM",
+      "source": "Reuters citing two EU diplomats",
+      "source_time_utc": "2026-10-07T07:09:35Z",
+      "retrieved_at_utc": "2026-10-07T12:20:13.645Z",
+      "url": "https://www.reuters.com/business/energy/iea-meet-wednesday-over-proposed-release-reserves-say-two-eu-diplomats-2026-10-07/",
+      "finding": "The IEA informal discussion began at 11:00 UTC, but no confirmed decision, incremental volume, product split or allocation surfaced by the research cutoff; detailed decisions remain expected October 14-15."
+    },
+    {
+      "type": "PRIMARY_ENERGY_CONTEXT",
+      "classification": "FACT",
+      "source": "International Energy Agency",
+      "source_date": "2026-10-02",
+      "retrieved_at_utc": "2026-10-07T12:20:13.645Z",
+      "url": "https://www.iea.org/news/executive-director-participates-in-g7-leaders-meeting-on-energy-security-and-markets",
+      "finding": "IEA reported about 325 million barrels of the March 400-million-barrel collective action had been released and said refined-product flows remained severely constrained; the page contains no October 7 implementation update."
+    },
+    {
+      "type": "PRIMARY_FED_CALENDAR",
+      "classification": "FACT",
+      "source": "Federal Reserve Board",
+      "retrieved_at_utc": "2026-10-07T12:20:13.645Z",
+      "url": "https://www.federalreserve.gov/newsevents/2026-october.htm",
+      "finding": "September 15-16 FOMC minutes are scheduled for 18:00 UTC on October 7, after this run's cutoff."
+    },
+    {
+      "type": "FRESH_FX_COMMODITY_EVIDENCE",
+      "classification": "FACT",
+      "source": "Reuters",
+      "source_time_utc": "2026-10-07T01:14:00Z",
+      "retrieved_at_utc": "2026-10-07T12:20:13.645Z",
+      "url": "https://www.reuters.com/world/asia-pacific/dollar-holds-losses-markets-await-fed-minutes-speakers-2026-10-07/",
+      "finding": "DXY rose about 0.3% to 102.13, Brent moved back above $100, and October Fed-hike odds fell to 21.6%; this mix extends existing regimes while preserving a policy-pricing conflict."
+    },
+    {
+      "type": "FRESH_GOLD_EVIDENCE",
+      "classification": "FACT",
+      "source": "Reuters",
+      "source_time_utc": "2026-10-07T02:18:00Z",
+      "retrieved_at_utc": "2026-10-07T12:20:13.645Z",
+      "url": "https://www.reuters.com/world/india/gold-edges-lower-with-focus-fed-minutes-rate-path-clues-2026-10-07/",
+      "finding": "Spot gold fell 1.1% to $4,119.01 by 11:27 UTC as the dollar strengthened; no independent safe-haven dislocation was established."
+    },
+    {
+      "type": "FRESH_CROSS_ASSET_EVIDENCE",
+      "classification": "FACT",
+      "source": "Associated Press",
+      "retrieved_at_utc": "2026-10-07T12:20:13.645Z",
+      "url": "https://apnews.com/article/stocks-markets-rates-oil-earnings-44b75c188756038371cf3112ede9cee8",
+      "finding": "Brent was $101.88, U.S. 10-year/30-year yields were about 5.33%/5.71%, and S&P/Nasdaq futures were down only 0.1%/0.4% after record equity closes; pressure is not yet a synchronized break."
+    }
+  ],
+  "prior_receipt_path": "automation_intelligence/mcp_interface/research_runs/macro/20261007T111954Z_macro.json",
+  "event_paths": [],
+  "blockers": [
+    "No valid hybrid request_id or required_result_path exists because automation_intelligence/hybrid_loop_fabric_v1/requests/macro/latest.json returned GitHub 404; no hybrid result was fabricated.",
+    "Active Macro automation identity 6ab8174517b48191b67ac472205a28d3 is absent from registry.json; no schedule or topology was changed.",
+    "No confirmed IEA implementation decision, incremental reserve volume, product split, country allocation or release timing was available by the research cutoff.",
+    "September FOMC minutes and synchronized post-release NQ/MNQ, Treasury, DXY, gold and oil reactions were not yet available."
+  ],
+  "subsystem_assessment": {
+    "oracle": {
+      "status": "NO_MATERIAL_DELTA",
+      "finding": "Current oil, rates, FX, gold and equity moves extend existing energy-inflation and global discount-rate states without a new regime transition."
+    },
+    "supermesh_x": {
+      "status": "NO_MATERIAL_DELTA",
+      "finding": "Reuters/AP and official IEA/Fed sources were fresh enough for screening, but the decisive primary IEA and FOMC outcomes were unavailable."
+    }
+  },
+  "execution_authorized": false
+}

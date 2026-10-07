@@ -1,0 +1,74 @@
+{
+  "schema_version": "icarus-mcp-event-v1",
+  "event_id": "20261007T000025452Z-daedalus-orphan-predecessor-scheduler-identity-drift",
+  "at_utc": "2026-10-07T00:00:25.452Z",
+  "category": "AUDIT",
+  "status": "BLOCKING",
+  "severity": "high",
+  "summary": "The retired DAEDALUS predecessor automation 6ab8177918b48191a97e56c44b57d2c5 remains enabled and is still executing hourly even though the current Hybrid Loop Fabric registry contains no matching lane/automation identity and classifies DAEDALUS PRIME under replacement identity 6abb103472608191b72f9eaa522b772b as HISTORICAL_DISABLED/MANUAL_GITHUB_REQUEST_ONLY. The replacement identity is absent from the live automation list. This creates orphan execution, duplicate-assurance, request-identity and control-plane drift risk.",
+  "surface": "ChatGPT scheduler identity, Hybrid Loop Fabric registry, DAEDALUS durable request routing",
+  "source": "DAEDALUS_AUTOMATION",
+  "paths": [
+    "automation_intelligence/hybrid_loop_fabric_v1/registry.json",
+    "automation_intelligence/hybrid_loop_fabric_v1/CONTRACT.md",
+    "automation_intelligence/omega_stack/incidents/scheduler-identity-migration-20260929T011116Z.json",
+    "automation_intelligence/omega_stack/verification.json",
+    "automation_intelligence/hybrid_loop_fabric_v1/requests/daedalus/latest.json",
+    "automation_intelligence/hybrid_loop_fabric_v1/health/daedalus.json"
+  ],
+  "evidence": {
+    "classification": "BLOCKING",
+    "live_scheduler_observation": {
+      "observed_at_utc": "2026-10-06T23:59:00Z",
+      "predecessor_automation_id": "6ab8177918b48191a97e56c44b57d2c5",
+      "predecessor_is_enabled": true,
+      "predecessor_schedule": "hourly at minute 53 America/Chicago",
+      "predecessor_last_run_time": "2026-10-06T22:50:47.306373Z",
+      "predecessor_updated_at": "2026-10-06T22:51:09.230595Z",
+      "replacement_automation_id": "6abb103472608191b72f9eaa522b772b",
+      "replacement_present_in_live_automation_list": false,
+      "source": "Connected ChatGPT Automations private inventory"
+    },
+    "current_registry": {
+      "blob_sha": "ce3e6cd23abaf28f913d1b62178416699587fa4a",
+      "fabric_version": "1.1.0",
+      "finding": "No lane references the running predecessor automation_id. DAEDALUS PRIME is registered as daedalus_prime under replacement identity 6abb103472608191b72f9eaa522b772b with current_state HISTORICAL_DISABLED and MANUAL_GITHUB_REQUEST_ONLY."
+    },
+    "current_contract": {
+      "blob_sha": "a2aa7059288144217691a419bb7e9e47289c2056",
+      "finding": "A valid unresolved request must match the exact lane and automation_id before substantive work or completion."
+    },
+    "migration_record": {
+      "path": "automation_intelligence/omega_stack/incidents/scheduler-identity-migration-20260929T011116Z.json",
+      "blob_sha": "d645ebcb18c526b6f1bc1f14018395a49f5b3325",
+      "finding": "Explicitly maps this predecessor to replacement 6abb103472608191b72f9eaa522b772b and states predecessor IDs were unmodifiable."
+    },
+    "historical_verification": {
+      "path": "automation_intelligence/omega_stack/verification.json",
+      "blob_sha": "d57b808969f97d5b0674616c469c4590fd10da48",
+      "finding": "Previously claimed exactly five replacement tasks enabled and bound DAEDALUS to the replacement identity."
+    },
+    "request_state": {
+      "latest_path": "automation_intelligence/hybrid_loop_fabric_v1/requests/daedalus/latest.json",
+      "health_path": "automation_intelligence/hybrid_loop_fabric_v1/health/daedalus.json",
+      "observation": "Both direct main-branch fetches returned 404, so this predecessor has no valid exact-lane request identity."
+    },
+    "uncertainty": "The audit did not mutate the scheduler. It is unknown whether the replacement automation was deleted, moved to another inaccessible account/workspace, or never survived the later topology cutover."
+  },
+  "required_remediation": [
+    "At the account control plane, pause the orphan predecessor 6ab8177918b48191a97e56c44b57d2c5 or explicitly re-register it under a compatible exact identity; do not leave it enabled but unrequestable.",
+    "Reconcile the replacement identity 6abb103472608191b72f9eaa522b772b against the live automation inventory and either restore it intentionally or update the registry with a verified current owner.",
+    "Add a control-plane invariant that every enabled hybrid worker appears exactly once in registry with matching lane, automation_id, state, cadence and request namespace; reject orphan or duplicate identities.",
+    "Do not accept research/hybrid completion from an enabled worker whose exact registry/request identity is absent."
+  ],
+  "next_independent_verification_target": "After scheduler reconciliation, inspect the live automation inventory and registry together, then issue one immutable manual DAEDALUS request and verify exact request→receipt/event→hybrid-result read-back under a single identity.",
+  "daedalus": {
+    "status": "BLOCKING",
+    "finding": "Live scheduler topology contradicts both the current registry and the documented predecessor-to-replacement migration; the running worker has no valid durable request identity."
+  },
+  "aegis": {
+    "status": "BLOCKING",
+    "finding": "An orphan worker can generate duplicate or misattributed assurance artifacts outside exact lane/request identity, so all substantive completion from this execution must fail closed."
+  },
+  "execution_authorized": false
+}

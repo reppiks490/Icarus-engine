@@ -1,0 +1,130 @@
+{
+  "schema_version": "icarus-research-run-v1",
+  "run_id": "flow-20261007T063403976Z",
+  "lane": "flow",
+  "automation_id": "6ab817544e68819197b5db21eb2cbe2b",
+  "started_at_utc": "2026-10-07T06:32:14Z",
+  "completed_at_utc": "2026-10-07T06:34:03.976Z",
+  "outcome": "NO_MATERIAL_DELTA",
+  "substantive_work_performed": true,
+  "summary": "Compared the prior verified BTC downside volatility/turnover event and subsequent normalization with the next fully completed hour across direct Bybit spot candles, separate Bybit linear candles, an independent Twelve Data price representation, and a point-in-time Bybit spot orderbook. The 05:00 UTC bar completed at 06:00 UTC and remained normalized: Bybit spot range 277.20 USD (robust z -0.2084), volume 310.738771 BTC (robust z +0.0440), and return +0.2884% versus the preceding 28 completed spot hours; Bybit linear range 281.20 USD and Twelve Data range 259.50 USD independently corroborated a non-anomalous interval. The forming 06:00 UTC bar was excluded. No new abnormal flow, volatility persistence, or durable liquidity conclusion is justified.",
+  "evidence": [
+    {
+      "type": "prior_receipt",
+      "repository": "reppiks490/Icarus-engine",
+      "ref": "main",
+      "path": "automation_intelligence/mcp_interface/research_runs/flow/20261007T053502818Z_flow.json",
+      "blob_sha": "0123583f3f47ba647e1e2035b863bb7536c936cd",
+      "observed_at_utc": "2026-10-07T06:33:10.535Z",
+      "result": "Prior run established normalization through the 04:00 UTC completed hour."
+    },
+    {
+      "type": "hybrid_registry",
+      "repository": "reppiks490/Icarus-engine",
+      "ref": "main",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/registry.json",
+      "blob_sha": "ce3e6cd23abaf28f913d1b62178416699587fa4a",
+      "contract_path": "automation_intelligence/hybrid_loop_fabric_v1/CONTRACT.md",
+      "contract_blob_sha": "a2aa7059288144217691a419bb7e9e47289c2056",
+      "validation": "fabric_id matched; registry schema icarus-hybrid-loop-registry-v2; current automation_id absent"
+    },
+    {
+      "type": "market_data",
+      "provider": "Bybit",
+      "tool": "bybit_get_kline",
+      "representation": "BTCUSDT spot 1h candles",
+      "source_url": "https://agent.bybit.com/mcp/open?symbol=BTCUSDT&category=spot&source=chatgpt",
+      "event_time_utc": "2026-10-07T05:00:00.000Z",
+      "availability_time_utc": "2026-10-07T06:00:00.000Z",
+      "retrieval_start_utc": "2026-10-07T06:33:07.915Z",
+      "retrieval_end_utc": "2026-10-07T06:33:09.013Z",
+      "observation": {
+        "open_usd": 84097.9,
+        "high_usd": 84357.1,
+        "low_usd": 84079.9,
+        "close_usd": 84340.4,
+        "volume_btc": 310.738771,
+        "range_usd": 277.2,
+        "return_pct": 0.2884,
+        "range_robust_z_28h": -0.2084,
+        "volume_robust_z_28h": 0.044
+      }
+    },
+    {
+      "type": "market_data",
+      "provider": "Bybit",
+      "tool": "bybit_get_kline",
+      "representation": "BTCUSDT linear perpetual 1h candles",
+      "source_url": "https://agent.bybit.com/mcp/open?symbol=BTCUSDT&category=linear&source=chatgpt",
+      "event_time_utc": "2026-10-07T05:00:00.000Z",
+      "availability_time_utc": "2026-10-07T06:00:00.000Z",
+      "retrieval_start_utc": "2026-10-07T06:33:07.915Z",
+      "retrieval_end_utc": "2026-10-07T06:33:09.132Z",
+      "observation": {
+        "open_usd": 84051.9,
+        "high_usd": 84317.2,
+        "low_usd": 84036,
+        "close_usd": 84292.1,
+        "range_usd": 281.2
+      }
+    },
+    {
+      "type": "market_data",
+      "provider": "Twelve Data",
+      "tool": "twelve_data_get_time_series",
+      "representation": "BTC/USD 1h OHLC",
+      "source_url": "https://twelvedata.com/",
+      "event_time_utc": "2026-10-07T05:00:00.000Z",
+      "availability_time_utc": "2026-10-07T06:00:00.000Z",
+      "retrieval_start_utc": "2026-10-07T06:33:07.915Z",
+      "retrieval_end_utc": "2026-10-07T06:33:10.535Z",
+      "observation": {
+        "open_usd": 84103.07,
+        "high_usd": 84343.97,
+        "low_usd": 84084.47,
+        "close_usd": 84332.85,
+        "range_usd": 259.5
+      }
+    },
+    {
+      "type": "point_in_time_market_data",
+      "provider": "Bybit",
+      "tool": "bybit_get_orderbook",
+      "representation": "BTCUSDT spot top-of-book/depth snapshot",
+      "source_url": "https://agent.bybit.com/mcp/open?symbol=BTCUSDT&category=spot&source=chatgpt",
+      "source_time_utc": "2026-10-07T06:33:08.753Z",
+      "retrieval_start_utc": "2026-10-07T06:33:07.915Z",
+      "retrieval_end_utc": "2026-10-07T06:33:08.973Z",
+      "observation": {
+        "best_bid_usd": 84245.8,
+        "best_ask_usd": 84245.9,
+        "spread_usd": 0.1
+      },
+      "limitation": "Single snapshot only; not used to infer persistent depth, order flow, or execution quality."
+    }
+  ],
+  "prior_receipt_path": "automation_intelligence/mcp_interface/research_runs/flow/20261007T053502818Z_flow.json",
+  "event_paths": [],
+  "blockers": [
+    "Hybrid request pointer automation_intelligence/hybrid_loop_fabric_v1/requests/flow/latest.json returned GitHub 404, so no request_id or required_result_path could be preserved and no hybrid result was fabricated.",
+    "Hybrid health path automation_intelligence/hybrid_loop_fabric_v1/health/flow.json returned GitHub 404.",
+    "The current automation_id is absent from the fetched registry; the flow_velocity registry entry is not evidence that this automation owns a request."
+  ],
+  "subsystem_assessment": {
+    "argus": {
+      "status": "NO_MATERIAL_DELTA",
+      "finding": "The 05:00 UTC completed Bybit spot hour showed normal range and turnover; the one orderbook snapshot is retained only as point-in-time top-of-book evidence and does not support persistent liquidity or order-flow claims."
+    },
+    "nexus": {
+      "status": "NO_MATERIAL_DELTA",
+      "finding": "Three independently retrieved representations agreed on a non-anomalous 05:00 UTC BTC interval; provider-specific retrieval witnesses and availability clocks were preserved, and the forming 06:00 UTC bar was excluded."
+    }
+  },
+  "data_gaps": [
+    "No authenticated trade tape or longitudinal depth series was available, so aggressive order flow, persistent depth, liquidation, funding, open-interest, and basis states remain UNKNOWN.",
+    "The Twelve Data response exposed OHLC but no volume for this representation."
+  ],
+  "conflicts": [],
+  "next_decisive_check": "Evaluate the next fully completed BTC hour after 07:00 UTC with the same provider-specific retrieval witnesses; escalate only if robust range/turnover anomaly or cross-representation divergence materially reappears.",
+  "execution_authorized": false
+}

@@ -1,3 +1,7 @@
+## 2026-10-07 — catalog-led provider collection
+
+Hourly non-Databento collection across both Icarus repositories: discovered asset queues, pagination, encrypted archives/checkpoints, descriptive research features and explicit credential/entitlement gaps. Databento unchanged; no ChatGPT or paid model calls.
+
 ## 2026-10-07 — GitHub-native bounded research
 
 - Add hourly Flow, Macro, AION, DAEDALUS and OMEGA measurements with immutable evidence and MCP events.

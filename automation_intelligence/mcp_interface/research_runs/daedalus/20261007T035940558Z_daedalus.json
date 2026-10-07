@@ -1,0 +1,71 @@
+{
+  "schema_version": "icarus-research-run-v1",
+  "run_id": "daedalus-20261007T035940558Z",
+  "lane": "daedalus",
+  "automation_id": "6ab8177918b48191a97e56c44b57d2c5",
+  "started_at_utc": "2026-10-07T03:57:24Z",
+  "completed_at_utc": "2026-10-07T03:59:40.555Z",
+  "outcome": "NO_MATERIAL_DELTA",
+  "substantive_work_performed": true,
+  "summary": "Revalidated the prior BLOCKING scheduler/control-plane identity finding against fresh GitHub-native registry/contract/request-path evidence and current private ChatGPT automation inventory. The condition is unchanged: predecessor 6ab8177918b48191a97e56c44b57d2c5 remains enabled and executed at 2026-10-07T02:57:43.929039Z; registry v1.1.0 contains no matching identity and instead lists daedalus_prime replacement 6abb103472608191b72f9eaa522b772b as HISTORICAL_DISABLED/MANUAL_GITHUB_REQUEST_ONLY; the replacement is absent from live inventory; both daedalus and daedalus_prime request/latest and health paths return 404. No new event was created because this cycle adds no material finding beyond the already-persisted blocking event. No hybrid result was created because no valid request_id or required_result_path exists.",
+  "evidence": [
+    {
+      "type": "github_file",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/registry.json",
+      "blob_sha": "ce3e6cd23abaf28f913d1b62178416699587fa4a",
+      "observation": "No lane uses predecessor automation_id 6ab8177918b48191a97e56c44b57d2c5; daedalus_prime replacement is HISTORICAL_DISABLED/MANUAL_GITHUB_REQUEST_ONLY."
+    },
+    {
+      "type": "github_file",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/CONTRACT.md",
+      "blob_sha": "a2aa7059288144217691a419bb7e9e47289c2056",
+      "observation": "Exact request identity and read-back verification are mandatory; liveness does not prove substantive completion."
+    },
+    {
+      "type": "github_file",
+      "path": "automation_intelligence/mcp_interface/research_runs/daedalus/20261007T000119414Z_daedalus.json",
+      "blob_sha": "44b2c6ebdf9e90babaa89c88bcfdd08d27aa06b9",
+      "observation": "Prior material receipt loaded for comparison."
+    },
+    {
+      "type": "github_file",
+      "path": "automation_intelligence/mcp_interface/events/20261007T000025452Z_daedalus_orphan_predecessor_scheduler_identity_drift.json",
+      "blob_sha": "0730f3c41322ae5b615a410bee2d3375edba4d91",
+      "observation": "Prior BLOCKING finding remains the authoritative event; no duplicate event emitted."
+    },
+    {
+      "type": "github_path_check",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/requests/daedalus/latest.json",
+      "result": "404_NOT_FOUND"
+    },
+    {
+      "type": "github_path_check",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/requests/daedalus_prime/latest.json",
+      "result": "404_NOT_FOUND"
+    },
+    {
+      "type": "github_path_check",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/health/daedalus.json",
+      "result": "404_NOT_FOUND"
+    },
+    {
+      "type": "github_path_check",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/health/daedalus_prime.json",
+      "result": "404_NOT_FOUND"
+    },
+    {
+      "type": "private_automation_inventory",
+      "observed_at_utc": "2026-10-07T03:58:00Z",
+      "observation": "6ab8177918b48191a97e56c44b57d2c5 enabled; last_run_time 2026-10-07T02:57:43.929039Z; replacement 6abb103472608191b72f9eaa522b772b absent."
+    }
+  ],
+  "prior_receipt_path": "automation_intelligence/mcp_interface/research_runs/daedalus/20261007T000119414Z_daedalus.json",
+  "event_paths": [],
+  "blockers": [
+    "No valid hybrid request_id or required_result_path exists for lane daedalus or daedalus_prime.",
+    "Running automation identity is absent from registry.",
+    "Registered replacement identity is absent from current live automation inventory.",
+    "Scheduler/topology mutation is outside this worker's authorized scope."
+  ],
+  "execution_authorized": false
+}

@@ -1,0 +1,60 @@
+{
+  "schema_version": "icarus-research-run-v1",
+  "run_id": "aion-20261007T043937Z",
+  "lane": "aion",
+  "automation_id": "6abb1618be1c8191943f5d4e2d88978d",
+  "started_at_utc": "2026-10-07T04:38:49Z",
+  "completed_at_utc": "2026-10-07T04:39:37.471Z",
+  "outcome": "BLOCKED",
+  "substantive_work_performed": false,
+  "summary": "Hybrid contract validation failed before substantive work. Registry v2/fabric 1.1.0 still contains neither lane aion nor automation_id 6abb1618be1c8191943f5d4e2d88978d. AION is preserved only as historical lane aion_prime under automation_id 6abb102bde94819189bbf57062edcb32 with manual-only dispatch. requests/aion/latest.json returned 404, so no exact request_id, unresolved backlog, or required_result_path exists. The prior verified blocked receipt records the same migrated-identity failure. No quantitative claim, falsification experiment, MCP/Brain event, parameter change, or hybrid result was fabricated.",
+  "evidence": [
+    {
+      "type": "hybrid_registry",
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/registry.json",
+      "observed_blob_sha": "ce3e6cd23abaf28f913d1b62178416699587fa4a",
+      "observed_main_revision": "26ef071d4c95c7e61c46e9495d61f8ce43f54052",
+      "url": "https://github.com/reppiks490/Icarus-engine/blob/main/automation_intelligence/hybrid_loop_fabric_v1/registry.json",
+      "observation": "No lane aion or automation_id 6abb1618be1c8191943f5d4e2d88978d. aion_prime is HISTORICAL_DISABLED under automation_id 6abb102bde94819189bbf57062edcb32 and MANUAL_GITHUB_REQUEST_ONLY."
+    },
+    {
+      "type": "hybrid_contract",
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/CONTRACT.md",
+      "observed_blob_sha": "a2aa7059288144217691a419bb7e9e47289c2056",
+      "url": "https://github.com/reppiks490/Icarus-engine/blob/main/automation_intelligence/hybrid_loop_fabric_v1/CONTRACT.md",
+      "observation": "Requires exact lane/automation/repository validation and immutable request identity before substantive work or result completion."
+    },
+    {
+      "type": "missing_request_pointer",
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/requests/aion/latest.json",
+      "url": "https://github.com/reppiks490/Icarus-engine/blob/main/automation_intelligence/hybrid_loop_fabric_v1/requests/aion/latest.json",
+      "observation": "GitHub returned 404 Not Found; no request_id, prior_unresolved_request_ids, or required_result_path was available."
+    },
+    {
+      "type": "prior_research_receipt",
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/mcp_interface/research_runs/aion/20261007T034648Z.json",
+      "observed_blob_sha": "67f89a3a7a595439c98fa6f4a58a678f34d4b7bb",
+      "url": "https://github.com/reppiks490/Icarus-engine/blob/main/automation_intelligence/mcp_interface/research_runs/aion/20261007T034648Z.json",
+      "observation": "Exact prior BLOCKED receipt was read; it records the same migrated-identity and missing-request-pointer failure."
+    },
+    {
+      "type": "automation_control",
+      "automation_id": "6abb1618be1c8191943f5d4e2d88978d",
+      "observation": "Automation listing confirmed this obsolete worker remained enabled despite its persistent registry mismatch."
+    }
+  ],
+  "prior_receipt_path": "automation_intelligence/mcp_interface/research_runs/aion/20261007T034648Z.json",
+  "event_paths": [],
+  "blockers": [
+    "Current Hybrid Loop Fabric registry has no lane aion and no automation_id 6abb1618be1c8191943f5d4e2d88978d.",
+    "Registered AION survives only as historical aion_prime with a different automation_id and manual-only dispatch.",
+    "automation_intelligence/hybrid_loop_fabric_v1/requests/aion/latest.json does not exist on main.",
+    "Without an exact immutable request_id and required_result_path, substantive processing and hybrid completion cannot be formed truthfully.",
+    "The same blocker persisted from the prior verified receipt; recurring execution would only create duplicate blocked receipts."
+  ],
+  "execution_authorized": false
+}

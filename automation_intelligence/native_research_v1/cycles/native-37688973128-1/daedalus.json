@@ -1,0 +1,59 @@
+{
+  "automation_id": "github-native-research-v1",
+  "blockers": [],
+  "chatgpt_tokens_used": 0,
+  "code_revision": "50a102bbc439dcd12847e6fcfbc66fd936053300",
+  "completed_at_utc": "2026-10-07T21:24:19.526653Z",
+  "event_paths": [],
+  "evidence": [
+    "automation_intelligence/native_research_v1/cycles/native-37688973128-1/evidence.json"
+  ],
+  "execution_authorized": false,
+  "input_sha256": "92fde190ef6f6010bb9a38659d8fb284587dbff5e71730e5dc859d587a43dd53",
+  "lane": "daedalus",
+  "local_interpretation": {
+    "authority": "UNVERIFIED_MODEL_INFERENCE",
+    "model": "Qwen/Qwen3-1.7B-GGUF@90862c4:Q8_0",
+    "payload": {
+      "conflicts": [],
+      "data_gaps": [],
+      "execution_authorized": false,
+      "lane": "daedalus",
+      "net_new_delta": "LOCAL_NEXT_TEST_SELECTION",
+      "summary": "Does an injected statistic error fail the independent oracle?"
+    },
+    "response_id": "local-26eea095bbfd1e0b1aab7d49",
+    "status": "GENERATED"
+  },
+  "measurements": {
+    "checks": [
+      {
+        "baseline_count": 28,
+        "future_excluded": true,
+        "oracle": "independently coded sorted scalar MAD",
+        "range_and_volume_checked": true,
+        "representation": "coinbase_spot"
+      },
+      {
+        "baseline_count": 28,
+        "future_excluded": true,
+        "oracle": "independently coded sorted scalar MAD",
+        "range_and_volume_checked": true,
+        "representation": "kraken_spot"
+      }
+    ],
+    "defects": [],
+    "scope": "Current cycle statistics/time integrity only; not certification of the entire ICARUS system.",
+    "status": "VERIFIED",
+    "summary": "2 independent measurement audits; 0 defects."
+  },
+  "outcome": "NO_MATERIAL_DELTA",
+  "paid_model_calls": 0,
+  "prior_receipt_path": "automation_intelligence/native_research_v1/cycles/native-37688102334-1/daedalus.json",
+  "run_id": "native-37688973128-1-daedalus",
+  "schema_version": "icarus-research-run-v1",
+  "started_at_utc": "2026-10-07T21:23:24.203191Z",
+  "substantive_work_performed": true,
+  "summary": "2 independent measurement audits; 0 defects.",
+  "worker": "GITHUB_ACTIONS"
+}

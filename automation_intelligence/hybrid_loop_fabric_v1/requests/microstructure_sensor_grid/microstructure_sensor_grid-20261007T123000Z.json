@@ -1,17 +1,22 @@
 {
   "automation_id": "6abaef8effb48191aa5c959455451681",
+  "backfill_policy": {
+    "hot_scan_limit": 24,
+    "irrecoverable_outcome": "BLOCKED",
+    "never_fabricate_outage_work": true,
+    "order": "OLDEST_UNRESOLVED_FIRST",
+    "preserve_all_request_ids": true
+  },
+  "contract_fingerprint": "b6484af3a8a1fa436662df7f4467bfe835c6dc53f0070abba2ef587387723322",
+  "contract_registry_path": "automation_intelligence/hybrid_loop_fabric_v1/registry.json",
+  "due_slot_utc": "2026-10-07T12:30:00Z",
   "execution_authorized": false,
   "fabric_id": "icarus-account-hybrid-loop-fabric-v1",
   "github_liveness_receipt_is_not_completion": true,
-  "health": "BACKLOG",
   "lane": "microstructure_sensor_grid",
-  "latest_request_id": "microstructure_sensor_grid-20261007T133000Z",
-  "observed_at_utc": "2026-10-07T14:20:24Z",
-  "oldest_unresolved_request_id": "microstructure_sensor_grid-20261006T143000Z",
-  "schema_version": "icarus-hybrid-loop-health-v1",
-  "title": "Microstructure Sensor Grid",
-  "unresolved_count_hot_window": 24,
-  "unresolved_request_ids_hot_window": [
+  "prior_unresolved_request_ids": [
+    "microstructure_sensor_grid-20261006T123000Z",
+    "microstructure_sensor_grid-20261006T133000Z",
     "microstructure_sensor_grid-20261006T143000Z",
     "microstructure_sensor_grid-20261006T153000Z",
     "microstructure_sensor_grid-20261006T163000Z",
@@ -33,8 +38,18 @@
     "microstructure_sensor_grid-20261007T083000Z",
     "microstructure_sensor_grid-20261007T093000Z",
     "microstructure_sensor_grid-20261007T103000Z",
-    "microstructure_sensor_grid-20261007T113000Z",
-    "microstructure_sensor_grid-20261007T123000Z",
-    "microstructure_sensor_grid-20261007T133000Z"
-  ]
+    "microstructure_sensor_grid-20261007T113000Z"
+  ],
+  "project_scope": "ICARUS_FLOW",
+  "recovered_after_schedule_delay": true,
+  "request_created_at_utc": "2026-10-07T14:20:24Z",
+  "request_id": "microstructure_sensor_grid-20261007T123000Z",
+  "request_origin": "GITHUB_ACTIONS_INTEGRATED_SCHEDULE",
+  "requested_at_utc": "2026-10-07T14:20:24Z",
+  "required_result_path": "automation_intelligence/hybrid_loop_fabric_v1/results/microstructure_sensor_grid/microstructure_sensor_grid-20261007T123000Z.json",
+  "schema_version": "icarus-hybrid-work-request-v1",
+  "substantive_ai_inference_required": true,
+  "title": "Microstructure Sensor Grid",
+  "workflow_run_attempt": "1",
+  "workflow_run_id": "37635838775"
 }

@@ -1,0 +1,78 @@
+{
+  "schema_version": "icarus-mcp-event-v1",
+  "event_id": "20261007T045433326Z-daedalus-active-flow-cross-provider-temporal-anchor-gap",
+  "at_utc": "2026-10-07T04:54:33.324Z",
+  "category": "AUDIT",
+  "status": "DEGRADED",
+  "severity": "high",
+  "summary": "The newest strict-v1 FLOW event avoids the historical ~80-minute provider-time inversion and correctly excludes the forming 04:00 BTC bar, but it assigns the same 2026-10-07T04:25:53.353Z retrieval_time_anchor to Bybit spot candles, Bybit linear candles, and Twelve Data observations even though that timestamp is the Bybit orderbook server timestamp. The FLOW event itself discloses this substitution. This preserves honest uncertainty but does not provide per-provider retrieval attestation; Twelve Data evidence cannot inherit a Bybit provider clock as proof of when it was retrieved.",
+  "surface": [
+    "Strict-v1 FLOW/ARGUS/NEXUS evidence temporal lineage",
+    "Cross-provider corroboration provenance",
+    "MCP event contract and Adaptive Brain research-observability ingestion"
+  ],
+  "source": "DAEDALUS_AUTOMATION",
+  "paths": [
+    "automation_intelligence/mcp_interface/events/20261007T042657438Z_flow_btc_two_hour_downside_volatility_turnover_burst.json",
+    "automation_intelligence/mcp_interface/research_runs/flow/20261007T042737399Z_flow.json",
+    "automation_intelligence/mcp_interface/contract.json",
+    "automation_intelligence/mcp_interface/icarus_consumer_contract.json"
+  ],
+  "evidence": [
+    {
+      "classification": "FACT",
+      "path": "automation_intelligence/mcp_interface/events/20261007T042657438Z_flow_btc_two_hour_downside_volatility_turnover_burst.json",
+      "blob_sha": "d945c75c2beca2f008b5b39c4f165e9760be20ac",
+      "finding": "Bybit spot, Bybit linear, and Twelve Data evidence entries all use retrieval_time_anchor 2026-10-07T04:25:53.353Z. The orderbook evidence identifies that exact value as its Bybit source_time. The event's data_gaps explicitly says the contemporaneous Bybit orderbook server timestamp anchors K-line and Twelve Data retrieval because provider-specific retrieval timestamps were unavailable."
+    },
+    {
+      "classification": "FACT",
+      "path": "automation_intelligence/mcp_interface/research_runs/flow/20261007T042737399Z_flow.json",
+      "blob_sha": "56932dd9a209f42ef716ebd1a3f0977daa1e55e3",
+      "finding": "The durable receipt repeats the shared retrieval_time_anchor across both provider families and preserves the event blob/commit identity."
+    },
+    {
+      "classification": "FACT",
+      "path": "automation_intelligence/mcp_interface/contract.json",
+      "blob_sha": "991b157fd82b3dd9e7e49356fefb06dd89c22579",
+      "finding": "Strict-v1 required fields do not require per-evidence event_time, provider_time, retrieved_at, observation class, or decision cutoff."
+    },
+    {
+      "classification": "FACT",
+      "path": "automation_intelligence/mcp_interface/icarus_consumer_contract.json",
+      "blob_sha": "0af0b2854913fd4ecf444cc6f870b6c06547e419",
+      "finding": "The consumer requires the strict-v1 envelope but imposes no per-evidence temporal-order validation. Its peer-packet surface separately defines max_future_skew_seconds=300, showing that future-skew controls exist elsewhere but not for MCP event evidence."
+    },
+    {
+      "classification": "VERIFIED",
+      "finding": "All cited completed BTC bars are causally earlier than the shared anchor: the 03:00 hourly bar completes at 04:00 UTC, before 04:25:53.353Z. No active ~80-minute inversion is present in this event."
+    },
+    {
+      "classification": "MODEL_INFERENCE",
+      "finding": "The market-range corroboration remains usable as research context, but the independent-source count must not be interpreted as independently attested retrieval timing. A Bybit server clock is not an authoritative retrieval witness for Twelve Data."
+    }
+  ],
+  "conflicts": [],
+  "limitations": [
+    "The audit proves missing provider-specific retrieval attestation, not post-cutoff data leakage.",
+    "The audit does not challenge the reported BTC OHLC ranges or Bybit spot volume calculations.",
+    "Actual client-side call completion timestamps were not preserved in the event, so exact provider latency cannot be reconstructed."
+  ],
+  "required_remediation": [
+    "Capture a local monotonic/UTC retrieved_at timestamp for every provider response at the connector boundary; do not borrow another provider's source timestamp.",
+    "Store provider_time/source_time separately from retrieved_at and record epoch/timezone semantics.",
+    "Require completed-bar end time <= retrieved_at <= assertion_created_at, with documented skew tolerance where applicable.",
+    "Label cross-provider corroboration temporally weaker whenever a provider-specific retrieval witness is absent.",
+    "Add this active strict-v1 event and the three historical ~80-minute inversions as regression fixtures for a temporal-lineage validator."
+  ],
+  "next_independent_verification_target": "Inspect the connector/runtime layer that issued the Bybit and Twelve Data calls and determine whether per-call completion timestamps exist outside the persisted event. If they exist, bind them to each evidence record; if not, add capture and rejection tests before using independent-source counts as temporal corroboration.",
+  "daedalus": {
+    "status": "DEGRADED",
+    "finding": "The newest FLOW finding is temporally better behaved than the grandfathered records and its completed bars precede the anchor, but scientific replay cannot reconstruct provider-specific retrieval timing because one Bybit server timestamp anchors both provider families."
+  },
+  "aegis": {
+    "status": "BLOCKING",
+    "finding": "For causal-time attestation, a provider-origin Bybit timestamp cannot authenticate when independent Twelve Data evidence became available. Strict-v1 currently admits this substitution without validation."
+  },
+  "execution_authorized": false
+}

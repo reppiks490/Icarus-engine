@@ -1,0 +1,101 @@
+{
+  "schema_version": "icarus-research-run-v1",
+  "run_id": "20261007T203627Z_flow",
+  "lane": "flow",
+  "automation_id": "6ab817544e68819197b5db21eb2cbe2b",
+  "started_at_utc": "2026-10-07T20:33:13Z",
+  "completed_at_utc": "2026-10-07T20:36:27.470Z",
+  "outcome": "MATERIAL_DELTA",
+  "substantive_work_performed": true,
+  "summary": "Fresh direct Bybit spot, Bybit linear, and Twelve Data hourly evidence resolved the prior provider-access gap. The 15:00 UTC BTC range re-expansion normalized at 16:00, produced only a borderline range-only pulse at 17:00, and returned to ordinary ranges and turnover at 18:00 and 19:00. The durable state is EPISODIC_ALTERNATING_VOLATILITY_NORMALIZED, not persistent volatility or sustained liquidity stress. Current Bybit displayed depth was recorded strictly as point-in-time evidence. Massive NQZ6, GCZ6, and SIZ6 aggregates remained about 8.5 hours stale and were excluded.",
+  "evidence": [
+    {
+      "type": "hybrid_registry",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/registry.json",
+      "blob_sha": "ce3e6cd23abaf28f913d1b62178416699587fa4a",
+      "result": "Validated before substantive work; current automation_id is absent and flow_velocity is historical-disabled under a different ID."
+    },
+    {
+      "type": "hybrid_contract",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/CONTRACT.md",
+      "blob_sha": "a2aa7059288144217691a419bb7e9e47289c2056",
+      "result": "Validated before substantive work; exact request identity and exact read-back are mandatory."
+    },
+    {
+      "type": "prior_research_receipt",
+      "path": "automation_intelligence/mcp_interface/research_runs/flow/20261007T192823Z_flow.json",
+      "blob_sha": "df02ac48005c8b08e7653dbcb288bcbc99a5cc69",
+      "comparison": "Prior run retained the 15:00 UTC episodic-volatility state because direct hourly Bybit evidence was inaccessible. This run restored direct access and resolved persistence."
+    },
+    {
+      "type": "provider_evidence",
+      "classification": "FACT",
+      "provider": "Bybit",
+      "representations": [
+        "BTCUSDT spot 1-hour candles",
+        "BTCUSDT linear 1-hour candles"
+      ],
+      "event_interval_utc": "2026-10-07T15:00:00Z/2026-10-07T20:00:00Z",
+      "retrieved_interval_utc": "2026-10-07T20:34:27.496Z/2026-10-07T20:34:28.539Z",
+      "finding": "Spot range robust-z sequence for 15:00-19:00 was +2.6679, +0.4429, +2.1211, +0.2100, -0.8574; spot volume z was +2.1853, +0.8895, +0.5076, -0.3164, -0.0723. Linear range z was +2.9275, +0.1761, +1.9208, +0.1209, -0.8458; linear volume z remained sub-threshold throughout."
+    },
+    {
+      "type": "independent_price_reconciliation",
+      "classification": "FACT",
+      "provider": "Twelve Data",
+      "representation": "BTC/USD 1-hour OHLC",
+      "event_interval_utc": "2026-10-07T15:00:00Z/2026-10-07T20:00:00Z",
+      "retrieved_interval_utc": "2026-10-07T20:34:27.496Z/2026-10-07T20:34:28.539Z",
+      "finding": "Range robust-z sequence was +2.6917, +0.2486, +1.9702, +0.1777, -0.7590, confirming normalization and only a borderline 17:00 pulse."
+    },
+    {
+      "type": "point_in_time_depth",
+      "classification": "FACT",
+      "provider": "Bybit",
+      "representation": "BTCUSDT spot displayed order book",
+      "event_time_utc": "2026-10-07T20:35:22.552Z",
+      "retrieved_interval_utc": "2026-10-07T20:35:22.515Z/2026-10-07T20:35:22.882Z",
+      "finding": "Best displayed bid 83,340.0 x 0.289586 BTC; best displayed ask 83,340.1 x 1.662785 BTC; $0.10 spread. No historical-depth comparison or liquidity-recovery inference was made."
+    },
+    {
+      "type": "source_health",
+      "classification": "FACT",
+      "provider": "Massive",
+      "representations": [
+        "NQZ6 1-hour aggregates",
+        "GCZ6 1-hour aggregates",
+        "SIZ6 1-hour aggregates"
+      ],
+      "retrieved_interval_utc": "2026-10-07T20:34:54.473Z/2026-10-07T20:35:08.881Z",
+      "finding": "Latest returned bars began at 12:00 UTC, approximately 8.5 hours stale at retrieval; excluded from contemporaneous cross-market inference."
+    },
+    {
+      "type": "material_event",
+      "path": "automation_intelligence/mcp_interface/events/20261007T203533Z_flow_btc_episodic_range_pulses_normalized.json",
+      "blob_sha": "1994ff8938e2d4337f21856bdbaba222e9b157ff",
+      "commit_sha": "f9879450fb50a8dfdcf4604f327a4f3f681f5a69",
+      "exact_readback_verified": true
+    }
+  ],
+  "prior_receipt_path": "automation_intelligence/mcp_interface/research_runs/flow/20261007T192823Z_flow.json",
+  "event_paths": [
+    "automation_intelligence/mcp_interface/events/20261007T203533Z_flow_btc_episodic_range_pulses_normalized.json"
+  ],
+  "blockers": [
+    "HYBRID_RESULT UNVERIFIED: automation_intelligence/hybrid_loop_fabric_v1/requests/flow/latest.json returned GitHub 404, so no request_id or required_result_path could be validated and no hybrid result was fabricated.",
+    "The current automation_id is absent from the validated hybrid registry; no schedule or topology mutation was attempted.",
+    "Massive NQZ6, GCZ6, and SIZ6 aggregates were approximately 8.5 hours stale and unusable for contemporaneous cross-market confirmation.",
+    "No authenticated trade-sign history, historical depth baseline, open interest, liquidations, funding, basis, current DXY/rates, or volatility-index evidence was available."
+  ],
+  "subsystem_assessment": {
+    "argus": {
+      "status": "MATERIAL_DELTA",
+      "finding": "Authenticated candle evidence proves the 15:00 range burst did not persist; the 17:00 pulse was range-only and sub-threshold. Current displayed depth is point-in-time only and supports no liquidity-recovery claim."
+    },
+    "nexus": {
+      "status": "MATERIAL_DELTA",
+      "finding": "Three BTC price representations reconcile the normalization sequence and direct Bybit routing recovered, while stale Massive futures data was quarantined rather than backfilled or interpolated."
+    }
+  },
+  "execution_authorized": false
+}

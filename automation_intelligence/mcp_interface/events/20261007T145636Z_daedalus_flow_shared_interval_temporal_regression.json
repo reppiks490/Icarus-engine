@@ -1,0 +1,118 @@
+{
+  "schema_version": "icarus-mcp-event-v1",
+  "event_id": "20261007T145636Z-daedalus-flow-shared-interval-temporal-regression",
+  "at_utc": "2026-10-07T14:56:36.733Z",
+  "category": "AUDIT",
+  "status": "DEGRADED",
+  "severity": "HIGH",
+  "summary": "The newest material Flow event regressed from distinct provider-query temporal witnesses to one shared retrieval interval for four separately returned observations: Bybit spot, Bybit linear, Twelve Data, and Bybit orderbook all use 2026-10-07T14:31:45.699Z–14:31:47.748Z. The three Massive futures calls likewise share one 46-second interval without a batch_capture_id or request-membership record. Independent fresh queries reproduced every 13:00 UTC BTC statistic exactly, so the market anomaly is not falsified; however, per-response availability timing remains unauditable. This is the second documented recurrence after run-local recovery, proving the repair is not a durable scientific gate.",
+  "surface": [
+    "FLOW/ARGUS/NEXUS provider-specific retrieval provenance",
+    "DAEDALUS causal-time and scientific-replay assurance",
+    "AEGIS temporal-witness falsification gate",
+    "icarus-mcp event/evidence contract and validator coverage"
+  ],
+  "source": "DAEDALUS_AUTOMATION",
+  "paths": [
+    "automation_intelligence/mcp_interface/events/20261007T143406Z_flow_btc_joint_range_turnover_burst.json",
+    "automation_intelligence/mcp_interface/research_runs/flow/20261007T143451Z_flow.json",
+    "automation_intelligence/mcp_interface/events/20261007T095137Z_daedalus_flow_temporal_witness_regression.json",
+    "automation_intelligence/mcp_interface/events/20261007T105042Z_daedalus_flow_temporal_recovery_reverified.json",
+    "automation_intelligence/mcp_interface/contract.json"
+  ],
+  "evidence": [
+    {
+      "classification": "FACT",
+      "path": "automation_intelligence/mcp_interface/events/20261007T143406Z_flow_btc_joint_range_turnover_burst.json",
+      "blob_sha": "c240aa280a9f5fb961f27a6d63ac15ae8ccfc70d",
+      "finding": "Bybit spot, Bybit linear, Twelve Data, and Bybit orderbook all carry the identical retrieval interval 14:31:45.699Z–14:31:47.748Z. No batch_capture_id, per-request interval, or request-membership list is persisted. NQZ6/GCZ6/SIZ6 similarly share one aggregate interval."
+    },
+    {
+      "classification": "FACT",
+      "path": "automation_intelligence/mcp_interface/research_runs/flow/20261007T143451Z_flow.json",
+      "blob_sha": "51454d425162e793baaa55c7ac6433c6570bb498",
+      "finding": "The exact-read-back receipt repeats the shared intervals while claiming preserved clocks; completed-bar ends are present and precede the batch interval, but individual response availability is not attested."
+    },
+    {
+      "classification": "FACT",
+      "path": "automation_intelligence/mcp_interface/events/20261007T095137Z_daedalus_flow_temporal_witness_regression.json",
+      "blob_sha": "2b24dcb5c24512dfff69cfe9c0036bf70df1d7f2",
+      "finding": "The earlier regression defined unexplained shared timestamps as insufficient and required either distinct per-request intervals or an explicit batch capture identity and membership list."
+    },
+    {
+      "classification": "FACT",
+      "path": "automation_intelligence/mcp_interface/events/20261007T105042Z_daedalus_flow_temporal_recovery_reverified.json",
+      "blob_sha": "41191d0877b3ef6eeb7f3bf76bafb3a77ae9b710",
+      "finding": "The intervening recovery was verified because each provider query had a distinct interval; it explicitly warned that no validator or contract gate made the repair durable."
+    },
+    {
+      "classification": "INDEPENDENT_ORACLE",
+      "providers": [
+        "Bybit spot",
+        "Bybit linear",
+        "Twelve Data"
+      ],
+      "query_intervals_utc": {
+        "bybit_spot": [
+          "2026-10-07T14:55:26.928Z",
+          "2026-10-07T14:55:28.096Z"
+        ],
+        "bybit_linear": [
+          "2026-10-07T14:55:28.096Z",
+          "2026-10-07T14:55:28.614Z"
+        ],
+        "twelve_data": [
+          "2026-10-07T14:55:28.614Z",
+          "2026-10-07T14:55:30.467Z"
+        ]
+      },
+      "finding": "Fresh sequential provider queries exactly reproduced the 13:00 UTC metrics: spot range $789.60 z +4.5517, volume 935.869759 BTC z +3.7803; linear range $861.30 z +4.7172, volume 8427.112 BTC z +5.5683; Twelve Data range $764.76 z +4.1604.",
+      "urls": [
+        "https://api.bybit.com/v5/market/kline?category=spot&symbol=BTCUSDT&interval=60&limit=60",
+        "https://api.bybit.com/v5/market/kline?category=linear&symbol=BTCUSDT&interval=60&limit=60",
+        "https://api.twelvedata.com/time_series?symbol=BTC/USD&interval=1h&outputsize=60"
+      ]
+    },
+    {
+      "classification": "NEGATIVE_ORACLE",
+      "query": "GitHub code search on main for retrieved_at_start_utc, completed_bar_end_utc, and batch_capture_id",
+      "finding": "Search results contain evidence artifacts only; batch_capture_id appears solely in the prior regression event. No implementation or test path enforcing per-request witnesses or explicit batch semantics was found."
+    },
+    {
+      "classification": "FACT",
+      "path": "automation_intelligence/mcp_interface/contract.json",
+      "blob_sha": "991b157fd82b3dd9e7e49356fefb06dd89c22579",
+      "finding": "The active v1 contract still does not require per-query retrieval intervals, completed-bar witnesses, batch identity, request membership, or causal-order validation."
+    },
+    {
+      "classification": "MODEL_INFERENCE",
+      "finding": "The shared interval likely describes a parallel query batch, but without persisted request membership or individual completion times it cannot prove when each provider response became available. Raw connector logs remain unavailable."
+    }
+  ],
+  "conflicts": [
+    "The BTC range and volume statistics are independently reproducible and remain usable as numerical observations.",
+    "Completed-bar end 14:00 UTC precedes the shared 14:31 interval, so broad causal ordering is plausible; the defect is loss of per-response temporal attestation, not backdating evidence.",
+    "A batch interval could be scientifically acceptable only with an explicit batch_capture_id and complete request-membership semantics, which are absent."
+  ],
+  "limitations": [
+    "Raw connector invocation logs and monotonic-clock attestations were unavailable.",
+    "No claim is made that the BTC anomaly itself is numerically wrong.",
+    "No scheduler, contract, code, test, deployment, or trading change was authorized."
+  ],
+  "required_remediation": [
+    "Version the event/evidence contract to require retrieved_at_start_utc and retrieved_at_end_utc per provider response, plus completed_bar_end_utc for completed-bar claims.",
+    "Permit shared intervals only when an explicit batch_capture_id, batch start/end, and complete request-membership list are persisted.",
+    "Implement a validator enforcing completed_bar_end <= retrieval start <= retrieval end <= assertion time and rejecting unexplained shared witnesses.",
+    "Retain the prior regression, recovery, latest regression, and this independent oracle as negative/positive/negative fixtures."
+  ],
+  "next_independent_verification_target": "Audit and test the Flow event-construction path. Durable clearance requires an automatic validator to reject the 14:31 artifact shape while accepting distinct per-request intervals or an explicitly identified parallel batch.",
+  "daedalus": {
+    "status": "DEGRADED",
+    "finding": "The newest material Flow artifact preserves broad ordering but regresses from distinct provider-query intervals to unexplained shared batch intervals."
+  },
+  "aegis": {
+    "status": "BLOCKING",
+    "finding": "Independent per-response availability timing is unavailable for four BTC observations and three futures queries; the same defect has now recurred after two run-local recoveries."
+  },
+  "execution_authorized": false
+}

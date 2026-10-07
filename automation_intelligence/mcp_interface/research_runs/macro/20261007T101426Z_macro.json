@@ -1,0 +1,90 @@
+{
+  "schema_version": "icarus-research-run-v1",
+  "run_id": "macro-20261007T101426Z",
+  "lane": "macro",
+  "automation_id": "6ab8174517b48191b67ac472205a28d3",
+  "started_at_utc": "2026-10-07T10:13:01Z",
+  "completed_at_utc": "2026-10-07T10:14:26Z",
+  "outcome": "NO_MATERIAL_DELTA",
+  "substantive_work_performed": true,
+  "summary": "Validated the Hybrid Loop Fabric registry and contract, confirmed the Macro request pointer remains unavailable, loaded the newest durable Macro receipt, and tested fresh IMF, FX, oil, rates, and precious-metals evidence against existing ICARUS states. The IMF's October 7 warning combines the already-persisted energy-inflation, global sovereign-yield/fiscal-risk, and AI-valuation risk themes without changing the IMF's 3.0% 2026 global-growth forecast. Contemporary price evidence—Brent above $100, DXY +0.3% to +0.4%, gold about 1% lower, and reduced October Fed-hike odds ahead of unreleased FOMC minutes—shows mixed transmission rather than a new synchronized shock. ORACLE preserves existing regimes without promotion. SUPERMESH-X classifies the IMF speech and updated Reuters prices as corroboration, not an independent regime transition.",
+  "evidence": [
+    {
+      "type": "PRIOR_RECEIPT",
+      "path": "automation_intelligence/mcp_interface/research_runs/macro/20261007T091732Z_macro.json",
+      "blob_sha": "593fa930550d9c752a5fea1534d3f1fc1166358b",
+      "finding": "The immediately prior run already encoded partial Middle East flow recovery, Brent above $100, dollar/gold pressure, and the pending FOMC-minutes check."
+    },
+    {
+      "type": "HYBRID_REGISTRY",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/registry.json",
+      "blob_sha": "ce3e6cd23abaf28f913d1b62178416699587fa4a",
+      "finding": "Current automation_id is absent; registered macro_shock_sentinel replacement is historical-disabled/manual-only."
+    },
+    {
+      "type": "HYBRID_CONTRACT",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/CONTRACT.md",
+      "blob_sha": "a2aa7059288144217691a419bb7e9e47289c2056"
+    },
+    {
+      "type": "GITHUB_PATH_CHECK",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/requests/macro/latest.json",
+      "result": "404_NOT_FOUND"
+    },
+    {
+      "type": "FRESH_POLICY_RISK_EVIDENCE",
+      "classification": "SOURCE_CLAIM",
+      "source": "Reuters reporting on IMF Managing Director Kristalina Georgieva",
+      "source_time_utc": "2026-10-07T06:06:00Z",
+      "retrieved_at_utc": "2026-10-07T10:14:26Z",
+      "url": "https://www.reuters.com/world/asia-pacific/imf-chief-warns-energy-shock-growing-debt-ai-risks-threaten-global-growth-2026-10-07/",
+      "finding": "Georgieva described a negative Middle East energy-supply shock, an inflationary AI-demand boom, record public debt and a prudently hawkish monetary-policy bias. She did not signal a change to the IMF's 3.0% 2026 global-growth forecast; updated forecasts remain pending."
+    },
+    {
+      "type": "FRESH_FX_RATES_EVIDENCE",
+      "classification": "FACT",
+      "source": "Reuters",
+      "source_time_utc": "2026-10-07T01:14:00Z",
+      "retrieved_at_utc": "2026-10-07T10:14:26Z",
+      "url": "https://www.reuters.com/world/asia-pacific/dollar-holds-losses-markets-await-fed-minutes-speakers-2026-10-07/",
+      "finding": "DXY was +0.3% at 102.13, EUR/USD -0.4% at 1.1216, Brent was above $100, and October Fed-hike odds had fallen to 21.6% from about 51% a week earlier. This is mixed oil/dollar pressure with less-near-term Fed tightening, not a new synchronized regime."
+    },
+    {
+      "type": "FRESH_PRECIOUS_METALS_EVIDENCE",
+      "classification": "FACT",
+      "source": "Reuters",
+      "source_time_utc": "2026-10-07T02:18:00Z",
+      "observed_market_time_utc": "2026-10-07T09:05:00Z",
+      "retrieved_at_utc": "2026-10-07T10:14:26Z",
+      "url": "https://www.reuters.com/world/india/gold-edges-lower-with-focus-fed-minutes-rate-path-clues-2026-10-07/",
+      "finding": "Spot gold was -0.98% at $4,122.73 and DXY +0.4%; silver, platinum and palladium were down more than 2%. December hike odds remained high while October was expected on hold. This confirms existing dollar/rate pressure and pre-minutes caution."
+    },
+    {
+      "type": "DECISIVE_EVENT_CALENDAR",
+      "classification": "FACT",
+      "source": "Federal Reserve",
+      "retrieved_at_utc": "2026-10-07T10:14:26Z",
+      "url": "https://www.federalreserve.gov/newsevents.htm",
+      "finding": "September FOMC minutes are scheduled for 14:00 U.S. Eastern time on October 7 and were not yet available."
+    }
+  ],
+  "prior_receipt_path": "automation_intelligence/mcp_interface/research_runs/macro/20261007T091732Z_macro.json",
+  "event_paths": [],
+  "blockers": [
+    "No valid hybrid request_id or required_result_path exists for lane macro because requests/macro/latest.json returned GitHub 404; no hybrid result was fabricated.",
+    "Active Macro automation identity 6ab8174517b48191b67ac472205a28d3 is absent from the registry; no schedule or topology was changed.",
+    "The IMF speech is a forward risk synthesis and does not yet include the updated World Economic Outlook forecast tables.",
+    "FOMC minutes and synchronized post-release NQ/MNQ, Treasury, DXY, gold and oil reactions were unavailable at this cycle's cutoff."
+  ],
+  "subsystem_assessment": {
+    "oracle": {
+      "status": "NO_MATERIAL_DELTA",
+      "finding": "Fresh IMF and market evidence corroborates existing energy-inflation, fiscal/rates and AI-valuation risk states without a new forecast or synchronized cross-asset regime break."
+    },
+    "supermesh_x": {
+      "status": "NO_MATERIAL_DELTA",
+      "finding": "Reuters and Federal Reserve sources were timely and internally consistent; the next decisive source is the unreleased FOMC minutes and subsequent market reaction."
+    }
+  },
+  "execution_authorized": false
+}

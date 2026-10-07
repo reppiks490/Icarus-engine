@@ -1,0 +1,97 @@
+{
+  "schema_version": "icarus-research-run-v1",
+  "run_id": "flow-20261007T042737399Z",
+  "lane": "flow",
+  "automation_id": "6ab817544e68819197b5db21eb2cbe2b",
+  "started_at_utc": "2026-10-07T04:25:01Z",
+  "completed_at_utc": "2026-10-07T04:27:37.397Z",
+  "outcome": "MATERIAL_DELTA",
+  "substantive_work_performed": true,
+  "summary": "Fresh completed-hour evidence identified a discrete two-hour BTC downside volatility-and-turnover burst at 01:00-02:00 UTC. Bybit spot reported joint abnormal range and turnover, strongest at 02:00 (range robust z +5.0294; volume robust z +6.1383), while Bybit linear and Twelve Data independently corroborated the price-range expansion. The 03:00 completed interval normalized. ARGUS classifies this as direct candle-volume evidence, not aggressor order flow or liquidation evidence. NEXUS verified cross-representation agreement and excluded the forming 04:00 interval. No routing, learning, scheduler, or trading behavior was changed.",
+  "evidence": [
+    {
+      "type": "prior_receipt",
+      "repository": "reppiks490/Icarus-engine",
+      "ref": "main",
+      "path": "automation_intelligence/mcp_interface/research_runs/flow/20261004T172920105Z_flow.json",
+      "blob_sha": "b209b5f335bc599c8e6112f6b68437d756d1f44b"
+    },
+    {
+      "type": "repository_contract",
+      "repository": "reppiks490/Icarus-engine",
+      "ref": "main",
+      "path": "automation_intelligence/mcp_interface/contract.json",
+      "blob_sha": "991b157fd82b3dd9e7e49356fefb06dd89c22579"
+    },
+    {
+      "type": "hybrid_registry",
+      "repository": "reppiks490/Icarus-engine",
+      "ref": "main",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/registry.json",
+      "blob_sha": "ce3e6cd23abaf28f913d1b62178416699587fa4a",
+      "result": "Current automation_id is not registered. Historical flow_velocity lane points to automation 6abb1022ac1881918a86ee30d74fa9dd and is HISTORICAL_DISABLED; active related lane is microstructure_sensor_grid under a different automation."
+    },
+    {
+      "type": "hybrid_contract",
+      "repository": "reppiks490/Icarus-engine",
+      "ref": "main",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/CONTRACT.md",
+      "blob_sha": "a2aa7059288144217691a419bb7e9e47289c2056"
+    },
+    {
+      "type": "provider_query",
+      "source": "Bybit get_kline",
+      "url": "https://agent.bybit.com/mcp/open?symbol=BTCUSDT&category=spot&source=chatgpt",
+      "representation": "BTCUSDT spot 1h",
+      "event_window": "2026-10-07T01:00:00Z/2026-10-07T03:59:59Z",
+      "retrieval_time_anchor": "2026-10-07T04:25:53.353Z",
+      "result": "01:00 range 1163.10 USD, volume 593.483517 BTC, range z +7.9815, volume z +2.8785; 02:00 range 952.90 USD, volume 1093.836999 BTC, range z +5.0294, volume z +6.1383; 03:00 range 385.80 USD, volume 353.960676 BTC, range z +0.6157, volume z +0.7326."
+    },
+    {
+      "type": "provider_query",
+      "source": "Bybit get_kline",
+      "url": "https://agent.bybit.com/mcp/open?symbol=BTCUSDT&category=linear&source=chatgpt",
+      "representation": "BTCUSDT linear 1h",
+      "event_window": "2026-10-07T01:00:00Z/2026-10-07T03:59:59Z",
+      "retrieval_time_anchor": "2026-10-07T04:25:53.353Z",
+      "result": "Completed-hour ranges: 1176.5, 1009.9, and 394.8 USD. Linear volume was not fused with spot volume."
+    },
+    {
+      "type": "provider_query",
+      "source": "Twelve Data get_time_series",
+      "url": "https://twelvedata.com/",
+      "representation": "BTC/USD 1h",
+      "event_window": "2026-10-07T01:00:00Z/2026-10-07T03:59:59Z",
+      "retrieval_time_anchor": "2026-10-07T04:25:53.353Z",
+      "result": "Completed-hour ranges: 1168.01, 956.27, and 381.48 USD. No volume field returned; forming 04:00 interval excluded."
+    },
+    {
+      "type": "provider_query",
+      "source": "Bybit get_orderbook",
+      "url": "https://www.bybit.com/",
+      "representation": "BTCUSDT spot point-in-time displayed depth",
+      "source_timestamp": "2026-10-07T04:25:53.353Z",
+      "result": "Best bid 84160.4 x 2.176317 BTC; best ask 84160.5 x 0.14002 BTC; displayed spread 0.1 USD; no historical depth inference."
+    },
+    {
+      "type": "persisted_event",
+      "repository": "reppiks490/Icarus-engine",
+      "ref": "main",
+      "path": "automation_intelligence/mcp_interface/events/20261007T042657438Z_flow_btc_two_hour_downside_volatility_turnover_burst.json",
+      "commit_sha": "fc743c0b300ab74226bc66d71261ab1e2bfb174e",
+      "blob_sha": "d945c75c2beca2f008b5b39c4f165e9760be20ac",
+      "verification": "read-back content matched intended event fields and evidence"
+    }
+  ],
+  "prior_receipt_path": "automation_intelligence/mcp_interface/research_runs/flow/20261004T172920105Z_flow.json",
+  "event_paths": [
+    "automation_intelligence/mcp_interface/events/20261007T042657438Z_flow_btc_two_hour_downside_volatility_turnover_burst.json"
+  ],
+  "blockers": [
+    "Hybrid request identity is unavailable: automation_intelligence/hybrid_loop_fabric_v1/requests/flow/latest.json and requests/flow_velocity/latest.json both returned 404, and registry.json does not map automation_id 6ab817544e68819197b5db21eb2cbe2b to a lane. Without an exact request_id and required_result_path, no hybrid result can be created truthfully.",
+    "The enabled ChatGPT predecessor automation is configuration-drifted from registry v1.1.0, which marks flow_velocity historical/disabled and assigns the active microstructure_sensor_grid lane to another automation. No schedule was changed.",
+    "No historical depth or trade sequence was acquired; order-flow direction, persistent liquidity, auction behavior, liquidations, funding, basis, open interest and exchange flow remain unknown.",
+    "No fresh direct NQ/MNQ, GC/MGC, SI, DXY, Treasury/rate-proxy or volatility-index evidence was acquired in this bounded cycle."
+  ],
+  "execution_authorized": false
+}

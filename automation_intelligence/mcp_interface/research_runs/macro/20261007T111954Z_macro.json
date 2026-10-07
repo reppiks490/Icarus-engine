@@ -1,0 +1,90 @@
+{
+  "schema_version": "icarus-research-run-v1",
+  "run_id": "macro-20261007T111954Z",
+  "lane": "macro",
+  "automation_id": "6ab8174517b48191b67ac472205a28d3",
+  "started_at_utc": "2026-10-07T11:18:18Z",
+  "completed_at_utc": "2026-10-07T11:19:54.272Z",
+  "outcome": "NO_MATERIAL_DELTA",
+  "substantive_work_performed": true,
+  "summary": "Loaded the latest durable Macro receipt and screened fresh sovereign-rates, oil-reserve, Fed-policy, FX, commodity and index evidence. The U.S. 30-year yield reached a fresh 24-year high near 5.706%, but this extends the already-preserved global discount-rate/fiscal-risk state by only a few basis points and did not produce a new synchronized cross-asset break: U.S. futures slipped modestly while the prior session's equity records and reduced October Fed-hike odds remained conflicting evidence. The IEA convened to discuss oil/diesel stock releases, but no new decision or additional volume was confirmed; October 14-15 remains the expected detail-setting window. ORACLE therefore preserves existing rates and energy-inflation regimes without promotion. SUPERMESH-X treats the timely Reuters reports as corroboration and preserves the absence of an official IEA decision and unreleased FOMC minutes.",
+  "evidence": [
+    {
+      "type": "PRIOR_RECEIPT",
+      "path": "automation_intelligence/mcp_interface/research_runs/macro/20261007T101426Z_macro.json",
+      "blob_sha": "6cf59f87948f913e4858172c2d182a1cb7073654",
+      "finding": "Immediately prior run already preserved the global sovereign-yield/fiscal-risk and energy-inflation states and identified FOMC minutes as the next decisive check."
+    },
+    {
+      "type": "HYBRID_REGISTRY",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/registry.json",
+      "blob_sha": "ce3e6cd23abaf28f913d1b62178416699587fa4a",
+      "finding": "Current automation_id remains absent; registered macro_shock_sentinel replacement is historical-disabled/manual-only."
+    },
+    {
+      "type": "HYBRID_CONTRACT",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/CONTRACT.md",
+      "blob_sha": "a2aa7059288144217691a419bb7e9e47289c2056"
+    },
+    {
+      "type": "GITHUB_PATH_CHECK",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/requests/macro/latest.json",
+      "result": "404_NOT_FOUND"
+    },
+    {
+      "type": "FRESH_RATES_EVIDENCE",
+      "classification": "FACT",
+      "source": "Reuters",
+      "source_time_utc": "2026-10-07T10:01:28Z",
+      "retrieved_at_utc": "2026-10-07T11:19:54.272Z",
+      "url": "https://www.reuters.com/business/us-30-year-bond-yield-hits-fresh-24-year-high-2026-10-07/",
+      "finding": "The U.S. 30-year Treasury yield reached about 5.706%, its highest since 2002. The incremental move extends the existing long-duration/fiscal-risk regime but is not a distinct new regime by itself."
+    },
+    {
+      "type": "FRESH_CROSS_ASSET_EVIDENCE",
+      "classification": "FACT",
+      "source": "Reuters",
+      "source_time_utc": "2026-10-07T10:36:59Z",
+      "retrieved_at_utc": "2026-10-07T11:19:54.272Z",
+      "url": "https://www.reuters.com/business/wall-st-futures-slip-yields-oil-rebound-fed-minutes-focus-2026-10-07/",
+      "finding": "U.S. futures slipped modestly as oil and yields rose; the 30-year yield was near 5.70%. This is trend pressure, not a synchronized equity-volatility dislocation, and follows record equity closes."
+    },
+    {
+      "type": "FRESH_ENERGY_POLICY_EVIDENCE",
+      "classification": "SOURCE_CLAIM",
+      "source": "Reuters citing two EU diplomats",
+      "source_time_utc": "2026-10-07T07:09:35Z",
+      "retrieved_at_utc": "2026-10-07T11:19:54.272Z",
+      "url": "https://www.reuters.com/business/energy/iea-meet-wednesday-over-proposed-release-reserves-say-two-eu-diplomats-2026-10-07/",
+      "finding": "The IEA governing board scheduled an informal discussion of oil and diesel stock releases at 11:00 UTC. No decision, incremental volume, timing or allocation was confirmed; it is unclear whether any action would be additional to existing commitments."
+    },
+    {
+      "type": "FRESH_FED_POLICY_EVIDENCE",
+      "classification": "SOURCE_CLAIM",
+      "source": "Reuters",
+      "source_time_utc": "2026-10-07T10:04:04Z",
+      "retrieved_at_utc": "2026-10-07T11:19:54.272Z",
+      "url": "https://www.reuters.com/business/fed-minutes-could-detail-rate-hike-decision-policy-path-2026-10-07/",
+      "finding": "The September FOMC minutes may reveal a broader debate than the unanimous rate increase, but they remained unreleased. Markets still leaned toward an October hold, preserving a conflict between long-yield pressure and near-term policy pricing."
+    }
+  ],
+  "prior_receipt_path": "automation_intelligence/mcp_interface/research_runs/macro/20261007T101426Z_macro.json",
+  "event_paths": [],
+  "blockers": [
+    "No valid hybrid request_id or required_result_path exists because automation_intelligence/hybrid_loop_fabric_v1/requests/macro/latest.json returned GitHub 404; no hybrid result was fabricated.",
+    "Active Macro automation identity 6ab8174517b48191b67ac472205a28d3 is absent from registry.json; no schedule or topology was changed.",
+    "The IEA discussion had no confirmed outcome or incremental reserve volume at the research cutoff.",
+    "September FOMC minutes and synchronized post-release NQ/MNQ, Treasury, DXY, gold and oil reactions were unavailable."
+  ],
+  "subsystem_assessment": {
+    "oracle": {
+      "status": "NO_MATERIAL_DELTA",
+      "finding": "The fresh 30-year yield high and modest futures pressure extend existing global-rates risk without establishing a new synchronized regime."
+    },
+    "supermesh_x": {
+      "status": "NO_MATERIAL_DELTA",
+      "finding": "Reuters provided timely rates and event-risk coverage, but the decisive IEA and FOMC primary outcomes were not yet available."
+    }
+  },
+  "execution_authorized": false
+}

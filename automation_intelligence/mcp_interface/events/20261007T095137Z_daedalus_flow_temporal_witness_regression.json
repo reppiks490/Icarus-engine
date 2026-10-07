@@ -1,0 +1,82 @@
+{
+  "schema_version": "icarus-mcp-event-v1",
+  "event_id": "20261007T095137Z-daedalus-flow-temporal-witness-regression",
+  "at_utc": "2026-10-07T09:51:37Z",
+  "category": "AUDIT",
+  "status": "DEGRADED",
+  "severity": "HIGH",
+  "summary": "The first newly audited material Flow run after DAEDALUS verified provider-specific retrieval-witness repair regressed to shared point timestamps and omitted retrieval start/end intervals and explicit completed-bar end witnesses. Bybit spot and linear share 2026-10-07T09:32:08.616Z; independent Twelve Data and Massive evidence share 2026-10-07T09:32:50.998Z. The prior repair was therefore run-local, not enforced. The BTC turnover observation is not falsified because its 08:00 hourly bar is directionally consistent with completion before the 09:32 retrieval point, but independent per-query temporal attestation is BLOCKED.",
+  "surface": [
+    "FLOW/ARGUS/NEXUS provider-specific retrieval provenance",
+    "DAEDALUS temporal-lineage assurance",
+    "AEGIS causal-time falsification gate",
+    "icarus-mcp-event-v1 contract and validator coverage"
+  ],
+  "source": "DAEDALUS_AUTOMATION",
+  "paths": [
+    "automation_intelligence/mcp_interface/events/20261007T080000Z_flow_btc_spot_turnover_only.json",
+    "automation_intelligence/mcp_interface/research_runs/flow/20261007T093001Z_flow.json",
+    "automation_intelligence/mcp_interface/events/20261007T055902600Z_daedalus_flow_provider_retrieval_witness_repair_verified.json",
+    "automation_intelligence/mcp_interface/contract.json"
+  ],
+  "evidence": [
+    {
+      "classification": "FACT",
+      "path": "automation_intelligence/mcp_interface/events/20261007T080000Z_flow_btc_spot_turnover_only.json",
+      "blob_sha": "cb7ce1cf12c3c8e196141e4bc2b3bfa2e6e5d4de",
+      "finding": "Bybit spot and Bybit linear evidence carry the identical retrieval_time_utc 2026-10-07T09:32:08.616Z. Twelve Data and Massive evidence carry the identical retrieval_time_utc 2026-10-07T09:32:50.998Z. No per-query retrieval interval is persisted."
+    },
+    {
+      "classification": "FACT",
+      "path": "automation_intelligence/mcp_interface/research_runs/flow/20261007T093001Z_flow.json",
+      "blob_sha": "4678693b31ad24f8c52924b3dd59dd2829ad90e0",
+      "finding": "The exact-read-back receipt repeats one point timestamp for both Bybit kline queries and another point timestamp for Twelve Data and Massive. It does not contain retrieved_at_start_utc, retrieved_at_end_utc, or completed_bar_end_utc."
+    },
+    {
+      "classification": "FACT",
+      "path": "automation_intelligence/mcp_interface/events/20261007T055902600Z_daedalus_flow_provider_retrieval_witness_repair_verified.json",
+      "blob_sha": "6e6a9921f0ac792a5ebfc56aae99b92191caacfe",
+      "finding": "The prior DAEDALUS event verified four distinct provider-query retrieval intervals and explicitly warned that the repair was receipt-local and not contract-enforced."
+    },
+    {
+      "classification": "NEGATIVE_ORACLE",
+      "query": "GitHub code search on main for retrieved_at_start_utc, retrieved_at_end_utc, and completed_bar_end_utc",
+      "finding": "Each term occurs in exactly two artifacts: the prior repaired Flow receipt and its DAEDALUS audit event. No implementation or test path was returned, so automatic enforcement was not evidenced."
+    },
+    {
+      "classification": "FACT",
+      "path": "automation_intelligence/mcp_interface/contract.json",
+      "blob_sha": "991b157fd82b3dd9e7e49356fefb06dd89c22579",
+      "finding": "icarus-mcp-interface-contract-v1 does not require retrieval intervals, completed-bar end, provider time, or causal ordering fields."
+    },
+    {
+      "classification": "MODEL_INFERENCE",
+      "finding": "The reused point timestamps may be batch-level capture rather than fabricated times, but they cannot independently attest each provider response. Raw connector logs were unavailable, so the exact capture mechanism remains unverified."
+    }
+  ],
+  "conflicts": [
+    "The 08:00 UTC BTC hourly observation remains temporally plausible: a standard one-hour bar would end at 09:00 UTC, before the recorded 09:32 retrieval point.",
+    "Temporal plausibility does not establish independent provider-response retrieval provenance."
+  ],
+  "limitations": [
+    "Raw connector invocation logs and monotonic-clock measurements were unavailable.",
+    "The event labels completed_bar=true but does not persist completed_bar_end_utc.",
+    "No claim is made that the BTC turnover statistic itself is numerically wrong."
+  ],
+  "required_remediation": [
+    "Version the event/evidence contract to require retrieved_at_start_utc and retrieved_at_end_utc for every provider request, plus completed_bar_end_utc for completed-bar claims.",
+    "Reject shared timestamps across distinct provider responses unless an explicit batch_capture_id, batch interval, and request-membership list are persisted.",
+    "Add a validator enforcing completed_bar_end_utc <= retrieved_at_start_utc <= retrieved_at_end_utc <= assertion_created_at_utc.",
+    "Add the repaired 05:33 run as a positive fixture and this 09:32 regression as a negative fixture."
+  ],
+  "next_independent_verification_target": "Audit the event-construction path that emitted flow-20261007T093001Z and prove whether timestamps were captured per request or assigned after batch completion; then verify a contract validator rejects the current artifact shape.",
+  "daedalus": {
+    "status": "DEGRADED",
+    "finding": "The previously verified temporal-provenance repair did not survive the next material Flow run, proving it was not a durable scientific gate."
+  },
+  "aegis": {
+    "status": "BLOCKING",
+    "finding": "Independent per-query temporal attestation is unavailable for the 09:32 Flow evidence because separate calls share point timestamps and omit request intervals and explicit bar-completion witnesses."
+  },
+  "execution_authorized": false
+}

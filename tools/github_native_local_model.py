@@ -63,6 +63,7 @@ def build_local_model_command(
     *,
     output_file: Path | None = None,
     max_output_tokens: int = 768,
+    output_schema: dict[str, object] | None = None,
 ) -> list[str]:
     if type(max_output_tokens) is not int or not 64 <= max_output_tokens <= 768:
         raise ValueError("local output budget must be 64..768")
@@ -81,7 +82,7 @@ def build_local_model_command(
         "--reasoning",
         "off",
         "--json-schema",
-        json.dumps(lane_json_schema(request.lane), sort_keys=True, separators=(",", ":")),
+        json.dumps(output_schema or lane_json_schema(request.lane), sort_keys=True, separators=(",", ":")),
         "-t",
         "4",
         "-c",
@@ -185,6 +186,7 @@ def run_local_model(
     executor: Executor = _default_executor,
     timeout_seconds: int = 180,
     max_output_tokens: int = 768,
+    output_schema: dict[str, object] | None = None,
 ) -> ModelResponse:
     if not binary.is_file():
         raise TransportError("local model runtime is missing")
@@ -201,6 +203,7 @@ def run_local_model(
             request,
             output_file=output_file,
             max_output_tokens=max_output_tokens,
+            output_schema=output_schema,
         )
         exit_code, stdout, stderr = executor(command, timeout_seconds)
         if exit_code != 0:

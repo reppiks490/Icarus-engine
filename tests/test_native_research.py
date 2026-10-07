@@ -166,3 +166,20 @@ def test_transport_failure_is_diagnosed_without_raw_model_text(monkeypatch):
     monkeypatch.setattr(lm,'run_local_model',fail)
     result=nr.model_commentary('aion',{'summary':'x'},Path('bin'),Path('model'))
     assert result['failure_code']=='TIMEOUT'
+
+
+def test_local_model_cannot_invent_facts_or_conflicts(monkeypatch):
+    nr=module()
+    import tools.github_native_local_model as lm
+    from tools.github_native_ai_openai import ModelResponse
+    seen={}
+    def fake(request,**kwargs):
+        seen.update(kwargs)
+        return ModelResponse('bad','completed',{'lane':'daedalus','summary':'Missing calibration for sensor X.','net_new_delta':'MEASURED_DELTA','data_gaps':['sensor X'],'conflicts':[],'execution_authorized':False})
+    monkeypatch.setattr(lm,'run_local_model',fake)
+    result=nr.model_commentary('daedalus',{'status':'VERIFIED','summary':'2 independent audits; no defects.','checks':[{},{}],'defects':[]},Path('bin'),Path('model'))
+    assert result['status']=='BLOCKED'
+    assert result['failure_code']=='UNGROUNDED_INTERPRETATION'
+    schema=seen['output_schema']
+    assert schema['properties']['summary']['enum']
+    assert schema['properties']['conflicts']['maxItems']==0

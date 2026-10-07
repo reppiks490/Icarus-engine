@@ -19,6 +19,14 @@ LANES = ('flow','macro','aion','daedalus','omega')
 SOURCES = {lane: lane.upper()+'_AUTOMATION' for lane in LANES}
 BASELINE = 28
 THRESHOLD = 2.5
+INTERPRETATION_POLICY = 'grounded-next-test-v1'
+NEXT_TESTS = {
+    'flow': ['Does the next completed hour retain joint range and turnover expansion?', 'Do independently timestamped venues corroborate the next anomaly?', 'Can a fresh direct futures feed confirm or refute cross-market propagation?'],
+    'macro': ['Does the next official release change the daily macro context?', 'Do consensus estimates support a measurable release surprise?', 'Can intraday USD and rate observations corroborate the current context?'],
+    'aion': ['Does the fixed hypothesis replicate on a new untouched chronological window?', 'Do larger event samples retain the observed association?', 'Does the association survive time-block and cross-venue negative controls?'],
+    'daedalus': ['Does deliberate future-data contamination fail the independent oracle?', 'Does an injected statistic error fail the independent oracle?', 'Does a missing baseline interval block anomaly qualification?'],
+    'omega': ['Which unavailable source would most reduce current research uncertainty?', 'Do independent lane receipts agree on the highest-value next experiment?', 'Can a new verified experiment resolve the highest-severity remaining blocker?'],
+}
 
 
 def stamp(epoch):
@@ -217,7 +225,7 @@ def macro_research(raw, now):
 
 def model_commentary(lane, measured, binary, model):
     from tools.github_native_ai_openai import ModelRequest, OutputValidationError, TransportError
-    from tools.github_native_local_model import LOCAL_MODEL_ID,run_local_model
+    from tools.github_native_local_model import LOCAL_MODEL_ID,run_local_model,lane_json_schema
     # Bounded factual snapshot; keep full measurements in the separate immutable receipt.
     compact=dict(lane=lane,status=measured.get('status'),summary=measured.get('summary'),
                  data_gaps=(measured.get('gaps') or measured.get('blockers') or [])[:3],
@@ -240,13 +248,21 @@ def model_commentary(lane, measured, binary, model):
         compact.pop('series',None)
         input_text=json.dumps(compact,sort_keys=True,allow_nan=False)
     try:
+        candidates=NEXT_TESTS[lane]
+        schema=lane_json_schema(lane)
+        schema['properties']['summary']={'type':'string','enum':candidates}
+        schema['properties']['net_new_delta']={'type':'string','enum':['LOCAL_NEXT_TEST_SELECTION']}
+        for field in ('data_gaps','conflicts'):
+            schema['properties'][field]={'type':'array','items':{'type':'string'},'maxItems':0}
         request=ModelRequest(lane,LOCAL_MODEL_ID,'none',
-            f'You are the {lane} research assistant. Return ONLY the required JSON, with lane exactly {lane!r}. '
-            'Use supplied facts only. Keep summary under 40 words and include one falsifiable next test. '
-            'Set net_new_delta to "MEASURED_DELTA". data_gaps and conflicts: at most two short strings each. '
-            'execution_authorized=false. Do not invent numbers, causal direction, missing data or authority. '
-            'Your interpretation is unverified and cannot clear a defect.',input_text)
-        response=run_local_model(request,binary=binary,model=model,timeout_seconds=120,max_output_tokens=384)
+            f'You are the {lane} experiment selector. Choose the single most useful next test '
+            'from the exact summary options in the supplied schema using only the supplied measurements. '
+            'Do not add facts, conflicts, or gaps: those are owned by measurement scripts. '
+            'Set net_new_delta="LOCAL_NEXT_TEST_SELECTION", data_gaps=[], conflicts=[], execution_authorized=false.',input_text)
+        response=run_local_model(request,binary=binary,model=model,timeout_seconds=120,max_output_tokens=384,output_schema=schema)
+        if (response.payload['summary'] not in candidates or response.payload['data_gaps'] or
+            response.payload['conflicts'] or response.payload['net_new_delta']!='LOCAL_NEXT_TEST_SELECTION'):
+            return dict(status='BLOCKED',authority='UNVERIFIED_MODEL_INFERENCE',failure_code='UNGROUNDED_INTERPRETATION')
         return dict(status='GENERATED',authority='UNVERIFIED_MODEL_INFERENCE',model=LOCAL_MODEL_ID,
                     response_id=response.response_id,payload=response.payload)
     except OutputValidationError as exc:
@@ -297,7 +313,8 @@ def run_cycle(root, packets, macro_raw, *,now,run_id,code_revision,binary,model,
         states[lane]=state
         changed=state!=previous.get('state_hashes',{}).get(lane)
         # Local reasoning runs only on semantic changes; every cycle still measures all lanes.
-        retry_model=previous.get('lanes',{}).get(lane,{}).get('local_model_status')=='BLOCKED'
+        retry_model=(previous.get('lanes',{}).get(lane,{}).get('local_model_status')=='BLOCKED' or
+                     previous.get('interpretation_policy')!=INTERPRETATION_POLICY)
         commentary=(model_commentary(lane,measured,binary,model) if (changed or retry_model) and binary and model else
                     dict(status='NOT_RUN' if not changed else 'BLOCKED',authority='UNVERIFIED_MODEL_INFERENCE',
                          reason='No semantic change' if not changed else 'Local runtime unavailable'))
@@ -329,7 +346,7 @@ def run_cycle(root, packets, macro_raw, *,now,run_id,code_revision,binary,model,
         lanes[lane]=dict(status=measured['status'],receipt_path=str(receipt_path),event_path=str(event_path) if event_path else None,
                          local_model_status=commentary['status'],substantive_work_performed=receipt['substantive_work_performed'])
     latest=dict(schema_version='icarus-native-research-status-v1',run_id=run_id,at_utc=stamp(now),code_revision=code_revision,
-                lanes=lanes,state_hashes=states,execution_authorized=False,chatgpt_tokens_used=0,paid_model_calls=0,
+                lanes=lanes,state_hashes=states,interpretation_policy=INTERPRETATION_POLICY,execution_authorized=False,chatgpt_tokens_used=0,paid_model_calls=0,
                 qualification='BOUNDED_RESEARCH_REPLACEMENT; NOT_FRONTIER_MODEL_EQUIVALENCE')
     previous_path.parent.mkdir(parents=True,exist_ok=True)
     previous_path.write_text(json.dumps(latest,indent=2,sort_keys=True)+'\n')

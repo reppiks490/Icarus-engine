@@ -1,0 +1,124 @@
+{
+  "automation_id": "github-native-research-v1",
+  "blockers": [
+    "Direct NQ/MNQ, GC/MGC, SI, DXY and volatility indices not acquired by this public worker.",
+    "Twelve Data and Massive connector credentials not exported; no entitlement inferred.",
+    "No historical trade signs, depth sequence, liquidations, OI, funding or basis collected."
+  ],
+  "chatgpt_tokens_used": 0,
+  "code_revision": "370491332c765234e575b7fcd30d5d3b34cc353f",
+  "completed_at_utc": "2026-10-07T21:08:44.324425Z",
+  "event_paths": [
+    "automation_intelligence/mcp_interface/events/native-37687170031-1_native_flow.json"
+  ],
+  "evidence": [
+    "automation_intelligence/native_research_v1/cycles/native-37687170031-1/evidence.json"
+  ],
+  "execution_authorized": false,
+  "input_sha256": "e2552f9f68856346dc880cb0e2cfa9a4ec9a0f3118d35e54d4daf1c8b7dcc8ae",
+  "lane": "flow",
+  "local_interpretation": {
+    "authority": "UNVERIFIED_MODEL_INFERENCE",
+    "model": "Qwen/Qwen3-1.7B-GGUF@90862c4:Q8_0",
+    "payload": {
+      "conflicts": [],
+      "data_gaps": [
+        "Direct NQ/MNQ, GC/MGC, SI, DXY and volatility indices not acquired by this public worker.",
+        "Twelve Data and Massive connector credentials not exported; no entitlement inferred.",
+        "No historical trade signs, depth sequence, liquidations, OI, funding or basis collected."
+      ],
+      "execution_authorized": false,
+      "lane": "flow",
+      "net_new_delta": ":-1.186008632559404",
+      "summary": "coinbase_spot: ORDINARY; kraken_spot: ORDINARY; bybit_spot: ORDINARY; bybit_linear: ORDINARY"
+    },
+    "response_id": "local-6e62560e6c9f23c56cf4abf9",
+    "status": "GENERATED"
+  },
+  "measurements": {
+    "conflicts": [],
+    "current": [
+      {
+        "baseline_count": 28,
+        "baseline_end": 1791403200,
+        "baseline_start": 1791302400,
+        "end": 1791406800,
+        "lane_key": "coinbase_spot",
+        "provider": "coinbase",
+        "range": 287.54000000000815,
+        "range_z": -0.20605822912572302,
+        "representation": "BTC-USD spot",
+        "start": 1791403200,
+        "state": "ORDINARY",
+        "volume": 157.22928174,
+        "volume_z": -0.33284244370049115
+      },
+      {
+        "baseline_count": 28,
+        "baseline_end": 1791403200,
+        "baseline_start": 1791302400,
+        "end": 1791406800,
+        "lane_key": "kraken_spot",
+        "provider": "kraken",
+        "range": 276.8999999999942,
+        "range_z": -0.06926962375146821,
+        "representation": "BTC-USD spot",
+        "start": 1791403200,
+        "state": "ORDINARY",
+        "volume": 85.2703445,
+        "volume_z": -0.38393649192797075
+      },
+      {
+        "baseline_count": 28,
+        "baseline_end": 1791403200,
+        "baseline_start": 1791302400,
+        "end": 1791406800,
+        "lane_key": "bybit_spot",
+        "provider": "bybit",
+        "range": 282.6000000000058,
+        "range_z": -0.0952360572648535,
+        "representation": "BTCUSDT spot",
+        "start": 1791403200,
+        "state": "ORDINARY",
+        "volume": 222.331327,
+        "volume_z": -1.186008632559404
+      },
+      {
+        "baseline_count": 28,
+        "baseline_end": 1791403200,
+        "baseline_start": 1791302400,
+        "end": 1791406800,
+        "lane_key": "bybit_linear",
+        "provider": "bybit",
+        "range": 289.5,
+        "range_z": -0.13390928334135566,
+        "representation": "BTCUSDT linear",
+        "start": 1791403200,
+        "state": "ORDINARY",
+        "volume": 937.245,
+        "volume_z": -0.7577268118455122
+      }
+    ],
+    "gaps": [
+      "Direct NQ/MNQ, GC/MGC, SI, DXY and volatility indices not acquired by this public worker.",
+      "Twelve Data and Massive connector credentials not exported; no entitlement inferred.",
+      "No historical trade signs, depth sequence, liquidations, OI, funding or basis collected."
+    ],
+    "limits": [
+      "Candle volume is representation-specific reported activity, not directional order flow.",
+      "No depth-history, liquidation, absorption or cross-asset causal claim."
+    ],
+    "provider_family_count": 3,
+    "status": "VERIFIED",
+    "summary": "coinbase_spot: ORDINARY; kraken_spot: ORDINARY; bybit_spot: ORDINARY; bybit_linear: ORDINARY"
+  },
+  "outcome": "MATERIAL_DELTA",
+  "paid_model_calls": 0,
+  "prior_receipt_path": "automation_intelligence/native_research_v1/cycles/native-37686609084-1/flow.json",
+  "run_id": "native-37687170031-1-flow",
+  "schema_version": "icarus-research-run-v1",
+  "started_at_utc": "2026-10-07T21:08:13.672096Z",
+  "substantive_work_performed": true,
+  "summary": "coinbase_spot: ORDINARY; kraken_spot: ORDINARY; bybit_spot: ORDINARY; bybit_linear: ORDINARY",
+  "worker": "GITHUB_ACTIONS"
+}

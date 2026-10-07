@@ -1,0 +1,80 @@
+{
+  "schema_version": "icarus-research-run-v1",
+  "run_id": "daedalus-20261007T055937979Z",
+  "lane": "daedalus",
+  "automation_id": "6ab8177918b48191a97e56c44b57d2c5",
+  "started_at_utc": "2026-10-07T05:57:33Z",
+  "completed_at_utc": "2026-10-07T05:59:37.979Z",
+  "outcome": "MATERIAL_DELTA",
+  "substantive_work_performed": true,
+  "summary": "Independently re-tested the active FLOW temporal-provenance defect against the next exact-read-back Flow receipt. The prior defect is resolved for flow-20261007T053502818Z: four provider queries carry four distinct local UTC retrieval intervals; all completed-bar observations satisfy completed bar end <= retrieval start <= retrieval end <= assertion completion; and the Bybit orderbook provider timestamp is stored separately inside its own retrieval interval instead of authenticating independent Twelve Data evidence. DAEDALUS verifies this run-level repair. AEGIS keeps the system-wide state DEGRADED because strict-v1 still does not require the fields and no automatic validator or regression-fixture evidence was found.",
+  "evidence": [
+    {
+      "type": "hybrid_registry",
+      "repository": "reppiks490/Icarus-engine",
+      "ref": "main",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/registry.json",
+      "blob_sha": "ce3e6cd23abaf28f913d1b62178416699587fa4a",
+      "result": "Current automation_id is not registered. daedalus_prime points to replacement 6abb103472608191b72f9eaa522b772b and is HISTORICAL_DISABLED / MANUAL_GITHUB_REQUEST_ONLY."
+    },
+    {
+      "type": "hybrid_contract",
+      "repository": "reppiks490/Icarus-engine",
+      "ref": "main",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/CONTRACT.md",
+      "blob_sha": "a2aa7059288144217691a419bb7e9e47289c2056"
+    },
+    {
+      "type": "prior_research_receipt",
+      "repository": "reppiks490/Icarus-engine",
+      "ref": "main",
+      "path": "automation_intelligence/mcp_interface/research_runs/daedalus/20261007T045512842Z_daedalus.json",
+      "blob_sha": "4d0308c09fa9370a10fc10465c7bf965ebaf4902",
+      "result": "Prior MATERIAL_DELTA classified the reused Bybit orderbook clock across Bybit and Twelve Data evidence as an active temporal-provenance defect."
+    },
+    {
+      "type": "prior_audit_event",
+      "repository": "reppiks490/Icarus-engine",
+      "ref": "main",
+      "path": "automation_intelligence/mcp_interface/events/20261007T045433326Z_daedalus_active_flow_cross_provider_temporal_anchor_gap.json",
+      "commit_sha": "b560e43a78614449140614ccfcb645ada3bbb0bb",
+      "blob_sha": "4402e9e958b9742cc0feb125e302a526341b5b98"
+    },
+    {
+      "type": "audited_flow_receipt",
+      "repository": "reppiks490/Icarus-engine",
+      "ref": "main",
+      "path": "automation_intelligence/mcp_interface/research_runs/flow/20261007T053502818Z_flow.json",
+      "blob_sha": "0123583f3f47ba647e1e2035b863bb7536c936cd",
+      "result": "Four distinct retrieval intervals were persisted. Bybit spot, linear and Twelve Data completed 04:00 UTC bars ended at 05:00 UTC, before retrieval. All retrieval intervals ended before assertion completion 05:35:02.818Z. Bybit orderbook source_time 05:33:49.153Z lies within its local retrieval interval 05:33:48.954-05:33:49.400Z."
+    },
+    {
+      "type": "contract_check",
+      "repository": "reppiks490/Icarus-engine",
+      "ref": "main",
+      "path": "automation_intelligence/mcp_interface/contract.json",
+      "blob_sha": "991b157fd82b3dd9e7e49356fefb06dd89c22579",
+      "result": "Strict-v1 still does not require per-evidence event/bar-completion, provider-time, or retrieval-time witnesses."
+    },
+    {
+      "type": "persisted_event",
+      "repository": "reppiks490/Icarus-engine",
+      "ref": "main",
+      "path": "automation_intelligence/mcp_interface/events/20261007T055902600Z_daedalus_flow_provider_retrieval_witness_repair_verified.json",
+      "commit_sha": "f4dc64c5399e7ba17c94ab7f8798bfb8c4f980ff",
+      "blob_sha": "6e6a9921f0ac792a5ebfc56aae99b92191caacfe",
+      "verification": "Exact text and semantic JSON read-back matched the intended event."
+    }
+  ],
+  "prior_receipt_path": "automation_intelligence/mcp_interface/research_runs/daedalus/20261007T045512842Z_daedalus.json",
+  "event_paths": [
+    "automation_intelligence/mcp_interface/events/20261007T055902600Z_daedalus_flow_provider_retrieval_witness_repair_verified.json"
+  ],
+  "blockers": [
+    "Hybrid request identity is unavailable: automation_intelligence/hybrid_loop_fabric_v1/requests/daedalus/latest.json and health/daedalus.json returned 404. No exact request_id, unresolved backlog, or required_result_path can be recovered truthfully, so no hybrid result was created.",
+    "Registry v1.1.0 does not map automation_id 6ab8177918b48191a97e56c44b57d2c5; daedalus_prime is assigned to a different historical-disabled automation. No schedule or topology was changed.",
+    "The verified temporal repair is receipt-local. Strict-v1 remains permissive and no automatic temporal validator or permanent regression fixtures were evidenced.",
+    "Raw connector runtime logs and monotonic-clock durations were unavailable; verification relies on exact persisted receipt fields and ordering checks."
+  ],
+  "execution_authorized": false
+}

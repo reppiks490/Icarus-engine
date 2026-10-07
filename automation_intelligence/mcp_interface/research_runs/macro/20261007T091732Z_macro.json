@@ -1,0 +1,88 @@
+{
+  "schema_version": "icarus-research-run-v1",
+  "run_id": "macro-20261007T091732Z",
+  "lane": "macro",
+  "automation_id": "6ab8174517b48191b67ac472205a28d3",
+  "started_at_utc": "2026-10-07T09:15:19Z",
+  "completed_at_utc": "2026-10-07T09:17:32.145Z",
+  "outcome": "NO_MATERIAL_DELTA",
+  "substantive_work_performed": true,
+  "summary": "Validated the Hybrid Loop Fabric registry and contract, confirmed that lane macro has no valid request pointer, loaded the newest durable Macro receipt and its referenced RBI event, and compared fresh macro/commodity evidence against the persisted EIA energy-inflation state. Current evidence confirms partial Middle East oil-flow recovery while Brent remains above $100 amid persistent kinetic and Gulf-storm risks. This is corroboration of the existing FORECAST_TIGHTNESS_WITH_PARTIAL_FLOW_RECOVERY state, not a distinct regime change. Gold/dollar behavior ahead of later FOMC minutes also did not establish a new synchronized cross-asset shock. ORACLE therefore preserves existing energy-inflation, RBI-tightening and global-rate contexts without promotion; SUPERMESH-X records Reuters physical-flow reporting as corroboration and preserves the absence of independent aggregate throughput and synchronized live-market confirmation.",
+  "evidence": [
+    {
+      "type": "PRIOR_RECEIPT",
+      "path": "automation_intelligence/mcp_interface/research_runs/macro/20261007T061932156Z_macro.json",
+      "blob_sha": "a2187a5e2817bc47dfc71d8a60bb6df9c4e15720",
+      "finding": "Immediately prior durable Macro run persisted the RBI calibrated-tightening regime."
+    },
+    {
+      "type": "REFERENCED_PRIOR_EVENT",
+      "path": "automation_intelligence/mcp_interface/events/20261007T061907867Z_macro_rbi_first_hike_calibrated_tightening.json",
+      "blob_sha": "9f0019c4d0759f2e69963f9debfda74c4a06cbc3",
+      "finding": "Exact referenced event was fetched from main and remains the current regional monetary-regime state."
+    },
+    {
+      "type": "DURABLE_COMPARISON_STATE",
+      "path": "automation_intelligence/mcp_interface/events/20261007T042314714Z_macro_eia_october_steo_oil_diesel_forecast_reset.json",
+      "blob_sha": "55c4f9a18f5f6f9a62e03667dfa55deaf2506b65",
+      "finding": "Already encodes elevated oil/refined-product inflation risk together with partial Middle East flow recovery and explicitly requires later physical-flow confirmation."
+    },
+    {
+      "type": "HYBRID_REGISTRY",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/registry.json",
+      "blob_sha": "ce3e6cd23abaf28f913d1b62178416699587fa4a",
+      "finding": "Current automation_id is absent; registered macro_shock_sentinel replacement is HISTORICAL_DISABLED and manual-only."
+    },
+    {
+      "type": "HYBRID_CONTRACT",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/CONTRACT.md",
+      "blob_sha": "a2aa7059288144217691a419bb7e9e47289c2056"
+    },
+    {
+      "type": "GITHUB_PATH_CHECK",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/requests/macro/latest.json",
+      "result": "404_NOT_FOUND"
+    },
+    {
+      "type": "GITHUB_PATH_CHECK",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/health/macro.json",
+      "result": "404_NOT_FOUND"
+    },
+    {
+      "type": "FRESH_MARKET_EVIDENCE",
+      "classification": "SOURCE_CLAIM",
+      "source": "Reuters",
+      "url": "https://www.reuters.com/business/energy/oil-prices-rise-storms-air-strikes-threaten-supply-2026-10-07/",
+      "source_time": "2026-10-07T00:48:00Z",
+      "observed_market_time": "2026-10-07T08:00:00Z",
+      "retrieved_at_utc": "2026-10-07T09:17:32.145Z",
+      "finding": "Reuters reported Saudi East-West pipeline flows at 5.8 million bpd and, citing Vitol, roughly 12 million bpd of crude plus 2 million bpd of refined products leaving the Middle East over the prior 7-10 days. Brent was $100.93 and WTI $89.59 at 08:00 UTC. Persistent ship attacks and a Gulf storm threatening facilities representing 15% of U.S. crude production prevented a normalization inference."
+    },
+    {
+      "type": "FRESH_CROSS_ASSET_EVIDENCE",
+      "classification": "FACT",
+      "source": "Reuters",
+      "url": "https://www.reuters.com/world/india/gold-edges-lower-with-focus-fed-minutes-rate-path-clues-2026-10-07/",
+      "source_time": "2026-10-07T02:18:00Z",
+      "observed_market_time": "2026-10-07T06:27:00Z",
+      "retrieved_at_utc": "2026-10-07T09:17:32.145Z",
+      "finding": "Spot gold was down 0.8% to $4,130.37 while DXY was up 0.3%; markets were awaiting later FOMC minutes. This is consistent with existing rate/dollar pressure, not a new confirmed regime break."
+    },
+    {
+      "type": "DECISIVE_EVENT_CALENDAR",
+      "source": "Scotiabank Economics calendar",
+      "url": "https://www.scotiabank.com/ca/en/about/economics/economics-publications/post.other-publications.calendar-of-economic-release-dates.calendar-of-economic-release-dates--october-2026-.html",
+      "retrieved_at_utc": "2026-10-07T09:17:32.145Z",
+      "finding": "The September FOMC minutes are scheduled for 14:00 U.S. Eastern time on October 7, after this cycle; they are the next decisive policy check rather than evidence available now."
+    }
+  ],
+  "prior_receipt_path": "automation_intelligence/mcp_interface/research_runs/macro/20261007T061932156Z_macro.json",
+  "event_paths": [],
+  "blockers": [
+    "No valid hybrid request_id or required_result_path exists for lane macro; requests/macro/latest.json and health/macro.json returned 404, so no hybrid result can be created truthfully.",
+    "Active Macro automation identity 6ab8174517b48191b67ac472205a28d3 is absent from the registry; the registered replacement is historical-disabled/manual-only.",
+    "The physical-flow claim is partly sourced to Vitol through Reuters and was not independently corroborated with aggregate tanker counts, export-terminal data, insurance/freight or official throughput data in this cycle.",
+    "FOMC minutes had not yet been released; no synchronized post-minutes NQ/MNQ, DXY, Treasury or gold reaction was available."
+  ],
+  "execution_authorized": false
+}

@@ -1,0 +1,62 @@
+{
+  "schema_version": "icarus-research-run-v1",
+  "run_id": "aion-20261007T034648Z",
+  "lane": "aion",
+  "automation_id": "6abb1618be1c8191943f5d4e2d88978d",
+  "started_at_utc": "2026-10-07T03:45:33Z",
+  "completed_at_utc": "2026-10-07T03:46:48.285Z",
+  "outcome": "BLOCKED",
+  "substantive_work_performed": false,
+  "summary": "Hybrid contract validation failed before substantive work. Current registry v2/fabric 1.1.0 contains neither lane aion nor automation_id 6abb1618be1c8191943f5d4e2d88978d. AION is preserved only as historical lane aion_prime with automation_id 6abb102bde94819189bbf57062edcb32 and MANUAL_GITHUB_REQUEST_ONLY dispatch. requests/aion/latest.json returned 404, so no request_id, unresolved backlog or required_result_path exists. No quantitative claim, brain event or hybrid result was fabricated.",
+  "evidence": [
+    {
+      "type": "hybrid_registry",
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/registry.json",
+      "observed_blob_sha": "ce3e6cd23abaf28f913d1b62178416699587fa4a",
+      "url": "https://github.com/reppiks490/Icarus-engine/blob/main/automation_intelligence/hybrid_loop_fabric_v1/registry.json",
+      "observation": "Registry schema icarus-hybrid-loop-registry-v2/fabric 1.1.0 has no lane aion and no automation_id 6abb1618be1c8191943f5d4e2d88978d. Historical aion_prime uses a different ID and manual-only dispatch."
+    },
+    {
+      "type": "hybrid_contract",
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/CONTRACT.md",
+      "observed_blob_sha": "a2aa7059288144217691a419bb7e9e47289c2056",
+      "url": "https://github.com/reppiks490/Icarus-engine/blob/main/automation_intelligence/hybrid_loop_fabric_v1/CONTRACT.md",
+      "observation": "Contract requires exact lane, title, automation_id, repository and branch validation plus an immutable request identity."
+    },
+    {
+      "type": "missing_request_pointer",
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/requests/aion/latest.json",
+      "url": "https://github.com/reppiks490/Icarus-engine/blob/main/automation_intelligence/hybrid_loop_fabric_v1/requests/aion/latest.json",
+      "observation": "GitHub returned 404 Not Found; no request_id, prior_unresolved_request_ids or required_result_path was available."
+    },
+    {
+      "type": "historical_migration_evidence",
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/contracts/historical_originals/omega_and_apex_scheduler_prompts_20261004.json",
+      "observed_revision": "00200f386bd54257c25b7cf09cc77c07b7ef7702",
+      "url": "https://github.com/reppiks490/Icarus-engine/commit/00200f386bd54257c25b7cf09cc77c07b7ef7702",
+      "observation": "Migration snapshot records historical AION PRIME under automation_id 6abb102bde94819189bbf57062edcb32, not this worker's ID."
+    },
+    {
+      "type": "prior_research_receipt",
+      "repository": "reppiks490/Icarus-engine",
+      "path": "automation_intelligence/mcp_interface/research_runs/aion/20261004T174629Z.json",
+      "observed_revision": "0e4f35103a243537775bd876d58c77fe91692e8f",
+      "observed_blob_sha": "e7e20277d57957e86625a3f419be59e1c5e33333",
+      "url": "https://github.com/reppiks490/Icarus-engine/commit/0e4f35103a243537775bd876d58c77fe91692e8f",
+      "observation": "Latest accessible AION receipt was read; it recorded the earlier pre-migration missing-request blocker."
+    }
+  ],
+  "prior_receipt_path": "automation_intelligence/mcp_interface/research_runs/aion/20261004T174629Z.json",
+  "event_paths": [],
+  "blockers": [
+    "Current Hybrid Loop Fabric registry has no lane aion and no automation_id 6abb1618be1c8191943f5d4e2d88978d.",
+    "Registered AION survives only as historical aion_prime with a different automation_id and manual-only dispatch.",
+    "automation_intelligence/hybrid_loop_fabric_v1/requests/aion/latest.json does not exist on main.",
+    "Without an exact immutable request_id and required_result_path, substantive processing and hybrid completion cannot be formed truthfully."
+  ],
+  "execution_authorized": false
+}

@@ -33,16 +33,16 @@ LOCAL_MODEL_ID = "Qwen/Qwen3-1.7B-GGUF@90862c4:Q8_0"
 Executor = Callable[[list[str], int], tuple[int, str, str]]
 
 
-def lane_json_schema() -> dict[str, object]:
+def lane_json_schema(lane: str | None = None) -> dict[str, object]:
     return {
         "type": "object",
         "properties": {
-            "lane": {"type": "string"},
+            "lane": {"type": "string", **({"enum": [lane]} if lane is not None else {})},
             "summary": {"type": "string"},
             "net_new_delta": {"type": "string"},
             "data_gaps": {"type": "array", "items": {"type": "string"}},
             "conflicts": {"type": "array", "items": {"type": "string"}},
-            "execution_authorized": {"type": "boolean"},
+            "execution_authorized": {"type": "boolean", "enum": [False]},
         },
         "required": [
             "lane",
@@ -78,7 +78,7 @@ def build_local_model_command(
         "--reasoning",
         "off",
         "--json-schema",
-        json.dumps(lane_json_schema(), sort_keys=True, separators=(",", ":")),
+        json.dumps(lane_json_schema(request.lane), sort_keys=True, separators=(",", ":")),
         "-t",
         "4",
         "-c",

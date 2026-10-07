@@ -336,3 +336,10 @@ def test_completion_command_excludes_cli_only_flags(tmp_path: Path) -> None:
     assert "--simple-io" not in cmd
     assert "--no-show-timings" not in cmd
     assert "-o" not in cmd
+
+
+def test_grammar_pins_requested_lane_and_false_execution_authority(tmp_path):
+    command=build_local_model_command(tmp_path/'llama-completion',tmp_path/'model.gguf',_request())
+    schema=json.loads(command[command.index('--json-schema')+1])
+    assert schema['properties']['lane'].get('enum') == ['aion']
+    assert schema['properties']['execution_authorized'].get('enum') == [False]

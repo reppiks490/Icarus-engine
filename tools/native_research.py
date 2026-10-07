@@ -216,17 +216,20 @@ def macro_research(raw, now):
 
 
 def model_commentary(lane, measured, binary, model):
-    from tools.github_native_ai_openai import ModelRequest
+    from tools.github_native_ai_openai import ModelRequest, OutputValidationError
     from tools.github_native_local_model import LOCAL_MODEL_ID,run_local_model
     try:
         request = ModelRequest(lane,LOCAL_MODEL_ID,'none',
-            'You are a research assistant. Use only supplied measurements. Return the required JSON. '
+            f'You are the {lane} research assistant. The JSON lane must be exactly {lane!r}. Use only supplied measurements. Return the required JSON. '
             'Do not invent numbers, causes, missing data or execution authority. Suggest a falsifiable next test. '
             'This output is unverified interpretation and cannot change measured facts. execution_authorized=false.',
             json.dumps(measured,sort_keys=True,allow_nan=False)[:8500])
         response=run_local_model(request,binary=binary,model=model,timeout_seconds=120)
         return dict(status='GENERATED',authority='UNVERIFIED_MODEL_INFERENCE',model=LOCAL_MODEL_ID,
                     response_id=response.response_id,payload=response.payload)
+    except OutputValidationError as exc:
+        return dict(status='BLOCKED',authority='UNVERIFIED_MODEL_INFERENCE',error_type=type(exc).__name__,
+                    validation_error=str(exc))
     except Exception as exc:
         return dict(status='BLOCKED',authority='UNVERIFIED_MODEL_INFERENCE',error_type=type(exc).__name__)
 
@@ -269,7 +272,8 @@ def run_cycle(root, packets, macro_raw, *,now,run_id,code_revision,binary,model,
         states[lane]=state
         changed=state!=previous.get('state_hashes',{}).get(lane)
         # Local reasoning runs only on semantic changes; every cycle still measures all lanes.
-        commentary=(model_commentary(lane,measured,binary,model) if changed and binary and model else
+        retry_model=previous.get('lanes',{}).get(lane,{}).get('local_model_status')=='BLOCKED'
+        commentary=(model_commentary(lane,measured,binary,model) if (changed or retry_model) and binary and model else
                     dict(status='NOT_RUN' if not changed else 'BLOCKED',authority='UNVERIFIED_MODEL_INFERENCE',
                          reason='No semantic change' if not changed else 'Local runtime unavailable'))
         receipt_path=cycle/(lane+'.json')

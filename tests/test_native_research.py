@@ -129,3 +129,13 @@ def test_run_id_cannot_escape_evidence_namespace(tmp_path):
     nr=module()
     with pytest.raises(ValueError):
         nr.run_cycle(tmp_path,{}, {},now=0,run_id='../escape',code_revision='fixed',binary=None,model=None)
+
+
+def test_failed_local_generation_retried_on_unchanged_measurements(tmp_path,monkeypatch):
+    nr=module()
+    responses=iter([dict(status='BLOCKED',authority='UNVERIFIED_MODEL_INFERENCE')]*5 +
+                   [dict(status='GENERATED',authority='UNVERIFIED_MODEL_INFERENCE')]*5)
+    monkeypatch.setattr(nr,'model_commentary',lambda *args: next(responses))
+    nr.run_cycle(tmp_path,{}, {'headlines':[],'series':[],'gaps':[]},now=0,run_id='one',code_revision='fixed',binary=Path('binary'),model=Path('model'))
+    second=nr.run_cycle(tmp_path,{}, {'headlines':[],'series':[],'gaps':[]},now=1,run_id='two',code_revision='fixed',binary=Path('binary'),model=Path('model'))
+    assert all(v['local_model_status']=='GENERATED' for v in second['lanes'].values())

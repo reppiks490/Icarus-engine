@@ -1,0 +1,49 @@
+{
+  "api_credential_required": false,
+  "canonical_state_mutated": false,
+  "deterministic_facts": {
+    "execution_authorized": false,
+    "expected_RUN_ID": "flow-20261001T203500Z",
+    "fallback_only": true,
+    "observed_worker_RUN_ID": "flow-20261001T203500Z",
+    "observed_worker_RUN_STATUS": "RUN_PERSISTED",
+    "run_id_match": true,
+    "slot_status": "FALLBACK_LIVENESS_ONLY",
+    "substantive_work_claimed": false,
+    "worker_receipt_status": "WATCHDOG_FALLBACK_RECEIPT_PRESENT"
+  },
+  "execution_authorized": false,
+  "inference_backend": "local_gguf",
+  "input_path": "/home/runner/work/Icarus-engine/Icarus-engine/automation_intelligence/restored_five_native/receipts/flow_microstructure/20261001T203500Z.json",
+  "input_sha256": "79fba2e8779503f0ad37ccf0ee5aeac3d0ca8b6c3c54b807878c032d7ee8665e",
+  "lane": "flow_microstructure",
+  "llama_cpp_sha256": "98020bb5a2a9e0284110e5c110158e18dca984a547d5afde1631fef0f03dd826",
+  "model": "Qwen/Qwen3-1.7B-GGUF@90862c4:Q8_0",
+  "model_advisory": {
+    "conflicts": [],
+    "data_gaps": [],
+    "execution_authorized": false,
+    "non_authoritative": true,
+    "summary": "Fallback-only evidence with matching RUN_ID and status. No gaps or conflicts. Next step: Monitor slot status for potential transitions."
+  },
+  "model_sha256": "061b54daade076b5d3362dac252678d17da8c68f07560be70818cace6590cb1a",
+  "observed_at_utc": "2026-10-07T21:16:25Z",
+  "paid_api_call_made": false,
+  "payload": {
+    "conflicts": [],
+    "data_gaps": [
+      "FALLBACK_LIVENESS_ONLY",
+      "WORKER_RECEIPT_NOT_VERIFIED:WATCHDOG_FALLBACK_RECEIPT_PRESENT",
+      "SUBSTANTIVE_WORK_NOT_PROVEN"
+    ],
+    "execution_authorized": false,
+    "lane": "flow_microstructure",
+    "net_new_delta": "SHADOW_ASSESSMENT_ONLY",
+    "summary": "Fallback-only durability receipt; worker completion is not verified. Observed RUN_ID matches expected. Substantive work is not proven by this durability evidence."
+  },
+  "response_id": "local-f6bd5fcb090204871267b2ea",
+  "response_status": "completed",
+  "run_origin": "GITHUB_NATIVE_LOCAL_GGUF_SHADOW",
+  "schema_version": "restored-five-local-shadow-v2",
+  "substantive_research_source": "DURABLE_REPO_EVIDENCE_ONLY"
+}

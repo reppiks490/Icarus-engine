@@ -1,0 +1,83 @@
+{
+  "schema_version": "icarus-research-run-v1",
+  "run_id": "macro-20261007T141956Z",
+  "lane": "macro",
+  "automation_id": "6ab8174517b48191b67ac472205a28d3",
+  "started_at_utc": "2026-10-07T14:17:28Z",
+  "completed_at_utc": "2026-10-07T14:19:56.754Z",
+  "outcome": "NO_MATERIAL_DELTA",
+  "substantive_work_performed": true,
+  "summary": "Fresh cross-asset and official-calendar checks found no new macro regime break. Oil, dollar strength, euro weakness, French spread stress, and the modest equity pullback extend already-recorded energy-inflation and global discount-rate/fiscal-risk regimes. No confirmed IEA reserve implementation decision was available, and the decisive EIA inventory and FOMC-minutes releases were still pending at the evidence cutoff.",
+  "evidence": [
+    {
+      "type": "repository_contract",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/registry.json",
+      "blob_sha": "ce3e6cd23abaf28f913d1b62178416699587fa4a"
+    },
+    {
+      "type": "repository_contract",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/CONTRACT.md",
+      "blob_sha": "a2aa7059288144217691a419bb7e9e47289c2056"
+    },
+    {
+      "type": "prior_receipt",
+      "path": "automation_intelligence/mcp_interface/research_runs/macro/20261007T122013Z_macro.json",
+      "blob_sha": "d34f268b537c046bdea49e59e0e3155944e99d03"
+    },
+    {
+      "type": "market_report",
+      "url": "https://www.reuters.com/world/china/global-markets-global-markets-2026-10-07/",
+      "observed": "2026-10-07T14:17:28Z",
+      "finding": "S&P 500 -0.6%, Nasdaq -0.85%, MSCI world -0.9%, STOXX 600 -1.1%; Brent $102.24 and WTI $90.64; France-Germany 10-year spread about 140 bp versus almost 160 bp the prior week."
+    },
+    {
+      "type": "market_report",
+      "url": "https://www.reuters.com/world/asia-pacific/dollar-holds-losses-markets-await-fed-minutes-speakers-2026-10-07/",
+      "observed": "2026-10-07T14:17:28Z",
+      "finding": "Dollar index 102.49, euro $1.1166, USD/JPY 158.265; October Fed-hike probability 21.6% and December 68.6%; moves corroborate the existing rates/fiscal-risk regime."
+    },
+    {
+      "type": "event_report",
+      "url": "https://www.reuters.com/business/energy/iea-meet-wednesday-over-proposed-release-reserves-say-two-eu-diplomats-2026-10-07/",
+      "observed": "2026-10-07T14:17:28Z",
+      "finding": "Only informal IEA discussion was reported; no confirmed implementation decision, product split, or incremental volume was available."
+    },
+    {
+      "type": "official_source",
+      "url": "https://www.iea.org/news/executive-director-participates-in-g7-leaders-meeting-on-energy-security-and-markets",
+      "observed": "2026-10-07T14:17:28Z",
+      "finding": "IEA stated 325 million barrels of the March 400 million barrel collective action had been made available and refined-product constraints remained severe."
+    },
+    {
+      "type": "official_calendar",
+      "url": "https://www.newyorkfed.org/research/calendars/i-oct26.html",
+      "observed": "2026-10-07T14:17:28Z",
+      "finding": "Calendar review preserved the release cutoff; the EIA inventory release had not yet occurred."
+    },
+    {
+      "type": "official_calendar",
+      "url": "https://www.federalreserve.gov/newsevents/2026-october.htm",
+      "observed": "2026-10-07T14:17:28Z",
+      "finding": "FOMC minutes were scheduled for 2026-10-07T18:00:00Z and were not yet available at cutoff."
+    }
+  ],
+  "prior_receipt_path": "automation_intelligence/mcp_interface/research_runs/macro/20261007T122013Z_macro.json",
+  "event_paths": [],
+  "blockers": [
+    "automation_intelligence/hybrid_loop_fabric_v1/requests/macro/latest.json returned GitHub 404 NOT_FOUND, so no request_id or required_result_path could be validated and no hybrid result was fabricated.",
+    "The current automation_id is absent from the validated hybrid registry; no schedule or topology mutation was attempted.",
+    "No confirmed IEA reserve implementation decision was available at the evidence cutoff.",
+    "EIA inventory data scheduled for 2026-10-07T14:30:00Z and FOMC minutes scheduled for 2026-10-07T18:00:00Z were not yet available."
+  ],
+  "subsystem_assessment": {
+    "oracle": {
+      "status": "NO_MATERIAL_DELTA",
+      "finding": "Fresh cross-asset evidence extends existing energy-inflation and global discount-rate/fiscal-risk regimes; no thesis-health promotion is justified before the pending official releases."
+    },
+    "supermesh_x": {
+      "status": "NO_MATERIAL_DELTA",
+      "finding": "Reuters market observations were corroborative, while official IEA, EIA, and Federal Reserve timing was preserved; no unavailable official outcome was inferred."
+    }
+  },
+  "execution_authorized": false
+}

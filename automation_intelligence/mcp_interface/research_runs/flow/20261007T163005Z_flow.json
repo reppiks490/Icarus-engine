@@ -1,0 +1,132 @@
+{
+  "schema_version": "icarus-research-run-v1",
+  "run_id": "20261007T163005Z_flow",
+  "lane": "flow",
+  "automation_id": "6ab817544e68819197b5db21eb2cbe2b",
+  "started_at_utc": "2026-10-07T16:27:12Z",
+  "completed_at_utc": "2026-10-07T16:30:05.499Z",
+  "outcome": "MATERIAL_DELTA",
+  "substantive_work_performed": true,
+  "summary": "The completed 15:00 UTC BTC interval re-expanded immediately after the prior hour's normalization. Bybit spot range/volume robust z-scores were +2.6679/+2.1854; Bybit linear range/volume +2.9276/+1.0648; Twelve Data independently confirmed range z +2.6918. This supports a recurrent episodic price-range burst, not a second broad range-and-turnover shock. A point-in-time Bybit displayed book showed a $0.10 spread but cannot establish event-hour liquidity. Massive NQZ6/GCZ6/SIZ6 aggregates ended at 08:00 UTC and were excluded from contemporaneous cross-market inference.",
+  "evidence": [
+    {
+      "type": "hybrid_registry",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/registry.json",
+      "blob_sha": "ce3e6cd23abaf28f913d1b62178416699587fa4a",
+      "result": "Validated before substantive work; current automation_id is absent and flow_velocity is historical-disabled under a different ID."
+    },
+    {
+      "type": "hybrid_contract",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/CONTRACT.md",
+      "blob_sha": "a2aa7059288144217691a419bb7e9e47289c2056",
+      "result": "Validated before substantive work; exact request identity is mandatory."
+    },
+    {
+      "type": "prior_research_receipt",
+      "path": "automation_intelligence/mcp_interface/research_runs/flow/20261007T152833Z_flow.json",
+      "blob_sha": "05e81ce6549cb8adfd7a60bd819bf7a65976c977",
+      "comparison": "Prior run verified 14:00 UTC normalization after the 13:00 joint range-and-turnover burst; the next completed hour was the decisive persistence check."
+    },
+    {
+      "type": "material_event",
+      "path": "automation_intelligence/mcp_interface/events/20261007T162940Z_flow_btc_recurrent_range_reexpansion.json",
+      "blob_sha": "9a95f212042f2c0c85cb4acd20283a80d034d9e8",
+      "commit_sha": "6cb1bd4f08ac42be4b6096cb1dfde4b54ca05144",
+      "exact_readback_verified": true
+    },
+    {
+      "type": "market_evidence",
+      "provider": "Bybit",
+      "representation": "BTCUSDT spot 1h",
+      "event_time_utc": "2026-10-07T15:00:00Z",
+      "completed_bar_end_utc": "2026-10-07T16:00:00Z",
+      "retrieved_at_start_utc": "2026-10-07T16:28:07.482Z",
+      "retrieved_at_end_utc": "2026-10-07T16:28:08.392Z",
+      "observations": "Range $639.20, robust z +2.6679; reported volume 747.654419 BTC, robust z +2.1854 versus prior 28 completed hours.",
+      "url": "https://api.bybit.com/v5/market/kline?category=spot&symbol=BTCUSDT&interval=60&limit=60"
+    },
+    {
+      "type": "market_evidence",
+      "provider": "Bybit",
+      "representation": "BTCUSDT linear perpetual 1h",
+      "event_time_utc": "2026-10-07T15:00:00Z",
+      "completed_bar_end_utc": "2026-10-07T16:00:00Z",
+      "retrieved_at_start_utc": "2026-10-07T16:28:08.392Z",
+      "retrieved_at_end_utc": "2026-10-07T16:28:09.266Z",
+      "observations": "Range $653.90, robust z +2.9276; reported volume 3479.085 BTC, robust z +1.0648 versus prior 28 completed hours.",
+      "url": "https://api.bybit.com/v5/market/kline?category=linear&symbol=BTCUSDT&interval=60&limit=60"
+    },
+    {
+      "type": "independent_price_evidence",
+      "provider": "Twelve Data",
+      "representation": "BTC/USD 1h",
+      "event_time_utc": "2026-10-07T15:00:00Z",
+      "completed_bar_end_utc": "2026-10-07T16:00:00Z",
+      "retrieved_at_start_utc": "2026-10-07T16:28:12.153Z",
+      "retrieved_at_end_utc": "2026-10-07T16:28:15.216Z",
+      "observations": "Range $643.39, robust z +2.6918 versus prior 28 completed hours.",
+      "url": "https://api.twelvedata.com/time_series?symbol=BTC/USD&interval=1h&outputsize=60"
+    },
+    {
+      "type": "point_snapshot",
+      "provider": "Bybit",
+      "representation": "BTCUSDT spot displayed order book",
+      "provider_time_utc": "2026-10-07T16:28:19.552Z",
+      "retrieved_at_start_utc": "2026-10-07T16:28:18.603Z",
+      "retrieved_at_end_utc": "2026-10-07T16:28:19.766Z",
+      "observations": "Best bid 83557.5 x 2.066152 BTC; best ask 83557.6 x 0.180738 BTC; displayed spread $0.10. Point snapshot only.",
+      "url": "https://api.bybit.com/v5/market/orderbook?category=spot&symbol=BTCUSDT&limit=25"
+    },
+    {
+      "type": "source_health_evidence",
+      "provider": "Massive",
+      "representation": "NQZ6 1h aggregates",
+      "latest_event_time_utc": "2026-10-07T08:00:00Z",
+      "retrieved_at_start_utc": "2026-10-07T16:28:31.296Z",
+      "retrieved_at_end_utc": "2026-10-07T16:28:40.764Z",
+      "result": "Stale by more than eight hours; excluded.",
+      "url": "https://api.massive.com/futures/v1/aggs/NQZ6"
+    },
+    {
+      "type": "source_health_evidence",
+      "provider": "Massive",
+      "representation": "GCZ6 1h aggregates",
+      "latest_event_time_utc": "2026-10-07T08:00:00Z",
+      "retrieved_at_start_utc": "2026-10-07T16:28:40.764Z",
+      "retrieved_at_end_utc": "2026-10-07T16:28:48.333Z",
+      "result": "Stale by more than eight hours; excluded.",
+      "url": "https://api.massive.com/futures/v1/aggs/GCZ6"
+    },
+    {
+      "type": "source_health_evidence",
+      "provider": "Massive",
+      "representation": "SIZ6 1h aggregates",
+      "latest_event_time_utc": "2026-10-07T08:00:00Z",
+      "retrieved_at_start_utc": "2026-10-07T16:28:48.333Z",
+      "retrieved_at_end_utc": "2026-10-07T16:29:00.915Z",
+      "result": "Stale by more than eight hours; excluded.",
+      "url": "https://api.massive.com/futures/v1/aggs/SIZ6"
+    }
+  ],
+  "prior_receipt_path": "automation_intelligence/mcp_interface/research_runs/flow/20261007T152833Z_flow.json",
+  "event_paths": [
+    "automation_intelligence/mcp_interface/events/20261007T162940Z_flow_btc_recurrent_range_reexpansion.json"
+  ],
+  "blockers": [
+    "HYBRID_RESULT UNVERIFIED: automation_intelligence/hybrid_loop_fabric_v1/requests/flow/latest.json returned GitHub 404, so no request_id or required_result_path could be validated.",
+    "The current automation_id is absent from the validated registry; no schedule or topology mutation was attempted.",
+    "Massive NQZ6/GCZ6/SIZ6 hourly aggregates ended at 08:00 UTC and were unusable for contemporaneous cross-market confirmation.",
+    "No authenticated historical trade-sign/depth sequence, open interest, liquidations, funding, basis, DXY, Treasury/rates, or volatility-index evidence was available."
+  ],
+  "subsystem_assessment": {
+    "argus": {
+      "status": "MATERIAL_DELTA",
+      "finding": "Authenticated candle ranges verify renewed BTC volatility, while mixed representation-specific volumes prevent a broad turnover or directional-flow claim."
+    },
+    "nexus": {
+      "status": "MATERIAL_DELTA",
+      "finding": "Three price representations independently reconcile on 15:00 UTC range re-expansion with distinct retrieval intervals; direct futures source health remains degraded."
+    }
+  },
+  "execution_authorized": false
+}

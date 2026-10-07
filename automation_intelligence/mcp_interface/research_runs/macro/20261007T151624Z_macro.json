@@ -1,0 +1,89 @@
+{
+  "schema_version": "icarus-research-run-v1",
+  "run_id": "macro-20261007T151624Z",
+  "lane": "macro",
+  "automation_id": "6ab8174517b48191b67ac472205a28d3",
+  "started_at_utc": "2026-10-07T15:13:32Z",
+  "completed_at_utc": "2026-10-07T15:16:24.275Z",
+  "recovered_at_utc": "2026-10-07T16:16:27.010Z",
+  "outcome": "BLOCKED",
+  "substantive_work_performed": true,
+  "summary": "Recovered the immutable receipt for the prior blocked Macro run with its original execution timestamps and outcome preserved. That run identified REACCELERATING_NEAR_TERM_WITH_LONG_RUN_ANCHOR_INTACT from the New York Fed September survey, but GitHub writes failed at the time. The event was subsequently recovered and exact-read-back verified; this historical receipt remains BLOCKED because that was the truthful original finalization outcome.",
+  "evidence": [
+    {
+      "type": "repository_contract",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/registry.json",
+      "blob_sha": "ce3e6cd23abaf28f913d1b62178416699587fa4a",
+      "finding": "Original and recovery checks agree that the current automation_id is absent."
+    },
+    {
+      "type": "repository_contract",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/CONTRACT.md",
+      "blob_sha": "a2aa7059288144217691a419bb7e9e47289c2056"
+    },
+    {
+      "type": "prior_receipt",
+      "path": "automation_intelligence/mcp_interface/research_runs/macro/20261007T141956Z_macro.json",
+      "blob_sha": "c06218811d5a95ff589adad4d36bcc8bd280d995"
+    },
+    {
+      "type": "survey_report",
+      "classification": "SOURCE_CLAIM",
+      "source": "Reuters reporting Federal Reserve Bank of New York Survey of Consumer Expectations",
+      "source_time_utc": "2026-10-07T15:01:25Z",
+      "retrieved_at_utc": "2026-10-07T15:16:24.275Z",
+      "url": "https://www.reuters.com/world/us/ny-fed-september-survey-finds-public-expecting-more-near-term-inflation-2026-10-07/",
+      "finding": "One-year inflation expectations rose to 3.9% from 3.6%, three-year to 3.3% from 3.2%, and five-year held at 3.0%."
+    },
+    {
+      "type": "official_recovery_oracle",
+      "classification": "FACT",
+      "source": "Federal Reserve Bank of New York",
+      "retrieved_at_utc": "2026-10-07T16:16:27.010Z",
+      "url": "https://www.newyorkfed.org/microeconomics/sce",
+      "finding": "Official page independently confirmed the survey figures and the highest one-year reading since May 2023."
+    },
+    {
+      "type": "market_report",
+      "classification": "FACT",
+      "source": "Reuters",
+      "source_time_utc": "2026-10-07T10:01:28Z",
+      "retrieved_at_utc": "2026-10-07T15:16:24.275Z",
+      "url": "https://www.reuters.com/business/us-30-year-bond-yield-hits-fresh-24-year-high-2026-10-07/",
+      "finding": "U.S. 30-year yield touched 5.7041%, a 24-year high."
+    },
+    {
+      "type": "recovered_material_event",
+      "path": "automation_intelligence/mcp_interface/events/20261007T151550Z_macro_us_near_term_inflation_expectations_reaccelerate.json",
+      "blob_sha": "d4c3e3f231aaf1f870594cf882b22875347c80d0",
+      "commit_sha": "5ffeca778e428b64217b4b24b375d44178d88f39",
+      "exact_readback_verified": true,
+      "recovered_at_utc": "2026-10-07T16:16:27.010Z"
+    },
+    {
+      "type": "original_persistence_failure",
+      "path": "automation_intelligence/mcp_interface/events/20261007T151550Z_macro_us_near_term_inflation_expectations_reaccelerate.json",
+      "finding": "The original run's two create attempts returned MCP -32603 Internal error and intervening read-back confirmed absence. This recovered receipt does not rewrite that historical outcome."
+    }
+  ],
+  "prior_receipt_path": "automation_intelligence/mcp_interface/research_runs/macro/20261007T141956Z_macro.json",
+  "event_paths": [
+    "automation_intelligence/mcp_interface/events/20261007T151550Z_macro_us_near_term_inflation_expectations_reaccelerate.json"
+  ],
+  "blockers": [
+    "Original finalization was blocked by GitHub create-file internal errors; outcome remains BLOCKED for historical truth.",
+    "No valid hybrid request pointer existed and the current automation_id was absent from the registry.",
+    "The September FOMC minutes remained pending at the original evidence cutoff."
+  ],
+  "subsystem_assessment": {
+    "oracle": {
+      "status": "BLOCKED",
+      "finding": "The material inflation-expectations state was identified but could not be persisted during the original run; it is now recovered without altering the original outcome."
+    },
+    "supermesh_x": {
+      "status": "BLOCKED",
+      "finding": "Original persistence failed and the official New York Fed page was unavailable then; both gaps are explicitly preserved alongside the later recovery oracle."
+    }
+  },
+  "execution_authorized": false
+}

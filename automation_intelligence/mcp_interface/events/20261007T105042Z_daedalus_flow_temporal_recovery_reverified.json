@@ -1,0 +1,92 @@
+{
+  "schema_version": "icarus-mcp-event-v1",
+  "event_id": "20261007T105042Z-daedalus-flow-temporal-recovery-reverified",
+  "at_utc": "2026-10-07T10:50:42.450Z",
+  "category": "AUDIT",
+  "status": "VERIFIED",
+  "severity": "MEDIUM",
+  "summary": "Independent re-audit verifies that the Flow run following the 09:32 temporal-witness regression restored per-request retrieval intervals and explicit completed-bar ends. All three completed BTC representations satisfy completed_bar_end <= retrieved_at_start <= retrieved_at_end <= event assertion, all provider-query intervals are distinct, and a fresh provider re-fetch independently reproduces every reported 09:00 UTC robust statistic. This is a verified per-run recovery, not durable enforcement: repository code search still finds the temporal fields only in evidence artifacts, not validator or test implementation.",
+  "surface": [
+    "FLOW/ARGUS/NEXUS provider-specific retrieval provenance",
+    "DAEDALUS causal-time assurance",
+    "AEGIS regression-resistance gate",
+    "icarus-mcp event/evidence contract enforcement"
+  ],
+  "source": "DAEDALUS_AUTOMATION",
+  "paths": [
+    "automation_intelligence/mcp_interface/events/20261007T095137Z_daedalus_flow_temporal_witness_regression.json",
+    "automation_intelligence/mcp_interface/events/20261007T103550Z_flow_btc_spot_turnover_normalized.json",
+    "automation_intelligence/mcp_interface/research_runs/flow/20261007T103620Z_flow.json",
+    "automation_intelligence/mcp_interface/contract.json"
+  ],
+  "evidence": [
+    {
+      "classification": "FACT",
+      "path": "automation_intelligence/mcp_interface/events/20261007T103550Z_flow_btc_spot_turnover_normalized.json",
+      "blob_sha": "5fb228369d9cc47a30f50015f7205524a7e64841",
+      "finding": "Spot, linear, Twelve Data, Bybit orderbook, and each Massive query carry separate retrieval intervals; completed BTC bars explicitly end at 10:00 UTC; the event assertion is 10:35:50 UTC."
+    },
+    {
+      "classification": "FACT",
+      "path": "automation_intelligence/mcp_interface/research_runs/flow/20261007T103620Z_flow.json",
+      "blob_sha": "52bdd921600efddd2cb780b6a1e9da41ad410862",
+      "finding": "The exact-read-back Flow receipt reproduces the per-query intervals, completed-bar ends, and verified event blob/commit identity."
+    },
+    {
+      "classification": "INDEPENDENT_ORACLE",
+      "provider": "Bybit and Twelve Data",
+      "retrieved_at_utc": "2026-10-07T10:50:42.450Z",
+      "finding": "Fresh 60-bar responses independently recomputed the 09:00 UTC metrics exactly: spot volume 447.397743 BTC, z +0.925032887; spot range $357.10, z +0.545635429; linear volume 2676.404 BTC, z +1.042958780; linear range $369, z +0.630830449; Twelve Data range $352.83, z +0.544970442.",
+      "urls": [
+        "https://api.bybit.com/v5/market/kline?category=spot&symbol=BTCUSDT&interval=60&limit=60",
+        "https://api.bybit.com/v5/market/kline?category=linear&symbol=BTCUSDT&interval=60&limit=60",
+        "https://api.twelvedata.com/time_series?symbol=BTC/USD&interval=1h&outputsize=60"
+      ]
+    },
+    {
+      "classification": "CAUSAL_TIME_CHECK",
+      "finding": "For each completed BTC candle, 10:00:00Z <= its distinct retrieval start/end <= 10:35:50Z assertion. The Bybit orderbook provider time 10:34:25.753Z falls inside its local 10:34:25.008Z–10:34:26.198Z interval. Massive latest-event time 02:00Z precedes each distinct retrieval interval and was correctly excluded as stale."
+    },
+    {
+      "classification": "NEGATIVE_ORACLE",
+      "query": "GitHub code search on main for retrieved_at_start_utc, retrieved_at_end_utc, completed_bar_end_utc",
+      "finding": "Each term occurs in six evidence artifacts only. No validator or test implementation path is returned, so durability remains unverified."
+    },
+    {
+      "classification": "FACT",
+      "path": "automation_intelligence/mcp_interface/events/20261007T095137Z_daedalus_flow_temporal_witness_regression.json",
+      "blob_sha": "2b24dcb5c24512dfff69cfe9c0036bf70df1d7f2",
+      "finding": "The immediately preceding audited Flow run reused shared point timestamps and omitted explicit completion witnesses; the current recovery is therefore a net-new state change."
+    },
+    {
+      "classification": "FACT",
+      "path": "automation_intelligence/mcp_interface/contract.json",
+      "blob_sha": "991b157fd82b3dd9e7e49356fefb06dd89c22579",
+      "finding": "The active v1 contract still does not require temporal witness fields or causal-order validation."
+    }
+  ],
+  "conflicts": [
+    "The latest Flow run repairs the concrete regression, but a prior repair also regressed on the next material run; one correct run is not proof of durable enforcement.",
+    "Market-statistic reproduction validates the reported calculation, not the causal reason for the isolated 08:00 turnover spike."
+  ],
+  "limitations": [
+    "Raw connector logs and monotonic-clock attestations remain unavailable.",
+    "No automated validator or regression fixtures were found in implementation paths.",
+    "No schedule, runtime, contract, trading, or deployment change was authorized."
+  ],
+  "required_remediation": [
+    "Version the event/evidence contract to require retrieved_at_start_utc, retrieved_at_end_utc, and completed_bar_end_utc where applicable.",
+    "Implement a validator enforcing completed_bar_end <= retrieval start <= retrieval end <= assertion time and rejecting unexplained timestamp reuse.",
+    "Retain the repaired 05:33 run, regressed 09:32 run, and recovered 10:34 run as positive/negative/positive regression fixtures."
+  ],
+  "next_independent_verification_target": "Audit the next material Flow artifact and the event-construction implementation; durable clearance requires automatic rejection of the 09:32 negative fixture, not another manually correct receipt.",
+  "daedalus": {
+    "status": "VERIFIED",
+    "finding": "The 10:34 Flow event and receipt satisfy causal ordering and independent recalculation exactly, restoring scientific usability for this run."
+  },
+  "aegis": {
+    "status": "DEGRADED",
+    "finding": "The repair remains artifact-local because no contract validator or regression test enforces the temporal witness invariants."
+  },
+  "execution_authorized": false
+}

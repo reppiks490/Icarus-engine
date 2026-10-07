@@ -1,0 +1,55 @@
+{
+  "api_credential_required": false,
+  "canonical_state_mutated": false,
+  "deterministic_facts": {
+    "execution_authorized": false,
+    "expected_RUN_ID": "flow-20261001T193500Z",
+    "fallback_only": true,
+    "observed_worker_RUN_ID": "flow-20261001T183500Z",
+    "observed_worker_RUN_STATUS": "RUN_PERSISTED",
+    "run_id_match": false,
+    "slot_status": "FALLBACK_LIVENESS_ONLY",
+    "substantive_work_claimed": false,
+    "worker_receipt_status": "WORKER_RECEIPT_MISSING"
+  },
+  "execution_authorized": false,
+  "inference_backend": "local_gguf",
+  "input_path": "/home/runner/work/Icarus-engine/Icarus-engine/automation_intelligence/restored_five_native/receipts/flow_microstructure/20261001T193500Z.json",
+  "input_sha256": "2f63a8bac09e51b427ba58637b6673dd8a69d271f9a06b859c7655d7b581a34c",
+  "lane": "flow_microstructure",
+  "llama_cpp_sha256": "98020bb5a2a9e0284110e5c110158e18dca984a547d5afde1631fef0f03dd826",
+  "model": "Qwen/Qwen3-1.7B-GGUF@90862c4:Q8_0",
+  "model_advisory": {
+    "conflicts": [
+      "The observed worker RUN status is 'RUN_PERSISTED' but the expected RUN ID is 'flow-20261001T193500Z', which matches t..."
+    ],
+    "data_gaps": [
+      "The observed worker RUN status is 'RUN_PERSISTED' but the worker receipt status is 'WORKER_RECEIPT_MISSING', suggesti..."
+    ],
+    "execution_authorized": false,
+    "non_authoritative": true,
+    "summary": "The evidence shows a gap in the workflow timeline with an older worker RUN ID. The work was completed but no receipt is available, indicating fallback-only status."
+  },
+  "model_sha256": "061b54daade076b5d3362dac252678d17da8c68f07560be70818cace6590cb1a",
+  "observed_at_utc": "2026-10-07T17:04:11Z",
+  "paid_api_call_made": false,
+  "payload": {
+    "conflicts": [
+      "OBSERVED_WORKER_RUN_ID_DIFFERS_FROM_EXPECTED"
+    ],
+    "data_gaps": [
+      "FALLBACK_LIVENESS_ONLY",
+      "WORKER_RECEIPT_NOT_VERIFIED:WORKER_RECEIPT_MISSING",
+      "SUBSTANTIVE_WORK_NOT_PROVEN"
+    ],
+    "execution_authorized": false,
+    "lane": "flow_microstructure",
+    "net_new_delta": "SHADOW_ASSESSMENT_ONLY",
+    "summary": "Fallback-only durability receipt; worker completion is not verified. Observed RUN_ID differs from expected. Substantive work is not proven by this durability evidence."
+  },
+  "response_id": "local-1cf5dca31fcf93a3c13e81de",
+  "response_status": "completed",
+  "run_origin": "GITHUB_NATIVE_LOCAL_GGUF_SHADOW",
+  "schema_version": "restored-five-local-shadow-v2",
+  "substantive_research_source": "DURABLE_REPO_EVIDENCE_ONLY"
+}

@@ -1,0 +1,94 @@
+{
+  "schema_version": "icarus-research-run-v1",
+  "run_id": "20261007T093001Z_flow",
+  "lane": "flow",
+  "automation_id": "6ab817544e68819197b5db21eb2cbe2b",
+  "started_at_utc": "2026-10-07T09:30:01Z",
+  "completed_at_utc": "2026-10-07T09:35:46Z",
+  "outcome": "MATERIAL_DELTA",
+  "substantive_work_performed": true,
+  "summary": "Authenticated BTC/USD evidence identified a completed 08:00 UTC Bybit spot turnover outlier (volume robust z +6.3878 against 28 prior completed hours) without price-range expansion and without confirmation from Bybit linear volume. Three BTC price representations showed ordinary range. A point-in-time spot spread was recorded without persistence claims. Licensed NQ/GC/SI aggregates lagged to 01:00 UTC and were excluded from contemporaneous corroboration. The result is an isolated spot-turnover anomaly, not a broad volatility, liquidity, or directional-order-flow shock.",
+  "evidence": [
+    {
+      "type": "prior_research_receipt",
+      "path": "automation_intelligence/mcp_interface/research_runs/flow/20261007T063403976Z_flow.json",
+      "blob_sha": "84b396aa55470f8455eb0414364ce6e772831dbd",
+      "comparison": "Prior run reported no material delta through the completed 05:00 UTC BTC hour; the 08:00 UTC spot-volume outlier is net-new."
+    },
+    {
+      "type": "hybrid_registry",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/registry.json",
+      "blob_sha": "ce3e6cd23abaf28f913d1b62178416699587fa4a"
+    },
+    {
+      "type": "hybrid_contract",
+      "path": "automation_intelligence/hybrid_loop_fabric_v1/CONTRACT.md",
+      "blob_sha": "a2aa7059288144217691a419bb7e9e47289c2056"
+    },
+    {
+      "type": "mcp_producer_contract",
+      "path": "automation_intelligence/mcp_interface/contract.json",
+      "blob_sha": "991b157fd82b3dd9e7e49356fefb06dd89c22579"
+    },
+    {
+      "type": "persisted_event",
+      "path": "automation_intelligence/mcp_interface/events/20261007T080000Z_flow_btc_spot_turnover_only.json",
+      "commit_sha": "7bdaf1866b569f5d65ea7c5167ee3fc3e2755797",
+      "blob_sha": "cb7ce1cf12c3c8e196141e4bc2b3bfa2e6e5d4de",
+      "exact_readback_match": true
+    },
+    {
+      "type": "market_evidence",
+      "provider": "Bybit",
+      "event_time_utc": "2026-10-07T08:00:00Z",
+      "retrieval_time_utc": "2026-10-07T09:32:08.616Z",
+      "observations": "Spot 1h volume 1203.317647 BTC, volume robust z +6.3878, range 242.6 USD, range robust z -0.3494; linear volume robust z +0.2628 and range robust z -0.4351.",
+      "urls": [
+        "https://api.bybit.com/v5/market/kline?category=spot&symbol=BTCUSDT&interval=60&limit=60",
+        "https://api.bybit.com/v5/market/kline?category=linear&symbol=BTCUSDT&interval=60&limit=60"
+      ]
+    },
+    {
+      "type": "independent_price_evidence",
+      "provider": "Twelve Data",
+      "event_time_utc": "2026-10-07T08:00:00Z",
+      "retrieval_time_utc": "2026-10-07T09:32:50.998Z",
+      "observations": "BTC/USD 1h range 227.19 USD, robust z -0.4289; comparable volume unavailable.",
+      "url": "https://api.twelvedata.com/time_series?symbol=BTC/USD&interval=1h&outputsize=60"
+    },
+    {
+      "type": "source_health_evidence",
+      "provider": "Massive",
+      "retrieval_time_utc": "2026-10-07T09:32:50.998Z",
+      "observations": "NQZ6, GCZ6, and SIZ6 1h aggregate endpoints returned latest bars at 2026-10-07T01:00:00Z, approximately 8.5 hours behind retrieval; excluded from contemporaneous inference.",
+      "urls": [
+        "https://api.massive.com/futures/v1/aggs/NQZ6",
+        "https://api.massive.com/futures/v1/aggs/GCZ6",
+        "https://api.massive.com/futures/v1/aggs/SIZ6"
+      ]
+    }
+  ],
+  "prior_receipt_path": "automation_intelligence/mcp_interface/research_runs/flow/20261007T063403976Z_flow.json",
+  "event_paths": [
+    "automation_intelligence/mcp_interface/events/20261007T080000Z_flow_btc_spot_turnover_only.json"
+  ],
+  "blockers": [
+    "automation_intelligence/hybrid_loop_fabric_v1/requests/flow/latest.json returned GitHub 404, so no exact request_id or required_result_path was available and no hybrid result was fabricated.",
+    "The current automation_id is absent from the fetched hybrid registry; the registered flow_velocity entry is historical-disabled/manual-only.",
+    "automation_intelligence/hybrid_loop_fabric_v1/health/flow.json returned GitHub 404.",
+    "Massive NQ/GC/SI aggregates were stale to 01:00 UTC and unusable for the 08:00 UTC cross-market check.",
+    "No authenticated historical trade-sign or depth sequence was available; direction, absorption, liquidation, and persistent liquidity remain unknown.",
+    "Fresh DXY, rates/Treasury, and volatility-index observations were unavailable."
+  ],
+  "subsystem_assessment": {
+    "argus": {
+      "status": "VERIFIED",
+      "finding": "Direct spot candle volume was a robust outlier while range was ordinary; order-flow mechanism and persistent liquidity were not inferred."
+    },
+    "nexus": {
+      "status": "DEGRADED",
+      "finding": "BTC price representations reconciled, but spot-volume did not reconcile with linear volume and the licensed futures aggregates were stale."
+    }
+  },
+  "execution_authorized": false
+}

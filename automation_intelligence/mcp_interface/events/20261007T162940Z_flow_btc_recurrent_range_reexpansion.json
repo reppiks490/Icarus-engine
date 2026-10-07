@@ -1,0 +1,162 @@
+{
+  "schema_version": "icarus-mcp-event-v1",
+  "event_id": "20261007T162940Z-flow-btc-recurrent-range-reexpansion",
+  "at_utc": "2026-10-07T16:29:40.779Z",
+  "category": "AUDIT",
+  "status": "MATERIAL_DELTA",
+  "severity": "MEDIUM",
+  "source": "FLOW_AUTOMATION",
+  "summary": "The completed 2026-10-07 15:00–16:00 UTC BTC interval re-expanded after the prior hour's normalization. Bybit spot range was $639.20 (robust z +2.6679) with 747.654419 BTC reported volume (z +2.1854); Bybit linear range was $653.90 (z +2.9276) with reported volume z +1.0648; Twelve Data BTC/USD independently showed a $643.39 range (z +2.6918). The three price representations reconcile on renewed range expansion, while turnover confirmation is mixed. This is a recurrent price-range burst, not a renewed joint range-and-turnover shock.",
+  "net_new_delta": "A one-hour normalization was followed immediately by a second independently corroborated BTC range expansion, strengthening an episodic alternating-burst regime while rejecting continuous-volatility and broad-turnover interpretations.",
+  "surface": [
+    "BTC/USD hourly volatility regime",
+    "ARGUS candle-range and representation-specific volume truth",
+    "NEXUS cross-provider clocks, reconciliation, and source-health state"
+  ],
+  "paths": [
+    "automation_intelligence/mcp_interface/events/20261007T152752Z_flow_btc_joint_burst_normalized.json",
+    "automation_intelligence/mcp_interface/research_runs/flow/20261007T152833Z_flow.json"
+  ],
+  "evidence": [
+    {
+      "classification": "FACT",
+      "provider": "Bybit",
+      "representation": "BTCUSDT spot 1h candle",
+      "event_time_utc": "2026-10-07T15:00:00Z",
+      "completed_bar_end_utc": "2026-10-07T16:00:00Z",
+      "retrieved_at_start_utc": "2026-10-07T16:28:07.482Z",
+      "retrieved_at_end_utc": "2026-10-07T16:28:08.392Z",
+      "observations": {
+        "open": 83010,
+        "high": 83456.7,
+        "low": 82817.5,
+        "close": 83452.4,
+        "range_usd": 639.2,
+        "range_robust_z_vs_prior_28": 2.6679,
+        "reported_volume_btc": 747.654419,
+        "volume_robust_z_vs_prior_28": 2.1854,
+        "baseline_range_median_usd": 297.65,
+        "baseline_range_mad_usd": 86.35,
+        "baseline_volume_median_btc": 364.3277885,
+        "baseline_volume_mad_btc": 118.312229
+      },
+      "url": "https://api.bybit.com/v5/market/kline?category=spot&symbol=BTCUSDT&interval=60&limit=60"
+    },
+    {
+      "classification": "FACT",
+      "provider": "Bybit",
+      "representation": "BTCUSDT linear perpetual 1h candle",
+      "event_time_utc": "2026-10-07T15:00:00Z",
+      "completed_bar_end_utc": "2026-10-07T16:00:00Z",
+      "retrieved_at_start_utc": "2026-10-07T16:28:08.392Z",
+      "retrieved_at_end_utc": "2026-10-07T16:28:09.266Z",
+      "observations": {
+        "open": 82977.5,
+        "high": 83425,
+        "low": 82771.1,
+        "close": 83422.8,
+        "range_usd": 653.9,
+        "range_robust_z_vs_prior_28": 2.9276,
+        "reported_volume_btc": 3479.085,
+        "volume_robust_z_vs_prior_28": 1.0648,
+        "baseline_range_median_usd": 313.4,
+        "baseline_range_mad_usd": 78.45,
+        "baseline_volume_median_btc": 1932.253,
+        "baseline_volume_mad_btc": 979.846
+      },
+      "url": "https://api.bybit.com/v5/market/kline?category=linear&symbol=BTCUSDT&interval=60&limit=60"
+    },
+    {
+      "classification": "FACT",
+      "provider": "Twelve Data",
+      "representation": "BTC/USD 1h price candle",
+      "event_time_utc": "2026-10-07T15:00:00Z",
+      "completed_bar_end_utc": "2026-10-07T16:00:00Z",
+      "retrieved_at_start_utc": "2026-10-07T16:28:12.153Z",
+      "retrieved_at_end_utc": "2026-10-07T16:28:15.216Z",
+      "observations": {
+        "open": 83010.45,
+        "high": 83461.55,
+        "low": 82818.16,
+        "close": 83454.24,
+        "range_usd": 643.39,
+        "range_robust_z_vs_prior_28": 2.6918,
+        "baseline_range_median_usd": 293.02,
+        "baseline_range_mad_usd": 87.795
+      },
+      "url": "https://api.twelvedata.com/time_series?symbol=BTC/USD&interval=1h&outputsize=60"
+    },
+    {
+      "classification": "FACT",
+      "provider": "Bybit",
+      "representation": "BTCUSDT spot displayed order-book point snapshot",
+      "provider_time_utc": "2026-10-07T16:28:19.552Z",
+      "retrieved_at_start_utc": "2026-10-07T16:28:18.603Z",
+      "retrieved_at_end_utc": "2026-10-07T16:28:19.766Z",
+      "observations": {
+        "best_bid": 83557.5,
+        "best_bid_qty_btc": 2.066152,
+        "best_ask": 83557.6,
+        "best_ask_qty_btc": 0.180738,
+        "displayed_spread_usd": 0.1
+      },
+      "limitation": "Point snapshot only; no historical-depth, persistent-liquidity, aggressor-flow, absorption, or execution-quality inference is made.",
+      "url": "https://api.bybit.com/v5/market/orderbook?category=spot&symbol=BTCUSDT&limit=25"
+    },
+    {
+      "classification": "FACT",
+      "provider": "Massive",
+      "representation": "NQZ6 1h trade aggregates",
+      "latest_event_time_utc": "2026-10-07T08:00:00Z",
+      "retrieved_at_start_utc": "2026-10-07T16:28:31.296Z",
+      "retrieved_at_end_utc": "2026-10-07T16:28:40.764Z",
+      "finding": "Latest licensed aggregate was more than eight hours behind retrieval and excluded from contemporaneous inference.",
+      "url": "https://api.massive.com/futures/v1/aggs/NQZ6"
+    },
+    {
+      "classification": "FACT",
+      "provider": "Massive",
+      "representation": "GCZ6 1h trade aggregates",
+      "latest_event_time_utc": "2026-10-07T08:00:00Z",
+      "retrieved_at_start_utc": "2026-10-07T16:28:40.764Z",
+      "retrieved_at_end_utc": "2026-10-07T16:28:48.333Z",
+      "finding": "Latest licensed aggregate was more than eight hours behind retrieval and excluded from contemporaneous inference.",
+      "url": "https://api.massive.com/futures/v1/aggs/GCZ6"
+    },
+    {
+      "classification": "FACT",
+      "provider": "Massive",
+      "representation": "SIZ6 1h trade aggregates",
+      "latest_event_time_utc": "2026-10-07T08:00:00Z",
+      "retrieved_at_start_utc": "2026-10-07T16:28:48.333Z",
+      "retrieved_at_end_utc": "2026-10-07T16:29:00.915Z",
+      "finding": "Latest licensed aggregate was more than eight hours behind retrieval and excluded from contemporaneous inference.",
+      "url": "https://api.massive.com/futures/v1/aggs/SIZ6"
+    },
+    {
+      "classification": "MODEL_INFERENCE",
+      "finding": "The 13:00 joint burst, 14:00 normalization, and 15:00 range re-expansion support an episodic alternating-burst state. Mixed volume evidence prevents classification as a second joint range-and-turnover shock; causal direction and cross-market propagation remain unknown."
+    }
+  ],
+  "conflicts": [
+    "All three price representations confirm range expansion.",
+    "Bybit spot reported volume was moderately elevated, but Bybit linear volume was ordinary; broad turnover confirmation is absent.",
+    "The current order book is a point snapshot taken after the event hour and cannot establish event-hour liquidity."
+  ],
+  "limitations": [
+    "No authenticated historical trade-sign or depth sequence was acquired.",
+    "NQZ6, GCZ6, and SIZ6 aggregates ended at 08:00 UTC and were excluded from contemporaneous cross-market inference.",
+    "No direct current DXY, Treasury/rate, or volatility-index observation was acquired.",
+    "No order-flow, liquidation, funding, basis, open-interest, or exchange-flow inference is made."
+  ],
+  "next_decisive_check": "Test whether the next fully completed BTC hour normalizes or sustains range expansion, and require current NQ/GC/SI plus USD/rates/volatility timestamps before promoting a broad cross-market regime.",
+  "argus": {
+    "status": "MATERIAL_DELTA",
+    "finding": "Authenticated candle evidence verifies renewed BTC range expansion; mixed representation-specific volume does not verify broad turnover or directional order flow."
+  },
+  "nexus": {
+    "status": "MATERIAL_DELTA",
+    "finding": "Three price representations reconcile on 15:00 UTC re-expansion with distinct retrieval intervals; cross-market source health remains degraded because licensed futures stopped at 08:00 UTC."
+  },
+  "execution_authorized": false
+}

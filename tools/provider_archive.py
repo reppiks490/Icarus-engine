@@ -33,8 +33,11 @@ def main():
     args=parser.parse_args()
     data=decrypt(args.archive.read_bytes(),args.provider,args.run_id,args.archive.stem,os.environ)
     args.output.parent.mkdir(parents=True,exist_ok=True)
-    with args.output.open('x') as f:json.dump(data,f,sort_keys=True)
-    os.chmod(args.output,0o600)
+    # Restrict POSIX access at creation, before any plaintext is written. The
+    # exclusive open also preserves existing files and rejects output symlinks.
+    # Windows access still depends on the destination directory's ACL.
+    fd=os.open(args.output,os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
+    with os.fdopen(fd,'w',encoding='utf-8') as f:json.dump(data,f,sort_keys=True)
     print('Private payload restored; do not commit licensed data.')
 
 if __name__=='__main__':main()

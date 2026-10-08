@@ -37,7 +37,7 @@ jobs:
       - name: Install test dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pytest
+          python -m pip install -e '.[dev]'
 
       - name: Run the combined suite (icarus + icarus_engine)
         run: pytest tests tests_engine -q

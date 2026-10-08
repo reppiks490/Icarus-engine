@@ -10,9 +10,10 @@ requires-python = ">=3.11"
 dependencies = []                      # the core runs on the standard library alone
 
 [project.optional-dependencies]
-dev = ["pytest>=8"]
+dev = ["pytest>=8", "cryptography>=44,<47"]
 # icarus_bridge/ and icarus_engine/server.py only. The engines and the
-# entire 584-test suite run on the standard library plus pytest.
+# core tests use the standard library plus pytest; provider archive/recovery
+# tests additionally require the cryptography dependency in the dev extra.
 bridge = ["fastapi", "httpx", "mcp", "uvicorn"]
 
 [project.scripts]

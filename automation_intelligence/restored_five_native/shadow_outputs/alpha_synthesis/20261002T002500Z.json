@@ -1,0 +1,47 @@
+{
+  "api_credential_required": false,
+  "canonical_state_mutated": false,
+  "deterministic_facts": {
+    "execution_authorized": false,
+    "expected_RUN_ID": "alpha-synthesis-20261002T002500Z",
+    "fallback_only": false,
+    "observed_worker_RUN_ID": "alpha-synthesis-20261002T002500Z",
+    "observed_worker_RUN_STATUS": "RUN_PERSISTED",
+    "run_id_match": true,
+    "slot_status": "WORKER_RECEIPT_VERIFIED",
+    "substantive_work_claimed": false,
+    "worker_receipt_status": "CHATGPT_CANONICAL_RECEIPT_PRESENT"
+  },
+  "execution_authorized": false,
+  "inference_backend": "local_gguf",
+  "input_path": "/home/runner/work/Icarus-engine/Icarus-engine/automation_intelligence/restored_five_native/receipts/alpha_synthesis/20261002T002500Z.json",
+  "input_sha256": "1ec4cb78bbdd2053c081037ac01508d608784e0ad3eab3da6a68af8a4bc80b41",
+  "lane": "alpha_synthesis",
+  "llama_cpp_sha256": "98020bb5a2a9e0284110e5c110158e18dca984a547d5afde1631fef0f03dd826",
+  "model": "Qwen/Qwen3-1.7B-GGUF@90862c4:Q8_0",
+  "model_advisory": {
+    "conflicts": [],
+    "data_gaps": [],
+    "execution_authorized": false,
+    "non_authoritative": true,
+    "summary": "Evidence shows expected RUN_ID matches observed, worker status is RUN_PERSISTED, and receipt is canonical. No gaps or conflicts detected. Next step: monitor for new work claims."
+  },
+  "model_sha256": "061b54daade076b5d3362dac252678d17da8c68f07560be70818cace6590cb1a",
+  "observed_at_utc": "2026-10-08T20:30:46Z",
+  "paid_api_call_made": false,
+  "payload": {
+    "conflicts": [],
+    "data_gaps": [
+      "SUBSTANTIVE_WORK_NOT_PROVEN"
+    ],
+    "execution_authorized": false,
+    "lane": "alpha_synthesis",
+    "net_new_delta": "SHADOW_ASSESSMENT_ONLY",
+    "summary": "Worker durability receipt verified. Observed RUN_ID matches expected. Substantive work is not proven by this durability evidence."
+  },
+  "response_id": "local-2439d5f76c139094870d26db",
+  "response_status": "completed",
+  "run_origin": "GITHUB_NATIVE_LOCAL_GGUF_SHADOW",
+  "schema_version": "restored-five-local-shadow-v2",
+  "substantive_research_source": "DURABLE_REPO_EVIDENCE_ONLY"
+}

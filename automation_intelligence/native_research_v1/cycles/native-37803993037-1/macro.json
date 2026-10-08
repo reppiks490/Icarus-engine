@@ -1,0 +1,148 @@
+{
+  "automation_id": "github-native-research-v1",
+  "blockers": [
+    "Release titles establish publication, not macro surprise or causal impact.",
+    "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+    "No consensus estimates acquired; economic surprise remains unknown."
+  ],
+  "chatgpt_tokens_used": 0,
+  "code_revision": "b9e6013aa578c1638ed5fb023563776ff72d5888",
+  "completed_at_utc": "2026-10-08T15:51:00.260559Z",
+  "event_paths": [
+    "automation_intelligence/mcp_interface/events/native-37803993037-1_native_macro.json"
+  ],
+  "evidence": [
+    "automation_intelligence/native_research_v1/cycles/native-37803993037-1/evidence.json"
+  ],
+  "execution_authorized": false,
+  "input_sha256": "9a900f1528f994bbb7225c9d750f81b3ba26e50d7a4e6c0241a21667b4cf59f4",
+  "lane": "macro",
+  "local_interpretation": {
+    "authority": "UNVERIFIED_MODEL_INFERENCE",
+    "model": "Qwen/Qwen3-1.7B-GGUF@90862c4:Q8_0",
+    "payload": {
+      "conflicts": [],
+      "data_gaps": [],
+      "execution_authorized": false,
+      "lane": "macro",
+      "net_new_delta": "LOCAL_NEXT_TEST_SELECTION",
+      "summary": "Does the next official release change the daily macro context?"
+    },
+    "response_id": "local-3dc1754c694e11cb5673d914",
+    "status": "GENERATED"
+  },
+  "measurements": {
+    "gaps": [
+      "Release titles establish publication, not macro surprise or causal impact.",
+      "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+      "No consensus estimates acquired; economic surprise remains unknown."
+    ],
+    "limits": "Publication and daily change are facts; surprise, causality and intraday propagation remain unverified.",
+    "releases": [
+      {
+        "published_epoch": 1791396000.0,
+        "retrieval_finished": 1791474642.7321417,
+        "retrieval_started": 1791474642.622901,
+        "source": "FED",
+        "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261007a.htm",
+        "title": "Minutes of the Federal Open Market Committee, September 15-16, 2026"
+      },
+      {
+        "published_epoch": 1791232200.0,
+        "retrieval_finished": 1791474642.7321417,
+        "retrieval_started": 1791474642.622901,
+        "source": "FED",
+        "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20261005a.htm",
+        "title": "Federal Reserve Board announces approval of application by Isabella Bank Corporation"
+      },
+      {
+        "published_epoch": 1791459000.0,
+        "retrieval_finished": 1791474643.5318043,
+        "retrieval_started": 1791474642.732821,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/accounts/2026/html/ecb.mg261008~a10153d090.en.html",
+        "title": "Meeting of 9-10 September 2026"
+      },
+      {
+        "published_epoch": 1791439200.0,
+        "retrieval_finished": 1791474643.5318043,
+        "retrieval_started": 1791474642.732821,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/inter/date/2026/html/ecb.in261008~3184e7d0d0.en.html",
+        "title": "Piero Cipollone: Interview with Corriere della Sera"
+      },
+      {
+        "published_epoch": 1791360000.0,
+        "retrieval_finished": 1791474643.5318043,
+        "retrieval_started": 1791474642.732821,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr261007~6447350434.en.html",
+        "title": "Results of the September 2026 survey on credit terms and conditions in euro-denominated securities financing and OTC derivatives markets (SESFOD)"
+      },
+      {
+        "published_epoch": 1791291600.0,
+        "retrieval_finished": 1791474643.5318043,
+        "retrieval_started": 1791474642.732821,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261006_1~0df91e4e44.en.html",
+        "title": "Frank Elderson: Effective supervision through timely remediation"
+      },
+      {
+        "published_epoch": 1791291600.0,
+        "retrieval_finished": 1791474643.5318043,
+        "retrieval_started": 1791474642.732821,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261006~0da978f159.en.html",
+        "title": "Piero Cipollone: Money in the digital age: digital euro, tokenisation and the role of central banks"
+      },
+      {
+        "published_epoch": 1791270000.0,
+        "retrieval_finished": 1791474643.5318043,
+        "retrieval_started": 1791474642.732821,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/inter/date/2026/html/ecb.in261006~bc94400297.en.html",
+        "title": "Philip R. Lane: Interview with Ansa"
+      }
+    ],
+    "series": [
+      {
+        "change": -0.040000000000000036,
+        "date": "2026-10-06",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-10-05",
+        "series": "DGS10",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10",
+        "value": 5.27
+      },
+      {
+        "change": -0.04999999999999982,
+        "date": "2026-10-06",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-10-05",
+        "series": "DGS2",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2",
+        "value": 4.79
+      },
+      {
+        "change": -0.40340000000000487,
+        "date": "2026-10-02",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-10-01",
+        "series": "DTWEXBGS",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DTWEXBGS",
+        "value": 121.3848
+      }
+    ],
+    "status": "VERIFIED",
+    "summary": "8 dated official release headlines; 3 daily macro series measured."
+  },
+  "outcome": "MATERIAL_DELTA",
+  "paid_model_calls": 0,
+  "prior_receipt_path": "automation_intelligence/native_research_v1/cycles/native-37746677215-1/macro.json",
+  "run_id": "native-37803993037-1-macro",
+  "schema_version": "icarus-research-run-v1",
+  "started_at_utc": "2026-10-08T15:50:43.985998Z",
+  "substantive_work_performed": true,
+  "summary": "8 dated official release headlines; 3 daily macro series measured.",
+  "worker": "GITHUB_ACTIONS"
+}

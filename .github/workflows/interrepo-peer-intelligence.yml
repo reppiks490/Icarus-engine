@@ -6,6 +6,10 @@ on:
       - "automation-durability-watchdog"
       - "restored-five-durability-watchdog"
       - "restored-five-native-liveness"
+      # Actions-authored MCP receipts do not trigger downstream push workflows.
+      # Observe the successful scheduled producers after all receipts persist.
+      - "provider-exhaustive-collection"
+      - "native-five-research"
     types: [completed]
     branches: [main]
   push:
@@ -22,8 +26,8 @@ on:
       - "tools/export_peer_intelligence.py"
       - ".github/workflows/interrepo-peer-intelligence.yml"
       # CL 2026-10-04: GitHub fires this repo's 5-10 minute crons only 6-12 times a day,
-      # so cron alone cannot hold the consumer's 1800 s freshness window. Lane pushes are
-      # event-driven and arrive whenever a lane is active, so they refresh the packet too.
+      # so cron alone cannot hold the consumer's 1800 s freshness window. External
+      # lane pushes refresh the packet; Actions-authored pushes use workflow_run above.
       - "automation_intelligence/mcp_interface/events/**"
       - "automation_intelligence/mcp_interface/research_runs/**"
   schedule:

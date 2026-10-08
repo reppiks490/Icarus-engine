@@ -1,0 +1,40 @@
+{
+  "at_utc": "2026-10-08T02:46:04.033457+00:00",
+  "category": "AUDIT",
+  "event_id": "providers-37719050867-1-fred-provider-coverage",
+  "evidence": [
+    {
+      "catalog": {
+        "asset_datasets_collected": 20,
+        "asset_templates": 21,
+        "assets": 883,
+        "collected_operations": 22,
+        "denied_operations": 0,
+        "operations": 31,
+        "pending_pages": 2,
+        "qualification": "INCOMPLETE_UNTIL_EVERY_OPERATION_ASSET_PAGE_TIME_RANGE_AND_TRANSPORT_IS_VERIFIED",
+        "unresolved_operations": 0
+      },
+      "classification": "FACT",
+      "provider_status": {
+        "fred": "COLLECTED_PARTIAL"
+      }
+    }
+  ],
+  "execution_authorized": false,
+  "paths": [
+    "automation_intelligence/provider_collection_v1/cycles/providers-37719050867-1-fred/receipt.json"
+  ],
+  "schema_version": "icarus-mcp-event-v1",
+  "severity": "MEDIUM",
+  "source": "MACRO_AUTOMATION",
+  "status": "DEGRADED",
+  "summary": "Provider catalog acquisition: 20 requests; full coverage remains explicitly incomplete.",
+  "supermesh_x": {
+    "finding": "Endpoint/asset queues and authentication, entitlement, pagination and archive gaps recorded.",
+    "status": "DEGRADED"
+  },
+  "surface": [
+    "Provider entitlement and collection coverage"
+  ]
+}

@@ -6,7 +6,7 @@
    "diagnostics": {
     "bh_rejections": 0,
     "candidates": 492,
-    "forward_sessions": 2,
+    "forward_sessions": 3,
     "hold_sessions": 263,
     "m_eff": 125.0,
     "metric": "returns",
@@ -21,102 +21,101 @@
     "batch": 24,
     "best": [
      {
-      "dsr": 0.0002,
-      "family": "vwap",
-      "id": "x1986fc005ce",
+      "dsr": 0.0028,
+      "family": "orb",
+      "id": "x37d9eecf222",
       "params": {
-       "check": 60,
        "cond": "dow_mon",
-       "regime": "vol_hi",
-       "side": "both",
-       "start": "09:35"
-      },
-      "status": "REJECTED",
-      "tune_t": 1.407,
-      "tune_trades": 21
-     },
-     {
-      "dsr": 0.0,
-      "family": "gap",
-      "id": "xce525ba1bad",
-      "params": {
-       "cond": "gap_up",
-       "exit": "10:00",
-       "mode": "fade",
-       "regime": "vol_hi",
-       "thr": "q80"
-      },
-      "status": "REJECTED",
-      "tune_t": 0.868,
-      "tune_trades": 9
-     },
-     {
-      "dsr": 0.0,
-      "family": "orb",
-      "id": "x6ed1d276321",
-      "params": {
-       "cond": "prev_down",
        "entry_mode": "breakout_close",
-       "or_min": 15,
-       "regime": "vol_hi",
-       "side": "both",
-       "stop": "atr10",
-       "target": "eod"
-      },
-      "status": "REJECTED",
-      "tune_t": 0.391,
-      "tune_trades": 30
-     },
-     {
-      "dsr": 0.0,
-      "family": "orb",
-      "id": "x5fb6275d548",
-      "params": {
-       "cond": "on_wide",
-       "entry_mode": "first_candle_dir",
        "or_min": 5,
        "regime": "vol_hi",
-       "side": "long",
-       "stop": "candle",
-       "target": "2R"
-      },
-      "status": "REJECTED",
-      "tune_t": 0.014,
-      "tune_trades": 11
-     },
-     {
-      "dsr": 0.0,
-      "family": "orb",
-      "id": "x2331a0bfae4",
-      "params": {
-       "cond": "gap_up",
-       "entry_mode": "breakout_close",
-       "or_min": 10,
-       "regime": "all",
        "side": "both",
        "stop": "atr10",
        "target": "10R"
       },
       "status": "REJECTED",
-      "tune_t": -0.017,
-      "tune_trades": 148
+      "tune_t": 0.473,
+      "tune_trades": 11
+     },
+     {
+      "dsr": 0.0028,
+      "family": "gap",
+      "id": "xe441644b329",
+      "params": {
+       "cond": "dow_mon",
+       "exit": "10:30",
+       "mode": "go",
+       "regime": "all",
+       "thr": "q80"
+      },
+      "status": "REJECTED",
+      "tune_t": 0.121,
+      "tune_trades": 18
+     },
+     {
+      "dsr": 0.0015,
+      "family": "imom",
+      "id": "x583eb083120",
+      "params": {
+       "base": "open",
+       "cond": "none",
+       "entry": "14:30",
+       "min_abs": "q50",
+       "regime": "vol_hi",
+       "t1": "10:30"
+      },
+      "status": "REJECTED",
+      "tune_t": -0.1,
+      "tune_trades": 26
+     },
+     {
+      "dsr": 0.0002,
+      "family": "gap",
+      "id": "xc55368424e5",
+      "params": {
+       "cond": "dow_mon",
+       "exit": "11:00",
+       "mode": "go",
+       "regime": "vol_lo",
+       "thr": "q80"
+      },
+      "status": "REJECTED",
+      "tune_t": -0.359,
+      "tune_trades": 8
+     },
+     {
+      "dsr": 0.0007,
+      "family": "orb",
+      "id": "x6ff16393dc6",
+      "params": {
+       "cond": "vix_inverted",
+       "entry_mode": "breakout_close",
+       "or_min": 60,
+       "regime": "all",
+       "side": "long",
+       "stop": "or_opposite",
+       "target": "eod"
+      },
+      "status": "REJECTED",
+      "tune_t": -0.405,
+      "tune_trades": 35
      }
     ],
     "diagnostics": {
      "bh_rejections": 0,
      "candidates": 24,
-     "forward_sessions": 2,
+     "forward_sessions": 3,
      "hold_sessions": 263,
      "m_eff": 21.0,
      "metric": "returns",
-     "pbo": 0.1284,
-     "prior_trials": 701,
+     "pbo": 0.5405,
+     "prior_trials": 725,
      "reached_hold": 0,
-     "spa_p": 0.644,
+     "spa_p": 0.984,
      "tune_sessions": 282,
-     "var_sr": 0.00606478
+     "var_sr": 0.00296594
     },
-    "explored_before": 576,
+    "explored_before": 600,
     "promoted": [],
     "status_counts": {
      "REJECTED": 24
@@ -127,7 +126,7 @@
     "diagnostics": {
      "bh_rejections": 0,
      "candidates": 3,
-     "forward_sessions": 2,
+     "forward_sessions": 3,
      "hold_sessions": 263,
      "m_eff": 3.0,
      "metric": "returns",
@@ -188,7 +187,7 @@
      "diagnostics": {
       "bh_rejections": 0,
       "candidates": 4,
-      "forward_sessions": 2,
+      "forward_sessions": 3,
       "hold_sessions": 263,
       "m_eff": 3.0,
       "metric": "returns",
@@ -272,7 +271,7 @@
     },
     "version": "cl-r2"
    },
-   "sessions": 547,
+   "sessions": 548,
    "status": "EVALUATED",
    "status_counts": {
     "REJECTED": 492
@@ -284,7 +283,7 @@
    "diagnostics": {
     "bh_rejections": 0,
     "candidates": 492,
-    "forward_sessions": 2,
+    "forward_sessions": 3,
     "hold_sessions": 263,
     "m_eff": 118.0,
     "metric": "returns",
@@ -301,97 +300,100 @@
      {
       "dsr": 0.0018,
       "family": "noise",
-      "id": "x7d8c42bb55e",
+      "id": "x39668c13ec8",
       "params": {
-       "check": 30,
-       "cond": "gap_up",
-       "lookback": 10,
-       "mult": 1.5,
+       "check": 60,
+       "cond": "none",
+       "lookback": 5,
+       "mult": 1.0,
        "regime": "vol_lo",
        "trail": "band"
       },
       "status": "REJECTED",
-      "tune_t": 1.603,
-      "tune_trades": 36
+      "tune_t": 2.421,
+      "tune_trades": 48
      },
      {
-      "dsr": 0.0049,
-      "family": "vwap",
-      "id": "x57f4d89b771",
+      "dsr": 0.0,
+      "family": "sweep",
+      "id": "x1ca7386af9b",
+      "params": {
+       "cond": "vix_high",
+       "depth_ticks": 2,
+       "exit": "eod",
+       "level": "on",
+       "mode": "reverse",
+       "regime": "vol_hi",
+       "window": "day"
+      },
+      "status": "REJECTED",
+      "tune_t": 1.455,
+      "tune_trades": 41
+     },
+     {
+      "dsr": 0.0002,
+      "family": "noise",
+      "id": "xc8bff785dc9",
       "params": {
        "check": 60,
        "cond": "prev_down",
-       "regime": "vol_lo",
-       "side": "long",
-       "start": "09:35"
+       "lookback": 14,
+       "mult": 1.25,
+       "regime": "all",
+       "trail": "band_vwap"
       },
       "status": "REJECTED",
-      "tune_t": 1.575,
-      "tune_trades": 44
+      "tune_t": 1.303,
+      "tune_trades": 70
      },
      {
-      "dsr": 0.0007,
-      "family": "tod",
-      "id": "x73f5b1ef8dd",
-      "params": {
-       "cond": "dow_mon",
-       "lookback": 60,
-       "regime": "vol_hi",
-       "which": "first"
-      },
-      "status": "REJECTED",
-      "tune_t": 0.85,
-      "tune_trades": 24
-     },
-     {
-      "dsr": 0.001,
+      "dsr": 0.0002,
       "family": "imom",
-      "id": "x8fea3ff028e",
+      "id": "x0249b18bd09",
       "params": {
-       "base": "open",
-       "cond": "on_wide",
-       "entry": "15:30",
-       "min_abs": "q50",
-       "regime": "vol_hi",
+       "base": "prevclose",
+       "cond": "dow_mon",
+       "entry": "15:00",
+       "min_abs": "none",
+       "regime": "vol_lo",
        "t1": "11:30"
       },
       "status": "REJECTED",
-      "tune_t": 0.823,
-      "tune_trades": 22
+      "tune_t": 1.088,
+      "tune_trades": 16
      },
      {
-      "dsr": 0.0014,
-      "family": "orb",
-      "id": "x89f320cca4a",
+      "dsr": 0.0,
+      "family": "noise",
+      "id": "x4aee626d16d",
       "params": {
-       "cond": "gap_up",
-       "entry_mode": "breakout_close",
-       "or_min": 30,
-       "regime": "all",
-       "side": "both",
-       "stop": "or_opposite",
-       "target": "10R"
+       "check": 30,
+       "cond": "dow_mid",
+       "lookback": 30,
+       "mult": 2.0,
+       "regime": "vol_lo",
+       "trail": "band"
       },
       "status": "REJECTED",
-      "tune_t": 0.749,
-      "tune_trades": 159
+      "tune_t": 1.064,
+      "tune_trades": 20
      }
     ],
     "diagnostics": {
      "bh_rejections": 0,
      "candidates": 24,
-     "forward_sessions": 2,
+     "forward_sessions": 3,
      "hold_sessions": 263,
-     "m_eff": 21.0,
+     "m_eff": 19.0,
      "metric": "returns",
-     "pbo": 0.2057,
-     "prior_trials": 694,
+     "pbo": 0.2641,
+     "prior_trials": 718,
      "reached_hold": 0,
-     "spa_p": 0.589,
+     "spa_p": 0.147,
      "tune_sessions": 282,
-     "var_sr": 0.00462552
+     "var_sr": 0.00689062
     },
-    "explored_before": 576,
+    "explored_before": 600,
     "promoted": [],
     "status_counts": {
      "REJECTED": 24
@@ -402,7 +404,7 @@
     "diagnostics": {
      "bh_rejections": 0,
      "candidates": 3,
-     "forward_sessions": 2,
+     "forward_sessions": 3,
      "hold_sessions": 263,
      "m_eff": 2.0,
      "metric": "returns",
@@ -463,7 +465,7 @@
      "diagnostics": {
       "bh_rejections": 1,
       "candidates": 4,
-      "forward_sessions": 2,
+      "forward_sessions": 3,
       "hold_sessions": 263,
       "m_eff": 3.0,
       "metric": "returns",
@@ -549,14 +551,14 @@
      {
       "after": "2026-10-05",
       "id": "qce1276a5f9b",
-      "mean": -0.00481395,
-      "nw_t": null,
+      "mean": -0.0032093,
+      "nw_t": -2.121,
       "protocol": "R4-1",
       "rule": {
        "min_trades": 60,
        "nw_t": 1.65
       },
-      "sessions": 2,
+      "sessions": 3,
       "status": "WATCHING",
       "trades": 1
      }
@@ -598,7 +600,7 @@
     },
     "version": "cl-r2"
    },
-   "sessions": 547,
+   "sessions": 548,
    "status": "EVALUATED",
    "status_counts": {
     "REJECTED": 492
@@ -610,7 +612,7 @@
    "diagnostics": {
     "bh_rejections": 0,
     "candidates": 492,
-    "forward_sessions": 2,
+    "forward_sessions": 3,
     "hold_sessions": 260,
     "m_eff": 114.0,
     "metric": "points",
@@ -625,102 +627,100 @@
     "batch": 24,
     "best": [
      {
-      "dsr": 0.0008,
-      "family": "noise",
-      "id": "x60af62fd7a1",
+      "dsr": 0.0092,
+      "family": "tod",
+      "id": "x6024422c379",
       "params": {
-       "check": 30,
-       "cond": "none",
-       "lookback": 30,
-       "mult": 2.0,
+       "cond": "vix_high",
+       "lookback": 20,
        "regime": "vol_hi",
-       "trail": "band_vwap"
+       "which": "first"
       },
       "status": "REJECTED",
-      "tune_t": 1.229,
-      "tune_trades": 21
+      "tune_t": 1.085,
+      "tune_trades": 68
      },
      {
-      "dsr": 0.0036,
-      "family": "noise",
-      "id": "x17af3164c1b",
-      "params": {
-       "check": 30,
-       "cond": "on_wide",
-       "lookback": 5,
-       "mult": 1.5,
-       "regime": "all",
-       "trail": "band_vwap"
-      },
-      "status": "REJECTED",
-      "tune_t": 0.906,
-      "tune_trades": 58
-     },
-     {
-      "dsr": 0.0056,
-      "family": "orb",
-      "id": "x5b3cfaa6d19",
-      "params": {
-       "cond": "dow_mon",
-       "entry_mode": "breakout_close",
-       "or_min": 30,
-       "regime": "vol_lo",
-       "side": "long",
-       "stop": "atr10",
-       "target": "2R"
-      },
-      "status": "REJECTED",
-      "tune_t": 0.828,
-      "tune_trades": 14
-     },
-     {
-      "dsr": 0.0045,
+      "dsr": 0.0069,
       "family": "gap",
-      "id": "x82eb1593718",
+      "id": "x2598c280e1b",
       "params": {
        "cond": "gap_down",
-       "exit": "fill",
+       "exit": "eod",
        "mode": "fade",
-       "regime": "all",
+       "regime": "vol_hi",
        "thr": "q50"
       },
       "status": "REJECTED",
-      "tune_t": 0.59,
-      "tune_trades": 49
+      "tune_t": 1.008,
+      "tune_trades": 26
      },
      {
-      "dsr": 0.0029,
-      "family": "sweep",
-      "id": "xdecec0cf933",
+      "dsr": 0.0023,
+      "family": "orb",
+      "id": "xaf9e7b51b6c",
       "params": {
-       "cond": "dow_mid",
-       "depth_ticks": 4,
+       "cond": "dow_mon",
+       "entry_mode": "breakout_close",
+       "or_min": 10,
+       "regime": "vol_lo",
+       "side": "long",
+       "stop": "atr10",
+       "target": "10R"
+      },
+      "status": "REJECTED",
+      "tune_t": 0.966,
+      "tune_trades": 15
+     },
+     {
+      "dsr": 0.0062,
+      "family": "sweep",
+      "id": "xa9acb769278",
+      "params": {
+       "cond": "none",
+       "depth_ticks": 0,
        "exit": "2R",
        "level": "on",
        "mode": "reverse",
        "regime": "vol_hi",
-       "window": "day"
+       "window": "am"
       },
       "status": "REJECTED",
-      "tune_t": 0.484,
-      "tune_trades": 44
+      "tune_t": 0.922,
+      "tune_trades": 64
+     },
+     {
+      "dsr": 0.0002,
+      "family": "noise",
+      "id": "xa399916fb01",
+      "params": {
+       "check": 60,
+       "cond": "vix_inverted",
+       "lookback": 30,
+       "mult": 1.25,
+       "regime": "vol_hi",
+       "trail": "band"
+      },
+      "status": "REJECTED",
+      "tune_t": 0.829,
+      "tune_trades": 26
      }
     ],
     "diagnostics": {
      "bh_rejections": 0,
      "candidates": 24,
-     "forward_sessions": 2,
+     "forward_sessions": 3,
      "hold_sessions": 260,
      "m_eff": 22.0,
      "metric": "points",
-     "pbo": 0.6207,
-     "prior_trials": 690,
+     "pbo": 0.5429,
+     "prior_trials": 714,
      "reached_hold": 0,
-     "spa_p": 0.874,
+     "spa_p": 0.889,
      "tune_sessions": 264,
-     "var_sr": 0.00378806
+     "var_sr": 0.00415177
     },
-    "explored_before": 576,
+    "explored_before": 600,
     "promoted": [],
     "status_counts": {
      "REJECTED": 24
@@ -731,7 +731,7 @@
     "diagnostics": {
      "bh_rejections": 0,
      "candidates": 3,
-     "forward_sessions": 2,
+     "forward_sessions": 3,
      "hold_sessions": 260,
      "m_eff": 2.0,
      "metric": "points",
@@ -789,49 +789,49 @@
     "forward": {
      "CANDLES": {
       "after": "2026-10-05",
-      "net_usd": 2040.6,
-      "trades": 4
+      "net_usd": 2968.6,
+      "trades": 5
      },
      "HA_HA_FILLS": {
       "after": "2026-10-05",
-      "net_usd": 1985.5,
-      "trades": 2
+      "net_usd": 3118.5,
+      "trades": 3
      },
      "HA_REAL_FILLS": {
       "after": "2026-10-05",
-      "net_usd": 1985.5,
-      "trades": 2
+      "net_usd": 2933.5,
+      "trades": 3
      }
     },
     "preset_source": "presets/NQ-20m-ultracoded.json (RECONSTRUCTED)",
     "reason": null,
     "status": null,
     "strategy": "THE PULSE OF ICARUS v3.1 (repo port)",
-    "tape_last_bar_close": "2026-10-07T11:00:00+00:00",
+    "tape_last_bar_close": "2026-10-07T23:20:00+00:00",
     "totals": {
      "CANDLES|base": {
-      "net_usd": 48517.56,
-      "trades": 576
+      "net_usd": 49445.56,
+      "trades": 577
      },
      "CANDLES|stress": {
-      "net_usd": 37838.66,
-      "trades": 571
+      "net_usd": 38739.66,
+      "trades": 572
      },
      "HA_HA_FILLS|base": {
-      "net_usd": 330967.5,
-      "trades": 552
+      "net_usd": 332100.5,
+      "trades": 553
      },
      "HA_REAL_FILLS|base": {
-      "net_usd": 17172.9,
-      "trades": 493
+      "net_usd": 18120.9,
+      "trades": 494
      },
      "HA_REAL_FILLS|repo_convention": {
-      "net_usd": 16039.7,
-      "trades": 495
+      "net_usd": 16987.3,
+      "trades": 496
      },
      "HA_REAL_FILLS|stress": {
-      "net_usd": 8511.9,
-      "trades": 495
+      "net_usd": 9432.9,
+      "trades": 496
      }
     },
     "trials_assumed_for_dsr": 100,
@@ -1135,7 +1135,7 @@
     },
     "version": "cl-r2"
    },
-   "sessions": 526,
+   "sessions": 527,
    "status": "EVALUATED",
    "status_counts": {
     "REJECTED": 492
@@ -1147,12 +1147,12 @@
    "cost_bp_rt": 1.0,
    "first": "1986-01-02",
    "first_signal": "1986-04",
-   "last": "2026-10-06",
+   "last": "2026-10-07",
    "last_signal": "2026-09",
    "n_trials": 3,
    "signals": 486,
    "stress_bp_rt": 3.0,
-   "trading_days": 10271,
+   "trading_days": 10272,
    "var_sr": 0.000178758
   },
   "recent_signals": [
@@ -1267,10 +1267,10 @@
  "databento_depth_corpus": {
   "diversifier": {
    "account": "third",
-   "budget_usd": 0.032455999999996266,
-   "cached_slices": 51,
-   "downloaded_slices": 1,
-   "estimated_requested_usd": 0.021286211908,
+   "budget_usd": 0.011170000000007008,
+   "cached_slices": 52,
+   "downloaded_slices": 0,
+   "estimated_requested_usd": 0.0,
    "feature_resolution": "1 minute",
    "max_request_usd": 15.0,
    "profile": "diversifier",
@@ -1312,9 +1312,9 @@
      "ok": 0
     },
     "SI": {
-     "cached": 5,
+     "cached": 6,
      "errors": 0,
-     "ok": 1
+     "ok": 0
     },
     "SIL": {
      "cached": 6,
@@ -1342,10 +1342,10 @@
   },
   "index": {
    "account": "secondary",
-   "budget_usd": 0.2688940000000031,
-   "cached_slices": 38,
-   "downloaded_slices": 1,
-   "estimated_requested_usd": 0.241574004292,
+   "budget_usd": 0.02732000000000312,
+   "cached_slices": 39,
+   "downloaded_slices": 0,
+   "estimated_requested_usd": 0.0,
    "feature_resolution": "1 minute",
    "max_request_usd": 15.0,
    "profile": "index",
@@ -1357,9 +1357,9 @@
      "ok": 0
     },
     "M2K": {
-     "cached": 4,
+     "cached": 5,
      "errors": 0,
-     "ok": 1
+     "ok": 0
     },
     "MES": {
      "cached": 5,
@@ -1402,7 +1402,7 @@
   "degraded_sources": [
    "BLS"
   ],
-  "generated_at": "2026-10-07T13:25:37.453688+00:00",
+  "generated_at": "2026-10-08T06:05:24.929488+00:00",
   "high_impact_current": 109,
   "high_impact_within_24h": 0,
   "next_high_impact": {
@@ -1410,7 +1410,7 @@
    "event_date": "2026-10-14",
    "event_key": "4f3276ffeae564d103ef7595",
    "impact": "high",
-   "minutes_to_event": 9639.4,
+   "minutes_to_event": 8902.3,
    "reference_period": "September 2026",
    "scheduled_at_et": "2026-10-14T08:30:00-04:00",
    "scheduled_at_utc": "2026-10-14T12:30:00+00:00",
@@ -1419,7 +1419,7 @@
    "timing_basis": "source_schedule",
    "title": "Consumer Price Index for September 2026"
   },
-  "schedule_versions": 404,
+  "schedule_versions": 467,
   "source_health": "degraded",
   "source_status": {
    "BEA": {
@@ -1451,7 +1451,7 @@
     "event_date": "2026-10-14",
     "event_key": "4f3276ffeae564d103ef7595",
     "impact": "high",
-    "minutes_to_event": 9639.4,
+    "minutes_to_event": 8902.3,
     "reference_period": "September 2026",
     "scheduled_at_et": "2026-10-14T08:30:00-04:00",
     "scheduled_at_utc": "2026-10-14T12:30:00+00:00",
@@ -1465,7 +1465,7 @@
     "event_date": "2026-10-14",
     "event_key": "e7fcfea076fb18b21904ea40",
     "impact": "low",
-    "minutes_to_event": 9639.4,
+    "minutes_to_event": 8902.3,
     "reference_period": "September 2026",
     "scheduled_at_et": "2026-10-14T08:30:00-04:00",
     "scheduled_at_utc": "2026-10-14T12:30:00+00:00",
@@ -1479,7 +1479,7 @@
     "event_date": "2026-10-15",
     "event_key": "d732362e8ee58c26c2020b77",
     "impact": "high",
-    "minutes_to_event": 11079.4,
+    "minutes_to_event": 10342.3,
     "reference_period": "September 2026",
     "scheduled_at_et": "2026-10-15T08:30:00-04:00",
     "scheduled_at_utc": "2026-10-15T12:30:00+00:00",
@@ -1493,7 +1493,7 @@
     "event_date": "2026-10-16",
     "event_key": "193a05ff8bfd8bf270158025",
     "impact": "medium",
-    "minutes_to_event": 12519.4,
+    "minutes_to_event": 11782.3,
     "reference_period": "September 2026",
     "scheduled_at_et": "2026-10-16T08:30:00-04:00",
     "scheduled_at_utc": "2026-10-16T12:30:00+00:00",
@@ -1507,7 +1507,7 @@
     "event_date": "2026-10-20",
     "event_key": "58a658f3649c0f14360bdd3b",
     "impact": "low",
-    "minutes_to_event": 18369.4,
+    "minutes_to_event": 17632.3,
     "reference_period": "September 2026",
     "scheduled_at_et": "2026-10-20T10:00:00-04:00",
     "scheduled_at_utc": "2026-10-20T14:00:00+00:00",
@@ -1521,7 +1521,7 @@
     "event_date": "2026-10-21",
     "event_key": "d6c2f9b79b43b3ff3906135a",
     "impact": "low",
-    "minutes_to_event": 19809.4,
+    "minutes_to_event": 19072.3,
     "reference_period": "Third Quarter 2026",
     "scheduled_at_et": "2026-10-21T10:00:00-04:00",
     "scheduled_at_utc": "2026-10-21T14:00:00+00:00",
@@ -1545,39 +1545,11 @@
     "title": "FOMC policy decision"
    },
    {
-    "category": "growth",
-    "event_date": "2026-10-29",
-    "event_key": "94a8ce417025684a43beb002",
-    "impact": "high",
-    "minutes_to_event": 31239.4,
-    "reference_period": "3rd Quarter 2026",
-    "scheduled_at_et": "2026-10-29T08:30:00-04:00",
-    "scheduled_at_utc": "2026-10-29T12:30:00+00:00",
-    "source": "BEA",
-    "time_known": true,
-    "timing_basis": "source_schedule",
-    "title": "GDP (Advance Estimate), 3rd Quarter 2026"
-   },
-   {
-    "category": "growth",
-    "event_date": "2026-10-29",
-    "event_key": "bde7eff99e812613f7d79043",
-    "impact": "high",
-    "minutes_to_event": 31239.4,
-    "reference_period": "September 2026",
-    "scheduled_at_et": "2026-10-29T08:30:00-04:00",
-    "scheduled_at_utc": "2026-10-29T12:30:00+00:00",
-    "source": "BEA",
-    "time_known": true,
-    "timing_basis": "source_schedule",
-    "title": "Personal Income and Outlays, September 2026"
-   },
-   {
     "category": "labor",
     "event_date": "2026-10-30",
     "event_key": "da62544b492c7d2b68c3d4ac",
     "impact": "high",
-    "minutes_to_event": 32679.4,
+    "minutes_to_event": 31942.3,
     "reference_period": "Third Quarter 2026",
     "scheduled_at_et": "2026-10-30T08:30:00-04:00",
     "scheduled_at_utc": "2026-10-30T12:30:00+00:00",
@@ -1591,7 +1563,7 @@
     "event_date": "2026-11-03",
     "event_key": "7a01bddf79a629fd85f4518b",
     "impact": "medium",
-    "minutes_to_event": 38589.4,
+    "minutes_to_event": 37852.3,
     "reference_period": "September 2026",
     "scheduled_at_et": "2026-11-03T10:00:00-05:00",
     "scheduled_at_utc": "2026-11-03T15:00:00+00:00",
@@ -1601,18 +1573,46 @@
     "title": "Job Openings and Labor Turnover Survey for September 2026"
    },
    {
-    "category": "growth",
-    "event_date": "2026-11-04",
-    "event_key": "c66cab6cdcd0d82e02b01e47",
-    "impact": "high",
-    "minutes_to_event": 39939.4,
-    "reference_period": "September 2026",
-    "scheduled_at_et": "2026-11-04T08:30:00-05:00",
-    "scheduled_at_utc": "2026-11-04T13:30:00+00:00",
-    "source": "BEA",
+    "category": "macro",
+    "event_date": "2026-11-05",
+    "event_key": "f8c3f13836bf615dfc21433f",
+    "impact": "medium",
+    "minutes_to_event": 40642.3,
+    "reference_period": "Third Quarter 2026",
+    "scheduled_at_et": "2026-11-05T08:30:00-05:00",
+    "scheduled_at_utc": "2026-11-05T13:30:00+00:00",
+    "source": "BLS",
     "time_known": true,
     "timing_basis": "source_schedule",
-    "title": "U.S. International Trade in Goods and Services, September 2026"
+    "title": "Productivity and Costs (P) for Third Quarter 2026"
+   },
+   {
+    "category": "labor",
+    "event_date": "2026-11-06",
+    "event_key": "39f03e74f7efc06323de37f7",
+    "impact": "high",
+    "minutes_to_event": 42082.3,
+    "reference_period": "October 2026",
+    "scheduled_at_et": "2026-11-06T08:30:00-05:00",
+    "scheduled_at_utc": "2026-11-06T13:30:00+00:00",
+    "source": "BLS",
+    "time_known": true,
+    "timing_basis": "source_schedule",
+    "title": "Employment Situation for October 2026"
+   },
+   {
+    "category": "inflation",
+    "event_date": "2026-11-10",
+    "event_key": "1678ef301584705d3b19b733",
+    "impact": "high",
+    "minutes_to_event": 47842.3,
+    "reference_period": "October 2026",
+    "scheduled_at_et": "2026-11-10T08:30:00-05:00",
+    "scheduled_at_utc": "2026-11-10T13:30:00+00:00",
+    "source": "BLS",
+    "time_known": true,
+    "timing_basis": "source_schedule",
+    "title": "Consumer Price Index for October 2026"
    }
   ]
  },
@@ -1639,10 +1639,19 @@
   ],
   "upcoming_focus_earnings": [
    {
+    "date": "2026-10-29",
+    "epsActual": null,
+    "epsEstimated": 1.96,
+    "lastUpdated": "2026-10-07",
+    "revenueActual": null,
+    "revenueEstimated": 202078000000,
+    "symbol": "AMZN"
+   },
+   {
     "date": "2026-10-28",
     "epsActual": null,
     "epsEstimated": 3.05,
-    "lastUpdated": "2026-10-06",
+    "lastUpdated": "2026-10-07",
     "revenueActual": null,
     "revenueEstimated": 127272400000,
     "symbol": "GOOGL"
@@ -1651,7 +1660,7 @@
     "date": "2026-10-28",
     "epsActual": null,
     "epsEstimated": 6.77,
-    "lastUpdated": "2026-10-06",
+    "lastUpdated": "2026-10-07",
     "revenueActual": null,
     "revenueEstimated": 63283660000,
     "symbol": "META"
@@ -1660,18 +1669,18 @@
     "date": "2026-10-28",
     "epsActual": null,
     "epsEstimated": 4.71,
-    "lastUpdated": "2026-10-06",
+    "lastUpdated": "2026-10-07",
     "revenueActual": null,
-    "revenueEstimated": 90585720000,
+    "revenueEstimated": 90611690000,
     "symbol": "MSFT"
    },
    {
-    "date": "2026-10-28",
+    "date": "2026-10-21",
     "epsActual": null,
-    "epsEstimated": 0.4528,
-    "lastUpdated": "2026-10-06",
+    "epsEstimated": 0.4525,
+    "lastUpdated": "2026-10-07",
     "revenueActual": null,
-    "revenueEstimated": 27486050000,
+    "revenueEstimated": 27776630000,
     "symbol": "TSLA"
    }
   ]
@@ -1732,13 +1741,13 @@
   "treasury_debt_to_penny": "ok",
   "treasury_operating_cash": "ok"
  },
- "generated_at": "2026-10-07T19:50:36.759220+00:00",
+ "generated_at": "2026-10-08T08:07:41.345692+00:00",
  "integrity": {
   "basis_check": {
    "jumps": [],
    "max_abs_dbasis": 108.92,
-   "median_abs_dbasis": 7.15,
-   "sessions": 512,
+   "median_abs_dbasis": 7.16,
+   "sessions": 513,
    "status": "OK",
    "threshold_points": 150.0
   },
@@ -1944,7 +1953,7 @@
   ]
  },
  "production_decision_authorized": false,
- "run_id": "cl-lab-6b0c8cb26cf28d51",
+ "run_id": "cl-lab-11b9257c13ffab4c",
  "schema": "cl_lab.ui_feed/1",
  "ui_state": "RESEARCH ONLY"
 }

@@ -71,7 +71,7 @@ def request_dir_for(lane: str) -> Path:
 def load_json(path: Path) -> dict[str, Any] | None:
     try:
         value = json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError):
+    except (OSError, UnicodeError, json.JSONDecodeError):
         return None
     return value if isinstance(value, dict) else None
 
@@ -101,7 +101,7 @@ def result_valid(repo_root: Path, lane: str, automation_id: str, request_id: str
     }
     if not required.issubset(payload):
         return False
-    if payload.get("outcome") not in RESULT_OUTCOMES:
+    if not isinstance(payload.get("outcome"), str) or payload["outcome"] not in RESULT_OUTCOMES:
         return False
     if not isinstance(payload.get("substantive_work_performed"), bool):
         return False
@@ -129,22 +129,59 @@ def request_files(repo_root: Path, lane: str) -> list[Path]:
     )
 
 
+def request_identity(path: Path, payload: dict[str, Any] | None) -> str | None:
+    if payload is None:
+        return None
+    request_id = payload.get("request_id")
+    # Bind identity to its immutable file before constructing any result path.
+    if not isinstance(request_id, str) or not request_id or request_id != path.stem:
+        return None
+    return request_id
+
+
+def aware_utc(raw: Any) -> datetime | None:
+    if not isinstance(raw, str):
+        return None
+    try:
+        value = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+        if value.tzinfo is None or value.utcoffset() is None:
+            return None
+        return value.astimezone(timezone.utc)
+    except (ValueError, OverflowError):
+        return None
+
+
+def request_time(payload: dict[str, Any] | None) -> datetime | None:
+    if payload is None:
+        return None
+    # Only old contracts without a due-slot field may fall back to request time.
+    raw = payload.get("due_slot_utc") if "due_slot_utc" in payload else payload.get("requested_at_utc")
+    return aware_utc(raw)
+
+
+def request_clocks_valid(payload: dict[str, Any] | None) -> bool:
+    if payload is None or request_time(payload) is None or aware_utc(payload.get("requested_at_utc")) is None:
+        return False
+    return "request_created_at_utc" not in payload or aware_utc(payload["request_created_at_utc"]) is not None
+
+
 def unresolved_requests(repo_root: Path, lane: str, automation_id: str, limit: int = 24) -> list[str]:
     files = request_files(repo_root, lane)
     if limit > 0:
         files = files[-limit:]
 
-    unresolved: list[str] = []
+    unresolved: list[tuple[datetime, str, str]] = []
     for path in files:
         payload = load_json(path)
-        if payload is None:
-            continue
-        request_id = payload.get("request_id")
-        if not isinstance(request_id, str):
+        request_id = request_identity(path, payload)
+        if request_id is None:
             continue
         if not result_valid(repo_root, lane, automation_id, request_id):
-            unresolved.append(request_id)
-    return unresolved
+            # Missing/invalid clocks stay unresolved and are diagnosed by health.
+            # The public helper retains support for legacy identity-only callers.
+            clock = request_time(payload) or datetime.max.replace(tzinfo=timezone.utc)
+            unresolved.append((clock, path.name, request_id))
+    return [request_id for _, _, request_id in sorted(unresolved)]
 
 
 def existing_due_slots(repo_root: Path, lane: str) -> set[str]:
@@ -262,16 +299,23 @@ def build_health(
     now: datetime,
 ) -> dict[str, Any]:
     automation_id = str(cfg["automation_id"])
-    unresolved = unresolved_requests(repo_root, lane, automation_id, limit=24)
+    unresolved = unresolved_requests(repo_root, lane, automation_id, limit=0)
+    hot_window = unresolved_requests(repo_root, lane, automation_id, limit=24)
     files = request_files(repo_root, lane)
+    invalid_paths: list[str] = []
+    for path in files:
+        payload = load_json(path)
+        if request_identity(path, payload) is None or not request_clocks_valid(payload):
+            invalid_paths.append(path.relative_to(repo_root).as_posix())
 
     latest_request_id: str | None = None
     if files:
         latest_payload = load_json(files[-1])
-        if latest_payload:
-            latest_request_id = latest_payload.get("request_id")
+        latest_request_id = request_identity(files[-1], latest_payload)
 
-    if unresolved:
+    if invalid_paths:
+        status = "UNVERIFIED"
+    elif unresolved:
         status = "BACKLOG" if len(unresolved) > 1 else "PENDING"
     elif latest_request_id:
         status = "RESOLVED"
@@ -287,8 +331,12 @@ def build_health(
         "observed_at_utc": z(now),
         "latest_request_id": latest_request_id,
         "oldest_unresolved_request_id": unresolved[0] if unresolved else None,
-        "unresolved_request_ids_hot_window": unresolved,
-        "unresolved_count_hot_window": len(unresolved),
+        "request_count_total": len(files),
+        "unresolved_count_total": len(unresolved),
+        "invalid_request_count": len(invalid_paths),
+        "invalid_request_paths": invalid_paths,
+        "unresolved_request_ids_hot_window": hot_window,
+        "unresolved_count_hot_window": len(hot_window),
         "health": status,
         "github_liveness_receipt_is_not_completion": True,
         "execution_authorized": False,
@@ -331,7 +379,7 @@ def enqueue(
     else:
         request_origin = "GITHUB_ACTIONS_MANUAL"
 
-    prior_unresolved = unresolved_requests(repo_root, lane, automation_id, limit=24)
+    prior_unresolved = unresolved_requests(repo_root, lane, automation_id, limit=0)
 
     if due_slot is not None:
         request_id = f"{lane}-{compact_stamp(due_slot)}"

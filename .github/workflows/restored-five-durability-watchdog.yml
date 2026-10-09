@@ -15,6 +15,7 @@ on:
     paths:
       - "tools/restored_five_durability_watchdog.py"
       - "tools/test_restored_five_durability_watchdog.py"
+      - "tests/test_restored_five_workflow_contract.py"
       - ".github/workflows/restored-five-durability-watchdog.yml"
       - "automation_intelligence/agent_fabric/robustness_guardian/**"
       - "automation_intelligence/agent_fabric/alpha_synthesis/**"
@@ -134,10 +135,69 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "automation: restored-five durability recovery $(date -u +%Y%m%dT%H%M%SZ) [skip ci]"
-          # Fail closed on concurrent main movement. Never rebase a recovery
-          # decision computed against an older snapshot; the next watchdog
-          # cycle will recompute from fresh main.
-          git push origin HEAD:main
+
+          # Never rebase a recovery decision computed against an older snapshot.
+          # On contention, discard the stale decision, refresh main, recompute the
+          # watchdog from that exact snapshot, validate its scope, and only then
+          # make another commit/push attempt.
+          if git push origin HEAD:main; then
+            exit 0
+          fi
+
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+
+            python tools/restored_five_durability_watchdog.py \
+              --repo-root . \
+              --stale-minutes 30 \
+              --monitor-grace-minutes 12 \
+              --monitor-after "2026-09-30T21:00:00Z" \
+              --stabilization-fallback \
+              --lane "robustness_guardian|automation_intelligence/agent_fabric/robustness_guardian|6abaf924e0248191b8a11bd1d32bf0b7|5|robustness-guardian" \
+              --lane "alpha_synthesis|automation_intelligence/agent_fabric/alpha_synthesis|6abaf8d75cf48191bc7ce06bc0006f1c|25|alpha-synthesis" \
+              --lane "flow_microstructure|automation_intelligence/flow|6abaef8effb48191aa5c959455451681|35|flow" \
+              --lane "apex_council|automation_intelligence/agent_fabric/apex_council|6ababd570fac81918777c8f809cf67c9|45|apex-council"
+
+            paths=(
+              automation_intelligence/agent_fabric/robustness_guardian/startup_state.json
+              automation_intelligence/agent_fabric/robustness_guardian/finalization_state.json
+              automation_intelligence/agent_fabric/robustness_guardian/heartbeat.json
+              automation_intelligence/agent_fabric/alpha_synthesis/startup_state.json
+              automation_intelligence/agent_fabric/alpha_synthesis/finalization_state.json
+              automation_intelligence/agent_fabric/alpha_synthesis/heartbeat.json
+              automation_intelligence/flow/startup_state.json
+              automation_intelligence/flow/finalization_state.json
+              automation_intelligence/flow/heartbeat.json
+              automation_intelligence/agent_fabric/apex_council/startup_state.json
+              automation_intelligence/agent_fabric/apex_council/finalization_state.json
+              automation_intelligence/agent_fabric/apex_council/heartbeat.json
+              automation_intelligence/agent_fabric/apex_council/watchdog_incidents.jsonl
+              automation_intelligence/flow/watchdog_incidents.jsonl
+              automation_intelligence/agent_fabric/alpha_synthesis/watchdog_incidents.jsonl
+              automation_intelligence/agent_fabric/robustness_guardian/watchdog_incidents.jsonl
+            )
+            for path in "${paths[@]}"; do
+              if [ -e "$path" ]; then git add -- "$path"; fi
+            done
+            if git diff --cached --quiet; then
+              echo "Concurrent writer already converged recovery state."
+              exit 0
+            fi
+            staged="$(git diff --cached --name-only)"
+            invalid="$(printf '%s\n' "$staged" | grep -Ev '^(automation_intelligence/agent_fabric/(robustness_guardian|alpha_synthesis|apex_council)/(startup_state|finalization_state|heartbeat)\.json|automation_intelligence/flow/(startup_state|finalization_state|heartbeat)\.json|automation_intelligence/agent_fabric/(robustness_guardian|alpha_synthesis|apex_council)/watchdog_incidents\.jsonl|automation_intelligence/flow/watchdog_incidents\.jsonl)$' || true)"
+            if [ -n "$invalid" ]; then
+              echo "Refusing out-of-scope recomputed watchdog mutation:" >&2
+              printf '%s\n' "$invalid" >&2
+              exit 1
+            fi
+            git commit -m "automation: restored-five durability recovery retry-${attempt} $(date -u +%Y%m%dT%H%M%SZ) [skip ci]"
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            sleep $((attempt * 2))
+          done
+          exit 1
 
       - name: Bind committed finalizations into heartbeats
         if: env.WATCHDOG_NO_CHANGE != '1'
@@ -163,9 +223,7 @@ jobs:
             automation_intelligence/agent_fabric/apex_council/heartbeat.json
           )
           for path in "${paths[@]}"; do
-            if [ -e "$path" ]; then
-              git add -- "$path"
-            fi
+            if [ -e "$path" ]; then git add -- "$path"; fi
           done
 
           if git diff --cached --quiet; then
@@ -181,7 +239,51 @@ jobs:
             exit 1
           fi
 
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "automation: bind restored-lane heartbeats to committed finalizations [skip ci]"
-          # Never rebase a mirror computed against stale main. A concurrent
-          # writer causes push rejection; the next watchdog recomputes.
-          git push origin HEAD:main
+          if git push origin HEAD:main; then
+            exit 0
+          fi
+
+          # Never rebase a mirror computed against stale main. Recompute it from
+          # the newly fetched snapshot and retry only the heartbeat namespace.
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            python tools/restored_five_durability_watchdog.py --repo-root . --stale-minutes 30 --receipt-first-stale-minutes 12 \
+              --lane "robustness_guardian|automation_intelligence/agent_fabric/robustness_guardian|6abaf924e0248191b8a11bd1d32bf0b7" \
+              --lane "alpha_synthesis|automation_intelligence/agent_fabric/alpha_synthesis|6abaf8d75cf48191bc7ce06bc0006f1c" \
+              --lane "flow_microstructure|automation_intelligence/flow|6abaef8effb48191aa5c959455451681" \
+              --lane "apex_council|automation_intelligence/agent_fabric/apex_council|6ababd570fac81918777c8f809cf67c9"
+            paths=(
+              automation_intelligence/agent_fabric/robustness_guardian/startup_state.json
+              automation_intelligence/agent_fabric/robustness_guardian/heartbeat.json
+              automation_intelligence/agent_fabric/alpha_synthesis/startup_state.json
+              automation_intelligence/agent_fabric/alpha_synthesis/heartbeat.json
+              automation_intelligence/flow/startup_state.json
+              automation_intelligence/flow/heartbeat.json
+              automation_intelligence/agent_fabric/apex_council/startup_state.json
+              automation_intelligence/agent_fabric/apex_council/heartbeat.json
+            )
+            for path in "${paths[@]}"; do
+              if [ -e "$path" ]; then git add -- "$path"; fi
+            done
+            if git diff --cached --quiet; then
+              echo "Concurrent writer already converged heartbeat mirrors."
+              exit 0
+            fi
+            staged="$(git diff --cached --name-only)"
+            invalid="$(printf '%s\n' "$staged" | grep -Ev '^(automation_intelligence/agent_fabric/(robustness_guardian|alpha_synthesis|apex_council)/(startup_state|heartbeat)\.json|automation_intelligence/flow/(startup_state|heartbeat)\.json)$' || true)"
+            if [ -n "$invalid" ]; then
+              echo "Refusing out-of-scope recomputed heartbeat mutation:" >&2
+              printf '%s\n' "$invalid" >&2
+              exit 1
+            fi
+            git commit -m "automation: bind restored-lane heartbeats retry-${attempt} [skip ci]"
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            sleep $((attempt * 2))
+          done
+          exit 1

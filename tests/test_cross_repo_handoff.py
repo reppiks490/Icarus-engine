@@ -25,6 +25,7 @@ def test_readme_has_no_unresolved_merge_markers():
     assert ">>>>>>>" not in text
     assert "reppiks490/Icarus" in text
 
+
 def test_canonical_brain_consumer_contract_is_fail_closed_and_research_only():
     contract = json.loads(
         (ROOT / "automation_intelligence" / "mcp_interface" / "icarus_consumer_contract.json")
@@ -48,6 +49,7 @@ def test_canonical_brain_consumer_contract_is_fail_closed_and_research_only():
     assert semantics["automatic_model_promotion"] is False
     assert semantics["production_decision_authorized"] is False
     assert semantics["automatic_execution_authority"] is False
+
 
 def test_brain_federation_strictly_enforces_event_contract_with_exact_legacy_exceptions():
     contract = json.loads(
@@ -86,6 +88,7 @@ def test_brain_federation_declares_historical_research_context_sources():
         "alpha_synthesis",
         "apex_council",
         "flow_microstructure",
+        "provider_collection",
     }
     assert len({row["path"] for row in sources}) == len(sources)
     assert all((ROOT / row["path"]).is_file() for row in sources)
@@ -98,11 +101,15 @@ def test_brain_federation_declares_historical_research_context_sources():
         "HISTORICAL_RESEARCH_EVIDENCE",
         "HISTORICAL_COLLECTION_EVIDENCE",
     }
-    flow = next(row for row in sources if row["id"] == "flow_microstructure")
-    assert flow["evidence_status"] == "HISTORICAL_COLLECTION_EVIDENCE"
-    assert flow["collection_only"] is True
+    collection_only = {row["id"] for row in sources if row["collection_only"] is True}
+    assert collection_only == {"flow_microstructure", "provider_collection"}
+    provider = next(row for row in sources if row["id"] == "provider_collection")
+    assert provider["path"] == "automation_intelligence/provider_collection_v1/research_context.json"
+    assert "providers" in provider["summary_fields"]
+    assert "summary" in provider["summary_fields"]
+    assert provider["raw_payloads_eligible"] is False
     for row in sources:
-        if row["id"] != "flow_microstructure":
+        if row["id"] not in collection_only:
             assert row["evidence_status"] == "HISTORICAL_RESEARCH_EVIDENCE"
 
 
@@ -118,6 +125,7 @@ def test_historical_context_contract_cannot_bypass_foundry_or_evaluator():
     assert truth["historical_context_never_bypasses_evaluator"] is True
     assert truth["historical_context_never_grants_shadow_qualification"] is True
     assert truth["historical_context_never_grants_execution_authority"] is True
+
 
 def test_brain_federation_peer_packet_has_bounded_freshness():
     contract = json.loads(

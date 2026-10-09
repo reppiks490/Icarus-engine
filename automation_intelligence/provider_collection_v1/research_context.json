@@ -18,11 +18,11 @@
       },
       "collected_pages": 0,
       "collected_rows": 0,
-      "completed_at_utc": "2026-10-09T00:09:50.125704+00:00",
+      "completed_at_utc": "2026-10-09T00:34:30.447598+00:00",
       "credential_present": false,
       "requests": 0,
       "research_features": [],
-      "run_id": "providers-37863321787-1-alpaca",
+      "run_id": "providers-37865451938-1-alpaca",
       "status": "BLOCKED_MISSING_CREDENTIAL",
       "substantive_work_performed": false
     },
@@ -40,17 +40,17 @@
       },
       "collected_pages": 0,
       "collected_rows": 0,
-      "completed_at_utc": "2026-10-09T00:09:53.990064+00:00",
+      "completed_at_utc": "2026-10-09T00:34:29.905608+00:00",
       "credential_present": false,
       "requests": 0,
       "research_features": [],
-      "run_id": "providers-37863321787-1-bybit",
+      "run_id": "providers-37865451938-1-bybit",
       "status": "NO_READY_JOBS",
       "substantive_work_performed": false
     },
     "eodhd": {
       "catalog": {
-        "asset_datasets_collected": 18,
+        "asset_datasets_collected": 21,
         "asset_templates": 28,
         "assets": 84649,
         "collected_operations": 12,
@@ -60,20 +60,32 @@
         "qualification": "INCOMPLETE_UNTIL_EVERY_OPERATION_ASSET_PAGE_TIME_RANGE_AND_TRANSPORT_IS_VERIFIED",
         "unresolved_operations": 19
       },
-      "collected_pages": 3,
-      "collected_rows": 251,
-      "completed_at_utc": "2026-10-09T00:15:33.794180+00:00",
+      "collected_pages": 2,
+      "collected_rows": 255,
+      "completed_at_utc": "2026-10-09T00:39:41.750829+00:00",
       "credential_present": true,
       "requests": 20,
       "research_features": [
         {
           "features": {
+            "value": {
+              "maximum": 51.65,
+              "mean": 35.849999999999994,
+              "minimum": 10.65,
+              "samples": 4,
+              "standard_deviation": 15.400527588365277
+            }
+          },
+          "operation": "eodhd:get:/div/{ticker}"
+        },
+        {
+          "features": {
             "close": {
-              "maximum": 78043.3281,
-              "mean": 71439.29493625509,
-              "minimum": 63496.0508,
+              "maximum": 1102.8101,
+              "mean": 1080.1640641434255,
+              "minimum": 1059.28,
               "samples": 251,
-              "standard_deviation": 3915.269618765697
+              "standard_deviation": 12.389165367866372
             },
             "volume": {
               "maximum": 0.0,
@@ -86,37 +98,37 @@
           "operation": "eodhd:get:/eod/{ticker}"
         }
       ],
-      "run_id": "providers-37863321787-1-eodhd",
+      "run_id": "providers-37865451938-1-eodhd",
       "status": "COLLECTED_PARTIAL",
       "substantive_work_performed": true
     },
     "fmp": {
       "catalog": {
-        "asset_datasets_collected": 0,
+        "asset_datasets_collected": 1,
         "asset_templates": 109,
         "assets": 6770,
-        "collected_operations": 33,
-        "denied_operations": 83,
+        "collected_operations": 36,
+        "denied_operations": 85,
         "operations": 230,
-        "pending_pages": 65,
+        "pending_pages": 45,
         "qualification": "INCOMPLETE_UNTIL_EVERY_OPERATION_ASSET_PAGE_TIME_RANGE_AND_TRANSPORT_IS_VERIFIED",
         "unresolved_operations": 0
       },
-      "collected_pages": 7,
-      "collected_rows": 253,
-      "completed_at_utc": "2026-10-09T00:14:05.017854+00:00",
+      "collected_pages": 1,
+      "collected_rows": 0,
+      "completed_at_utc": "2026-10-09T00:38:42.195447+00:00",
       "credential_present": true,
       "requests": 20,
       "research_features": [],
-      "run_id": "providers-37863321787-1-fmp",
+      "run_id": "providers-37865451938-1-fmp",
       "status": "COLLECTED_PARTIAL",
-      "substantive_work_performed": true
+      "substantive_work_performed": false
     },
     "fred": {
       "catalog": {
-        "asset_datasets_collected": 60,
+        "asset_datasets_collected": 80,
         "asset_templates": 21,
-        "assets": 5144,
+        "assets": 5366,
         "collected_operations": 23,
         "denied_operations": 0,
         "operations": 31,
@@ -125,37 +137,12 @@
         "unresolved_operations": 0
       },
       "collected_pages": 20,
-      "collected_rows": 2735,
-      "completed_at_utc": "2026-10-09T00:14:12.034578+00:00",
+      "collected_rows": 10144,
+      "completed_at_utc": "2026-10-09T00:38:48.222821+00:00",
       "credential_present": true,
       "requests": 20,
-      "research_features": [
-        {
-          "features": {
-            "value": {
-              "maximum": 94.0,
-              "mean": 81.22222222222223,
-              "minimum": 62.0,
-              "samples": 9,
-              "standard_deviation": 13.13838970158129
-            }
-          },
-          "operation": "fred:get:/series/observations"
-        },
-        {
-          "features": {
-            "value": {
-              "maximum": 94.0,
-              "mean": 81.66666666666667,
-              "minimum": 64.0,
-              "samples": 9,
-              "standard_deviation": 12.762793146051099
-            }
-          },
-          "operation": "fred:get:/series/observations"
-        }
-      ],
-      "run_id": "providers-37863321787-1-fred",
+      "research_features": [],
+      "run_id": "providers-37865451938-1-fred",
       "status": "COLLECTED_PARTIAL",
       "substantive_work_performed": true
     },
@@ -173,11 +160,11 @@
       },
       "collected_pages": 0,
       "collected_rows": 0,
-      "completed_at_utc": "2026-10-09T00:09:49.919923+00:00",
+      "completed_at_utc": "2026-10-09T00:34:26.848744+00:00",
       "credential_present": false,
       "requests": 0,
       "research_features": [],
-      "run_id": "providers-37863321787-1-intrinio",
+      "run_id": "providers-37865451938-1-intrinio",
       "status": "BLOCKED_MISSING_CREDENTIAL",
       "substantive_work_performed": false
     },
@@ -195,11 +182,11 @@
       },
       "collected_pages": 0,
       "collected_rows": 0,
-      "completed_at_utc": "2026-10-09T00:09:49.116531+00:00",
+      "completed_at_utc": "2026-10-09T00:34:30.792740+00:00",
       "credential_present": false,
       "requests": 0,
       "research_features": [],
-      "run_id": "providers-37863321787-1-massive",
+      "run_id": "providers-37865451938-1-massive",
       "status": "BLOCKED_MISSING_CREDENTIAL",
       "substantive_work_performed": false
     },
@@ -217,11 +204,11 @@
       },
       "collected_pages": 0,
       "collected_rows": 0,
-      "completed_at_utc": "2026-10-09T00:09:50.056494+00:00",
+      "completed_at_utc": "2026-10-09T00:34:29.980670+00:00",
       "credential_present": false,
       "requests": 0,
       "research_features": [],
-      "run_id": "providers-37863321787-1-quiver",
+      "run_id": "providers-37865451938-1-quiver",
       "status": "BLOCKED_MISSING_CREDENTIAL",
       "substantive_work_performed": false
     },
@@ -239,34 +226,34 @@
       },
       "collected_pages": 0,
       "collected_rows": 0,
-      "completed_at_utc": "2026-10-09T00:09:49.982690+00:00",
+      "completed_at_utc": "2026-10-09T00:34:29.360315+00:00",
       "credential_present": false,
       "requests": 0,
       "research_features": [],
-      "run_id": "providers-37863321787-1-tickstream",
+      "run_id": "providers-37865451938-1-tickstream",
       "status": "BLOCKED_MISSING_CREDENTIAL",
       "substantive_work_performed": false
     },
     "tiingo": {
       "catalog": {
-        "asset_datasets_collected": 44,
+        "asset_datasets_collected": 61,
         "asset_templates": 15,
         "assets": 26579,
         "collected_operations": 11,
         "denied_operations": 4,
         "operations": 29,
-        "pending_pages": 0,
+        "pending_pages": 1,
         "qualification": "INCOMPLETE_UNTIL_EVERY_OPERATION_ASSET_PAGE_TIME_RANGE_AND_TRANSPORT_IS_VERIFIED",
         "unresolved_operations": 1
       },
-      "collected_pages": 10,
+      "collected_pages": 8,
       "collected_rows": 1,
-      "completed_at_utc": "2026-10-09T00:14:01.795184+00:00",
+      "completed_at_utc": "2026-10-09T00:38:02.014623+00:00",
       "credential_present": true,
-      "requests": 20,
+      "requests": 17,
       "research_features": [],
-      "run_id": "providers-37863321787-1-tiingo",
-      "status": "COLLECTED_PARTIAL",
+      "run_id": "providers-37865451938-1-tiingo",
+      "status": "QUOTA_OR_RATE_LIMIT_PAUSED",
       "substantive_work_performed": true
     },
     "twelve": {
@@ -283,25 +270,25 @@
       },
       "collected_pages": 0,
       "collected_rows": 0,
-      "completed_at_utc": "2026-10-09T00:09:49.451640+00:00",
+      "completed_at_utc": "2026-10-09T00:34:29.347485+00:00",
       "credential_present": false,
       "requests": 0,
       "research_features": [],
-      "run_id": "providers-37863321787-1-twelve",
+      "run_id": "providers-37865451938-1-twelve",
       "status": "BLOCKED_MISSING_CREDENTIAL",
       "substantive_work_performed": false
     }
   },
   "raw_payloads_included": false,
   "schema_version": "icarus-provider-research-context-v1",
-  "snapshot_at_utc": "2026-10-09T00:15:33.794180+00:00",
+  "snapshot_at_utc": "2026-10-09T00:39:41.750829+00:00",
   "source_root": "automation_intelligence/provider_collection_v1/latest",
   "summary": {
-    "collected_pages": 40,
-    "collected_rows": 3240,
-    "providers_blocked": 6,
-    "providers_substantive": 4,
+    "collected_pages": 31,
+    "collected_rows": 10400,
+    "providers_blocked": 7,
+    "providers_substantive": 3,
     "providers_total": 11,
-    "requests": 80
+    "requests": 77
   }
 }

@@ -16,13 +16,14 @@ def test_restored_five_workflow_refreshes_before_decision_and_recomputes_after_c
     assert text.count("- name: Commit verified recovery state") == 1
     assert text.count("- name: Refresh main after grace") == 1
     assert text.count("git pull --rebase origin main") == 1
-    assert text.count("git push origin HEAD:main") == 2
+    assert text.count("git push origin HEAD:main") == 4
     assert "\n || true)\"" not in text
 
     commit_block = text.split("- name: Commit verified recovery state", 1)[1]
     assert "git pull --rebase origin main" not in commit_block
     assert "Never rebase a recovery" in commit_block
     recovery_commit_block = commit_block.split("- name: Bind committed finalizations into heartbeats", 1)[0]
+    assert recovery_commit_block.count("git push origin HEAD:main") == 2
     assert "for attempt in 1 2 3 4 5; do" in recovery_commit_block
     assert "git fetch origin main" in recovery_commit_block
     assert "git reset --hard origin/main" in recovery_commit_block
@@ -32,6 +33,7 @@ def test_restored_five_workflow_refreshes_before_decision_and_recomputes_after_c
         "- name: Commit verified recovery state"
     )
     mirror_block = text.split("- name: Bind committed finalizations into heartbeats", 1)[1]
+    assert mirror_block.count("git push origin HEAD:main") == 2
     assert "--stabilization-fallback" not in mirror_block
     assert "finalization_state.json" not in mirror_block
     assert "git pull" not in mirror_block

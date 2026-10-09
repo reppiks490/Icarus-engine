@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 WORKFLOW = Path(".github/workflows/restored-five-durability-watchdog.yml")
 
 
-def test_restored_five_workflow_refreshes_before_decision_and_fails_closed_after() -> None:
+def test_restored_five_workflow_refreshes_before_decision_and_recomputes_after_contention() -> None:
     text = WORKFLOW.read_text(encoding="utf-8")
 
     assert text.count("- name: Commit verified recovery state") == 1
@@ -22,6 +22,12 @@ def test_restored_five_workflow_refreshes_before_decision_and_fails_closed_after
     commit_block = text.split("- name: Commit verified recovery state", 1)[1]
     assert "git pull --rebase origin main" not in commit_block
     assert "Never rebase a recovery" in commit_block
+    recovery_commit_block = commit_block.split("- name: Bind committed finalizations into heartbeats", 1)[0]
+    assert "for attempt in 1 2 3 4 5; do" in recovery_commit_block
+    assert "git fetch origin main" in recovery_commit_block
+    assert "git reset --hard origin/main" in recovery_commit_block
+    assert "python tools/restored_five_durability_watchdog.py" in recovery_commit_block
+    assert "--stabilization-fallback" in recovery_commit_block
     assert text.index("- name: Bind committed finalizations into heartbeats") > text.index(
         "- name: Commit verified recovery state"
     )
@@ -29,6 +35,10 @@ def test_restored_five_workflow_refreshes_before_decision_and_fails_closed_after
     assert "--stabilization-fallback" not in mirror_block
     assert "finalization_state.json" not in mirror_block
     assert "git pull" not in mirror_block
+    assert "for attempt in 1 2 3 4 5; do" in mirror_block
+    assert "git fetch origin main" in mirror_block
+    assert "git reset --hard origin/main" in mirror_block
+    assert "python tools/restored_five_durability_watchdog.py" in mirror_block
     assert "if: env.WATCHDOG_NO_CHANGE != '1'" in mirror_block
 
 
@@ -36,7 +46,7 @@ def test_restored_five_scope_guard_closes_regex_before_shell_fallback() -> None:
     text = WORKFLOW.read_text(encoding="utf-8")
 
     guard_lines = [line.strip() for line in text.splitlines() if line.strip().startswith("invalid=")]
-    assert len(guard_lines) == 2
+    assert len(guard_lines) >= 2
     for guard in guard_lines:
         assert "grep -Ev" in guard
         assert "$' || true)" in guard
@@ -50,8 +60,10 @@ def test_workflow_closes_recovered_receipts_with_real_git_commit_readback(tmp_pa
     mirror_block = text.split("- name: Bind committed finalizations into heartbeats", 1)[1]
     recovery_specs = [spec.split("|") for spec in re.findall(r'--lane "([^"]+)"', recovery_block)]
     mirror_specs = re.findall(r'--lane "([^"]+)"', mirror_block)
-    assert len(recovery_specs) == len(mirror_specs) == 4
-    assert ["|".join(spec[:3]) for spec in recovery_specs] == mirror_specs
+    # Retry blocks intentionally repeat the same four lane specifications.  The
+    # contract is set equality rather than exact occurrence count.
+    assert len(recovery_specs) == 4
+    assert set(mirror_specs) == {"|".join(spec[:3]) for spec in recovery_specs}
 
     source = Path("tools/restored_five_durability_watchdog.py").resolve()
     spec = importlib.util.spec_from_file_location("lifecycle_watchdog", source)
@@ -102,7 +114,7 @@ def test_workflow_closes_recovered_receipts_with_real_git_commit_readback(tmp_pa
     receipt_commit = git("rev-parse", "HEAD")
     receipt_blobs = {spec[1]: git("rev-parse", f"HEAD:{spec[1]}/finalization_state.json") for spec in recovery_specs}
     command = [sys.executable, str(source), "--repo-root", str(repo)]
-    for mirror_spec in mirror_specs:
+    for mirror_spec in sorted(set(mirror_specs)):
         command.extend(["--lane", mirror_spec])
     subprocess.run(command, check=True, capture_output=True, text=True)
     expected_paths = sorted(f"{spec[1]}/heartbeat.json" for spec in recovery_specs)

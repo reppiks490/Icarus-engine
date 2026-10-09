@@ -144,6 +144,89 @@ def _write(df,path):
     path.parent.mkdir(parents=True,exist_ok=True)
     df.to_csv(path,index=False,compression="gzip")
 
+def _iso(value):
+    if value is None or pd.isna(value):
+        return None
+    if hasattr(value,"isoformat"):
+        return value.isoformat()
+    return str(value)
+
+def _scalar(value):
+    if value is None or pd.isna(value):
+        return None
+    if hasattr(value,"item"):
+        try:
+            return value.item()
+        except Exception:
+            pass
+    return value
+
+def research_context(filings,facts,status):
+    """Build a bounded, causal SEC projection for the research fabric.
+
+    Only facts tied to a known filing acceptance timestamp are admitted.  Filing
+    report dates and XBRL period-end dates remain descriptive and never become
+    availability timestamps.
+    """
+    tickers={}
+    names=set(status)
+    if not filings.empty and "ticker" in filings:
+        names.update(str(x) for x in filings["ticker"].dropna().unique())
+    if not facts.empty and "ticker" in facts:
+        names.update(str(x) for x in facts["ticker"].dropna().unique())
+    for ticker in sorted(names):
+        tickers[ticker]={
+            "status":status.get(ticker,{}),
+            "latest_filing":None,
+            "latest_facts":{},
+        }
+
+    if not filings.empty and {"ticker","accepted_at"} <= set(filings.columns):
+        valid=filings[filings["accepted_at"].notna()].copy()
+        if not valid.empty:
+            valid=valid.sort_values(["ticker","accepted_at","accession"])
+            for ticker,group in valid.groupby("ticker",sort=True):
+                row=group.iloc[-1]
+                tickers.setdefault(str(ticker),{"status":{},"latest_filing":None,"latest_facts":{}})
+                tickers[str(ticker)]["latest_filing"]={
+                    "form":_scalar(row.get("form")),
+                    "accession":_scalar(row.get("accession")),
+                    "accepted_at":_iso(row.get("accepted_at")),
+                    "filing_date":_iso(row.get("filing_date")),
+                    "report_date":_iso(row.get("report_date")),
+                    "items":_scalar(row.get("items")),
+                }
+
+    if not facts.empty and {"ticker","concept","unit","accepted_at"} <= set(facts.columns):
+        valid=facts[facts["accepted_at"].notna()].copy()
+        if not valid.empty:
+            valid=valid.sort_values(["ticker","concept","unit","accepted_at","end"])
+            for (ticker,concept,unit),group in valid.groupby(["ticker","concept","unit"],sort=True):
+                row=group.iloc[-1]
+                key=f"{concept}|{unit}"
+                tickers.setdefault(str(ticker),{"status":{},"latest_filing":None,"latest_facts":{}})
+                tickers[str(ticker)]["latest_facts"][key]={
+                    "value":_scalar(row.get("value")),
+                    "accepted_at":_iso(row.get("accepted_at")),
+                    "period_end":_iso(row.get("end")),
+                    "form":_scalar(row.get("form")),
+                    "accession":_scalar(row.get("accession")),
+                }
+
+    return {
+        "schema":"icarus.sec_edgar.research_context/1",
+        "authority":"RESEARCH_CONTEXT_ONLY",
+        "generated_at":pd.Timestamp.now(tz="UTC").isoformat(),
+        "causality":"accepted_at is the availability timestamp; report/end dates never grant earlier availability",
+        "raw_documents_included":False,
+        "execution_authorized":False,
+        "production_decision_authorized":False,
+        "automatic_model_promotion":False,
+        "filing_rows":int(len(filings)),
+        "fact_rows":int(len(facts)),
+        "tickers":tickers,
+    }
+
 def refresh(cache_dir,tickers=None):
     tickers=tuple(tickers or DEFAULT_TICKERS)
     mapping=ticker_map()
@@ -196,8 +279,10 @@ def refresh(cache_dir,tickers=None):
 def main():
     cache=os.environ.get("ICARUS_SEC_CACHE",".sec_edgar_cache")
     out=Path(os.environ.get("ICARUS_SEC_MANIFEST","automation_intelligence/cl_lab/sec_edgar_manifest.json"))
+    context_out=Path(os.environ.get("ICARUS_SEC_CONTEXT","automation_intelligence/cl_lab/sec_edgar_research_context.json"))
     tickers=tuple(x.strip().upper() for x in os.environ.get("ICARUS_SEC_TICKERS",",".join(DEFAULT_TICKERS)).split(",") if x.strip())
     out.parent.mkdir(parents=True,exist_ok=True)
+    context_out.parent.mkdir(parents=True,exist_ok=True)
     try:
         _ua()
     except FeedError as e:
@@ -208,6 +293,22 @@ def main():
             "causality":"acceptanceDateTime is the availability timestamp; report/end dates are descriptive only",
         }
         out.write_text(json.dumps(manifest,indent=2,sort_keys=True))
+        context={
+            "schema":"icarus.sec_edgar.research_context/1",
+            "authority":"RESEARCH_CONTEXT_ONLY",
+            "generated_at":manifest["generated_at"],
+            "status":"configuration_error",
+            "error":str(e),
+            "causality":"accepted_at is the availability timestamp; report/end dates never grant earlier availability",
+            "raw_documents_included":False,
+            "execution_authorized":False,
+            "production_decision_authorized":False,
+            "automatic_model_promotion":False,
+            "filing_rows":0,
+            "fact_rows":0,
+            "tickers":{},
+        }
+        context_out.write_text(json.dumps(context,indent=2,sort_keys=True))
         print(json.dumps({"status":"configuration_error","error":str(e)}))
         raise SystemExit(str(e))
 
@@ -222,6 +323,10 @@ def main():
         "causality":"acceptanceDateTime is the availability timestamp; report/end dates are descriptive only",
     }
     out.write_text(json.dumps(manifest,indent=2,sort_keys=True))
+    context=research_context(filings,facts,status)
+    context["status"]=manifest["status"]
+    context["source_manifest"]="automation_intelligence/cl_lab/sec_edgar_manifest.json"
+    context_out.write_text(json.dumps(context,indent=2,sort_keys=True))
     print(json.dumps({"tickers":len(status),"filing_rows":len(filings),"fact_rows":len(facts),
                       "errors":{k:status[k].get("error") for k in bad}}))
     if not status or len(bad)==len(status) or filings.empty:

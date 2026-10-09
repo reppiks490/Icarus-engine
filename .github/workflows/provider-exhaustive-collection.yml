@@ -8,8 +8,10 @@ on:
     branches: [main]
     paths:
       - 'tools/provider_exhaustive_collection.py'
+      - 'tools/provider_research_context.py'
       - 'config/provider_endpoint_catalog.json'
       - 'tests/test_provider_exhaustive_collection.py'
+      - 'tests/test_provider_research_context.py'
       - '.github/workflows/provider-exhaustive-collection.yml'
 
 permissions:
@@ -38,7 +40,7 @@ jobs:
       - name: Install bounded acquisition dependencies
         run: python -m pip install 'pytest>=8,<10' 'cryptography>=44,<47'
       - name: Verify pagination, credential and scope boundaries
-        run: python -m pytest tests/test_provider_exhaustive_collection.py -q
+        run: python -m pytest tests/test_provider_exhaustive_collection.py tests/test_provider_research_context.py -q
       - name: Restore resumable provider catalog state
         uses: actions/cache/restore@v4
         with:
@@ -47,10 +49,6 @@ jobs:
           restore-keys: provider-coverage-v1-${{ matrix.provider }}-
       - name: Drain all-catalog provider queue without ChatGPT
         env:
-          # Every canonical provider variable accepts the same value from either
-          # a GitHub Actions secret or repository/environment variable. Common
-          # historical aliases are folded into the canonical names so the
-          # collector does not silently miss an otherwise configured credential.
           TICKSTREAM_API_KEY: ${{ secrets.TICKSTREAM_API_KEY || vars.TICKSTREAM_API_KEY || secrets.TICK_STREAM_API_KEY || vars.TICK_STREAM_API_KEY }}
           TICK_STREAM_API_KEY: ${{ secrets.TICK_STREAM_API_KEY || vars.TICK_STREAM_API_KEY || secrets.TICKSTREAM_API_KEY || vars.TICKSTREAM_API_KEY }}
           MASSIVE_API_KEY: ${{ secrets.MASSIVE_API_KEY || vars.MASSIVE_API_KEY || secrets.POLYGON_API_KEY || vars.POLYGON_API_KEY }}
@@ -115,6 +113,67 @@ jobs:
             git fetch origin main
             if ! git rebase origin/main; then git rebase --abort; exit 1; fi
             if git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt * 2))
+          done
+          exit 1
+
+  aggregate-research-context:
+    needs: collect
+    if: always()
+    runs-on: ubuntu-latest
+    concurrency:
+      group: provider-research-context
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Verify provider context aggregation contract
+        run: python -m pytest tests/test_provider_research_context.py -q
+      - name: Rebuild provider research context from committed latest receipts
+        shell: bash
+        run: python -m tools.provider_research_context --repo-root .
+      - name: Persist research context from a fresh snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          PATH_TO_CONTEXT='automation_intelligence/provider_collection_v1/research_context.json'
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- "$PATH_TO_CONTEXT"
+          if git diff --cached --quiet; then
+            echo 'Provider research context already current.'
+            exit 0
+          fi
+          git commit -m "research: aggregate provider context [skip ci]"
+          if git push origin HEAD:main; then
+            exit 0
+          fi
+
+          # A failed push means main changed. Never rebase a derived aggregate
+          # computed from stale provider receipts; refresh, recompute, and retry.
+          for attempt in 1 2 3 4 5 6 7 8; do
+            git fetch origin main
+            git reset --hard origin/main
+            python -m tools.provider_research_context --repo-root .
+            git add -- "$PATH_TO_CONTEXT"
+            if git diff --cached --quiet; then
+              echo 'Concurrent writer already converged provider context.'
+              exit 0
+            fi
+            staged="$(git diff --cached --name-only)"
+            if [ "$staged" != "$PATH_TO_CONTEXT" ]; then
+              echo "Refusing out-of-scope provider context mutation: $staged" >&2
+              exit 1
+            fi
+            git commit -m "research: aggregate provider context retry-${attempt} [skip ci]"
+            if git push origin HEAD:main; then
+              exit 0
+            fi
             sleep $((attempt * 2))
           done
           exit 1

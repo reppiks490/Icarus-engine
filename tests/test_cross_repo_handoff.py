@@ -89,6 +89,7 @@ def test_brain_federation_declares_historical_research_context_sources():
         "apex_council",
         "flow_microstructure",
         "provider_collection",
+        "sec_edgar",
     }
     assert len({row["path"] for row in sources}) == len(sources)
     assert all((ROOT / row["path"]).is_file() for row in sources)
@@ -102,12 +103,20 @@ def test_brain_federation_declares_historical_research_context_sources():
         "HISTORICAL_COLLECTION_EVIDENCE",
     }
     collection_only = {row["id"] for row in sources if row["collection_only"] is True}
-    assert collection_only == {"flow_microstructure", "provider_collection"}
+    assert collection_only == {"flow_microstructure", "provider_collection", "sec_edgar"}
+
     provider = next(row for row in sources if row["id"] == "provider_collection")
     assert provider["path"] == "automation_intelligence/provider_collection_v1/research_context.json"
     assert "providers" in provider["summary_fields"]
     assert "summary" in provider["summary_fields"]
     assert provider["raw_payloads_eligible"] is False
+
+    sec = next(row for row in sources if row["id"] == "sec_edgar")
+    assert sec["path"] == "automation_intelligence/cl_lab/sec_edgar_research_context.json"
+    assert "tickers" in sec["summary_fields"]
+    assert sec["raw_payloads_eligible"] is False
+    assert sec["causal_timestamp"] == "accepted_at"
+
     for row in sources:
         if row["id"] not in collection_only:
             assert row["evidence_status"] == "HISTORICAL_RESEARCH_EVIDENCE"

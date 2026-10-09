@@ -1,0 +1,51 @@
+{
+  "schema_version": "icarus-mcp-event-v1",
+  "event_id": "codex-assurance-finite-input-repair-20261009",
+  "at_utc": "2026-10-09T17:02:23Z",
+  "category": "REPAIR",
+  "status": "DEGRADED",
+  "severity": "MEDIUM",
+  "source": "CODEX_ENGINEERING",
+  "surface": [
+    "Generic replay assurance numerical comparison"
+  ],
+  "summary": "Reject false parity from nonfinite observations and invalid tolerances; local regressions pass, final CI pending.",
+  "paths": [
+    "icarus_engine/assurance.py",
+    "tests_engine/test_assurance_finite.py"
+  ],
+  "evidence": [
+    {
+      "classification": "FACT",
+      "source_commit": "88438d21d461b35c33b299d88731b972dcbbad48",
+      "assurance_blob_sha": "219b948f404bd3a4a3746003b93f695a1b3bc62e",
+      "test_blob_sha": "d191061207b62d005a205421a7d93642a96834bd",
+      "focused_cases_passed": 56,
+      "new_regression_cases": 42,
+      "baseline_failing_cases": 29,
+      "independent_review": "APPROVED",
+      "initial_published_head_sha": "635399f25ac6ced70a9d51cd2928603934dd403b",
+      "initial_ci_code_jobs": "SUCCESS",
+      "initial_ci_provenance_job": "FAILED_MISSING_SAME_CHANGESET_EVENT"
+    },
+    {
+      "classification": "FACT",
+      "local_full_suite": {
+        "base_commit": "20fcd274b3aabe372a0d79e4531cd03a04d39ba4",
+        "passed": 1068,
+        "failed": 2,
+        "setup_errors": 10,
+        "failure_cause": "Socket PermissionError in restricted execution environment",
+        "all_12_failures_reproduced_on_unmodified_baseline": true
+      },
+      "limitations": [
+        "Generic assurance primitive only; active comparison jobs' usage is not proven",
+        "No financial edge, model training, or production deployment is certified",
+        "Infinity remains the existing mismatch sentinel; strict JSON serialization is not newly guaranteed"
+      ]
+    }
+  ],
+  "candidate_evidence_eligible": false,
+  "production_decision_authorized": false,
+  "execution_authorized": false
+}

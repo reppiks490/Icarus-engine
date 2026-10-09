@@ -47,26 +47,30 @@ jobs:
           restore-keys: provider-coverage-v1-${{ matrix.provider }}-
       - name: Drain all-catalog provider queue without ChatGPT
         env:
-          TICKSTREAM_API_KEY: ${{ secrets.TICKSTREAM_API_KEY }}
-          TICK_STREAM_API_KEY: ${{ secrets.TICK_STREAM_API_KEY }}
-          MASSIVE_API_KEY: ${{ secrets.MASSIVE_API_KEY }}
-          POLYGON_API_KEY: ${{ secrets.POLYGON_API_KEY }}
-          TWELVE_DATA_API_KEY: ${{ secrets.TWELVE_DATA_API_KEY }}
-          TWELVEDATA_API_KEY: ${{ secrets.TWELVEDATA_API_KEY }}
-          TWELVE_API_KEY: ${{ secrets.TWELVE_API_KEY }}
-          FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
-          EODHD_API_TOKEN: ${{ secrets.EODHD_API_TOKEN }}
-          EODHD_API_KEY: ${{ secrets.EODHD_API_KEY }}
-          TIINGO_API_TOKEN: ${{ secrets.TIINGO_API_TOKEN }}
-          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
-          INTRINIO_API_KEY: ${{ secrets.INTRINIO_API_KEY }}
-          INTRINIO_API_TOKEN: ${{ secrets.INTRINIO_API_TOKEN }}
-          QUIVER_API_KEY: ${{ secrets.QUIVER_API_KEY }}
-          QUIVER_API_TOKEN: ${{ secrets.QUIVER_API_TOKEN }}
-          QUIVER_QUANT_API_KEY: ${{ secrets.QUIVER_QUANT_API_KEY }}
-          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
-          ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
-          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+          # Every canonical provider variable accepts the same value from either
+          # a GitHub Actions secret or repository/environment variable. Common
+          # historical aliases are folded into the canonical names so the
+          # collector does not silently miss an otherwise configured credential.
+          TICKSTREAM_API_KEY: ${{ secrets.TICKSTREAM_API_KEY || vars.TICKSTREAM_API_KEY || secrets.TICK_STREAM_API_KEY || vars.TICK_STREAM_API_KEY }}
+          TICK_STREAM_API_KEY: ${{ secrets.TICK_STREAM_API_KEY || vars.TICK_STREAM_API_KEY || secrets.TICKSTREAM_API_KEY || vars.TICKSTREAM_API_KEY }}
+          MASSIVE_API_KEY: ${{ secrets.MASSIVE_API_KEY || vars.MASSIVE_API_KEY || secrets.POLYGON_API_KEY || vars.POLYGON_API_KEY }}
+          POLYGON_API_KEY: ${{ secrets.POLYGON_API_KEY || vars.POLYGON_API_KEY || secrets.MASSIVE_API_KEY || vars.MASSIVE_API_KEY }}
+          TWELVE_DATA_API_KEY: ${{ secrets.TWELVE_DATA_API_KEY || vars.TWELVE_DATA_API_KEY || secrets.TWELVEDATA_API_KEY || vars.TWELVEDATA_API_KEY || secrets.TWELVE_API_KEY || vars.TWELVE_API_KEY }}
+          TWELVEDATA_API_KEY: ${{ secrets.TWELVEDATA_API_KEY || vars.TWELVEDATA_API_KEY || secrets.TWELVE_DATA_API_KEY || vars.TWELVE_DATA_API_KEY || secrets.TWELVE_API_KEY || vars.TWELVE_API_KEY }}
+          TWELVE_API_KEY: ${{ secrets.TWELVE_API_KEY || vars.TWELVE_API_KEY || secrets.TWELVE_DATA_API_KEY || vars.TWELVE_DATA_API_KEY || secrets.TWELVEDATA_API_KEY || vars.TWELVEDATA_API_KEY }}
+          FMP_API_KEY: ${{ secrets.FMP_API_KEY || vars.FMP_API_KEY }}
+          EODHD_API_TOKEN: ${{ secrets.EODHD_API_TOKEN || vars.EODHD_API_TOKEN || secrets.EODHD_API_KEY || vars.EODHD_API_KEY }}
+          EODHD_API_KEY: ${{ secrets.EODHD_API_KEY || vars.EODHD_API_KEY || secrets.EODHD_API_TOKEN || vars.EODHD_API_TOKEN }}
+          TIINGO_API_TOKEN: ${{ secrets.TIINGO_API_TOKEN || vars.TIINGO_API_TOKEN || secrets.TIINGO_API_KEY || vars.TIINGO_API_KEY }}
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY || vars.TIINGO_API_KEY || secrets.TIINGO_API_TOKEN || vars.TIINGO_API_TOKEN }}
+          INTRINIO_API_KEY: ${{ secrets.INTRINIO_API_KEY || vars.INTRINIO_API_KEY || secrets.INTRINIO_API_TOKEN || vars.INTRINIO_API_TOKEN }}
+          INTRINIO_API_TOKEN: ${{ secrets.INTRINIO_API_TOKEN || vars.INTRINIO_API_TOKEN || secrets.INTRINIO_API_KEY || vars.INTRINIO_API_KEY }}
+          QUIVER_API_KEY: ${{ secrets.QUIVER_API_KEY || vars.QUIVER_API_KEY || secrets.QUIVER_API_TOKEN || vars.QUIVER_API_TOKEN || secrets.QUIVER_QUANT_API_KEY || vars.QUIVER_QUANT_API_KEY }}
+          QUIVER_API_TOKEN: ${{ secrets.QUIVER_API_TOKEN || vars.QUIVER_API_TOKEN || secrets.QUIVER_API_KEY || vars.QUIVER_API_KEY || secrets.QUIVER_QUANT_API_KEY || vars.QUIVER_QUANT_API_KEY }}
+          QUIVER_QUANT_API_KEY: ${{ secrets.QUIVER_QUANT_API_KEY || vars.QUIVER_QUANT_API_KEY || secrets.QUIVER_API_KEY || vars.QUIVER_API_KEY || secrets.QUIVER_API_TOKEN || vars.QUIVER_API_TOKEN }}
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY || vars.FRED_API_KEY }}
+          ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY || vars.ALPACA_API_KEY || secrets.APCA_API_KEY_ID || vars.APCA_API_KEY_ID }}
+          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY || vars.ALPACA_SECRET_KEY || secrets.APCA_API_SECRET_KEY || vars.APCA_API_SECRET_KEY }}
           ICARUS_DATA_ARCHIVE_KEY: ${{ secrets.ICARUS_DATA_ARCHIVE_KEY }}
         run: >-
           python -m tools.provider_exhaustive_collection

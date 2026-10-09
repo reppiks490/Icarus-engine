@@ -132,6 +132,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+      - name: Install aggregation test dependency
+        run: python -m pip install 'pytest>=8,<10'
       - name: Verify provider context aggregation contract
         run: python -m pytest tests/test_provider_research_context.py -q
       - name: Rebuild provider research context from committed latest receipts

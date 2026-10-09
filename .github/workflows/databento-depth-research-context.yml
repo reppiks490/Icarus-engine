@@ -1,0 +1,105 @@
+name: databento-depth-research-context
+
+on:
+  workflow_run:
+    workflows: ["databento-depth-corpus"]
+    types: [completed]
+  push:
+    branches: [main]
+    paths:
+      - "tools/databento_depth_research_context.py"
+      - "tests/test_databento_depth_research_context.py"
+      - ".github/workflows/databento-depth-research-context.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: databento-depth-research-context
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Verify derived-depth bridge
+        run: python -m pytest -q tests/test_databento_depth_research_context.py -p no:cacheprovider
+
+      - name: Restore derived Databento depth cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .databento_depth_cache
+          key: databento-depth-context-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            databento-depth-
+          fail-on-cache-miss: true
+
+      - name: Build research-only microstructure context
+        run: >-
+          python -m tools.databento_depth_research_context
+          --repo-root .
+          --depth-cache .databento_depth_cache
+
+      - name: Refuse empty or authority-bearing context
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path('automation_intelligence/cl_lab/databento_depth_research_context.json')
+          x = json.loads(p.read_text())
+          assert x['schema_version'] == 'icarus-databento-depth-research-context-v1'
+          assert x['authority'] == 'RESEARCH_CONTEXT_ONLY'
+          assert x['raw_payloads_included'] is False
+          assert x['raw_dbn_retained'] is False
+          assert x['candidate_evidence_eligible'] is False
+          assert x['execution_authorized'] is False
+          assert x['production_decision_authorized'] is False
+          assert x['automatic_model_promotion'] is False
+          assert x['summary']['slices'] > 0
+          assert x['summary']['feature_rows'] > 0
+          PY
+
+      - name: Persist derived depth research context
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # Recompute after synchronizing so the compact manifest projection is
+          # always based on fresh main while feature data remains cache-derived.
+          git pull --rebase origin main
+          python -m tools.databento_depth_research_context --repo-root . --depth-cache .databento_depth_cache
+          git add automation_intelligence/cl_lab/databento_depth_research_context.json
+          if git diff --cached --quiet; then
+            echo "no derived depth-context changes"
+            exit 0
+          fi
+          git commit -m "[Databento] publish derived depth research context [skip ci]"
+          for attempt in 1 2 3 4 5 6 7 8; do
+            if git push origin HEAD:main; then exit 0; fi
+            git fetch origin main
+            git rebase origin/main
+            python -m tools.databento_depth_research_context --repo-root . --depth-cache .databento_depth_cache
+            git add automation_intelligence/cl_lab/databento_depth_research_context.json
+            if ! git diff --cached --quiet; then
+              git commit --amend --no-edit
+            fi
+            sleep $((attempt * 2))
+          done
+          exit 1

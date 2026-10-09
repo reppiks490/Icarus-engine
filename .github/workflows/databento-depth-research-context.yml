@@ -2,7 +2,7 @@ name: databento-depth-research-context
 
 on:
   workflow_run:
-    workflows: ["databento-depth-corpus"]
+    workflows: ["databento-depth-corpus", "cl-depth-sweep"]
     types: [completed]
   push:
     branches: [main]
@@ -42,7 +42,7 @@ jobs:
       - name: Verify derived-depth bridge
         run: python -m pytest -q tests/test_databento_depth_research_context.py -p no:cacheprovider
 
-      - name: Restore derived Databento depth cache
+      - name: Restore corpus-derived Databento depth cache
         uses: actions/cache/restore@v4
         with:
           path: .databento_depth_cache
@@ -51,13 +51,23 @@ jobs:
             databento-depth-
           fail-on-cache-miss: true
 
+      - name: Restore NQ sweep-derived Databento depth cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .databento_sweep_cache
+          key: databento-sweep-context-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            databento-sweep-
+          fail-on-cache-miss: true
+
       - name: Build research-only microstructure context
         run: >-
           python -m tools.databento_depth_research_context
           --repo-root .
           --depth-cache .databento_depth_cache
+          --depth-cache .databento_sweep_cache
 
-      - name: Refuse empty or authority-bearing context
+      - name: Refuse partial, empty or authority-bearing context
         shell: bash
         run: |
           python - <<'PY'
@@ -75,6 +85,11 @@ jobs:
           assert x['automatic_model_promotion'] is False
           assert x['summary']['slices'] > 0
           assert x['summary']['feature_rows'] > 0
+          for account in ('primary', 'secondary', 'third'):
+              assert x['summary']['accounts'].get(account, 0) > 0, f'missing Databento {account} depth features'
+          for lane in ('index', 'diversifier', 'sweep_primary', 'sweep_secondary', 'sweep_third'):
+              assert lane in x['manifests'], f'missing Databento manifest {lane}'
+          assert len(x['source_feature_caches']) == 2
           PY
 
       - name: Persist derived depth research context
@@ -92,7 +107,8 @@ jobs:
             git reset --hard origin/main
             python -m tools.databento_depth_research_context \
               --repo-root . \
-              --depth-cache .databento_depth_cache
+              --depth-cache .databento_depth_cache \
+              --depth-cache .databento_sweep_cache
             git add -- "$CONTEXT"
 
             if git diff --cached --quiet; then

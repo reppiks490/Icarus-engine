@@ -48,9 +48,10 @@ jobs:
 
       - name: Refresh SEC EDGAR filings and XBRL
         env:
-          SEC_USER_AGENT: ${{ vars.SEC_USER_AGENT }}
+          SEC_USER_AGENT: ${{ vars.SEC_USER_AGENT || secrets.SEC_USER_AGENT }}
           ICARUS_SEC_CACHE: .sec_edgar_cache
           ICARUS_SEC_MANIFEST: automation_intelligence/cl_lab/sec_edgar_manifest.json
+          ICARUS_SEC_TICKERS: ${{ vars.ICARUS_SEC_TICKERS }}
         run: python -m cl_lab.feeds.sec_edgar
 
       - name: Save SEC EDGAR cache

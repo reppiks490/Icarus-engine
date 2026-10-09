@@ -13,6 +13,7 @@ import hashlib
 import json
 import math
 from collections import Counter
+from collections.abc import Iterable
 from pathlib import Path
 from typing import Any
 
@@ -20,6 +21,9 @@ OUTPUT = Path("automation_intelligence/cl_lab/databento_depth_research_context.j
 MANIFESTS = {
     "index": Path("automation_intelligence/cl_lab/databento_depth_corpus_index.json"),
     "diversifier": Path("automation_intelligence/cl_lab/databento_depth_corpus_diversifier.json"),
+    "sweep_primary": Path("automation_intelligence/cl_lab/databento_depth_sweep_primary.json"),
+    "sweep_secondary": Path("automation_intelligence/cl_lab/databento_depth_sweep_secondary.json"),
+    "sweep_third": Path("automation_intelligence/cl_lab/databento_depth_sweep_third.json"),
 }
 METRICS = (
     "events", "add_events", "cancel_events", "modify_events", "trade_events", "fill_events",
@@ -98,6 +102,7 @@ def summarize_slice(path: Path, depth_root: Path) -> dict[str, Any]:
         "rows": rows,
         "first_ts": first_ts,
         "last_ts": last_ts,
+        "source_cache": str(depth_root),
         "feature_path": rel.as_posix(),
         "feature_sha256": _sha256(path),
         "metrics": {
@@ -121,25 +126,60 @@ def _manifest_summary(repo_root: Path) -> dict[str, Any]:
             continue
         requests = payload.get("requests") if isinstance(payload.get("requests"), list) else []
         statuses = Counter(str(row.get("status", "UNKNOWN")) for row in requests if isinstance(row, dict))
-        result[lane] = {
+        summary = {
             key: payload.get(key)
             for key in (
-                "status", "profile", "account", "budget_usd", "max_request_usd",
-                "estimated_requested_usd", "downloaded_slices", "cached_slices",
-                "raw_retention", "feature_resolution", "selection_method",
+                "status", "profile", "account", "root", "data_schema", "dataset",
+                "budget_usd", "cap_usd", "max_request_usd", "estimated_requested_usd",
+                "downloaded_slices", "cached_slices", "spent_usd", "remaining_usd",
+                "raw_retention", "feature_resolution", "selection_method", "window_new_york",
             )
             if key in payload
         }
-        result[lane]["request_statuses"] = dict(sorted(statuses.items()))
+        if "held_days" in payload:
+            held = payload.get("held_days") if isinstance(payload.get("held_days"), list) else []
+            summary["held_days"] = len(held)
+        if "bought" in payload:
+            bought = payload.get("bought") if isinstance(payload.get("bought"), list) else []
+            summary["bought"] = len(bought)
+        if "errors" in payload:
+            errors = payload.get("errors") if isinstance(payload.get("errors"), list) else []
+            summary["errors"] = len(errors)
+        if requests:
+            summary["request_statuses"] = dict(sorted(statuses.items()))
+        result[lane] = summary
     return result
 
 
-def build_context(repo_root: Path, depth_root: Path) -> dict[str, Any]:
-    feature_root = depth_root / "features"
-    slices = []
-    if feature_root.is_dir():
+def _normalize_roots(depth_roots: Path | Iterable[Path]) -> list[Path]:
+    if isinstance(depth_roots, Path):
+        return [depth_roots]
+    return [Path(root) for root in depth_roots]
+
+
+def build_context(repo_root: Path, depth_roots: Path | Iterable[Path]) -> dict[str, Any]:
+    roots_to_scan = _normalize_roots(depth_roots)
+    by_key: dict[tuple[str, str, str, str], dict[str, Any]] = {}
+    duplicate_slices = 0
+    for depth_root in roots_to_scan:
+        feature_root = depth_root / "features"
+        if not feature_root.is_dir():
+            continue
         for path in sorted(feature_root.glob("*/*/*/*.csv.gz")):
-            slices.append(summarize_slice(path, depth_root))
+            row = summarize_slice(path, depth_root)
+            key = (row["account"], row["schema"], row["root"], row["day"])
+            prior = by_key.get(key)
+            if prior is None:
+                by_key[key] = row
+                continue
+            if prior["feature_sha256"] != row["feature_sha256"]:
+                raise ValueError(
+                    "conflicting Databento depth slice for "
+                    f"account={key[0]} schema={key[1]} root={key[2]} day={key[3]}"
+                )
+            duplicate_slices += 1
+
+    slices = sorted(by_key.values(), key=lambda row: (row["account"], row["schema"], row["root"], row["day"]))
     schemas = Counter(row["schema"] for row in slices)
     accounts = Counter(row["account"] for row in slices)
     roots = Counter(row["root"] for row in slices)
@@ -149,7 +189,7 @@ def build_context(repo_root: Path, depth_root: Path) -> dict[str, Any]:
         "authority": "RESEARCH_CONTEXT_ONLY",
         "status": "READY" if slices else "NO_FEATURE_SLICES",
         "snapshot_at_utc": max(timestamps) if timestamps else None,
-        "source_feature_cache": str(depth_root),
+        "source_feature_caches": [str(root) for root in roots_to_scan],
         "source_feature_cache_committed": False,
         "raw_payloads_included": False,
         "raw_dbn_retained": False,
@@ -162,6 +202,7 @@ def build_context(repo_root: Path, depth_root: Path) -> dict[str, Any]:
         "summary": {
             "slices": len(slices),
             "feature_rows": sum(row["rows"] for row in slices),
+            "duplicate_slices_deduplicated": duplicate_slices,
             "schemas": dict(sorted(schemas.items())),
             "accounts": dict(sorted(accounts.items())),
             "roots": dict(sorted(roots.items())),
@@ -171,10 +212,14 @@ def build_context(repo_root: Path, depth_root: Path) -> dict[str, Any]:
     }
 
 
-def write_context(repo_root: Path, depth_root: Path, output: Path | None = None) -> Path:
+def write_context(
+    repo_root: Path,
+    depth_roots: Path | Iterable[Path],
+    output: Path | None = None,
+) -> Path:
     target = output or (repo_root / OUTPUT)
     target.parent.mkdir(parents=True, exist_ok=True)
-    payload = build_context(repo_root, depth_root)
+    payload = build_context(repo_root, depth_roots)
     target.write_text(
         json.dumps(payload, indent=2, sort_keys=True, allow_nan=False) + "\n",
         encoding="utf-8",
@@ -185,10 +230,17 @@ def write_context(repo_root: Path, depth_root: Path, output: Path | None = None)
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--repo-root", type=Path, default=Path("."))
-    parser.add_argument("--depth-cache", type=Path, default=Path(".databento_depth_cache"))
+    parser.add_argument(
+        "--depth-cache",
+        type=Path,
+        action="append",
+        dest="depth_caches",
+        help="Derived Databento depth cache root; repeat to merge corpus and sweep caches.",
+    )
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
-    print(write_context(args.repo_root, args.depth_cache, args.output))
+    depth_caches = args.depth_caches or [Path(".databento_depth_cache")]
+    print(write_context(args.repo_root, depth_caches, args.output))
 
 
 if __name__ == "__main__":

@@ -76,6 +76,16 @@ jobs:
           restore-keys: |
             databento-depth-
 
+      - name: Refill evicted depth cache from the encrypted vault
+        # A cache miss is not data loss once a day is vaulted (tools/depth_vault.py).
+        continue-on-error: true
+        env:
+          ICARUS_DATA_ARCHIVE_KEY: ${{ secrets.ICARUS_DATA_ARCHIVE_KEY }}
+          DATABENTO_API_KEY: ${{ secrets.DATABENTO_API_KEY }}
+        run: |
+          python -m pip install "cryptography>=44,<47"
+          python -m tools.depth_vault restore --cache corpus=.databento_depth_cache
+
       - name: Acquire index microstructure from secondary account
         env:
           DATABENTO_API_KEY_SECONDARY: ${{ secrets.DATABENTO_API_KEY_SECONDARY }}

@@ -1,0 +1,86 @@
+# Seals the derived Databento depth caches into the encrypted vault (tools/depth_vault.py).
+# The NQ MBP-10 sweep cache was evicted on 2026-10-10 with 18 paid days in it; the
+# corpus cache is the same single point of failure. This runs after every depth
+# purchase, daily (a restore counts as cache access and delays eviction), and on
+# its own changes, and commits only new ciphertext.
+name: depth-vault
+
+on:
+  workflow_run:
+    workflows: ["databento-depth-corpus", "cl-depth-sweep"]
+    types: [completed]
+  schedule:
+    - cron: "29 6 * * *"
+  push:
+    branches: [main, "claude/**"]
+    paths:
+      - "tools/depth_vault.py"
+      - ".github/workflows/depth-vault.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: depth-vault-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  seal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      # workflow_run and schedule always target main; a push seals onto its own branch.
+      TARGET: ${{ github.event_name == 'push' && github.ref_name || 'main' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install
+        run: python -m pip install "cryptography>=44,<47" "pytest>=8,<10"
+
+      - name: Vault tests
+        run: python -m pytest -q tests/test_depth_vault.py -p no:cacheprovider -o addopts= --import-mode=importlib
+
+      - name: Restore corpus depth cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .databento_depth_cache
+          key: databento-depth-vault-${{ github.run_id }}
+          restore-keys: |
+            databento-depth-
+
+      - name: Restore sweep depth cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .databento_sweep_cache
+          key: databento-sweep-vault-${{ github.run_id }}
+          restore-keys: |
+            databento-sweep-
+
+      - name: Seal and commit
+        env:
+          ICARUS_DATA_ARCHIVE_KEY: ${{ secrets.ICARUS_DATA_ARCHIVE_KEY }}
+          DATABENTO_API_KEY: ${{ secrets.DATABENTO_API_KEY }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for attempt in 1 2 3 4 5; do
+            git fetch origin "$TARGET"
+            git reset --hard "origin/$TARGET"
+            python -m tools.depth_vault seal \
+              --cache corpus=.databento_depth_cache \
+              --cache sweep=.databento_sweep_cache
+            git add data/depth_vault
+            if git diff --cached --quiet; then echo "vault already current"; exit 0; fi
+            git commit -m "[vault] seal derived depth features [skip ci]"
+            if git push origin "HEAD:$TARGET"; then exit 0; fi
+            sleep $((attempt * 5))
+          done
+          exit 1

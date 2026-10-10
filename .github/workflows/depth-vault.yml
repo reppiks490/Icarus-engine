@@ -42,10 +42,12 @@ jobs:
           python-version: "3.11"
 
       - name: Install
-        run: python -m pip install "cryptography>=44,<47" "pytest>=8,<10"
+        run: python -m pip install "cryptography>=44,<47" "pytest>=8,<10" "numpy>=1.26,<3" "pandas>=2.2,<3"
 
-      - name: Vault tests
-        run: python -m pytest -q tests/test_depth_vault.py -p no:cacheprovider -o addopts= --import-mode=importlib
+      - name: Vault and D1 tests
+        run: |
+          python -m pytest -q tests/test_depth_vault.py -p no:cacheprovider -o addopts= --import-mode=importlib
+          python -m pytest -q tests_cl/test_depth_test.py -p no:cacheprovider
 
       - name: Restore corpus depth cache
         uses: actions/cache/restore@v4
@@ -77,9 +79,12 @@ jobs:
             python -m tools.depth_vault seal \
               --cache corpus=.databento_depth_cache \
               --cache sweep=.databento_sweep_cache
-            git add data/depth_vault
+            # Pre-registered D1 (docs/DEPTH_PREREG_D1.md): aggregate statistics only, no vendor rows.
+            python -m cl_lab.depth_test --cache .databento_sweep_cache \
+              --out automation_intelligence/cl_lab/depth_d1_latest.json
+            git add data/depth_vault automation_intelligence/cl_lab/depth_d1_latest.json
             if git diff --cached --quiet; then echo "vault already current"; exit 0; fi
-            git commit -m "[vault] seal derived depth features [skip ci]"
+            git commit -m "[vault] seal derived depth features; D1 status [skip ci]"
             if git push origin "HEAD:$TARGET"; then exit 0; fi
             sleep $((attempt * 5))
           done

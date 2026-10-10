@@ -1,0 +1,116 @@
+{
+  "at_utc": "2026-10-10T21:58:14.634628Z",
+  "category": "AUDIT",
+  "event_id": "native-38089604096-1-native-macro",
+  "evidence": [
+    {
+      "classification": "FACT",
+      "code_revision": "51bf9949e67d464ed457750c019c4093a700f34a",
+      "evidence_sha256": "4b32153aaa7988aae34e8a8b53d05e6254956c0dcd328961f1afdf7b8780d215",
+      "measurement": {
+        "gaps": [
+          "Release titles establish publication, not macro surprise or causal impact.",
+          "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+          "No consensus estimates acquired; economic surprise remains unknown."
+        ],
+        "limits": "Publication and daily change are facts; surprise, causality and intraday propagation remain unverified.",
+        "releases": [
+          {
+            "published_epoch": 1791554400.0,
+            "retrieval_finished": 1791669493.3215806,
+            "retrieval_started": 1791669493.234384,
+            "source": "FED",
+            "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/other20261009a.htm",
+            "title": "Federal Reserve Board releases results of the 2025 Survey of Consumer Finances, which provides the public and policymakers with detailed insights into the economic condition of American families"
+          },
+          {
+            "published_epoch": 1791491400.0,
+            "retrieval_finished": 1791669493.3215806,
+            "retrieval_started": 1791669493.234384,
+            "source": "FED",
+            "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20261008a.htm",
+            "title": "Federal Reserve Board announces enforcement action against American Express Company to address, among other things, the firm\u2019s failure to sufficiently detect and report certain suspicious activity related to money laundering"
+          },
+          {
+            "published_epoch": 1791459000.0,
+            "retrieval_finished": 1791669494.0756907,
+            "retrieval_started": 1791669493.3222332,
+            "source": "ECB",
+            "source_url": "https://www.ecb.europa.eu//press/accounts/2026/html/ecb.mg261008~a10153d090.en.html",
+            "title": "Meeting of 9-10 September 2026"
+          },
+          {
+            "published_epoch": 1791439200.0,
+            "retrieval_finished": 1791669494.0756907,
+            "retrieval_started": 1791669493.3222332,
+            "source": "ECB",
+            "source_url": "https://www.ecb.europa.eu//press/inter/date/2026/html/ecb.in261008~3184e7d0d0.en.html",
+            "title": "Piero Cipollone: Interview with Corriere della Sera"
+          },
+          {
+            "published_epoch": 1791554429.0,
+            "retrieval_finished": 1791669494.3354568,
+            "retrieval_started": 1791669494.0761971,
+            "source": "BLS",
+            "source_url": "https://www.bls.gov/bls/",
+            "title": "Major Economic Indicators Latest Numbers"
+          }
+        ],
+        "series": [
+          {
+            "change": -0.0600000000000005,
+            "date": "2026-10-08",
+            "freshness": "DAILY_OBSERVATION",
+            "prior_date": "2026-10-07",
+            "series": "DGS10",
+            "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10",
+            "value": 5.22
+          },
+          {
+            "change": -0.019999999999999574,
+            "date": "2026-10-08",
+            "freshness": "DAILY_OBSERVATION",
+            "prior_date": "2026-10-07",
+            "series": "DGS2",
+            "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2",
+            "value": 4.75
+          },
+          {
+            "change": -0.40340000000000487,
+            "date": "2026-10-02",
+            "freshness": "STALE",
+            "prior_date": "2026-10-01",
+            "series": "DTWEXBGS",
+            "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DTWEXBGS",
+            "value": 121.3848
+          }
+        ],
+        "status": "VERIFIED",
+        "summary": "5 dated official release headlines; 3 daily macro series measured."
+      }
+    }
+  ],
+  "execution_authorized": false,
+  "interpretation_authority": "UNVERIFIED_MODEL_INFERENCE",
+  "oracle": {
+    "finding": "5 dated official release headlines; 3 daily macro series measured.",
+    "status": "VERIFIED"
+  },
+  "paths": [
+    "automation_intelligence/native_research_v1/cycles/native-38089604096-1/evidence.json",
+    "automation_intelligence/native_research_v1/cycles/native-38089604096-1/macro.json"
+  ],
+  "schema_version": "icarus-mcp-event-v1",
+  "severity": "MEDIUM",
+  "source": "MACRO_AUTOMATION",
+  "status": "VERIFIED",
+  "summary": "5 dated official release headlines; 3 daily macro series measured.",
+  "supermesh_x": {
+    "finding": "5 dated official release headlines; 3 daily macro series measured.",
+    "status": "VERIFIED"
+  },
+  "surface": [
+    "macro native research"
+  ],
+  "worker": "GITHUB_NATIVE_RESEARCH_V1"
+}

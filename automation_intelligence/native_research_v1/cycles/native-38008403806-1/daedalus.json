@@ -1,0 +1,50 @@
+{
+  "automation_id": "github-native-research-v1",
+  "blockers": [],
+  "chatgpt_tokens_used": 0,
+  "code_revision": "a12ac695ed74b01060521f1c4de25f0d0e0bfa0e",
+  "completed_at_utc": "2026-10-10T00:18:15.911854Z",
+  "event_paths": [],
+  "evidence": [
+    "automation_intelligence/native_research_v1/cycles/native-38008403806-1/evidence.json"
+  ],
+  "execution_authorized": false,
+  "input_sha256": "a0d82fa3c2453d4171763b1b7975696b1dcd4af22bd04202d71bbbc9063ac22f",
+  "lane": "daedalus",
+  "local_interpretation": {
+    "authority": "UNVERIFIED_MODEL_INFERENCE",
+    "reason": "No semantic change",
+    "status": "NOT_RUN"
+  },
+  "measurements": {
+    "checks": [
+      {
+        "baseline_count": 28,
+        "future_excluded": true,
+        "oracle": "independently coded sorted scalar MAD",
+        "range_and_volume_checked": true,
+        "representation": "coinbase_spot"
+      },
+      {
+        "baseline_count": 28,
+        "future_excluded": true,
+        "oracle": "independently coded sorted scalar MAD",
+        "range_and_volume_checked": true,
+        "representation": "kraken_spot"
+      }
+    ],
+    "defects": [],
+    "scope": "Current cycle statistics/time integrity only; not certification of the entire ICARUS system.",
+    "status": "VERIFIED",
+    "summary": "2 independent measurement audits; 0 defects."
+  },
+  "outcome": "NO_MATERIAL_DELTA",
+  "paid_model_calls": 0,
+  "prior_receipt_path": "automation_intelligence/native_research_v1/cycles/native-37986082453-1/daedalus.json",
+  "run_id": "native-38008403806-1-daedalus",
+  "schema_version": "icarus-research-run-v1",
+  "started_at_utc": "2026-10-10T00:18:04.049122Z",
+  "substantive_work_performed": true,
+  "summary": "2 independent measurement audits; 0 defects.",
+  "worker": "GITHUB_ACTIONS"
+}

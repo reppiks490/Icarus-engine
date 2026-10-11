@@ -1,4 +1,4 @@
-# Data health — 2026-10-11 21:07 UTC
+# Data health — 2026-10-11 21:15 UTC
 
 **FAILING** 3 · **BLOCKED** 4 · **STALE** 2 · **DEGRADED** 5 · **OK** 65
 
@@ -13,8 +13,8 @@
 | provider:intrinio | BLOCKED | no key reaches the runner |
 | provider:quiver | BLOCKED | no key reaches the runner |
 | provider:tickstream | BLOCKED | no key reaches the runner |
-| workflow:official-economic-events.yml | STALE | last success 8.3 h ago (expected within 8 h) |
-| workflow:sec-edgar-data.yml | STALE | last success 3.1 h ago (expected within 3 h) |
+| workflow:official-economic-events.yml | STALE | last success 8.4 h ago (expected within 8 h) |
+| workflow:sec-edgar-data.yml | STALE | last success 3.2 h ago (expected within 3 h) |
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
 | provider:eodhd | DEGRADED | 263 rows; 29 endpoints denied by plan |
 | provider:fmp | DEGRADED | 239 rows; 85 endpoints denied by plan |
@@ -47,5 +47,5 @@ Champions: 0. Pulse variants: {'CANDLES': 'REJECTED', 'HA_HA_FILLS': 'ARTIFACT_R
 
 ## Claude <-> ChatGPT
 
-- claude: done 5, in progress 2, planned 9, waiting 1; awaiting its reply: 1
-- chatgpt: blocked 1, in progress 6, planned 6, waiting 4; awaiting its reply: 4
+- claude: done 5, in progress 2, planned 9, waiting 1; awaiting its reply: 3
+- chatgpt: blocked 1, done 1, in progress 3, planned 5, waiting 7; awaiting its reply: 0

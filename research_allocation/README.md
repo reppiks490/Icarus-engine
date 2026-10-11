@@ -71,6 +71,9 @@ not dropped cases or infinite numbers in JSON. Unresolved/expired recommendation
 remain in reports. Brier/log-loss scores assess prediction calibration only;
 `decision_benefit_proven` remains false. No counterfactual realized benefit is
 inferred from a completed record.
+The registered model is an independent snapshot matching its prediction/hash.
+New timestamps are sampled under the SQLite write lock, not before waiting for
+it. They are local-clock records, not independent durable-time attestations.
 
 ## Scientific and integration boundaries
 
@@ -106,11 +109,14 @@ python -m pytest tests/test_research_allocation.py -q
 The existing CI collects `tests/test_research_allocation.py`, a new import-only
 TestCase shim suggested by Claude in PR141 review comment6112774338. No workflow
 change is needed. The module's original 69 synthetic cases passed through that
-shim; three further failing-first cases established explicit insufficient-model
-and authority-flag handling. **72 cases now pass**, including 250 deterministic
-random models checked against a Decimal expectation oracle, invariants, joint
-marginal rejection, sequential stopping, prospective replay/concurrency/tamper
-checks and CLI round-trips. These are software tests, not scientific market trials.
+shim. Further failing-first regressions established insufficient-model and
+authority-flag handling, rare/zero joint-marginal rejection, normalized sequential
+arithmetic, final-value cancellation guards, write-lock timestamp ordering,
+frozen model consistency and oversized-number error JSON. **84 cases now pass,
+with 22 subtests**, including 250 finite models and 200 correlated joint policies
+checked against independent Decimal expectation oracles. These are software
+tests, not scientific market trials. Scale-aware numeric tolerance is explicit;
+the module does not promise arbitrary precision or empirical optimality.
 
 Full repository regression, independent review and exact-head CI are recorded in
 [VERIFICATION.md](VERIFICATION.md). A green old prototype PR is not proof of this

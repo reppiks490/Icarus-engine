@@ -97,7 +97,13 @@ Proposed order:
 4. Owners approve adapters and prospective comparison protocol.
 5. Measure usefulness before any scheduling or budget change.
 
-Current PR141 remains a dependency-planning prototype. It does not implement this full program, learn autonomously, derive market likelihoods, buy data, or improve an observed trading result.
+The original PR141 at15cad18d was a dependency-planning prototype. Its Atlas
+continuation now implements the isolated finite-model evaluator, sensitivity,
+explicit joint observations, two-stage stopping, offline CLI and local prospective
+journal described in README.md and DESIGN.md. It still does not implement the
+full real-world program: no runtime adapters, autonomous learning, validated
+market likelihoods, acquisition, scientific trial launch or measured improvement
+in research/trading outcomes. The original investigation/source pins are preserved.
 
 ## Investigation coverage and limits
 

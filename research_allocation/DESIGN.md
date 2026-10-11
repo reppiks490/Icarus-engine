@@ -47,12 +47,23 @@ never multiplies marginals to assume independence. All upfront member costs are
 charged. Complementarity is derived from the joint decision model, not source or
 feature counts.
 
+Marginal agreement uses relative `1e-10` tolerance and zero absolute tolerance:
+an impossible component cannot receive even tiny joint mass, and a rare branch
+cannot conceal a large relative discrepancy. Every sequential weight and its
+conditioning denominator come from the same validated, normalized joint, never
+the raw input rows. Conditional distributions are checked to sum to one.
+
 For exactly two observations, the sequential evaluator compares stopping after
 the first outcome with paying for the second. It reports conservative/optimistic
 cost-endpoint policies separately. The conservative policy's net interval keeps
 that policy fixed across costs; it does not splice optimistic outcome choices
 into a purported fixed-policy result. Unavailable follow-up permits stopping;
 unknown available follow-up cost withholds assessment. No observations are run.
+Stop/continue and final preference use scale-aware floating-point tolerances.
+Policy gain is checked/clamped to the zero/perfect-information bounds before
+subtracting the first cost, so large constant utility cannot turn a tiny cost
+into a positive recommendation. The reported tolerance is numerical, not
+statistical uncertainty; effects below it are not certified as positive.
 
 ## Prospective advisory evidence
 
@@ -62,6 +73,11 @@ prediction, chosen observation and expiry before an outcome may be appended.
 Different content under the same ID is rejected. Clock reversal, retrospective
 or future observations, wrong units, out-of-window results and unknown outcomes
 are rejected. Impossible outcomes remain counted as model contradictions.
+Registration deep-copies the supplied model before analysis and persists that
+same frozen snapshot. New-event timestamps and expiry/future checks are sampled
+after the write lock is acquired, immediately before append; lock/scheduler
+delay cannot backdate a new record. Identical retries retain their old content
+and timestamp, including after expiry. Local clocks remain untrusted externally.
 
 Reports include prediction scores, cost overruns and unresolved/expired records.
 They never establish counterfactual realized benefit, independent timestamps or

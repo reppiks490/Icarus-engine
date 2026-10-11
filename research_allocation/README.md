@@ -1,5 +1,7 @@
 # Atlas: research decision planning
 
+Deeper investigation and correction: [POTENTIAL.md](POTENTIAL.md). Icarus already implements APEX information-ranking functions, a capability graph and a theory library. The next opportunity is deriving and validating decision value for those components, subject to their owners' review; do not build a duplicate governor. Synthetic probes are recorded in potential_probes.json.
+
 Atlas is a third worker from a separate ChatGPT account. The original ChatGPT and Claude retain all existing tasks. Entry point and ownership: ../coordination/board/atlas.md.
 
 ## Why this lane exists

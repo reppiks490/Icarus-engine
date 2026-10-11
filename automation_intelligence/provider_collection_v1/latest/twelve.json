@@ -6,56 +6,134 @@
     "collected_operations": 16,
     "denied_operations": 1,
     "operations": 185,
-    "pending_pages": 9,
+    "pending_pages": 0,
     "qualification": "INCOMPLETE_UNTIL_EVERY_OPERATION_ASSET_PAGE_TIME_RANGE_AND_TRANSPORT_IS_VERIFIED",
     "unresolved_operations": 4
   },
   "chatgpt_tokens_used": 0,
   "checkpoint_status": "ENCRYPTED_AES256_GCM",
-  "completed_at_utc": "2026-10-11T04:08:26.742507+00:00",
+  "completed_at_utc": "2026-10-11T07:12:50.476214+00:00",
   "databento_excluded": true,
   "execution_authorized": false,
   "paid_model_calls": 0,
   "providers": {
     "twelve": {
-      "archive_status": [
-        "ENCRYPTED_AES256_GCM"
-      ],
+      "archive_status": [],
       "blocked": [
         {
-          "asset_specific": false,
-          "failure_code": "PAYLOAD_LIMIT_INCOMPLETE",
-          "operation": "twelve:get:/funds"
-        },
-        {
-          "asset_specific": false,
-          "failure_code": "PAYLOAD_LIMIT_INCOMPLETE",
-          "operation": "twelve:get:/stocks"
-        },
-        {
-          "asset_specific": false,
-          "failure_code": "403",
-          "operation": "twelve:get:/exchange_schedule"
+          "asset_specific": true,
+          "failure_code": "404",
+          "operation": "twelve:get:/add"
         },
         {
           "asset_specific": true,
           "failure_code": "404",
-          "operation": "twelve:get:/ad"
+          "operation": "twelve:get:/adosc"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "404",
+          "operation": "twelve:get:/adx"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "404",
+          "operation": "twelve:get:/adxr"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "403",
+          "operation": "twelve:get:/analyst_ratings/light"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "403",
+          "operation": "twelve:get:/analyst_ratings/us_equities"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "404",
+          "operation": "twelve:get:/apo"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "404",
+          "operation": "twelve:get:/aroon"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "404",
+          "operation": "twelve:get:/aroonosc"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "404",
+          "operation": "twelve:get:/atr"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "404",
+          "operation": "twelve:get:/avg"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "404",
+          "operation": "twelve:get:/avgprice"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "403",
+          "operation": "twelve:get:/balance_sheet"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "403",
+          "operation": "twelve:get:/balance_sheet/consolidated"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "404",
+          "operation": "twelve:get:/bbands"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "404",
+          "operation": "twelve:get:/beta"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "404",
+          "operation": "twelve:get:/bop"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "403",
+          "operation": "twelve:get:/cash_flow"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "403",
+          "operation": "twelve:get:/cash_flow/consolidated"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "404",
+          "operation": "twelve:get:/cci"
         }
       ],
-      "collected_pages": 16,
-      "collected_rows": 72083,
+      "collected_pages": 0,
+      "collected_rows": 0,
       "credential_present": true,
       "endpoint_count": 185,
       "requests": 20,
       "research_features": [],
-      "status": "COLLECTED_PARTIAL",
-      "substantive_work_performed": true
+      "status": "BLOCKED",
+      "substantive_work_performed": false
     }
   },
   "raw_payloads_public": false,
   "requests": 20,
-  "run_id": "providers-38110375656-1-twelve",
+  "run_id": "providers-38120363555-1-twelve",
   "schema_version": "icarus-provider-collection-cycle-v1",
-  "started_at_utc": "2026-10-11T04:03:56.044191+00:00"
+  "started_at_utc": "2026-10-11T07:08:40.052049+00:00"
 }

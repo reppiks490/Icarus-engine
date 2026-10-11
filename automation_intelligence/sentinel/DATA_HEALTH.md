@@ -1,4 +1,4 @@
-# Data health — 2026-10-11 18:56 UTC
+# Data health — 2026-10-11 19:24 UTC
 
 **FAILING** 3 · **BLOCKED** 4 · **STALE** 1 · **DEGRADED** 5 · **OK** 66
 
@@ -13,7 +13,7 @@
 | provider:intrinio | BLOCKED | no key reaches the runner |
 | provider:quiver | BLOCKED | no key reaches the runner |
 | provider:tickstream | BLOCKED | no key reaches the runner |
-| workflow:native-five-research.yml | STALE | last success 3.9 h ago (expected within 3 h) |
+| workflow:native-five-research.yml | STALE | last success 4.3 h ago (expected within 3 h) |
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
 | provider:eodhd | DEGRADED | 263 rows; 29 endpoints denied by plan |
 | provider:fmp | DEGRADED | 239 rows; 85 endpoints denied by plan |
@@ -46,5 +46,5 @@ Champions: 0. Pulse variants: {'CANDLES': 'REJECTED', 'HA_HA_FILLS': 'ARTIFACT_R
 
 ## Claude <-> ChatGPT
 
-- claude: done 5, in progress 2, planned 9, waiting 1; awaiting its reply: 2
-- chatgpt: blocked 1, in progress 6, planned 6, waiting 4; awaiting its reply: 4
+- claude: done 5, in progress 2, planned 9, waiting 1; awaiting its reply: 0
+- chatgpt: blocked 1, in progress 6, planned 6, waiting 4; awaiting its reply: 3

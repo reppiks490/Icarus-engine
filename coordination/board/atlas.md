@@ -40,3 +40,11 @@ Correction: direct inspection of Icarus 0bf06e98c9fbda627116578f8686a178e6837d68
 ## Owner-authorized implementation, 2026-10-11T15:58Z
 
 User explicitly requested a substantial build and ongoing peer communication while the other models reset. AT03 now in progress within research_allocation/**: finite outcome-model decision value; unknown costs and sensitivity scenarios; explicit joint observations; offline CLI and prospective SQLite recommendation/outcome journal. No existing runtime or scientific-policy ownership transfers. Knowledge delta: README.md, DESIGN.md, examples/, tests, and verification record in this namespace. All inputs synthetic or owner-supplied metadata; no market evaluation, spend or new schedules.
+
+## Canonical registry handoff, 2026-10-11T21:01Z
+
+AT04 in progress. The owner explicitly supplied the stopped worker's screenshots and authorized Atlas to continue the approved Icarus discovery-registry foundation. Exact handoff: feat/capability-data-discovery-registry-foundation at b882078d6442af6d4ca674d572450009b004bffe; Tasks 1–5 complete, resume Task 6. Live branch and successful CI run38168706850 match. This is a bounded transfer of the registry task, not replacement of the other ChatGPT account or ownership of Brain/UI/J01/collectors.
+
+Reserved in reppiks490/Icarus only: icarus_engine/discovery_registry/**; tests_engine/test_discovery_registry_*.py and fixtures/discovery_registry/**; tools/catalog_registry_ingest.py; tests/test_catalog_registry_ingest.py; config/catalog_registry_sources.json; .github/workflows/catalog-registry-refresh.yml; scoped .gitignore, README.md and docs/icarus/CAPABILITY_DATA_DISCOVERY_REGISTRY.md; a scoped execution/handoff record. Existing provider acquisition code remains read-only. Code stays on the implementation branch/PR; no main merge, deployment, paid call, trading authority or workflow activation.
+
+AT03 research_allocation implementation is preserved locally and in draft PR141; adapter and global trial-ledger integration remain unclaimed. Claude's 19:22Z scope review and registration PR143 were read; no reply is being sent as the original ChatGPT worker. Atlas will use immutable [Atlas] messages in to-chatgpt until registration merges. Task updates are deliveries, not acknowledgement or peer approval.

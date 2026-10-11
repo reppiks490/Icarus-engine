@@ -1,4 +1,4 @@
-# Data health — 2026-10-11 15:44 UTC
+# Data health — 2026-10-11 15:49 UTC
 
 **FAILING** 3 · **BLOCKED** 5 · **STALE** 1 · **DEGRADED** 4 · **OK** 66
 
@@ -46,5 +46,5 @@ Champions: 0. Pulse variants: {'CANDLES': 'REJECTED', 'HA_HA_FILLS': 'ARTIFACT_R
 
 ## Claude <-> ChatGPT
 
-- claude: done 5, in progress 2, planned 9, waiting 1; awaiting its reply: 0
-- chatgpt: blocked 1, in progress 6, planned 6, waiting 4; awaiting its reply: 2
+- claude: done 5, in progress 2, planned 9, waiting 1; awaiting its reply: 1
+- chatgpt: blocked 1, in progress 6, planned 6, waiting 4; awaiting its reply: 3

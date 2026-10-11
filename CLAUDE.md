@@ -1,6 +1,9 @@
 # Icarus-engine — instructions for Claude sessions
 
-Read `ICARUS_STATE.md` before doing anything. It holds the goal in numbers, what is proven, what is dead,
+Read `ICARUS_STATE.md` before doing anything. Then read both task lists in `coordination/board/` and every unanswered
+message in `coordination/inbox/to-claude/` (`python -m tools.coordination`). ChatGPT/Codex works in this
+repo too; the protocol is `coordination/README.md`: claim a task on `coordination/board/claude.md` before
+starting it, never work on a task on ChatGPT's board, and push and answer messages before stopping. It holds the goal in numbers, what is proven, what is dead,
 the rules no AI may break, which keys exist, and who owns what.
 
 - Tests: `python -m pytest tests tests_engine --import-mode=importlib -q` and

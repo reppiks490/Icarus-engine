@@ -11,8 +11,9 @@ nothing for three runs disables itself and says why. No agent can place a trade.
 | Id | Agent | Purpose | Runs on | Status |
 |---|---|---|---|---|
 | R2 | Single source of truth | `ICARUS_STATE.md` read first by every AI | — | Done |
-| S1 | Data-health sentinel | Every source: key present, last success, rows, failures; vault and budgets | GitHub Actions, daily | Building |
-| C8 | Daily briefing | One phone-readable report: data health, agent activity, candidates and verdicts | Claude routine, daily | Building |
+| X1 | Claude ↔ ChatGPT coordination | Task lists and inboxes in `coordination/`; coordinator answers twice a day | Claude routine | Building |
+| S1 | Data-health sentinel | Every source: key present, last success, rows, failures; vault and budgets | GitHub Actions, every 3 h | Done |
+| C8 | Daily briefing | One phone-readable report: data health, agent activity, candidates and verdicts | Claude routine, daily | Done |
 | R1 | Claims referee | Ledger of every AI claim, verified against repo and CI | Claude routine | Planned |
 | I1 | Red team | Look-ahead, Heikin-Ashi fills, roll jumps, cost stress on every claimed result | On demand | Planned |
 | C2 | Win-rate frontier | WR vs expectancy across TP/SL/time-stop for each setup | Actions | Planned (hard: test design) |

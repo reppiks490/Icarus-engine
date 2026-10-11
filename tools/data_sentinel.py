@@ -20,6 +20,8 @@ import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
+from tools import coordination
+
 AI = Path("automation_intelligence")
 OUT = AI / "sentinel"
 
@@ -183,7 +185,7 @@ def build(root: Path, repo: str | None = None, token: str | None = None, now: da
         counts[s["verdict"]] = counts.get(s["verdict"], 0) + 1
     return dict(schema="icarus.data_health/1", generated_at=now.isoformat(timespec="seconds"),
                 counts=counts, sources=sources, depth=depth(root), research=research(root),
-                execution_authorized=False)
+                coordination=coordination.summary(root, now), execution_authorized=False)
 
 
 def markdown(report: dict) -> str:
@@ -205,12 +207,16 @@ def markdown(report: dict) -> str:
     lines += [f"| {k} | ${v['cap_usd']} | ${v['spent_usd']} | ${v['left_usd']} |" for k, v in d["budgets"].items()]
     lines += ["", "## Research", "", f"Champions: {r['champions']}. Pulse variants: {r['pulse']}. "
               f"CL lab last run: {r['cl_last_run']}.", ""]
+    if report.get("coordination"):
+        lines += ["## Claude <-> ChatGPT", "", coordination.markdown(report["coordination"]), ""]
     return "\n".join(lines)
 
 
 def _fingerprint(report: dict) -> list:
     return [(s["source"], s["verdict"]) for s in report.get("sources", [])] + [
-        report.get("depth", {}).get("vault_files"), report.get("research", {}).get("champions")]
+        report.get("depth", {}).get("vault_files"), report.get("research", {}).get("champions"),
+        (report.get("coordination") or {}).get("awaiting_reply"),
+        {k: v.get("counts") for k, v in ((report.get("coordination") or {}).get("boards") or {}).items()}]
 
 
 def changed(previous: dict | None, report: dict, refresh_h: float = 24.0) -> bool:

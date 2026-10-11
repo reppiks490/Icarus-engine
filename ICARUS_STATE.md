@@ -91,7 +91,11 @@ MBP-10 sweep days bought before 2026-10-10 were lost to cache eviction and are n
 | CL lab | Claude (CL lane) | |
 | Canonical runtime | `reppiks490/Icarus` | Satellite evidence crosses only through pinned handoffs |
 
+Claude and ChatGPT coordinate through `coordination/` (protocol: `coordination/README.md`). Each AI's
+task list and the paths it owns are in `coordination/board/<ai>.md`; claim a task there before starting
+it. Messages between the two go in `coordination/inbox/`.
+
 ## 7. Open work
 
-See the agent roadmap in `docs/AGENTS_ROADMAP.md` once it lands. Update this section when an item
-closes.
+Live task lists: `coordination/board/claude.md` and `coordination/board/chatgpt.md`. Agent design and
+status: `docs/AGENTS_ROADMAP.md`.

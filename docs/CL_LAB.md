@@ -75,3 +75,21 @@ python -m cl_lab.run --out /tmp/cl_out --cache .cl_cache
 The canonical Icarus repository can export local continuous-futures OHLCV through its existing Databento adapter. Point CL at that export with ICARUS_DATABENTO_CORPUS=/path/to/corpus/databento. CL verifies the manifest schema, file SHA-256, row count, and CSV shape before surfacing compact corpus metadata. Raw rows remain local.
 
 This makes the broader futures universe, including NQ/MNQ, ES/MES, YM/MYM, RTY/M2K, GC/MGC, SI/SIL, and other registered Databento-compatible futures visible as verified corpus evidence. Corpus presence is not strategy qualification: assets without a separately validated cost model and gate path remain corpus-only.
+
+The run fingerprint uses `corpus.identity()`. It covers content hashes, coverage and verification state. It leaves out the manifest's generation time and error text, so re-reading the same verified bytes does not count as a new run.
+
+## Scheduled Databento OHLCV refresh: explicit roots (CL-84, ported from PR 84)
+
+A configured Databento key only authenticates; it does not authorize spend. `cl_lab.feeds` requests a Databento feed only when its root is listed in `CL_DATABENTO_ROOTS`, for example `NQ,MNQ`.
+
+- **Unset or empty:** nothing is requested.
+- **Root not listed:** the feed is `configured_dormant`, or `cached` if a cache exists. The cache is kept.
+- **Unknown name in the list:** every Databento feed is `blocked` and nothing is requested.
+
+Listed roots stay bounded by three guards:
+
+- the estimate before each request and `CL_DATABENTO_MAX_USD_PER_FEED`;
+- the per-account credit lanes in `databento_budget`, whose spend is recorded before each download;
+- the per-run reserve.
+
+A failed refresh leaves the cache file untouched. Its manifest entry reports that cache's rows and hash. The manifest's `databento_policy` block records the selected roots and any policy error.

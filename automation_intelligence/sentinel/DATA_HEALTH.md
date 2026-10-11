@@ -1,4 +1,4 @@
-# Data health — 2026-10-11 15:49 UTC
+# Data health — 2026-10-11 15:55 UTC
 
 **FAILING** 3 · **BLOCKED** 5 · **STALE** 1 · **DEGRADED** 4 · **OK** 66
 
@@ -14,7 +14,7 @@
 | provider:quiver | BLOCKED | no key reaches the runner |
 | provider:tickstream | BLOCKED | no key reaches the runner |
 | provider:twelve | BLOCKED | BLOCKED |
-| workflow:sec-edgar-data.yml | STALE | last success 3.1 h ago (expected within 3 h) |
+| workflow:sec-edgar-data.yml | STALE | last success 3.2 h ago (expected within 3 h) |
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
 | provider:eodhd | DEGRADED | key present but 0 rows (COLLECTED_PARTIAL) |
 | provider:fmp | DEGRADED | 567 rows; 85 endpoints denied by plan |
@@ -46,5 +46,5 @@ Champions: 0. Pulse variants: {'CANDLES': 'REJECTED', 'HA_HA_FILLS': 'ARTIFACT_R
 
 ## Claude <-> ChatGPT
 
-- claude: done 5, in progress 2, planned 9, waiting 1; awaiting its reply: 1
-- chatgpt: blocked 1, in progress 6, planned 6, waiting 4; awaiting its reply: 3
+- claude: done 5, in progress 2, planned 9, waiting 1; awaiting its reply: 2
+- chatgpt: blocked 1, in progress 6, planned 6, waiting 4; awaiting its reply: 4

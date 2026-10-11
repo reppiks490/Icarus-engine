@@ -31,23 +31,51 @@ ASSET_CLASS = {
     "EEM": "emerging", "EFA": "intl developed", "I:NDX": "index cash",
 }
 
-def load_panel(min_bars: int = 2000) -> dict[str, list[Bar]]:
-    """Every market in data/panel/, keyed by ticker.
+REPO = Path(__file__).resolve().parent.parent
 
-    Reads committed CSVs rather than the vendor spill files. The spills live in
+
+def ensure_panel(root: Path | None = None, vault: Path | None = None, env=None) -> Path:
+    """Make sure data/panel/ holds the CSVs, restoring them from the encrypted vault if needed.
+
+    The panel is licensed vendor data in a public repository, so it lives in the vault
+    (tools/depth_vault.py, cache "panel"), not in the tree. A missing panel is an error with
+    instructions, never a silently empty dict: an empty panel would make the cross-asset
+    test look like it ran.
+    """
+    import os
+
+    from tools import depth_vault
+
+    root = root or REPO / "data" / "panel"
+    vault = vault or REPO / "data" / "depth_vault"
+    if any(root.glob("*_5m.csv")):
+        return root
+    manifest = depth_vault._load_manifest(vault)
+    if not manifest["caches"].get("panel"):
+        raise FileNotFoundError(f"no panel CSVs in {root} and none in the vault")
+    try:
+        depth_vault.restore({"panel": root}, vault, os.environ if env is None else env)
+    except ValueError as ex:
+        raise FileNotFoundError(
+            f"the panel is vaulted, not in the tree ({ex}). Set ICARUS_DATA_ARCHIVE_KEY or "
+            "DATABENTO_API_KEY and run: python -m tools.depth_vault restore --cache panel=data/panel") from ex
+    return root
+
+
+def load_panel(min_bars: int = 2000, root: Path | None = None) -> dict[str, list[Bar]]:
+    """Every market in data/panel/, keyed by ticker, restored from the vault when absent.
+
+    Reads the exported CSVs rather than the vendor spill files. The spills live in
     a container scratch directory and vanish with it, and they carry no ticker
     unless the response happened to paginate -- five markets were silently
-    dropped for exactly that reason. The export in data/panel/ is durable, in
-    git, and its labels were verified against /v2/aggs/ticker/{T}/prev by
-    comparing each file's last close to the previous-day close, rather than
-    inferred from the order the calls were made in.
+    dropped for exactly that reason. The labels were verified against
+    /v2/aggs/ticker/{T}/prev by comparing each file's last close to the
+    previous-day close, rather than inferred from the order the calls were made in.
 
     Bars are already stamped at their CLOSE by the exporter, matching Bar.ts.
     """
-    root = Path(__file__).resolve().parent.parent / "data" / "panel"
+    root = ensure_panel(root)
     panel: dict[str, list[Bar]] = {}
-    if not root.is_dir():
-        return panel
     for path in sorted(root.glob("*_5m.csv")):
         ticker = path.stem.rsplit("_5m", 1)[0].replace("_", ":")
         bars = load_csv(str(path))

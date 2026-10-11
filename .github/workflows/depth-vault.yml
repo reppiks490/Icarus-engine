@@ -1,4 +1,5 @@
-# Seals the derived Databento depth caches into the encrypted vault (tools/depth_vault.py).
+# Seals the derived Databento depth caches and the 13-market panel into the encrypted vault
+# (tools/depth_vault.py), labels every object's origin and verifies every object on each run.
 # The NQ MBP-10 sweep cache was evicted on 2026-10-10 with 18 paid days in it; the
 # corpus cache is the same single point of failure. This runs after every depth
 # purchase, daily (a restore counts as cache access and delays eviction), and on
@@ -16,6 +17,7 @@ on:
     paths:
       - "tools/depth_vault.py"
       - ".github/workflows/depth-vault.yml"
+      - "data/depth_vault/sources.json"
   workflow_dispatch:
 
 permissions:
@@ -79,12 +81,18 @@ jobs:
             python -m tools.depth_vault seal \
               --cache corpus=.databento_depth_cache \
               --cache sweep=.databento_sweep_cache
+            # The 13-market panel (preserved original, L1): plain CSV, sealed while it is still in the tree.
+            python -m tools.depth_vault seal --cache panel=data/panel --suffix .csv
+            # Provenance per object (J02), then decrypt-and-hash every object in memory; a failure stops
+            # the job before anything is committed.
+            python -m tools.depth_vault label
+            python -m tools.depth_vault verify --out automation_intelligence/sentinel/vault_verify.json
             # Pre-registered D1 (docs/DEPTH_PREREG_D1.md): aggregate statistics only, no vendor rows.
             python -m cl_lab.depth_test --cache .databento_sweep_cache \
               --out automation_intelligence/cl_lab/depth_d1_latest.json
-            git add data/depth_vault automation_intelligence/cl_lab/depth_d1_latest.json
+            git add data/depth_vault automation_intelligence/cl_lab/depth_d1_latest.json automation_intelligence/sentinel/vault_verify.json
             if git diff --cached --quiet; then echo "vault already current"; exit 0; fi
-            git commit -m "[vault] seal derived depth features; D1 status [skip ci]"
+            git commit -m "[vault] seal, label and verify; D1 status [skip ci]"
             if git push origin "HEAD:$TARGET"; then exit 0; fi
             sleep $((attempt * 5))
           done

@@ -70,3 +70,17 @@ def test_report_carries_the_claude_chatgpt_mailbox(tmp_path):
         "From: Claude\nTo: ChatGPT\nDate: 2026-10-11\nSubject: Answer\nReply-needed: no\n"
         "Re: 20261011T0500Z-chatgpt-ask.md\n\nBody\n")
     assert ds.changed(quiet, ds.build(tmp_path, now=NOW))
+
+
+def test_vault_verify_verdict_reaches_the_report(tmp_path):
+    report = ds.build(tmp_path, now=NOW)
+    assert report["depth"]["vault_verify"]["verdict"] == "NOT_RUN"
+    receipt = tmp_path / "automation_intelligence/sentinel/vault_verify.json"
+    receipt.parent.mkdir(parents=True)
+    receipt.write_text(json.dumps({"verdict": "FAILED", "verified_at": "2026-10-11T06:00:00+00:00",
+                                   "failure_count": 2}))
+    failed = ds.build(tmp_path, now=NOW)
+    assert failed["depth"]["vault_verify"] == {"verdict": "FAILED", "verified_at": "2026-10-11T06:00:00+00:00",
+                                               "failures": 2}
+    assert "decrypt-and-hash check: FAILED" in ds.markdown(failed)
+    assert ds.changed(report, failed)

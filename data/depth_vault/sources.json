@@ -1,0 +1,35 @@
+{
+ "schema": "icarus.vault_sources/1",
+ "note": "Hand-written provenance per vault cache. Every claim cites a file or commit. tools/depth_vault.py label turns this into origins.json, one record per object; purchase times come only from the spend ledgers, never from this file.",
+ "caches": {
+  "corpus": {
+   "origin": "new_acquisition",
+   "provider": "Databento",
+   "content": "Derived order-book features (per-day 1-minute microstructure rows) and the corpus index files, reduced from MBO and MBP-10 downloads. Raw DBN is not kept.",
+   "acquired_via": ".github/workflows/databento-depth-corpus.yml",
+   "purchase_ledgers": "automation_intelligence/cl_lab/spend/depth__index.json, automation_intelligence/cl_lab/spend/depth__diversifier.json",
+   "is_restoration": false,
+   "rights": "Licensed Databento derivatives; kept encrypted because the repository is public. Rights review belongs to S01 (Codex)."
+  },
+  "sweep": {
+   "origin": "new_acquisition",
+   "provider": "Databento",
+   "content": "Derived NQ MBP-10 sweep features and resilience events, per regular-session day. Raw DBN is not kept.",
+   "acquired_via": ".github/workflows/cl-depth-sweep.yml",
+   "purchase_ledgers": "automation_intelligence/cl_lab/spend/depth__sweep__primary.json, depth__sweep__secondary.json, depth__sweep__third.json",
+   "is_restoration": false,
+   "lost_before_vault": "The 18 NQ MBP-10 days bought before 2026-10-10 were evicted from the Actions cache before this vault existed. They are not here and are not recoverable; days bought again later are new acquisitions, never restorations.",
+   "rights": "Licensed Databento derivatives; kept encrypted. Rights review belongs to S01 (Codex)."
+  },
+  "panel": {
+   "origin": "preserved_original",
+   "provider": "Polygon.io REST aggregates (since renamed Massive). Inferred from the /v2/aggs/ticker/{T}/prev label check described in commit 5c830854dda0140118b7cb9af2f697996e3aaa38; no request log survives.",
+   "content": "13 files of 5-minute OHLCV bars: SPY, QQQ, IWM, NVDA, GLD, SLV, USO, XLE, TLT, IEF, UUP, VXX, EEM.",
+   "collected": "Before 2026-09-20T18:11:41Z; exact pull times were not recorded.",
+   "first_committed": {"commit": "5c830854dda0140118b7cb9af2f697996e3aaa38", "at": "2026-09-20T18:11:41Z", "branch": "claude/research-restore"},
+   "restored_to_main": {"commit": "7d2c9c053d9bcdf0866a86427e9cea37d5ef06a3", "at": "2026-10-10T22:08:04Z"},
+   "is_restoration": false,
+   "rights": "Unverified. Plaintext was public on claude/research-restore from 2026-09-20 and on main from 2026-10-10; removing it from the tree does not remove it from history. Rights and exposure scope belong to S01 (Codex)."
+  }
+ }
+}

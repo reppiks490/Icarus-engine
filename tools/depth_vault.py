@@ -21,6 +21,16 @@ set makes older objects unreadable, which is why the archive key is preferred.
 
 Raw DBN (``_raw_tmp``, ``_retry_raw``) is never sealed: it is large, and keeping it
 is a licensing decision this tool does not make.
+
+The vault also holds the 13-market 5-minute panel (``data/panel``), a preserved original
+pulled from Polygon in September 2026 that must not sit in the public tree as plain CSV.
+
+Provenance is explicit, never guessed. ``sources.json`` is written by hand: per cache, whether it
+is a ``new_acquisition`` or a ``preserved_original``, the provider and the evidence.
+``label`` turns it into ``origins.json``, one record per object, with the purchase time copied
+from the matching spend-ledger entry where one exists and ``null`` where none does.
+``verify`` decrypts every object in memory, checks it against its manifest hash and its
+label, and writes no plaintext anywhere.
 """
 from __future__ import annotations
 
@@ -29,13 +39,20 @@ import base64
 import hashlib
 import json
 import os
+import re
 import zlib
+from datetime import datetime, timezone
 from pathlib import Path
 
 VAULT_DIR = Path("data/depth_vault")
 SCHEMA = "icarus.depth_vault/1"
 SKIP_DIRS = {"_raw_tmp", "_retry_raw"}
 SUFFIXES = (".csv.gz", ".json")
+LEDGERS = Path("automation_intelligence/cl_lab/spend")
+ORIGINS = ("new_acquisition", "preserved_original")
+# features/<account>/<schema>/<root>/<market day>.csv.gz, as written by the depth and sweep lanes.
+_FEATURE = re.compile(r"^features/(?P<account>\w+)/(?P<schema>\w+)/(?P<root>\w+)/(?P<day>\d{4}-\d{2}-\d{2})\.csv\.gz$")
+_DAY = re.compile(r"(\d{4}-\d{2}-\d{2})")
 
 
 def _key(env) -> tuple[bytes, str]:
@@ -56,9 +73,9 @@ def _key(env) -> tuple[bytes, str]:
     return key, "HKDF(DATABENTO_API_KEY)"
 
 
-def _files(cache: Path):
+def _files(cache: Path, suffixes=SUFFIXES):
     for path in sorted(cache.rglob("*")):
-        if not path.is_file() or not path.name.endswith(SUFFIXES):
+        if not path.is_file() or not path.name.endswith(tuple(suffixes)):
             continue
         rel = path.relative_to(cache)
         if rel.parts[0] in SKIP_DIRS or path.name.endswith(".tmp"):
@@ -73,8 +90,8 @@ def _load_manifest(vault: Path) -> dict:
     return {"schema": SCHEMA, "caches": {}}
 
 
-def seal(caches: dict[str, Path], vault: Path = VAULT_DIR, env=os.environ) -> dict:
-    """Encrypt every derived file in ``caches`` ({name: dir}) that the vault lacks."""
+def seal(caches: dict[str, Path], vault: Path = VAULT_DIR, env=os.environ, suffixes=SUFFIXES) -> dict:
+    """Encrypt every file in ``caches`` ({name: dir}) ending in ``suffixes`` that the vault lacks."""
     from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
     key, key_source = _key(env)
@@ -90,7 +107,7 @@ def seal(caches: dict[str, Path], vault: Path = VAULT_DIR, env=os.environ) -> di
         if not Path(cache).is_dir():
             continue
         entries = manifest["caches"].setdefault(name, {})
-        for rel, path in _files(Path(cache)):
+        for rel, path in _files(Path(cache), suffixes):
             plain = path.read_bytes()
             digest = hashlib.sha256(plain).hexdigest()
             obj = objects / f"{digest}.bin"
@@ -137,6 +154,123 @@ def restore(caches: dict[str, Path], vault: Path = VAULT_DIR, env=os.environ) ->
     return {"restored": restored, "present": present}
 
 
+def _ledger_entries(ledger_dir: Path) -> list[tuple[str, int, dict, str]]:
+    out = []
+    for path in sorted(Path(ledger_dir).glob("*.json")):
+        try:
+            d = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        for i, entry in enumerate(d.get("entries") or []):
+            out.append((path.as_posix(), i, entry, str(d.get("account") or "")))
+    return out
+
+
+def _purchase(rel: str, entries) -> tuple[str | None, str]:
+    """The ledger purchase time for one feature file, or None and the reason there is none.
+
+    A match needs the same root, schema, market day and buying account. Anything other than
+    exactly one match is reported, not resolved by guessing.
+    """
+    m = _FEATURE.match(rel)
+    if not m:
+        return None, "not a per-day feature file"
+    want = [m["root"].upper(), m["schema"].replace("-", "").lower(), m["day"]]
+    hits = []
+    for path, i, entry, account in entries:
+        words = str(entry.get("what") or "").split()
+        if len(words) >= 3 and [words[0].upper(), words[1].replace("-", "").lower(), words[2]] == want \
+                and account == m["account"]:
+            hits.append((path, i, entry))
+    if len(hits) == 1:
+        path, i, entry = hits[0]
+        return entry.get("at"), f"{path}#entries[{i}]"
+    return None, "no ledger entry" if not hits else f"{len(hits)} ledger entries match"
+
+
+def label(vault: Path = VAULT_DIR, ledger_dir: Path = LEDGERS) -> dict:
+    """Write ``origins.json``: one provenance record per vaulted object, from ``sources.json`` and the ledgers."""
+    manifest = _load_manifest(vault)
+    sources = json.loads((vault / "sources.json").read_text(encoding="utf-8")).get("caches", {})
+    entries = _ledger_entries(ledger_dir)
+    objects, unlabelled = {}, []
+    for name, files in sorted(manifest["caches"].items()):
+        src = sources.get(name) or {}
+        if src.get("origin") not in ORIGINS:
+            unlabelled.append(name)
+        for rel, meta in sorted(files.items()):
+            at, evidence = _purchase(rel, entries) if src.get("origin") == "new_acquisition" else (None, "see sources.json")
+            day = _DAY.search(rel)
+            objects[f"{name}/{rel}"] = {
+                "sha256": meta["sha256"], "bytes": meta["bytes"],
+                "origin": src.get("origin"), "provider": src.get("provider"),
+                "market_day": day.group(1) if day else None,
+                "purchased_at": at, "purchase_evidence": evidence,
+            }
+    out = {"schema": "icarus.vault_origins/1", "unlabelled_caches": unlabelled, "objects": objects,
+           "execution_authorized": False}
+    (vault / "origins.json").write_text(json.dumps(out, indent=1, sort_keys=True) + "\n", encoding="utf-8")
+    return {"objects": len(objects), "unlabelled_caches": unlabelled,
+            "purchased_at_known": sum(1 for o in objects.values() if o["purchased_at"])}
+
+
+def verify(vault: Path = VAULT_DIR, env=os.environ, now: datetime | None = None) -> dict:
+    """Decrypt every manifest object in memory and check hash and label. Writes nothing."""
+    from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+
+    manifest = _load_manifest(vault)
+    origins_path = vault / "origins.json"
+    origins = json.loads(origins_path.read_text(encoding="utf-8")).get("objects", {}) if origins_path.exists() else {}
+    key, key_source = _key(env)
+    if manifest.get("key_source") not in (None, key_source):
+        raise ValueError(f"vault was sealed with {manifest['key_source']}, not {key_source}")
+    aead = AESGCM(key)
+    caches, failures, referenced = {}, [], set()
+    for name, files in sorted(manifest["caches"].items()):
+        ok = nbytes = unlabelled = 0
+        for rel, meta in sorted(files.items()):
+            referenced.add(meta["sha256"])
+            obj = vault / "objects" / f"{meta['sha256']}.bin"
+            try:
+                blob = obj.read_bytes()
+                plain = zlib.decompress(aead.decrypt(blob[:12], blob[12:], meta["sha256"].encode()))
+                if hashlib.sha256(plain).hexdigest() != meta["sha256"] or len(plain) != meta["bytes"]:
+                    raise ValueError("hash or size mismatch")
+            except Exception as ex:  # noqa: BLE001 - every failure is reported by name
+                failures.append(f"{name}/{rel}: {type(ex).__name__}")
+                continue
+            ok += 1
+            nbytes += len(plain)
+            if (origins.get(f"{name}/{rel}") or {}).get("origin") not in ORIGINS:
+                unlabelled += 1
+        caches[name] = {"files": len(files), "authenticated": ok, "plaintext_bytes": nbytes, "unlabelled": unlabelled}
+    stored = {p.stem for p in (vault / "objects").glob("*.bin")} if (vault / "objects").is_dir() else set()
+    unlabelled_total = sum(c["unlabelled"] for c in caches.values())
+    verdict = "OK" if not failures and not unlabelled_total else "FAILED"
+    return {"schema": "icarus.vault_verify/1", "verdict": verdict, "key_source": key_source,
+            "verified_at": (now or datetime.now(timezone.utc)).isoformat(timespec="seconds"),
+            "caches": caches, "failures": failures[:50], "failure_count": len(failures),
+            "unreferenced_objects": len(stored - referenced), "plaintext_written": False,
+            "execution_authorized": False}
+
+
+def write_receipt(path: Path, receipt: dict, refresh_h: float = 24.0) -> bool:
+    """Write the verify receipt when anything but its timestamp changed, or once a day."""
+    path = Path(path)
+    try:
+        old = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        old = None
+    if old:
+        same = {k: v for k, v in old.items() if k != "verified_at"} == {k: v for k, v in receipt.items() if k != "verified_at"}
+        age_h = (datetime.fromisoformat(receipt["verified_at"]) - datetime.fromisoformat(old["verified_at"])).total_seconds() / 3600
+        if same and age_h < refresh_h:
+            return False
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(receipt, indent=1, sort_keys=True) + "\n", encoding="utf-8")
+    return True
+
+
 def _caches(pairs: list[str]) -> dict[str, Path]:
     out = {}
     for pair in pairs:
@@ -149,12 +283,30 @@ def _caches(pairs: list[str]) -> dict[str, Path]:
 
 def main(argv=None) -> None:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("action", choices=("seal", "restore"))
-    ap.add_argument("--cache", action="append", required=True, help="NAME=DIR, repeatable")
+    ap.add_argument("action", choices=("seal", "restore", "label", "verify"))
+    ap.add_argument("--cache", action="append", default=[], help="NAME=DIR, repeatable (seal, restore)")
+    ap.add_argument("--suffix", action="append", help=f"file endings to seal (default {', '.join(SUFFIXES)})")
     ap.add_argument("--vault", type=Path, default=VAULT_DIR)
+    ap.add_argument("--ledgers", type=Path, default=LEDGERS)
+    ap.add_argument("--out", type=Path, help="verify: write the receipt here")
     a = ap.parse_args(argv)
-    fn = seal if a.action == "seal" else restore
-    print(json.dumps(fn(_caches(a.cache), a.vault)))
+    if a.action in ("seal", "restore") and not a.cache:
+        ap.error(f"{a.action} needs at least one --cache NAME=DIR")
+    if a.action == "seal":
+        result = seal(_caches(a.cache), a.vault, suffixes=tuple(a.suffix or SUFFIXES))
+    elif a.action == "restore":
+        result = restore(_caches(a.cache), a.vault)
+    elif a.action == "label":
+        result = label(a.vault, a.ledgers)
+    else:
+        result = verify(a.vault)
+        if a.out:
+            result["receipt_written"] = write_receipt(a.out, {k: v for k, v in result.items()})
+        print(json.dumps({k: result[k] for k in ("verdict", "caches", "failure_count", "unreferenced_objects")}))
+        if result["verdict"] != "OK":
+            raise SystemExit(1)
+        return
+    print(json.dumps(result))
 
 
 if __name__ == "__main__":

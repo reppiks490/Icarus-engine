@@ -37,21 +37,40 @@ def test_manifest_hashes_match_the_files_and_name_the_generator():
     assert MANIFEST["execution_authorized"] is False
 
 
+REASON_CODES = {
+    "UNDECLARED_MODERN_CONTRACT", "UNSUPPORTED_CONTRACT_VERSION", "CONTRACT_SOURCE_SET_MISMATCH",
+    "PACKET_VERSION_MISMATCH", "INVALID_PACKET_CLOCK", "STALE_PACKET", "FUTURE_PACKET", "UNKNOWN_SOURCE",
+    "DUPLICATE_SOURCE", "MISSING_SOURCE", "ARTIFACT_FIELD_MISMATCH", "AUTHORITY_EXPANSION", "KIND_CONFUSION",
+    "ARTIFACT_ID_MISMATCH", "BLOB_WITNESS_MISMATCH", "SCHEMA_MISMATCH", "SOURCE_NOT_ELIGIBLE",
+    "INVALID_SOURCE_CLOCK", "PROJECTION_MISMATCH", "FUTURE_SOURCE_CLOCK", "SUMMARY_TOO_LARGE"}
+
+
 @pytest.mark.parametrize("case", sorted(MANIFEST["cases"]))
 def test_every_case_ends_in_its_declared_outcome(case):
-    contract, block, sources, expected = BF.load_case(HERE / "cases" / case)
-    assert expected["expect"] == MANIFEST["cases"][case]["expect"]
-    assert BF.reference_verify(contract, block, sources, expected["consumer_now"]) == expected["expect"]
+    expected = json.loads((HERE / "cases" / case / "expected.json").read_text())
+    want = expected["expect"] if expected["path"] == "packet" else expected["expect_by_source"]
+    assert want == MANIFEST["cases"][case]["expect"]
+    assert BF.outcome(HERE / "cases" / case) == want
 
 
-def test_both_accept_cases_and_every_reason_code_are_covered():
-    expects = {c["expect"] for c in MANIFEST["cases"].values()}
-    assert expects >= {
-        "ACCEPT", "UNDECLARED_MODERN_CONTRACT", "UNSUPPORTED_CONTRACT_VERSION", "CONTRACT_SOURCE_SET_MISMATCH",
-        "PACKET_VERSION_MISMATCH", "STALE_PACKET", "FUTURE_PACKET", "UNKNOWN_SOURCE", "DUPLICATE_SOURCE",
-        "MISSING_SOURCE", "ARTIFACT_FIELD_MISMATCH", "AUTHORITY_EXPANSION", "KIND_CONFUSION",
-        "ARTIFACT_ID_MISMATCH", "BLOB_WITNESS_MISMATCH", "SCHEMA_MISMATCH", "SOURCE_NOT_ELIGIBLE",
-        "PROJECTION_MISMATCH", "FUTURE_SOURCE_CLOCK", "SUMMARY_TOO_LARGE"}
+def test_both_paths_and_every_reason_code_are_covered():
+    packet = {c["expect"] for c in MANIFEST["cases"].values() if c["path"] == "packet"}
+    assert packet == REASON_CODES | {"ACCEPT"}
+    live = {v for c in MANIFEST["cases"].values() if c["path"] == "live" for v in c["expect"].values()}
+    assert live >= {"ACCEPT", "FUTURE_SOURCE_CLOCK", "INVALID_SOURCE_CLOCK", "SCHEMA_MISMATCH",
+                    "SOURCE_NOT_ELIGIBLE", "UNDECLARED_MODERN_CONTRACT"}
+    assert packet - {"ACCEPT"} <= REASON_CODES and live - {"ACCEPT"} <= REASON_CODES
+
+
+def test_malformed_inputs_reject_instead_of_raising():
+    contract, block, sources, expected = BF.load_case(HERE / "cases" / "accept_modern6")
+    path = "automation_intelligence/cl_lab/sec_edgar_research_context.json"
+    for raw in (b"", b"[]", b"null", b"\xff\xfe"):
+        assert BF.reference_live_verify(contract, dict(sources, **{path: raw}), expected["consumer_now"])[
+            "sec_edgar"] == "SCHEMA_MISMATCH"
+    for clock in (None, "", "yesterday", 5, "2026-10-11"):
+        assert BF.reference_verify(contract, dict(block, observed_at=clock), sources,
+                                   expected["consumer_now"]) == "INVALID_PACKET_CLOCK"
 
 
 def test_legacy_artifacts_are_todays_exporter_output():
@@ -66,5 +85,7 @@ def test_new_kind_artifacts_never_carry_legacy_run_fields():
     docs = [a for a in block["historical_artifacts"] if a["artifact_kind"] == "RESEARCH_CONTEXT_DOCUMENT"]
     assert {a["lane"] for a in docs} == {"provider_collection", "sec_edgar"}
     for art in docs:
+        assert set(art) == BF.DOC_ARTIFACT_FIELDS
         assert art["run_id"] is None and art["run_status"] is None
-        assert not any(k in json.loads(sources[art["path"]]) for k in BF.RUN_KEYS)
+        doc = json.loads(sources[art["path"]])
+        assert not any(k.startswith("RUN_") or k == "COLLECTION_ONLY" for k in doc)

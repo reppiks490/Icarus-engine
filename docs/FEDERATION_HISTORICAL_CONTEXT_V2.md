@@ -1,53 +1,75 @@
 # J01 — Engine → Icarus historical context, version 2
 
-Status: **DRAFT for Codex approval.** No producer or consumer code changes until Codex approves this
-document on its PR thread. Editor: Claude (sole editor of the shared contract, agreed 2026-10-11).
-Reviewer: Codex. Changes found during implementation come back here as a reviewed edit.
+Status: **DRAFT, revision 2, for Codex approval.**
+
+- Revision 2 applies Codex's review of 2026-10-11 (PR #136 comment 6110008926) and records its
+  section 11 decisions.
+- No producer or consumer code changes until Codex approves this document on its PR thread.
+- Editor: Claude, sole editor of the shared contract (agreed 2026-10-11). Reviewer: Codex.
+- Changes found during implementation come back here as a reviewed edit.
 
 Repositories: producer `reppiks490/Icarus-engine` (Claude), consumer `reppiks490/Icarus` (Codex).
 
-## 1. What is broken, with evidence
+## 1. What is broken, and how the consumer actually works
 
-- Engine `automation_intelligence/mcp_interface/icarus_consumer_contract.json` declares six historical
-  sources since 2026-10-08 (`78dced8e` added `provider_collection`, `246fd229` added `sec_edgar`).
+**Breakage, with evidence:**
+
+- Engine `automation_intelligence/mcp_interface/icarus_consumer_contract.json` has declared six
+  historical sources since 2026-10-08: `78dced8e` added `provider_collection` and `246fd229` added
+  `sec_edgar`.
 - Icarus `icarus_engine/brain_sync.py` (`_HISTORICAL_CONTEXT_EXPECTED`) accepts exactly four and raises
   `Icarus-engine historical context source set mismatch` (line 419 at `b96833c5`).
 - Engine `icarus_engine/interrepo_bridge.py` builds `historical_artifacts` only from control-plane lanes'
-  `<worker_root>/latest.json`; the two new sources are not lanes, so the exporter never emits them.
-- Icarus `live-engine-federation-gate` has failed on every scheduled run checked, 2026-10-09 13:16Z to
+  `<worker_root>/latest.json`. The two new sources are not lanes, so the exporter never emits them.
+- Icarus `live-engine-federation-gate` failed on every scheduled run checked, 2026-10-09 13:16Z to
   2026-10-10 21:43Z (run `38088740404`), ingesting zero events.
 
-The two new documents are a different kind from the four. They have no `RUN_ID`, `RUN_STATUS`,
-`RUN_CORE` or `COLLECTION_ONLY`, so today's consumer rule "a collection-only source must carry
-`COLLECTION_ONLY: true`" cannot be met without inventing fields. That is forbidden. Version 2 adds an
-explicit source kind instead.
+The two new documents are a different kind from the four. They have no `RUN_*` fields and no
+`COLLECTION_ONLY`, so today's rule "a collection-only source must carry `COLLECTION_ONLY: true`" cannot
+be met without inventing fields. That is forbidden, so version 2 adds an explicit source kind instead.
+
+**The consumer at `b96833c5` has two independent paths.** This document constrains both and changes the
+structure of neither.
+
+- **Live ingest** (`brain_sync.py` around line 1462; it runs before packet validation, around line 1601):
+  - each declared source document is fetched from Engine `main`, validated and journaled **on its own**;
+  - a failing source makes the cycle `degraded`, and rows already journaled for other sources stay;
+  - rows are deduplicated by the document's Git blob SHA (`processed_historical_blob_shas`).
+- **Packet witness verification** (around line 2026):
+  - each artifact in the peer packet is checked against its document at the packet's `source_commit`;
+  - this path verifies and records a receipt. It does **not** ingest.
 
 ## 2. Versions and how a consumer picks one
 
-| Contract `historical_context` | Packet | Consumer result |
+| Contract `historical_context` | Packet | Result |
 |---|---|---|
-| no `contract_version`, exactly the four legacy sources, as today's consumer checks them | no `historical_context_version`, four `HISTORICAL_LATEST` artifacts | **legacy v1**: accepted exactly as today |
-| `contract_version: 2`, exactly the six sources of §3 | `historical_context_version: 2`, one authentic artifact per declared source | **v2**: accepted when every check in §6 passes |
-| no `contract_version` and any source set other than the legacy four (**today's state**) | any | reject `UNDECLARED_MODERN_CONTRACT` |
-| `contract_version: 2` | missing, legacy or wrong `historical_context_version` | reject `PACKET_VERSION_MISMATCH` |
-| `contract_version: 2` with any source set other than the six of §3 | any | reject `CONTRACT_SOURCE_SET_MISMATCH` |
-| `contract_version` other than 2 | any | reject `UNSUPPORTED_CONTRACT_VERSION` |
+| no `contract_version` key; exactly the four legacy sources, each equal to its frozen entry | no `historical_context_version` key; four `HISTORICAL_LATEST` artifacts | **legacy v1**: accepted as today |
+| `contract_version` is the integer `2`; exactly the six sources of §3, each equal to its frozen entry | `historical_context_version` is the integer `2`; one authentic artifact per declared source | **v2**: accepted when every check in §6 passes |
+| no `contract_version` key and any source set other than the legacy four (**today's state**) | any | `UNDECLARED_MODERN_CONTRACT` |
+| `contract_version` present but not the integer `2` (including `true`, `2.0`, `"2"`, `3`) | any | `UNSUPPORTED_CONTRACT_VERSION` |
+| `contract_version: 2` with a source set other than the six | any | `CONTRACT_SOURCE_SET_MISMATCH` |
+| legacy contract | any `historical_context_version` key, even `1` | `PACKET_VERSION_MISMATCH` |
+| `contract_version: 2` | missing, non-integer or other `historical_context_version` | `PACKET_VERSION_MISMATCH` |
 
-A declared six-source contract never downgrades to four because the exporter is incomplete. All six
-artifacts are verified before any of them is ingested; there is no partial ingest. The gate stays red,
-truthfully, until the producer emits all six.
+Version values are compared as exact JSON integers. `true` never stands for 1, and `2.0` never stands for 2.
 
-The packet `schema_version` stays `icarus-peer-intelligence-packet-v1`. `historical_context_version`
-is a new optional top-level field: absent means 1. *(Decision for Codex: keep v1 plus this field, or bump
-the packet schema. Claude proposes keeping v1, because the peer-packet gate pins the v1 string in both
-repositories and nothing else in the packet changes.)*
+A declared six-source contract never downgrades to four because the exporter is incomplete.
+
+**All-or-none applies to packet acceptance:**
+
+- A packet is accepted only when every declared source has exactly one artifact and all of them pass §6.
+- The six-source receipt records the packet's validated projections, and it is all-or-none.
+- Live-ingest writes are independent of the packet, per source, as described in §1. That stays as it is.
+
+The gate stays red, truthfully, until the producer emits all six.
+
+**Decision (Codex, 2026-10-11):** the packet `schema_version` stays `icarus-peer-intelligence-packet-v1`,
+and modern six-source packets add `historical_context_version: 2`.
 
 ## 3. The six sources in v2
 
-Every source keeps `research_context_eligible: true`, `candidate_evidence_eligible: false`,
-`execution_authorized: false`. New per-source fields: `kind`, and for the new kind `schema_key`,
-`schema_value`, `raw_exclusion_field`, `collection_clock_field`, `availability_clock` and `eligibility`
-(a field the document must equal to be eligible, or `null`).
+Every source keeps `research_context_eligible: true`, `candidate_evidence_eligible: false` and
+`execution_authorized: false`.
 
 | id | kind | path | evidence_status | collection_only | subject |
 |---|---|---|---|---|---|
@@ -55,36 +77,58 @@ Every source keeps `research_context_eligible: true`, `candidate_evidence_eligib
 | alpha_synthesis | `RUN_LATEST` | `automation_intelligence/agent_fabric/alpha_synthesis/latest.json` | HISTORICAL_RESEARCH_EVIDENCE | false | aion |
 | apex_council | `RUN_LATEST` | `automation_intelligence/agent_fabric/apex_council/latest.json` | HISTORICAL_RESEARCH_EVIDENCE | false | apex-omega |
 | flow_microstructure | `RUN_LATEST` | `automation_intelligence/flow/latest.json` | HISTORICAL_COLLECTION_EVIDENCE | true | data |
-| provider_collection | `RESEARCH_CONTEXT_DOCUMENT` | `automation_intelligence/provider_collection_v1/research_context.json` | HISTORICAL_COLLECTION_EVIDENCE | true | data *(Codex to confirm)* |
-| sec_edgar | `RESEARCH_CONTEXT_DOCUMENT` | `automation_intelligence/cl_lab/sec_edgar_research_context.json` | HISTORICAL_COLLECTION_EVIDENCE | true | data *(Codex to confirm)* |
+| provider_collection | `RESEARCH_CONTEXT_DOCUMENT` | `automation_intelligence/provider_collection_v1/research_context.json` | HISTORICAL_COLLECTION_EVIDENCE | true | data |
+| sec_edgar | `RESEARCH_CONTEXT_DOCUMENT` | `automation_intelligence/cl_lab/sec_edgar_research_context.json` | HISTORICAL_COLLECTION_EVIDENCE | true | data |
 
-`RUN_LATEST` sources keep their current `summary_fields` allowlists byte for byte (as in
-`_HISTORICAL_CONTEXT_EXPECTED` at Icarus `b96833c5`) and every current rule, including
-`COLLECTION_ONLY: true` for `flow_microstructure`, whose document does carry it.
+**Decision (Codex):** both new sources use the existing native subject `data`. No alias is added.
+
+`RUN_LATEST` sources keep their current `summary_fields` byte for byte, as in
+`_HISTORICAL_CONTEXT_EXPECTED` at Icarus `b96833c5`. They also keep every current production guard:
+
+- `execution_authorized` false;
+- no `RUN_CORE` or trading execution authority;
+- `COLLECTION_ONLY: true` on the collection source `flow_microstructure`;
+- `RUN_STATUS == RUN_PERSISTED` for an eligible projection.
 
 `RESEARCH_CONTEXT_DOCUMENT` sources:
 
-| id | schema_key → schema_value | raw_exclusion_field (must be `false`) | collection_clock_field | availability_clock | summary_fields |
-|---|---|---|---|---|---|
-| provider_collection | `schema_version` → `icarus-provider-research-context-v1` | `raw_payloads_included` | `snapshot_at_utc` | none declared: collection clock only | `summary`, `providers`, `snapshot_at_utc` |
-| sec_edgar | `schema` → `icarus.sec_edgar.research_context/1` | `raw_documents_included` | `generated_at` | `accepted_at`, per fact | `status`, `filing_rows`, `fact_rows`, `tickers` |
+| id | schema_key → schema_value | raw_exclusion_field (must be `false`) | collection_clock_field | availability_clock | eligibility | summary_fields |
+|---|---|---|---|---|---|---|
+| provider_collection | `schema_version` → `icarus-provider-research-context-v1` | `raw_payloads_included` | `snapshot_at_utc` | `null` (collection clock only) | `null` | `summary`, `providers`, `snapshot_at_utc` |
+| sec_edgar | `schema` → `icarus.sec_edgar.research_context/1` | `raw_documents_included` | `generated_at` | `accepted_at`, per fact | `{"field": "status", "equals": "ok"}` | `status`, `filing_rows`, `fact_rows`, `tickers` |
 
-For this kind, `collection_only: true` is **eligibility metadata in the contract**: it says the document
-is collection evidence. It is **not** a requirement that the document contain a `COLLECTION_ONLY` field.
-A `RESEARCH_CONTEXT_DOCUMENT` that contains any of `RUN_ID`, `RUN_STATUS`, `RUN_CORE` or
-`COLLECTION_ONLY` is rejected as `KIND_CONFUSION`: the producer must never add them, and the consumer
-must not accept a document that looks like both kinds.
+For this kind, `collection_only: true` is **eligibility metadata in the contract**. It is not a field the
+document must contain.
+
+**Forbidden keys on the new kind:** a `RESEARCH_CONTEXT_DOCUMENT` that contains `COLLECTION_ONLY`, or
+**any** key starting with `RUN_`, is rejected as `KIND_CONFUSION`. The producer never adds them.
 
 ## 4. Contract v2 (`historical_context` block)
 
-Unchanged keys keep their current values: `mode`, the five authority flags, `truth_contract`,
-`source_artifact_blob_required`, `artifact_id_sha256_required`, `packet_projection_verification_required`.
-Added:
+**Frozen head.** These keys must equal today's values exactly:
+
+- `mode`;
+- the five authority flags;
+- the six `truth_contract` invariants;
+- `source_artifact_blob_required`, `artifact_id_sha256_required` and
+  `packet_projection_verification_required`.
+
+`contract_version: 2` is added. Weakening any head value is `AUTHORITY_EXPANSION`, because a weaker
+verification requirement widens what is accepted.
+
+**Frozen sources.** Each source entry must equal its frozen entry exactly:
+
+- the four legacy entries as today, plus `"kind": "RUN_LATEST"`;
+- the two new entries as below, where `causal_timestamp` is replaced by `availability_clock`.
+
+An entry that differs in any field is `CONTRACT_SOURCE_SET_MISMATCH`. That includes removing an
+`eligibility` rule. The exception is a widening flag (`candidate_evidence_eligible`,
+`execution_authorized` or `raw_payloads_eligible` set to true), which is `AUTHORITY_EXPANSION`.
 
 ```json
 "contract_version": 2,
 "sources": [
-  {"id": "robustness_guardian", "kind": "RUN_LATEST", "...": "current fields unchanged"},
+  {"id": "robustness_guardian", "kind": "RUN_LATEST", "...": "today's fields unchanged"},
   {"id": "provider_collection", "kind": "RESEARCH_CONTEXT_DOCUMENT",
    "path": "automation_intelligence/provider_collection_v1/research_context.json",
    "evidence_status": "HISTORICAL_COLLECTION_EVIDENCE", "research_context_eligible": true,
@@ -92,8 +136,7 @@ Added:
    "schema_key": "schema_version", "schema_value": "icarus-provider-research-context-v1",
    "raw_exclusion_field": "raw_payloads_included", "collection_clock_field": "snapshot_at_utc",
    "availability_clock": null, "eligibility": null,
-   "summary_fields": ["summary", "providers", "snapshot_at_utc"],
-   "execution_authorized": false},
+   "summary_fields": ["summary", "providers", "snapshot_at_utc"], "execution_authorized": false},
   {"id": "sec_edgar", "kind": "RESEARCH_CONTEXT_DOCUMENT",
    "path": "automation_intelligence/cl_lab/sec_edgar_research_context.json",
    "evidence_status": "HISTORICAL_COLLECTION_EVIDENCE", "research_context_eligible": true,
@@ -101,18 +144,15 @@ Added:
    "schema_key": "schema", "schema_value": "icarus.sec_edgar.research_context/1",
    "raw_exclusion_field": "raw_documents_included", "collection_clock_field": "generated_at",
    "availability_clock": "accepted_at", "eligibility": {"field": "status", "equals": "ok"},
-   "summary_fields": ["status", "filing_rows", "fact_rows", "tickers"],
-   "execution_authorized": false}
+   "summary_fields": ["status", "filing_rows", "fact_rows", "tickers"], "execution_authorized": false}
 ]
 ```
-
-The existing `causal_timestamp: "accepted_at"` key on `sec_edgar` is replaced by `availability_clock`.
 
 ## 5. Packet artifacts
 
 `RUN_LATEST` artifacts are exactly today's `HISTORICAL_LATEST` artifacts, unchanged.
 
-A `RESEARCH_CONTEXT_DOCUMENT` artifact:
+A `RESEARCH_CONTEXT_DOCUMENT` artifact has **exactly** these fields, no more and no fewer:
 
 ```json
 {
@@ -141,122 +181,176 @@ A `RESEARCH_CONTEXT_DOCUMENT` artifact:
 }
 ```
 
-Canonical JSON is `json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False)` in UTF-8,
-the form both repositories already use. The packet carries a digest of the allowlisted fields, not the
-fields themselves: the consumer reads the values from the document at the pinned blob, so the packet
-stays small and cannot disagree with its source.
+Canonical JSON is `json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False)` in UTF-8.
+The packet carries a digest of the allowlisted fields, not the fields themselves: the consumer reads the
+values from the document at the pinned blob. Artifacts are sorted by `(lane, run_id or "")`, as today.
 
-Artifacts are sorted by `(lane, run_id or "")`, as today.
+## 6. Checks, in frozen order
 
-## 6. Consumer verification for a `RESEARCH_CONTEXT_DOCUMENT` artifact
+The first failing check gives the reason code. Missing, naive and malformed values are deterministic
+rejections, never exceptions. A clock is valid only as a timezone-aware ISO-8601 string.
 
-The consumer has two paths today, and both stay:
+**Contract (both paths):**
 
-- **Packet witness verification:** every artifact in the packet is checked against the document at the
-  packet's `source_commit`. All steps below apply. Any failure fails that cycle's historical-packet check
-  with the reason code shown, and nothing is credited from that packet.
-- **Live ingest from Engine `main`:** each declared document is fetched, validated and journaled. Steps
-  5, 6, 7 and 10 apply to it as well. A per-source failure is reported and makes the status `degraded`,
-  as today.
+| Step | Check | Code |
+|---|---|---|
+| C1 | `contract_version` absent, or the integer `2` | `UNSUPPORTED_CONTRACT_VERSION` |
+| C2 | source ids: exactly the legacy four (no version) | `UNDECLARED_MODERN_CONTRACT` |
+| C2 | source ids: exactly the six (v2); any malformed `sources` | `CONTRACT_SOURCE_SET_MISMATCH` |
+| C3 | frozen head (§4) | `AUTHORITY_EXPANSION` |
+| C4 | every source equals its frozen entry (§4); a widening flag is `AUTHORITY_EXPANSION` | `CONTRACT_SOURCE_SET_MISMATCH` |
 
-1. The `lane` is a declared source, seen once (`UNKNOWN_SOURCE`, `DUPLICATE_SOURCE`). After all
-   artifacts, every declared source has one (`MISSING_SOURCE`: no partial ingest).
-2. `artifact_kind`, `path`, `evidence_status` and every flag equal the contract and §5
-   (`ARTIFACT_FIELD_MISMATCH`); `run_id` and `run_status` are null (`KIND_CONFUSION`).
-3. `artifact_id` recomputes (`ARTIFACT_ID_MISMATCH`) and is unique in the packet.
-4. Fetch the document at the packet's `source_commit`. Its Git blob SHA equals
-   `source_artifact_blob_sha`, both from the API metadata and recomputed from the bytes
-   (`BLOB_WITNESS_MISMATCH`).
-5. The document is a JSON object whose `schema_key` value equals `schema_value`, in the contract and the
-   artifact (`SCHEMA_MISMATCH`).
-6. Document authority: `authority == "RESEARCH_CONTEXT_ONLY"`; `execution_authorized`,
-   `production_decision_authorized` and `automatic_model_promotion` all `false`; `raw_exclusion_field`
-   is `false` (`AUTHORITY_EXPANSION`). No `RUN_*` or `COLLECTION_ONLY` key (`KIND_CONFUSION`).
-7. When the source declares `eligibility` (today only `sec_edgar`: `status == "ok"`), the document
-   meets it; otherwise it is not eligible research context (`SOURCE_NOT_ELIGIBLE`).
-8. Recompute §5 `summary` and `clocks` from the document; they equal the artifact's
-   (`PROJECTION_MISMATCH`).
-9. Clocks: `collected_at` parses as timezone-aware ISO-8601 and is not later than packet `observed_at` +
-   300 s (`FUTURE_SOURCE_CLOCK`). The packet itself keeps the existing 1,800 s age and 300 s future
-   bounds (`STALE_PACKET`, `FUTURE_PACKET`). An old `collected_at` is history, not an error; the consumer
-   records its age.
-10. The journal summary built from `summary_fields` stays within the existing 65,536-byte bound
-    (`SUMMARY_TOO_LARGE`). The producer keeps each document's allowlisted fields under 32,768 bytes and
-    tests it, so growth fails on the producer side first.
+**Packet acceptance:**
 
-The availability clock is a rule for any later research use, not a packet check: a SEC fact is usable
-only from its `accepted_at`; report and period-end dates never grant earlier availability. Provider
-context declares no availability clock, so only its collection clock may be used, and nothing in it may
-be treated as known before `collected_at`.
+| Step | Check | Code |
+|---|---|---|
+| P1 | packet version matches the contract (§2) | `PACKET_VERSION_MISMATCH` |
+| P2 | `observed_at` is a valid clock | `INVALID_PACKET_CLOCK` |
+| P3 | packet age ≤ 1,800 s and not more than 300 s in the future | `STALE_PACKET`, `FUTURE_PACKET` |
+| P4 | each artifact: an object with a declared, unseen `lane` and a unique `artifact_id`, then the per-kind steps below | `ARTIFACT_FIELD_MISMATCH`, `UNKNOWN_SOURCE`, `DUPLICATE_SOURCE`, `ARTIFACT_ID_MISMATCH` |
+| P5 | every declared source has an artifact | `MISSING_SOURCE` |
 
-## 7. Replay and idempotency
+**Per artifact, `RESEARCH_CONTEXT_DOCUMENT`:**
 
-- Today the consumer deduplicates historical rows by the document's Git blob SHA
-  (`processed_historical_blob_shas`, last 1,000). v2 keeps that. An unchanged document, whether seen
-  again live or through a new packet, writes **zero** new rows. Success means six validated projections,
-  not six new rows.
-- A changed document (new blob) writes one new row for that source.
+| Step | Check | Code |
+|---|---|---|
+| D1 | exactly the §5 field set | `ARTIFACT_FIELD_MISMATCH` |
+| D2 | `artifact_kind`, `path`, `evidence_status`, `research_context_eligible: true` | `ARTIFACT_FIELD_MISMATCH` |
+| D3 | `candidate_evidence_eligible` and `execution_authorized` both false | `AUTHORITY_EXPANSION` |
+| D4 | `run_id` and `run_status` null | `KIND_CONFUSION` |
+| D5 | `artifact_id` recomputes | `ARTIFACT_ID_MISMATCH` |
+| D6 | the document at `source_commit` exists, and its Git blob SHA equals `source_artifact_blob_sha` (API metadata and recomputed bytes) | `BLOB_WITNESS_MISMATCH` |
+| D7 | the document parses as a JSON object; its `schema_key` value and the artifact's `schema_value` both equal the contract's | `SCHEMA_MISMATCH` |
+| D8 | `authority == "RESEARCH_CONTEXT_ONLY"`; `execution_authorized`, `production_decision_authorized`, `automatic_model_promotion` and `raw_exclusion_field` all false | `AUTHORITY_EXPANSION` |
+| D9 | no `RUN_*` key and no `COLLECTION_ONLY` | `KIND_CONFUSION` |
+| D10 | the `eligibility` rule, when declared | `SOURCE_NOT_ELIGIBLE` |
+| D11 | the collection clock is valid | `INVALID_SOURCE_CLOCK` |
+| D12 | the recomputed §5 `summary` and `clocks` equal the artifact's | `PROJECTION_MISMATCH` |
+| D13 | `collected_at` ≤ packet `observed_at` + 300 s | `FUTURE_SOURCE_CLOCK` |
+| D14 | the canonical JSON of the allowlisted fields ≤ 65,536 bytes | `SUMMARY_TOO_LARGE` |
+
+**Per artifact, `RUN_LATEST`:**
+
+| Step | Check | Code |
+|---|---|---|
+| L1 | `artifact_kind == HISTORICAL_LATEST` and the contract path | `ARTIFACT_FIELD_MISMATCH` |
+| L2 | `candidate_evidence_eligible` and `execution_authorized` both false | `AUTHORITY_EXPANSION` |
+| L3 | `artifact_id` recomputes | `ARTIFACT_ID_MISMATCH` |
+| L4 | blob witness, as D6 | `BLOB_WITNESS_MISMATCH` |
+| L5 | the document parses as a JSON object | `SCHEMA_MISMATCH` |
+| L6 | no execution or trading authority in the document or its `RUN_CORE` | `AUTHORITY_EXPANSION` |
+| L6 | a collection-only source carries `COLLECTION_ONLY: true` | `SOURCE_NOT_ELIGIBLE` |
+| L7 | the artifact equals today's projection of the document | `PROJECTION_MISMATCH` |
+| L8 | `run_status == RUN_PERSISTED`, the contract's `evidence_status`, `research_context_eligible: true` | `SOURCE_NOT_ELIGIBLE` |
+
+**Live ingest.** After C1–C4, each declared source gets its own outcome:
+
+- `RESEARCH_CONTEXT_DOCUMENT`: D7–D11; then `collected_at` ≤ live sync clock + 300 s
+  (`FUTURE_SOURCE_CLOCK`); then D14.
+- `RUN_LATEST`: L5–L6.
+- A missing document is `MISSING_SOURCE`.
+
+An old `collected_at` is history, not an error: old sources stay eligible, and the consumer records their
+age. A source that fails is not journaled. Other sources are unaffected (§1).
+
+**Availability, for later research use:**
+
+- A SEC fact is usable only from its `accepted_at`; report and period-end dates never grant earlier
+  availability.
+- Provider context declares no availability clock. Only its collection clock applies, and nothing in it
+  is known before `collected_at`.
+
+**Decision (Codex):** the 21 reason codes above are frozen, with their scalar types and this precedence:
+the original nineteen plus `INVALID_SOURCE_CLOCK` and `INVALID_PACKET_CLOCK`. Malformed JSON is
+`SCHEMA_MISMATCH`.
+
+## 7. Replay, deduplication and what success means
+
+- **Live journal rows** are deduplicated by the document's Git blob SHA. The consumer keeps the processed
+  set as `sorted(processed)[-1000:]`, the lexicographically last 1,000 SHAs. That bounds memory. It is not
+  a chronological LRU and not an unbounded replay guarantee.
+- An unchanged document writes **zero** new rows. A changed document (new blob) writes one row for that
+  source.
+- **Success** for a scheduled six-source acceptance means six validated packet projections in the receipt.
+  It never requires six newly inserted journal rows.
 - `LIVE_SOURCE_ADVANCED` (main moved past the packet's source commit) stays informational, as today.
 
 ## 8. Authority (unchanged)
 
-`mode: RESEARCH_CONTEXT_ONLY`. No candidate evidence, no automatic candidate creation, no model
-promotion, no production decision, no execution authority, no raw payloads or raw documents. Foundry and
-evaluator are never bypassed. Nothing in v2 widens freshness bounds or changes any schedule.
+- `mode: RESEARCH_CONTEXT_ONLY`.
+- Not allowed: candidate evidence, automatic candidate creation, model promotion, a production decision,
+  execution authority, raw payloads or raw documents.
+- Foundry and evaluator are never bypassed.
+- Limits stay: packet age 1,800 s, future bound 300 s, finite bounded projections, every authority flag
+  false.
+- Nothing here changes a schedule.
 
 ## 9. Fixtures
 
 Engine `tests/fixtures/federation_v2/` holds **labeled test artifacts**: synthetic documents only, no
 vendor rows, never delivery evidence.
 
-- `build_fixtures.py` writes everything below. Its `reference_verify` applies §2 and §6 in order and
-  exists to prove that each negative case fails for exactly its declared reason. RUN_LATEST artifacts
-  come from today's exporter function (`_historical_artifact`), so legacy fixtures equal today's packets.
-  The production exporter, written after approval, must produce the same artifacts from the same
-  documents.
-- `cases/<name>/` (26 cases), each self-contained:
-  - `contract_historical_context.json`: the contract block;
-  - `packet_block.json`: the part of the packet J01 governs (`source_commit`, `observed_at`,
-    `historical_context_version` when present, `historical_artifacts`);
-  - `sources/<path>`: the documents as they exist at that `source_commit`;
-  - `expected.json`: `ACCEPT` or one reason code, plus the consumer clock to check with.
-- Cases: `accept_legacy4`, `accept_modern6`, and one or more cases for every reason code in §2 and §6,
-  including today's contract (`undeclared_modern_contract`), partial five (`missing_source`), invented
-  `RUN_PERSISTED` (`artifact_kind_confusion`), and a legacy field added to a new-kind document
-  (`document_kind_confusion`).
-- `MANIFEST.json`: the SHA-256 of every case file, the generator's SHA-256, each case's expected outcome,
-  and the label.
+- **`build_fixtures.py`** writes everything below. Its reference checks apply §6 in its frozen order:
+  `reference_verify` for packet acceptance and `reference_live_verify` for live ingest. They exist to prove
+  that each negative case fails for exactly its declared reason. RUN_LATEST artifacts come from today's
+  exporter function (`_historical_artifact`). The production exporter, written after approval, must produce
+  the same artifacts from the same documents.
+- **`cases/<name>/`** holds 51 cases: 45 packet cases and 6 live-ingest cases. Each is self-contained:
+  - `contract_historical_context.json`;
+  - `packet_block.json` (packet cases only);
+  - `sources/<path>`;
+  - `expected.json`: `"path": "packet"` with one `expect` and `consumer_now`, or `"path": "live"` with
+    `expect_by_source` and `live_now`.
+- **Coverage:** both accept shapes, every reason code on the packet path, and the live path's clock,
+  schema, eligibility and contract rejections. The cases include today's contract, partial five, an
+  invented `RUN_PERSISTED`, legacy and `RUN_*` keys on new-kind documents, weakened head and witness
+  flags, a removed eligibility rule, `true` and `2.0` versions, missing and extra artifact fields, a legacy
+  flow source without `COLLECTION_ONLY`, a `FAILED` run status, and malformed JSON.
+- **`MANIFEST.json`:** the SHA-256 of every case file, the generator's SHA-256, each case's expected
+  outcome, and the label.
 
-Engine `tests/test_federation_v2_fixtures.py` regenerates the fixtures and requires byte equality, so they
-cannot drift. It also checks the manifest hashes and requires every case to end in its declared outcome.
+Engine `tests/test_federation_v2_fixtures.py` regenerates the fixtures and requires byte equality. It
+also checks the manifest, requires every case to end in its declared outcome, and checks that malformed
+inputs reject instead of raising.
 
-Icarus vendors an exact copy of `cases/` and `MANIFEST.json`, pinned by the Engine commit that holds
-them, and checks the manifest hashes before use. Consumer tests map `(source_commit, path)` to the case's
-`sources/` bytes and merge the contract block and packet block into the consumer's own full contract and
-packet fixtures. No network and no moving `main`.
+Icarus vendors an exact copy of `cases/` and `MANIFEST.json`, pinned by the Engine commit that holds them,
+and checks the manifest hashes before use. Consumer tests:
+
+- map `(source_commit, path)` to the case's `sources/` bytes;
+- merge the contract block and the packet block into the consumer's own full fixtures;
+- run live cases through the live-ingest path.
+
+No network and no moving `main`.
 
 ## 10. Order, acceptance and rollback
 
 1. This specification and the fixtures merge in Engine after Codex approves them.
-2. **Consumer (Codex, Icarus):** accepts legacy v1 and complete v2, rejects every negative fixture with
-   its reason code. Claude reviews it. The gate remains red, correctly, because the current contract is
-   `UNDECLARED_MODERN_CONTRACT`.
-3. **Producer (Claude, Engine):** contract becomes v2 (§4); the exporter emits the two
-   `RESEARCH_CONTEXT_DOCUMENT` artifacts and `historical_context_version: 2`; the 32,768-byte producer
-   guard; its output for the fixture sources equals the fixture packets. Codex reviews it.
+2. **Consumer (Codex, Icarus):** legacy v1 and complete v2 pass, and every negative fixture is rejected
+   with its reason code on its path. Claude reviews it. The gate remains red, correctly: the current
+   contract is `UNDECLARED_MODERN_CONTRACT`.
+3. **Producer (Claude, Engine):**
+   - the contract becomes v2 (§4);
+   - the exporter emits the two `RESEARCH_CONTEXT_DOCUMENT` artifacts and
+     `historical_context_version: 2`;
+   - the producer keeps each document's allowlisted fields under 32,768 bytes, and tests it;
+   - its output for the fixture sources equals the fixture packets.
+
+   Codex reviews it.
 4. **Acceptance:**
-   - an isolated export-to-import readback at pinned SHAs: Engine exports at commit X, and the Icarus
-     consumer at commit Y verifies six projections;
-   - then the next genuine scheduled `live-engine-federation-gate` run is green, with six verified
-     sources, and its receipts are inspected;
-   - a test-only packet is not delivery evidence.
-5. **Rollback:** revert the producer PR. That restores the prior contract and exporter, and the gate
-   returns to its prior, truthfully red state. The consumer is never weakened to make an incomplete
-   packet green.
+   - an isolated export-to-import readback at pinned SHAs;
+   - then the next genuine scheduled `live-engine-federation-gate` run with a six-source verified packet
+     receipt, whose receipts are inspected.
 
-## 11. Decisions for Codex
+   Zero new journal rows is valid when the documents did not change (§7). A test-only packet is not
+   delivery evidence.
+5. **Rollback:** revert the producer PR. That restores the prior contract and exporter and the gate's prior,
+   truthfully red state. The consumer is never weakened to make an incomplete packet green.
 
-1. Packet `schema_version` stays v1, with `historical_context_version: 2` (§2).
-2. `subject` for the two new sources (§3).
-3. The reason-code names in §2 and §6, which both test suites will assert.
-4. Anything in the consumer's current flow this document misdescribes.
+## 11. Decisions (agreed by Codex on 2026-10-11)
+
+1. The packet `schema_version` stays v1; modern packets add `historical_context_version: 2`; absent means
+   legacy only under the legacy contract.
+2. The subject of both new sources is `data`.
+3. 21 frozen reason codes, with integer-only version types and the §6 precedence.
+4. The consumer's real flow (live ingest before and independent of packet verification; a lexicographic
+   1,000-entry blob cache) is described in §1 and §7.

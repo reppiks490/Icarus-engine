@@ -1,0 +1,153 @@
+{
+ "artifact_id_sha256_required": true,
+ "automatic_candidate_creation": false,
+ "automatic_model_promotion": false,
+ "contract_version": 2,
+ "direct_candidate_evidence": false,
+ "execution_authorized": false,
+ "mode": "RESEARCH_CONTEXT_ONLY",
+ "packet_projection_verification_required": true,
+ "production_decision_authorized": false,
+ "source_artifact_blob_required": true,
+ "sources": [
+  {
+   "candidate_evidence_eligible": false,
+   "collection_only": false,
+   "evidence_status": "HISTORICAL_RESEARCH_EVIDENCE",
+   "execution_authorized": false,
+   "id": "alpha_synthesis",
+   "kind": "RUN_LATEST",
+   "path": "automation_intelligence/agent_fabric/alpha_synthesis/latest.json",
+   "research_context_eligible": true,
+   "summary_fields": [
+    "RUN_CORE.evidence_dataset_identity",
+    "RUN_CORE.findings",
+    "RUN_CORE.built_changes",
+    "RUN_CORE.unresolved_risks",
+    "RUN_CORE.NEXT",
+    "RUN_CORE_SHA256",
+    "history_blob_sha",
+    "ledger_blob_sha"
+   ]
+  },
+  {
+   "candidate_evidence_eligible": false,
+   "collection_only": false,
+   "evidence_status": "HISTORICAL_RESEARCH_EVIDENCE",
+   "execution_authorized": false,
+   "id": "apex_council",
+   "kind": "RUN_LATEST",
+   "path": "automation_intelligence/agent_fabric/apex_council/latest.json",
+   "research_context_eligible": true,
+   "summary_fields": [
+    "RUN_CORE.specialist_states_consumed",
+    "RUN_CORE.evidence_contract",
+    "RUN_CORE.decision_contract",
+    "RUN_CORE.disagreements_collisions",
+    "RUN_CORE.built_changes",
+    "RUN_CORE.NEXT",
+    "RUN_CORE.base_main_sha",
+    "RUN_CORE.final_main_sha",
+    "RUN_CORE_SHA256",
+    "history_blob_sha",
+    "ledger_blob_sha"
+   ]
+  },
+  {
+   "candidate_evidence_eligible": false,
+   "collection_only": true,
+   "evidence_status": "HISTORICAL_COLLECTION_EVIDENCE",
+   "execution_authorized": false,
+   "id": "flow_microstructure",
+   "kind": "RUN_LATEST",
+   "path": "automation_intelligence/flow/latest.json",
+   "research_context_eligible": true,
+   "summary_fields": [
+    "NET_NEW_DELTA",
+    "observations",
+    "PROVIDER_CONFLICTS",
+    "DATA_GAPS",
+    "source_provenance",
+    "quality_notes",
+    "history_blob_sha"
+   ]
+  },
+  {
+   "candidate_evidence_eligible": false,
+   "collection_only": false,
+   "evidence_status": "HISTORICAL_RESEARCH_EVIDENCE",
+   "execution_authorized": false,
+   "id": "robustness_guardian",
+   "kind": "RUN_LATEST",
+   "path": "automation_intelligence/agent_fabric/robustness_guardian/latest.json",
+   "research_context_eligible": true,
+   "summary_fields": [
+    "RUN_CORE.findings",
+    "RUN_CORE.built_changes",
+    "RUN_CORE.unresolved_risks",
+    "RUN_CORE.NEXT",
+    "RUN_CORE.test_state",
+    "RUN_CORE.base_main_sha",
+    "RUN_CORE.final_main_sha",
+    "RUN_CORE_SHA256",
+    "history_blob_sha"
+   ]
+  },
+  {
+   "availability_clock": null,
+   "candidate_evidence_eligible": false,
+   "collection_clock_field": "snapshot_at_utc",
+   "collection_only": true,
+   "eligibility": null,
+   "evidence_status": "HISTORICAL_COLLECTION_EVIDENCE",
+   "execution_authorized": false,
+   "id": "provider_collection",
+   "kind": "RESEARCH_CONTEXT_DOCUMENT",
+   "path": "automation_intelligence/provider_collection_v1/research_context.json",
+   "raw_exclusion_field": "raw_payloads_included",
+   "raw_payloads_eligible": false,
+   "research_context_eligible": true,
+   "schema_key": "schema_version",
+   "schema_value": "icarus-provider-research-context-v1",
+   "summary_fields": [
+    "summary",
+    "providers",
+    "snapshot_at_utc"
+   ]
+  },
+  {
+   "availability_clock": "accepted_at",
+   "candidate_evidence_eligible": false,
+   "collection_clock_field": "generated_at",
+   "collection_only": true,
+   "eligibility": {
+    "equals": "ok",
+    "field": "status"
+   },
+   "evidence_status": "HISTORICAL_COLLECTION_EVIDENCE",
+   "execution_authorized": false,
+   "id": "sec_edgar",
+   "kind": "RESEARCH_CONTEXT_DOCUMENT",
+   "path": "automation_intelligence/cl_lab/sec_edgar_research_context.json",
+   "raw_exclusion_field": "raw_documents_included",
+   "raw_payloads_eligible": false,
+   "research_context_eligible": true,
+   "schema_key": "schema",
+   "schema_value": "icarus.sec_edgar.research_context/1",
+   "summary_fields": [
+    "status",
+    "filing_rows",
+    "fact_rows",
+    "tickers"
+   ]
+  }
+ ],
+ "truth_contract": {
+  "foreign_repository_state_is_context_not_native_truth": true,
+  "historical_context_never_bypasses_evaluator": true,
+  "historical_context_never_bypasses_foundry": false,
+  "historical_context_never_grants_execution_authority": true,
+  "historical_context_never_grants_shadow_qualification": true,
+  "historical_packet_projection_is_source_derived": true
+ }
+}

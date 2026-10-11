@@ -42,7 +42,7 @@ import os
 import re
 import zlib
 from datetime import datetime, timezone
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 VAULT_DIR = Path("data/depth_vault")
 SCHEMA = "icarus.depth_vault/1"
@@ -53,6 +53,7 @@ ORIGINS = ("new_acquisition", "preserved_original")
 # features/<account>/<schema>/<root>/<market day>.csv.gz, as written by the depth and sweep lanes.
 _FEATURE = re.compile(r"^features/(?P<account>\w+)/(?P<schema>\w+)/(?P<root>\w+)/(?P<day>\d{4}-\d{2}-\d{2})\.csv\.gz$")
 _DAY = re.compile(r"(\d{4}-\d{2}-\d{2})")
+_SHA256 = re.compile(r"^[0-9a-f]{64}$")
 
 
 def _key(env) -> tuple[bytes, str]:
@@ -121,6 +122,29 @@ def seal(caches: dict[str, Path], vault: Path = VAULT_DIR, env=os.environ, suffi
     return {"added_objects": added, "files": total, "key_source": key_source}
 
 
+def _object_name(meta: dict) -> str:
+    digest = str(meta.get("sha256") or "")
+    if not _SHA256.fullmatch(digest):
+        raise ValueError(f"vault manifest hash is malformed: {digest[:80]!r}")
+    return f"{digest}.bin"
+
+
+def _safe_dest(root: Path, rel: str) -> Path:
+    """Where ``rel`` restores inside ``root``; refuses any path that would land outside it.
+
+    Rejects absolute paths, ``..`` and backslashes, then resolves the target (following any symlinks
+    already on disk) and requires it to stay under the resolved cache root.
+    """
+    pure = PurePosixPath(rel)
+    if not rel or "\\" in rel or pure.is_absolute() or ".." in pure.parts:
+        raise ValueError(f"vault manifest path escapes its cache: {rel!r}")
+    base = Path(root).resolve()
+    target = (Path(root) / pure).resolve()
+    if target != base and base not in target.parents:
+        raise ValueError(f"vault manifest path escapes its cache: {rel!r}")
+    return Path(root) / pure
+
+
 def restore(caches: dict[str, Path], vault: Path = VAULT_DIR, env=os.environ) -> dict:
     """Write every vaulted file missing from ``caches``; a present file is never overwritten."""
     from cryptography.hazmat.primitives.ciphers.aead import AESGCM
@@ -138,11 +162,11 @@ def restore(caches: dict[str, Path], vault: Path = VAULT_DIR, env=os.environ) ->
             continue
         root = Path(caches[name])
         for rel, meta in entries.items():
-            dest = root / rel
+            dest = _safe_dest(root, rel)
             if dest.exists():
                 present += 1
                 continue
-            blob = (vault / "objects" / f"{meta['sha256']}.bin").read_bytes()
+            blob = (vault / "objects" / _object_name(meta)).read_bytes()
             plain = zlib.decompress(aead.decrypt(blob[:12], blob[12:], meta["sha256"].encode()))
             if hashlib.sha256(plain).hexdigest() != meta["sha256"]:
                 raise ValueError(f"vault object for {name}/{rel} does not match its manifest hash")
@@ -188,10 +212,13 @@ def _purchase(rel: str, entries) -> tuple[str | None, str]:
     return None, "no ledger entry" if not hits else f"{len(hits)} ledger entries match"
 
 
-def label(vault: Path = VAULT_DIR, ledger_dir: Path = LEDGERS) -> dict:
-    """Write ``origins.json``: one provenance record per vaulted object, from ``sources.json`` and the ledgers."""
+def _build_origins(vault: Path, ledger_dir: Path) -> dict:
+    """The provenance record every vaulted object should carry, from the manifest, ``sources.json`` and the ledgers."""
     manifest = _load_manifest(vault)
-    sources = json.loads((vault / "sources.json").read_text(encoding="utf-8")).get("caches", {})
+    try:
+        sources = json.loads((vault / "sources.json").read_text(encoding="utf-8")).get("caches", {})
+    except (OSError, ValueError):
+        sources = {}
     entries = _ledger_entries(ledger_dir)
     objects, unlabelled = {}, []
     for name, files in sorted(manifest["caches"].items()):
@@ -207,32 +234,51 @@ def label(vault: Path = VAULT_DIR, ledger_dir: Path = LEDGERS) -> dict:
                 "market_day": day.group(1) if day else None,
                 "purchased_at": at, "purchase_evidence": evidence,
             }
-    out = {"schema": "icarus.vault_origins/1", "unlabelled_caches": unlabelled, "objects": objects,
-           "execution_authorized": False}
+    return {"schema": "icarus.vault_origins/1", "unlabelled_caches": unlabelled, "objects": objects,
+            "execution_authorized": False}
+
+
+def label(vault: Path = VAULT_DIR, ledger_dir: Path = LEDGERS) -> dict:
+    """Write ``origins.json``: one provenance record per vaulted object, from ``sources.json`` and the ledgers."""
+    out = _build_origins(vault, ledger_dir)
     (vault / "origins.json").write_text(json.dumps(out, indent=1, sort_keys=True) + "\n", encoding="utf-8")
-    return {"objects": len(objects), "unlabelled_caches": unlabelled,
+    objects = out["objects"]
+    return {"objects": len(objects), "unlabelled_caches": out["unlabelled_caches"],
             "purchased_at_known": sum(1 for o in objects.values() if o["purchased_at"])}
 
 
-def verify(vault: Path = VAULT_DIR, env=os.environ, now: datetime | None = None) -> dict:
-    """Decrypt every manifest object in memory and check hash and label. Writes nothing."""
+def verify(vault: Path = VAULT_DIR, env=os.environ, now: datetime | None = None, ledger_dir: Path = LEDGERS) -> dict:
+    """Decrypt every manifest object in memory and check hash, size and label. Writes nothing.
+
+    A label passes only if it equals, field for field, the record ``label`` would write now from the
+    manifest entry, ``sources.json`` and a uniquely matching ledger entry, and names an allowed origin.
+    """
     from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
     manifest = _load_manifest(vault)
     origins_path = vault / "origins.json"
-    origins = json.loads(origins_path.read_text(encoding="utf-8")).get("objects", {}) if origins_path.exists() else {}
+    try:
+        origins = json.loads(origins_path.read_text(encoding="utf-8")).get("objects", {})
+    except (OSError, ValueError):
+        origins = {}
+    expected = _build_origins(vault, ledger_dir)["objects"]
     key, key_source = _key(env)
     if manifest.get("key_source") not in (None, key_source):
         raise ValueError(f"vault was sealed with {manifest['key_source']}, not {key_source}")
     aead = AESGCM(key)
-    caches, failures, referenced = {}, [], set()
+    caches, failures, mismatches, referenced = {}, [], [], set()
     for name, files in sorted(manifest["caches"].items()):
-        ok = nbytes = unlabelled = 0
+        ok = nbytes = bad_labels = 0
         for rel, meta in sorted(files.items()):
-            referenced.add(meta["sha256"])
-            obj = vault / "objects" / f"{meta['sha256']}.bin"
+            key = f"{name}/{rel}"
+            want, got = expected.get(key) or {}, origins.get(key)
+            if got != want or want.get("origin") not in ORIGINS:
+                bad_labels += 1
+                fields = sorted(k for k in set(want) | set(got or {}) if (got or {}).get(k) != want.get(k))
+                mismatches.append(f"{key}: {', '.join(fields) or 'origin not allowed'}")
             try:
-                blob = obj.read_bytes()
+                referenced.add(meta["sha256"])
+                blob = (vault / "objects" / _object_name(meta)).read_bytes()
                 plain = zlib.decompress(aead.decrypt(blob[:12], blob[12:], meta["sha256"].encode()))
                 if hashlib.sha256(plain).hexdigest() != meta["sha256"] or len(plain) != meta["bytes"]:
                     raise ValueError("hash or size mismatch")
@@ -241,15 +287,15 @@ def verify(vault: Path = VAULT_DIR, env=os.environ, now: datetime | None = None)
                 continue
             ok += 1
             nbytes += len(plain)
-            if (origins.get(f"{name}/{rel}") or {}).get("origin") not in ORIGINS:
-                unlabelled += 1
-        caches[name] = {"files": len(files), "authenticated": ok, "plaintext_bytes": nbytes, "unlabelled": unlabelled}
+        caches[name] = {"files": len(files), "authenticated": ok, "plaintext_bytes": nbytes, "label_mismatches": bad_labels}
+    stale = sorted(set(origins) - set(expected))
+    mismatches += [f"{k}: label for an object the manifest does not hold" for k in stale]
     stored = {p.stem for p in (vault / "objects").glob("*.bin")} if (vault / "objects").is_dir() else set()
-    unlabelled_total = sum(c["unlabelled"] for c in caches.values())
-    verdict = "OK" if not failures and not unlabelled_total else "FAILED"
+    verdict = "OK" if not failures and not mismatches else "FAILED"
     return {"schema": "icarus.vault_verify/1", "verdict": verdict, "key_source": key_source,
             "verified_at": (now or datetime.now(timezone.utc)).isoformat(timespec="seconds"),
             "caches": caches, "failures": failures[:50], "failure_count": len(failures),
+            "label_mismatches": mismatches[:50], "label_mismatch_count": len(mismatches),
             "unreferenced_objects": len(stored - referenced), "plaintext_written": False,
             "execution_authorized": False}
 
@@ -299,10 +345,11 @@ def main(argv=None) -> None:
     elif a.action == "label":
         result = label(a.vault, a.ledgers)
     else:
-        result = verify(a.vault)
+        result = verify(a.vault, ledger_dir=a.ledgers)
         if a.out:
             result["receipt_written"] = write_receipt(a.out, {k: v for k, v in result.items()})
-        print(json.dumps({k: result[k] for k in ("verdict", "caches", "failure_count", "unreferenced_objects")}))
+        print(json.dumps({k: result[k] for k in ("verdict", "caches", "failure_count", "label_mismatch_count",
+                                                 "unreferenced_objects")}))
         if result["verdict"] != "OK":
             raise SystemExit(1)
         return

@@ -157,7 +157,7 @@ def test_verify_authenticates_every_object_without_writing_plaintext(tmp_path):
     _sources(vault, sweep={"origin": "new_acquisition", "provider": "Databento"})
     depth_vault.label(vault, tmp_path / "no-ledgers")
     before = sorted(p.name for p in tmp_path.rglob("*"))
-    receipt = depth_vault.verify(vault, ENV)
+    receipt = depth_vault.verify(vault, ENV, ledger_dir=tmp_path / "no-ledgers")
     assert receipt["verdict"] == "OK" and receipt["caches"]["sweep"]["authenticated"] == 2
     assert receipt["plaintext_written"] is False and sorted(p.name for p in tmp_path.rglob("*")) == before
 
@@ -165,12 +165,13 @@ def test_verify_authenticates_every_object_without_writing_plaintext(tmp_path):
 def test_verify_fails_on_tampering_and_on_unlabelled_objects(tmp_path):
     cache, vault = _cache(tmp_path), tmp_path / "vault"
     depth_vault.seal({"sweep": cache}, vault, ENV)
-    assert depth_vault.verify(vault, ENV)["caches"]["sweep"]["unlabelled"] == 2  # no origins.json yet
+    none = tmp_path / "no-ledgers"
+    assert depth_vault.verify(vault, ENV, ledger_dir=none)["caches"]["sweep"]["label_mismatches"] == 2
     _sources(vault, sweep={"origin": "new_acquisition", "provider": "Databento"})
-    depth_vault.label(vault, tmp_path / "no-ledgers")
+    depth_vault.label(vault, none)
     obj = next((vault / "objects").iterdir())
     obj.write_bytes(obj.read_bytes()[:-1] + bytes([obj.read_bytes()[-1] ^ 1]))
-    receipt = depth_vault.verify(vault, ENV)
+    receipt = depth_vault.verify(vault, ENV, ledger_dir=none)
     assert receipt["verdict"] == "FAILED" and receipt["failure_count"] == 1
     assert receipt["caches"]["sweep"]["authenticated"] == 1
 
@@ -205,3 +206,76 @@ def test_committed_origins_cover_every_vaulted_object():
     want = {f"{c}/{rel}" for c, files in manifest["caches"].items() for rel in files}
     assert want <= set(origins["objects"]) and not origins["unlabelled_caches"]
     assert all(o["origin"] in depth_vault.ORIGINS for o in origins["objects"].values())
+
+
+def test_verify_rejects_any_altered_label_field(tmp_path):
+    cache, vault = _cache(tmp_path), tmp_path / "vault"
+    depth_vault.seal({"sweep": cache}, vault, ENV)
+    _sources(vault, sweep={"origin": "new_acquisition", "provider": "Databento"})
+    ledgers = _ledger(tmp_path, "sweep", "primary",
+                      [{"at": "2026-10-05T15:22:16+00:00", "what": "NQ mbp-10 2026-10-05 13:15-20:15Z"}])
+    depth_vault.label(vault, ledgers)
+    assert depth_vault.verify(vault, ENV, ledger_dir=ledgers)["verdict"] == "OK"
+    good = (vault / "origins.json").read_text()
+    key = "sweep/features/primary/mbp10/nq/2026-10-05.csv.gz"
+    for field, value in [("sha256", "0" * 64), ("bytes", 1), ("provider", "Other"),
+                         ("origin", "preserved_original"), ("purchased_at", "2026-10-06T00:00:00+00:00"),
+                         ("purchase_evidence", "invented")]:
+        doc = json.loads(good)
+        doc["objects"][key][field] = value
+        (vault / "origins.json").write_text(json.dumps(doc))
+        receipt = depth_vault.verify(vault, ENV, ledger_dir=ledgers)
+        assert receipt["verdict"] == "FAILED", field
+        assert receipt["label_mismatches"] == [f"{key}: {field}"], field
+    doc = json.loads(good)
+    doc["objects"]["sweep/not-in-manifest.csv.gz"] = doc["objects"][key]
+    (vault / "origins.json").write_text(json.dumps(doc))
+    assert depth_vault.verify(vault, ENV, ledger_dir=ledgers)["label_mismatch_count"] == 1
+
+
+def _add_entry(vault, cache, rel, sha):
+    manifest = json.loads((vault / "manifest.json").read_text())
+    manifest["caches"][cache][rel] = {"sha256": sha, "bytes": 1}
+    (vault / "manifest.json").write_text(json.dumps(manifest))
+
+
+def test_restore_refuses_paths_that_climb_out_of_the_cache(tmp_path):
+    cache, vault = _cache(tmp_path), tmp_path / "vault"
+    depth_vault.seal({"sweep": cache}, vault, ENV)
+    sha = next((vault / "objects").iterdir()).stem
+    _add_entry(vault, "sweep", "../escape_5m.csv", sha)
+    target = tmp_path / "restore" / "sweep"
+    with pytest.raises(ValueError, match="escapes its cache"):
+        depth_vault.restore({"sweep": target}, vault, ENV)
+    assert not (tmp_path / "restore" / "escape_5m.csv").exists()
+
+
+def test_restore_refuses_symlink_escapes(tmp_path):
+    cache, vault = _cache(tmp_path), tmp_path / "vault"
+    depth_vault.seal({"sweep": cache}, vault, ENV)
+    sha = next((vault / "objects").iterdir()).stem
+    outside, target = tmp_path / "outside", tmp_path / "restore"
+    outside.mkdir()
+    target.mkdir()
+    (target / "sub").symlink_to(outside, target_is_directory=True)
+    _add_entry(vault, "sweep", "sub/x_5m.csv", sha)
+    with pytest.raises(ValueError, match="escapes its cache"):
+        depth_vault.restore({"sweep": target}, vault, ENV)
+    assert not any(outside.iterdir())
+
+
+@pytest.mark.parametrize("rel", ["/abs/x.csv", "a/../../x.csv", "a\\..\\x.csv"])
+def test_restore_refuses_absolute_and_backslash_paths(tmp_path, rel):
+    cache, vault = _cache(tmp_path), tmp_path / "vault"
+    depth_vault.seal({"sweep": cache}, vault, ENV)
+    _add_entry(vault, "sweep", rel, next((vault / "objects").iterdir()).stem)
+    with pytest.raises(ValueError, match="escapes its cache"):
+        depth_vault.restore({"sweep": tmp_path / "restore"}, vault, ENV)
+
+
+def test_malformed_manifest_hash_is_refused(tmp_path):
+    cache, vault = _cache(tmp_path), tmp_path / "vault"
+    depth_vault.seal({"sweep": cache}, vault, ENV)
+    _add_entry(vault, "sweep", "x_5m.csv", "../../manifest")
+    with pytest.raises(ValueError, match="hash is malformed"):
+        depth_vault.restore({"sweep": tmp_path / "restore"}, vault, ENV)

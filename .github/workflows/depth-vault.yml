@@ -88,6 +88,9 @@ jobs:
             # the job before anything is committed.
             python -m tools.depth_vault label
             python -m tools.depth_vault verify --out automation_intelligence/sentinel/vault_verify.json
+            # Restore drill: a full filesystem restore of the panel into the runner's private temp dir,
+            # checked file by file against the manifest. Nothing from it is committed.
+            python -c "import pathlib, tempfile; from tools.asset_panel import ensure_panel; d = pathlib.Path(tempfile.mkdtemp(dir='$RUNNER_TEMP')) / 'panel'; ensure_panel(d); print('panel restore drill ok:', len(list(d.glob('*.csv'))), 'files')"
             # Pre-registered D1 (docs/DEPTH_PREREG_D1.md): aggregate statistics only, no vendor rows.
             python -m cl_lab.depth_test --cache .databento_sweep_cache \
               --out automation_intelligence/cl_lab/depth_d1_latest.json

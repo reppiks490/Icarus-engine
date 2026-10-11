@@ -35,30 +35,36 @@ REPO = Path(__file__).resolve().parent.parent
 
 
 def ensure_panel(root: Path | None = None, vault: Path | None = None, env=None) -> Path:
-    """Make sure data/panel/ holds the CSVs, restoring them from the encrypted vault if needed.
+    """Make data/panel/ hold exactly the vaulted panel, restoring missing files from the vault.
 
     The panel is licensed vendor data in a public repository, so it lives in the vault
-    (tools/depth_vault.py, cache "panel"), not in the tree. A missing panel is an error with
-    instructions, never a silently empty dict: an empty panel would make the cross-asset
-    test look like it ran.
+    (tools/depth_vault.py, cache "panel"), not in the tree. The vault manifest is the
+    inventory: every expected file must be present after restoring and must match its
+    manifest SHA-256. A partial or corrupted panel is an error, never a quietly smaller
+    research universe, and a missing panel is an error with instructions, never an empty
+    dict: either would make the cross-asset test look like it ran.
     """
+    import hashlib
     import os
 
     from tools import depth_vault
 
     root = root or REPO / "data" / "panel"
     vault = vault or REPO / "data" / "depth_vault"
-    if any(root.glob("*_5m.csv")):
-        return root
-    manifest = depth_vault._load_manifest(vault)
-    if not manifest["caches"].get("panel"):
-        raise FileNotFoundError(f"no panel CSVs in {root} and none in the vault")
-    try:
-        depth_vault.restore({"panel": root}, vault, os.environ if env is None else env)
-    except ValueError as ex:
-        raise FileNotFoundError(
-            f"the panel is vaulted, not in the tree ({ex}). Set ICARUS_DATA_ARCHIVE_KEY or "
-            "DATABENTO_API_KEY and run: python -m tools.depth_vault restore --cache panel=data/panel") from ex
+    expected = depth_vault._load_manifest(vault)["caches"].get("panel") or {}
+    if not expected:
+        raise FileNotFoundError(f"the vault holds no panel inventory ({vault}); cannot check {root}")
+    if any(not (root / rel).exists() for rel in expected):
+        try:
+            depth_vault.restore({"panel": root}, vault, os.environ if env is None else env)
+        except ValueError as ex:
+            raise FileNotFoundError(
+                f"the panel is vaulted, not in the tree ({ex}). Set ICARUS_DATA_ARCHIVE_KEY or "
+                "DATABENTO_API_KEY and run: python -m tools.depth_vault restore --cache panel=data/panel") from ex
+    bad = sorted(rel for rel, meta in expected.items()
+                 if hashlib.sha256((root / rel).read_bytes()).hexdigest() != meta["sha256"])
+    if bad:
+        raise ValueError(f"panel files differ from the vault manifest: {bad}. Delete them and restore again.")
     return root
 
 

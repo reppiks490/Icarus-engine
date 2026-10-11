@@ -35,6 +35,21 @@ def rare_model(component_probability=1e-12, joint_probability=1e-12):
 
 
 class SequentialTests(unittest.TestCase):
+    def test_large_constant_utility_preserves_tiny_negative_acquisition_cost(self):
+        m = model()
+        m['prior'] = {'A': .7994044827864234, 'B': 1-.7994044827864234}
+        m['utility'] = {a: {'A': 1e12, 'B': 1e12} for a in m['utility']}
+        first = experiment('left', low=1e-8, high=1e-8)
+        first['likelihood'] = {'A': {'a': .03280200762057717, 'b': 1-.03280200762057717},
+                               'B': {'a': .48088133338888395, 'b': 1-.48088133338888395}}
+        m['experiments'] = [first, experiment('right', .5)]
+        b = xor_bundle()
+        b['likelihood'] = {s: {j: first['likelihood'][s][values['left']]*.5
+                               for j, values in b['outcomes'].items()} for s in m['states']}
+        r = evaluate_sequential(parse_model(m), b, 'left')
+        self.assertAlmostEqual(r['conservative_policy']['net_value'], -1e-8, places=12)
+        self.assertFalse(r['preferred_to_no_acquisition_at_high_cost'])
+
     def test_200_joint_policies_against_decimal_oracle(self):
         rng = random.Random(8453)
         d = lambda x: Decimal(str(x))

@@ -6,6 +6,7 @@ import tempfile
 import threading
 import unittest
 from research_allocation.journal import Journal, JournalError
+from research_allocation.contracts import digest
 from research_allocation.test_decision import model
 
 
@@ -32,7 +33,7 @@ class JournalTests(unittest.TestCase):
         self.now = RECEIVED
         return self.j.observe('r1', 'a', OBSERVED, .1, 'synthetic_utility')
 
-    def after_write_lock_delay(self, operation, stamp, *, intervening=False):
+    def after_write_lock_delay(self, operation, stamp, *, intervening=False, during_delay=None):
         ready, start, attempted, release = (threading.Event() for _ in range(4))
         values, errors = [], []
 
@@ -60,6 +61,8 @@ class JournalTests(unittest.TestCase):
             start.set()
             self.assertTrue(attempted.wait(timeout=5))
             self.now = stamp
+            if during_delay is not None:
+                during_delay()
             self.j.db.execute('COMMIT')
             if intervening:
                 self.j.register('intervening', model(), 'signal', EXPIRES)
@@ -71,6 +74,22 @@ class JournalTests(unittest.TestCase):
             thread.join(timeout=10)
         self.assertFalse(thread.is_alive())
         return values, errors
+
+    def test_registration_freezes_same_model_snapshot_as_prediction(self):
+        raw = model()
+        original = copy.deepcopy(raw)
+        def mutate():
+            raw['prior'].update(A=.6, B=.4)
+            raw['experiments'][0]['cost'].update(low=.8, high=.8)
+        values, errors = self.after_write_lock_delay(
+            lambda j: j.register('r1', raw, 'signal', EXPIRES), RECEIVED,
+            during_delay=mutate)
+        self.assertFalse(errors, errors)
+        payload = values[0]['payload']
+        self.assertEqual(payload['model'], original)
+        self.assertEqual(payload['model_hash'], digest(payload['model']))
+        self.assertEqual(payload['predicted']['cost']['high'],
+                         payload['model']['experiments'][0]['cost']['high'])
 
     def test_registration_expiry_checked_after_write_lock_delay(self):
         values, errors = self.after_write_lock_delay(

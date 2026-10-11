@@ -1,6 +1,6 @@
-# Data health — 2026-10-11 04:50 UTC
+# Data health — 2026-10-11 07:13 UTC
 
-**FAILING** 1 · **BLOCKED** 4 · **STALE** 1 · **DEGRADED** 5 · **OK** 68
+**FAILING** 1 · **BLOCKED** 5 · **STALE** 1 · **DEGRADED** 4 · **OK** 68
 
 ## Needs attention
 
@@ -11,12 +11,12 @@
 | provider:intrinio | BLOCKED | no key reaches the runner |
 | provider:quiver | BLOCKED | no key reaches the runner |
 | provider:tickstream | BLOCKED | no key reaches the runner |
-| workflow:native-five-research.yml | STALE | last success 3.6 h ago (expected within 3 h) |
+| provider:twelve | BLOCKED | BLOCKED |
+| workflow:native-five-research.yml | STALE | last success 6.0 h ago (expected within 3 h) |
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
-| provider:eodhd | DEGRADED | 21291 rows; 29 endpoints denied by plan |
-| provider:fmp | DEGRADED | key present but 0 rows (COLLECTED_PARTIAL) |
-| provider:tiingo | DEGRADED | 1 rows; 4 endpoints denied by plan |
-| provider:twelve | DEGRADED | 72083 rows; 1 endpoints denied by plan |
+| provider:eodhd | DEGRADED | 4455 rows; 29 endpoints denied by plan |
+| provider:fmp | DEGRADED | 6954 rows; 85 endpoints denied by plan |
+| provider:tiingo | DEGRADED | 27379 rows; 4 endpoints denied by plan |
 
 ## Delivering
 

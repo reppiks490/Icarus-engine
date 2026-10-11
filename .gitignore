@@ -18,3 +18,7 @@ databento_corpus/
 
 # Canonical ICARUS Databento corpus layout; keep licensed rows local.
 corpus/databento/
+
+# Licensed vendor bars: the 13-market panel lives encrypted in data/depth_vault (cache "panel").
+# Restore with: python -m tools.depth_vault restore --cache panel=data/panel
+data/panel/*.csv

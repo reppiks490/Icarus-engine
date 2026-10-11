@@ -81,7 +81,8 @@ jobs:
             python -m tools.depth_vault seal \
               --cache corpus=.databento_depth_cache \
               --cache sweep=.databento_sweep_cache
-            # The 13-market panel (preserved original, L1): plain CSV, sealed while it is still in the tree.
+            # The 13-market panel (preserved original, L1) is vaulted and no longer in the tree; this re-seals
+            # only if CSVs are ever placed in data/panel again, and is otherwise a no-op.
             python -m tools.depth_vault seal --cache panel=data/panel --suffix .csv
             # Provenance per object (J02), then decrypt-and-hash every object in memory; a failure stops
             # the job before anything is committed.

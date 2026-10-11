@@ -79,8 +79,14 @@ Vantage, Twelve Data, FMP, Financial Datasets, Coinversa (Hyperliquid), Crypto.c
 Bigdata.com, Quartr, LunarCrush, Neon, Google Sheets, Notion, Tavily, Firecrawl, Exa, Consensus, Wolfram,
 Hugging Face, Keel, CircleCI, Postman.
 
-Paid order-book data: 133 derived feature files sealed in `data/depth_vault/` (encrypted). The 18 NQ
-MBP-10 sweep days bought before 2026-10-10 were lost to cache eviction and are not recoverable.
+Encrypted vault (`data/depth_vault/`, `tools/depth_vault.py`): 133 derived Databento order-book files
+(new acquisitions) and the 13-market 5-minute Polygon panel (a preserved original, removed from the tree
+on 2026-10-11 and restored from the vault on demand). Every object carries an origin label
+(`origins.json`), and every run of `depth-vault.yml` decrypts and hash-checks all of them
+(`automation_intelligence/sentinel/vault_verify.json`). The panel was public in plain text from
+2026-09-20 (branch) and 2026-10-10 (main); history still holds it, and its rights review is S01 (Codex).
+The 18 NQ MBP-10 sweep days bought before 2026-10-10 were lost to cache eviction and are not
+recoverable.
 
 ## 6. Ownership
 

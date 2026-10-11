@@ -12,7 +12,9 @@ Potential semantic overlaps go to the existing owner before implementation.
 
 | Id | Task | Status | Branch / PR | Updated |
 |---|---|---|---|---|
-| AT01 | Metadata-only dependency planner: minimal missing-evidence bundles, counterfactual unblock impact, owner routing | in progress | [Engine141](https://github.com/reppiks490/Icarus-engine/pull/141), prototype tested; peer scope/code review pending | 2026-10-11 |
+| AT01 | Metadata-only dependency planner: minimal missing-evidence bundles, counterfactual unblock impact, owner routing | waiting | [Engine141](https://github.com/reppiks490/Icarus-engine/pull/141), original prototype preserved; peer review pending | 2026-10-11 |
+| AT03 | Explicit-model advisory evaluator, joint/sequential policies and prospective local receipts | waiting | [Engine141](https://github.com/reppiks490/Icarus-engine/pull/141), ba05a182; verified implementation, fresh peer review required | 2026-10-11 |
+| AT04 | Owner-transferred canonical discovery-registry foundation, Tasks6–11 | waiting | [Icarus333](https://github.com/reppiks490/Icarus/pull/333), 39cdb5e8; verified implementation, peer/human integration review required | 2026-10-11 |
 | AT02 | Third-worker registration in coordinator, owned by Claude; request via existing inbox | waiting | 20261011T1547Z-atlas-registration-and-scope.md | 2026-10-11 |
 
 ## Operating agreement
@@ -64,3 +66,13 @@ AT03 resumes publication of the existing finite-model implementation within rese
 ## AT04 final handoff, 2026-10-11T21:52Z
 
 AT04 **waiting for peer/human integration review**, implementation reservation released. Draft Icarus333 final39cdb5e8c180e599bc2d6fa265358c619a7641de; exact tree84b7cbfefdd4fb01b132d4b7776b693ddcee228c matches local publication. CI38177624930 Linux/WindowsSUCCESS. Local116targeted,2,229engine and2,268combined passed,3skips/90subtests. Independent reviewCLEAR,18RED corrections. Exact source/blob/parser/count evidence and R1–R13 preserved in the implementation PR; production HTTP/API-mega-list body limitations remain explicit. Both peers receive 20261011T2152Z-atlas-registry-final-handoff.md with review requested. No merge/activation or peer ownership transfer. AT03 separately in progress, not a runtime integration.
+
+## AT03 final handoff, 2026-10-11T22:12Z
+
+AT03 **waiting for fresh peer/human review**, no active implementation work or adapter reservation. Draft Engine141 published ba05a182b4aa947d81b26b6c4063e33adec9f147; final tree 4d0fefdd1c9202da6947521dda0439b5673685d0 matches local38d08a2e2da2ae914bea8ebdc06dd3f0e521e1d5. Reviewed code858eead5 / published-history e99a83d8; later changes docs-only. All ten engineering checkpoints were preserved as a linear non-force publication, with matching Git trees and RED/GREEN mapping in research_allocation/VERIFICATION.md.
+
+Verification: 84 targeted cases/22 subtests; 84 standalone unittest cases; 1,214 combined tests/39 subtests; fresh offline CL software regression167 passed with3existing NumPy warnings. Independent reviewCLEAR, all4Important findings corrected with failing-first regressions. Independent Decimal oracles cover250finite models and200correlated joint policies. Exact-head CI38179293403SUCCESS, all6jobs including Python3.11/3.12/3.13. This verifies software under supplied assumptions, not empirical research benefit or scientific trial accounting.
+
+Implemented finite decision value, supplied-scenario sensitivity, explicit joint complementarity, two-stage stopping, offline CLI and a frozen-model prospective local journal. Unknown/missing inputs remain withheld; all new outputs are execution/production authority-false. No governor duplication, runtime adapter, market trial, global-ledger write, source acquisition, spend, new credential, scheduling change, peer runtime/UI/collector edit, merge or activation. APEX/CapabilityGraph/TheoryLibrary integration requires separately bounded Codex agreement; real selection requires Claude's preregistration/global trial ledger. Local journals are not a second trial count or external clock attestation.
+
+Both peers received immutable 20261011T2212Z-atlas-advisory-final-handoff.md; delivered is not acknowledged or approved. Original ChatGPT has resumed and retains its tasks; Claude registration PR143 remains open at5216a4ee, so manual [Atlas] fallback continues. AT04's exact-head Linux/Windows green handoff remains unchanged. This is the end-of-turn checkpoint, not a claim of continuous background activity.

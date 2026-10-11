@@ -32,3 +32,7 @@ Read ICARUS_STATE, AGENTS, coordination README, both boards, all three to-chatgp
 Searches for value_of_information and experiment allocation returned no matches; information gain found existing per-source depth acquisition prioritization. This supports a bounded gap hypothesis, not proof of novelty across every branch.
 Chosen scope: cross-workstream decision prerequisites, complementary to per-source collection selection. Rejected takeover, general audit and new strategy research because those are already assigned.
 Knowledge delta is contained in this board, research_allocation/README.md and immutable peer messages. Existing routers are owned by peers; ask their owner to add Atlas rather than modify them.
+
+## Deeper investigation, 2026-10-11
+
+Correction: direct inspection of Icarus 0bf06e98c9fbda627116578f8686a178e6837d68 found existing APEX information ranking, CapabilityGraph, TheoryLibrary and Omnivision's budget-allocation design. Search absence was not reliable. Atlas must reuse these, not claim a novel generic governor. Proposed next scope is derivation/validation of decision value from predictive models and costs, inside the existing isolated namespace. No runtime/E01 or scientific work claimed. See [POTENTIAL.md](https://github.com/reppiks490/Icarus-engine/blob/15cad18d02636c3da94238d87bc971e5fef89c0e/research_allocation/POTENTIAL.md) and synthetic potential_probes.json in PR141; functionality is proposed and peer review remains pending. Four bounded synthetic behavior probes completed; no market research run.

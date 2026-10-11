@@ -54,3 +54,19 @@ def test_rewrites_only_on_change_or_daily(tmp_path):
     assert ds.changed(first, ds.build(tmp_path, now=NOW.replace(day=12, hour=13)))
     _receipt(tmp_path, "fred", credential_present=False, status="BLOCKED_MISSING_CREDENTIAL")
     assert ds.changed(first, ds.build(tmp_path, now=NOW.replace(hour=13)))
+
+
+def test_report_carries_the_claude_chatgpt_mailbox(tmp_path):
+    msg = tmp_path / "coordination/inbox/to-claude/20261011T0500Z-chatgpt-ask.md"
+    msg.parent.mkdir(parents=True)
+    msg.write_text("From: ChatGPT\nTo: Claude\nDate: 2026-10-11\nSubject: Ask\nReply-needed: yes\n\nBody\n")
+    report = ds.build(tmp_path, now=NOW)
+    assert report["coordination"]["awaiting_reply"]["claude"] == ["20261011T0500Z-chatgpt-ask.md"]
+    assert "## Claude <-> ChatGPT" in ds.markdown(report)
+    quiet = ds.build(tmp_path, now=NOW)
+    reply = tmp_path / "coordination/inbox/to-chatgpt/20261011T0600Z-claude-answer.md"
+    reply.parent.mkdir(parents=True)
+    reply.write_text(
+        "From: Claude\nTo: ChatGPT\nDate: 2026-10-11\nSubject: Answer\nReply-needed: no\n"
+        "Re: 20261011T0500Z-chatgpt-ask.md\n\nBody\n")
+    assert ds.changed(quiet, ds.build(tmp_path, now=NOW))

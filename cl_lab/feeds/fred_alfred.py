@@ -43,6 +43,11 @@ def observations(series,key,**params):
 def vintage_dates(series,key):
     return _get("series/vintagedates",key,series_id=series,limit=10000).get("vintage_dates",[])
 
+def fred_today(now):
+    """FRED's calendar date. Its server rejects realtime dates after its own 'today' (US Central), so a
+    UTC date asked for between 00:00 and 05:00 UTC is in FRED's future and every vintage request fails."""
+    return pd.Timestamp(now).tz_convert("America/Chicago").date().isoformat()
+
 def point_in_time(series,key,as_of):
     """Values known on as_of. Never substitute today's revised history."""
     return observations(series,key,realtime_start=as_of,realtime_end=as_of)
@@ -86,10 +91,11 @@ def refresh(cache_dir,key,now=None):
                     (root/"vintage_dates").mkdir(parents=True,exist_ok=True)
                     (root/"vintage_dates"/f"{sid}.json").write_text(json.dumps(vd))
                     ent["vintage_dates"]=len(vd)
-                    pit=point_in_time(sid,key,now.date().isoformat())
+                    as_of=fred_today(now)
+                    pit=point_in_time(sid,key,as_of)
                     if pit.empty:
                         raise RuntimeError("ALFRED point-in-time snapshot is empty")
-                    _write(pit,root/"pit"/f"{sid}__{now.date().isoformat()}.csv.gz")
+                    _write(pit,root/"pit"/f"{sid}__{as_of}.csv.gz")
                     ent["pit_rows"]=len(pit)
                 raw=(root/"current"/f"{sid}.csv.gz").read_bytes()
                 ent["sha256"]=hashlib.sha256(raw).hexdigest()

@@ -36,7 +36,7 @@ All paths are in `reppiks490/Icarus-engine` unless named otherwise.
 | J02 | Source-supported origin labels for every vault object; authenticated decrypt-and-hash verify on a runner | in progress | claude/verification-conversation-ebkh15 | 2026-10-11 |
 | J01-P | J01: specification and labeled fixtures for Codex approval, then the producer/exporter after Codex's consumer | planned | - | 2026-10-11 |
 | K1 | Alpha Vantage and Finnhub in provider collection, with typed outcomes, rights, clocks and readback | planned | - | 2026-10-11 |
-| CL-84 | Compare #84 with current `cl_lab`; propose porting its guards to a fresh CL PR. #84 stays open and intact until Codex agrees | planned | #84 | 2026-10-11 |
+| CL-84 | Port PR 84's useful Databento guards to current `cl_lab` (allowlist, manifest identity, stable corpus fingerprint) as a draft for Codex; comparison sent in #139. PR 84 stays open and intact | in progress | claude/cl84-port | 2026-10-11 |
 | DB4 | `DATABENTO_API_KEY_FOURTH` in a workflow: needs an owner-approved purpose and cap, enforced before requests, and CL-84 resolved | blocked | - | 2026-10-11 |
 | R01-C2 | Win-rate frontier: complete family, selection rule, endpoints, null, multiplicity and cost stress preregistered first | planned | - | 2026-10-11 |
 | R01-P1 | Forward research simulator for registered rules; no broker, no execution | planned | - | 2026-10-11 |

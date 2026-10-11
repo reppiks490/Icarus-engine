@@ -65,3 +65,25 @@ def test_corpus_inspection_is_unavailable_without_configuration(monkeypatch):
     out = corpus.inspect()
     assert out["status"] == "UNAVAILABLE"
     assert out["assets"] == {}
+
+
+def test_corpus_identity_ignores_retrieval_time_and_error_text_but_binds_content(tmp_path):
+    # CL-84 (ported from PR 84): the run fingerprint must not change when only diagnostics change.
+    _write(tmp_path)
+    base = corpus.inspect(tmp_path)
+    assert base["status"] == "VERIFIED"
+    later = json.loads(json.dumps(base))
+    later["generated_at"] = "2099-01-01T00:00:00Z"
+    later["reason"] = "different diagnostic text"
+    for row in later["assets"].values():
+        row["error"] = "transient diagnostic text"
+    assert corpus.identity(base) == corpus.identity(later)
+    assert "generated_at" not in corpus.identity(base)
+
+    changed = json.loads(json.dumps(base))
+    next(iter(changed["assets"].values()))["sha256"] = "b" * 64
+    assert corpus.identity(changed) != corpus.identity(base)
+    fewer = json.loads(json.dumps(base))
+    fewer["verified_assets"] = 0
+    assert corpus.identity(fewer) != corpus.identity(base)
+    assert corpus.identity(None) == {}

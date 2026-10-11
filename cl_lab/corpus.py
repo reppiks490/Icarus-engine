@@ -23,6 +23,26 @@ def _sha256(path: Path) -> str:
     return h.hexdigest()
 
 
+# CL-84 (ported from PR 84, 2026-10-11): what a CL run fingerprint may depend on. Manifest generation
+# time, reasons and error text are left out, so re-reading the same verified bytes is not a new run;
+# content hash, coverage, representation and verification state stay binding.
+IDENTITY_KEYS = ("status", "schema_version", "provider", "dataset", "roll_rule", "minutes",
+                 "timestamp_semantics", "start", "end_exclusive", "verified_assets", "blocked_assets")
+ASSET_IDENTITY_KEYS = ("status", "source_status", "rows", "first", "last", "sha256", "databento_symbol",
+                       "provider_ticker", "tv_symbol")
+
+
+def identity(snapshot: dict) -> dict:
+    """Stable corpus identity for run fingerprinting, from an ``inspect()`` result."""
+    if not isinstance(snapshot, dict):
+        return {}
+    stable = {k: snapshot.get(k) for k in IDENTITY_KEYS if k in snapshot}
+    assets = snapshot.get("assets") if isinstance(snapshot.get("assets"), dict) else {}
+    stable["assets"] = {str(token): {k: row.get(k) for k in ASSET_IDENTITY_KEYS if k in row}
+                        for token, row in sorted(assets.items()) if isinstance(row, dict)}
+    return stable
+
+
 def inspect(path: str | os.PathLike | None = None) -> dict:
     root_text = str(path or os.environ.get(ENV) or "").strip()
     if not root_text:

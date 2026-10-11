@@ -63,6 +63,23 @@ DATABENTO_LANE_OVERRIDES = {
     "DX": dict(account="secondary", start="2025-07-01T00:00:00Z", max_usd=20.0),
 }
 
+# CL-84 (ported from PR 84, 2026-10-11): a configured key authenticates; it does not authorize spend.
+# Only roots named in CL_DATABENTO_ROOTS are requested. Unset or empty means no Databento request at all;
+# an unknown name blocks every Databento feed so a typo can never widen or silently narrow the set.
+DATABENTO_ROOTS_ENV = "CL_DATABENTO_ROOTS"
+DATABENTO_ALL_ROOTS = frozenset(DATABENTO_FUTURES_ROOTS) | {r for r, _, _ in DATABENTO_INTELLIGENCE_FUTURES}
+
+
+def databento_policy() -> tuple[frozenset, str | None]:
+    """Return (roots this refresh may request, policy error or None)."""
+    raw = os.environ.get(DATABENTO_ROOTS_ENV) or ""
+    selected = frozenset(x.strip().upper() for x in raw.split(",") if x.strip())
+    unknown = sorted(selected - DATABENTO_ALL_ROOTS)
+    if unknown:
+        return frozenset(), f"unknown {DATABENTO_ROOTS_ENV}: " + ",".join(unknown)
+    return selected, None
+
+
 FEEDS = [
     dict(name="btcusdt_5m", kind="binance", symbol="BTCUSDT", interval="5m", intraday=True),
     dict(name="ethusdt_5m", kind="binance", symbol="ETHUSDT", interval="5m", intraday=True),
@@ -234,22 +251,34 @@ def refresh_all(cache_dir, only=None, now=None, ledger_dir=None) -> dict:
     os.makedirs(cache_dir, exist_ok=True)
     ledger_dir = ledger_dir or os.environ.get("CL_SPEND_LEDGER_DIR") or databento_budget.LEDGER_DIR
     lanes = {}
-    out = {"schema": "cl_lab.feeds.manifest/1", "generated_at": now.isoformat(), "feeds": {}}
+    selected, policy_error = databento_policy()
+    out = {"schema": "cl_lab.feeds.manifest/1", "generated_at": now.isoformat(), "feeds": {},
+           "databento_policy": {"selected_roots": sorted(selected), "policy_error": policy_error}}
     for feed in FEEDS:
         if only and feed["name"] not in only:
             continue
         path = os.path.join(cache_dir, f"{feed['name']}.csv.gz")
         intraday = feed["intraday"]
+        old = None
         try:
             if feed["kind"] == "databento":
+                old = store.load_frame(path, intraday=True)
                 # Bind credential presence, spend ledger and provider client to one account.
                 feed = {**feed, "account": (
                     feed.get("account") or os.environ.get("CL_DATABENTO_OHLCV_ACCOUNT") or "primary"
                 ).strip().lower()}
                 key_env = databento_feed.api_key_env(feed["account"])
+                if policy_error:
+                    ent = store.manifest_entry(feed["name"], old, "blocked",
+                        error=policy_error, intraday=True)
+                    ent.update(kind="databento", root=feed["root"],
+                               dataset=feed.get("dataset") or "GLBX.MDP3",
+                               research_role=feed.get("research_role"), selected=False,
+                               continuous_symbol=databento_feed.continuous_symbol(feed["root"]))
+                    out["feeds"][feed["name"]] = ent
+                    continue
                 # Missing optional credentials preserve the prior cache as dormant.
                 if not (os.environ.get(key_env) or "").strip():
-                    old = store.load_frame(path, intraday=True)
                     status = "cached" if old is not None and not old.empty else "unconfigured"
                     ent = store.manifest_entry(
                         feed["name"], old, status,
@@ -259,6 +288,17 @@ def refresh_all(cache_dir, only=None, now=None, ledger_dir=None) -> dict:
                     ent.update(kind="databento", root=feed["root"],
                                dataset=feed.get("dataset") or "GLBX.MDP3",
                                research_role=feed.get("research_role"),
+                               continuous_symbol=databento_feed.continuous_symbol(feed["root"]))
+                    out["feeds"][feed["name"]] = ent
+                    continue
+                if feed["root"] not in selected:
+                    # Root was not explicitly allowlisted: no estimate, request or cache write.
+                    status = "cached" if old is not None and not old.empty else "configured_dormant"
+                    ent = store.manifest_entry(feed["name"], old, status,
+                        error=f"root not in {DATABENTO_ROOTS_ENV}", intraday=True)
+                    ent.update(kind="databento", root=feed["root"],
+                               dataset=feed.get("dataset") or "GLBX.MDP3",
+                               research_role=feed.get("research_role"), selected=False,
                                continuous_symbol=databento_feed.continuous_symbol(feed["root"]))
                     out["feeds"][feed["name"]] = ent
                     continue
@@ -291,11 +331,13 @@ def refresh_all(cache_dir, only=None, now=None, ledger_dir=None) -> dict:
                 ent["integrity"] = treasury.panel_integrity(df, feed["dataset"])
             ent["requests"], ent["notes"] = used, notes[:10]
         except Exception as e:  # recorded, never raised: one dead feed must not stop the lab
-            ent = store.manifest_entry(feed["name"], None, "error", error=f"{type(e).__name__}: {e}")
+            # CL-84: a failed paid refresh leaves the cache file untouched, so report what it still holds.
+            kept = old if feed["kind"] == "databento" else None
+            ent = store.manifest_entry(feed["name"], kept, "error", error=f"{type(e).__name__}: {e}")
         ent["kind"] = feed["kind"]
         if feed["kind"] == "databento":
             ent.update(root=feed["root"], dataset=feed.get("dataset") or "GLBX.MDP3",
-                       research_role=feed.get("research_role"),
+                       research_role=feed.get("research_role"), selected=True,
                        continuous_symbol=databento_feed.continuous_symbol(feed["root"]))
         elif feed["kind"] == "treasury":
             ent.update(dataset=feed["dataset"], source="U.S. Treasury Fiscal Data API")

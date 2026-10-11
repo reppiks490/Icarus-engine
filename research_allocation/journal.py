@@ -4,6 +4,7 @@ The local clock and SQLite file are not independent attestations. A user who can
 rewrite every hash can rewrite history; externally anchor exports when required.
 """
 from datetime import datetime, timezone
+import copy
 import json
 import math
 from pathlib import Path
@@ -95,7 +96,8 @@ class Journal:
 
     def register(self, record_id, model, experiment_id, expires_at):
         text(record_id, 'record_id')
-        analysis = evaluate(model)
+        frozen_model = copy.deepcopy(model)
+        analysis = evaluate(frozen_model)
         candidate = next((x for x in analysis['experiments']
                           if x['experiment_id'] == experiment_id), None)
         if candidate is None or not candidate['available']:
@@ -103,7 +105,7 @@ class Journal:
         if candidate['net_decision_value'] is None:
             raise JournalError('unknown cost cannot be registered as an assessed recommendation')
         utc(expires_at)
-        semantic = {'record_id': record_id, 'model': model,
+        semantic = {'record_id': record_id, 'model': frozen_model,
                     'model_hash': analysis['model_hash'], 'experiment_id': experiment_id,
                     'expires_at': expires_at, 'predicted': candidate}
         key = 'recommendation:' + record_id

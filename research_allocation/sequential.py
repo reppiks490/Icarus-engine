@@ -26,6 +26,8 @@ def evaluate_sequential(model, bundle, first):
     # Multiplying before summation also keeps subnormal branch weights coherent.
     joint_weights = {j: {s: model.prior[s] * joint.likelihood[s][j] for s in model.states}
                      for j in joint.outcomes}
+    upper = joint_result['perfect_information_bound']
+    value_tolerance = max(1e-10, 32 * math.ulp(max(1.0, abs(base), abs(base+upper))))
 
     def solve(cost_field):
         first_cost = getattr(e1.cost, cost_field)
@@ -77,7 +79,11 @@ def evaluate_sequential(model, bundle, first):
                          'continuations': continuations if follow else []})
         follow_probability = math.fsum(follow_terms)
         expected_cost = first_cost + follow_probability * second_cost
-        return {'net_value': math.fsum(value_terms) - first_cost - base,
+        gain_before_first_cost = math.fsum(value_terms) - base
+        if gain_before_first_cost < -value_tolerance or gain_before_first_cost > upper+value_tolerance:
+            raise ModelError('sequential policy value bounds violated')
+        gain_before_first_cost = min(upper, max(0.0, gain_before_first_cost))
+        return {'net_value': gain_before_first_cost - first_cost,
                 'probability_acquire_second': follow_probability,
                 'expected_acquisition_cost': expected_cost,
                 'maximum_acquisition_cost': first_cost + second_cost,
@@ -92,11 +98,12 @@ def evaluate_sequential(model, bundle, first):
     return {'schema_version': 'atlas.sequential.v1', 'status': 'ASSESSED',
             'first': first, 'second': second, 'utility_unit': model.unit,
             'baseline_expected_utility': base,
+            'value_roundoff_tolerance': value_tolerance,
             'conservative_policy': conservative,
             'conservative_policy_net_range': {'low': conservative['net_value'],
                                                'high': upper_for_fixed_policy},
             'optimistic_policy': optimistic,
-            'preferred_to_no_acquisition_at_high_cost': conservative['net_value'] > 1e-10,
+            'preferred_to_no_acquisition_at_high_cost': conservative['net_value'] > value_tolerance,
             'upfront_joint_net': joint_result['net_decision_value'],
             'limits': 'Explicit two-observation joint model; fixed per-acquisition costs. '
                       'No learning or empirical optimality claim. Different cost endpoints may choose different policies.',

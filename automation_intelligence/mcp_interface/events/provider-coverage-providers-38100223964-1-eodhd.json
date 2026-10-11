@@ -1,0 +1,40 @@
+{
+  "at_utc": "2026-10-11T01:03:38.298441+00:00",
+  "category": "AUDIT",
+  "event_id": "providers-38100223964-1-eodhd-provider-coverage",
+  "evidence": [
+    {
+      "catalog": {
+        "asset_datasets_collected": 16,
+        "asset_templates": 28,
+        "assets": 85311,
+        "collected_operations": 12,
+        "denied_operations": 29,
+        "operations": 88,
+        "pending_pages": 24,
+        "qualification": "INCOMPLETE_UNTIL_EVERY_OPERATION_ASSET_PAGE_TIME_RANGE_AND_TRANSPORT_IS_VERIFIED",
+        "unresolved_operations": 19
+      },
+      "classification": "FACT",
+      "provider_status": {
+        "eodhd": "COLLECTED_PARTIAL"
+      }
+    }
+  ],
+  "execution_authorized": false,
+  "paths": [
+    "automation_intelligence/provider_collection_v1/cycles/providers-38100223964-1-eodhd/receipt.json"
+  ],
+  "schema_version": "icarus-mcp-event-v1",
+  "severity": "MEDIUM",
+  "source": "MACRO_AUTOMATION",
+  "status": "DEGRADED",
+  "summary": "Provider catalog acquisition: 20 requests; full coverage remains explicitly incomplete.",
+  "supermesh_x": {
+    "finding": "Endpoint/asset queues and authentication, entitlement, pagination and archive gaps recorded.",
+    "status": "DEGRADED"
+  },
+  "surface": [
+    "Provider entitlement and collection coverage"
+  ]
+}

@@ -80,6 +80,29 @@ class CLITests(unittest.TestCase):
         code, r = self.invoke('evaluate', str(p))
         self.assertEqual(code, 2); self.assertEqual(r['status'], 'ERROR')
 
+    def test_missing_predictive_model_is_explicitly_insufficient(self):
+        for field in ('prior', 'utility', 'experiments'):
+            with self.subTest(field=field):
+                raw = model(); raw.pop(field)
+                path = self.write('incomplete.json', raw)
+                code, payload = self.invoke('evaluate', path)
+                self.assertEqual(code, 2)
+                self.assertEqual(payload['status'], 'INSUFFICIENT_MODEL')
+                self.assertFalse(payload['execution_authorized'])
+                self.assertFalse(payload['production_decision_authorized'])
+
+    def test_missing_likelihood_is_not_inferred(self):
+        raw = model(); raw['experiments'][0].pop('likelihood')
+        code, payload = self.invoke('evaluate', self.write('no-likelihood.json', raw))
+        self.assertEqual(code, 2)
+        self.assertEqual(payload['status'], 'INSUFFICIENT_MODEL')
+
+    def test_cli_validation_keeps_both_authority_flags_false(self):
+        code, payload = self.invoke('validate', self.model_path)
+        self.assertEqual(code, 0)
+        self.assertFalse(payload['execution_authorized'])
+        self.assertFalse(payload['production_decision_authorized'])
+
     def test_python_module_entrypoint(self):
         result = subprocess.run([sys.executable, '-m', 'research_allocation', 'evaluate',
                                  self.model_path], capture_output=True, text=True, timeout=10)

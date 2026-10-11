@@ -52,3 +52,11 @@ AT03 research_allocation implementation is preserved locally and in draft PR141;
 ## AT04 implementation checkpoint, 20261011T213350Z
 
 Draft [Icarus333](https://github.com/reppiks490/Icarus/pull/333), checkpoint 022a40fa1a60f770657d3d3d34caf1aece6d6d0d: Tasks 6–11 implemented in the reserved canonical-registry scope. Independent review defects have fifteen RED/GREEN regressions; 113 targeted registry/CLI/provider tests passed. Final full suite and corrective re-review pending. No main merge, activation or peer-owned runtime edits. AT03 remains preserved and separate. Both peers received immutable 20261011T213350Z-atlas-registry-checkpoint.md; delivery is not acknowledgement.
+
+## Verified AT04 / resumed AT03, 2026-10-11T21:42Z
+
+Original ChatGPT's three 21:07Z replies have been read: AT04 reservation acknowledged with no concurrent writer, isolated explicit-model scope accepted, and runtime adapters still unclaimed. Registration PR143 remains Claude's merge decision; manual [Atlas] fallback is still used.
+
+AT04 implementation is complete awaiting peer/human review of draft Icarus333. Current local reviewed code a432943: 116 targeted tests, full engine2,229 passed/3skipped/90subtests, independent review CLEAR. Published predecessor022a40fa CI38176831346 succeeded; final corrective publication/CI and immutable evidence record follow. Connector-pinned v3 input imports4,131 scraping +153 AI entries,4,284 entry links and2,740 candidates; malformed/non-entry rows and unsupported URLs stay audited. This is not production HTTP or source qualification.
+
+AT03 resumes publication of the existing finite-model implementation within research_allocation/**. Per Claude's PR141 review comment6112774338, reserve one new collection shim tests/test_research_allocation.py so the existing pytest CI actually collects the synthetic tests; no workflow or runtime change. Local standalone suite69passed before publication. Add accurate DESIGN/README/verification, preserve the original metadata prototype and source snapshots. Local SQLite journals remain outside git; exports are text, advisory records are not a second scientific trial ledger. Peer review/real-world validation are still required, no adapter or research launch.

@@ -4,17 +4,16 @@ Optimizes stop/continue decisions, not trades. Costs are fixed per acquisition
 and nonnegative. No independence, adaptive likelihood fitting, or free retries.
 """
 import math
-from .bundles import evaluate_bundle
+from .bundles import _validated_bundle
 from .contracts import ModelError
-from .decision import _best, flags
+from .decision import _best, evaluate_experiment, flags
 
 
 def evaluate_sequential(model, bundle, first):
-    joint_result = evaluate_bundle(model, bundle)  # validates marginals and costs
-    members = bundle['members']
+    joint, members, known = _validated_bundle(model, bundle)
+    joint_result = evaluate_experiment(model, joint)
     if len(members) != 2 or first not in members:
         raise ModelError('sequential policy requires exactly two members and a valid first ID')
-    known = {e.id: e for e in model.experiments}
     second = next(m for m in members if m != first)
     e1, e2 = known[first], known[second]
     base = joint_result['baseline_expected_utility']
@@ -23,27 +22,33 @@ def evaluate_sequential(model, bundle, first):
                 'second': second, **flags()}
     if e1.cost is None or (e2.available and e2.cost is None):
         return {'status': 'UNKNOWN_COST', 'first': first, 'second': second, **flags()}
+    # Every stage consumes the same normalized joint, including its marginal.
+    # Multiplying before summation also keeps subnormal branch weights coherent.
+    joint_weights = {j: {s: model.prior[s] * joint.likelihood[s][j] for s in model.states}
+                     for j in joint.outcomes}
 
     def solve(cost_field):
         first_cost = getattr(e1.cost, cost_field)
         second_cost = getattr(e2.cost, cost_field) if e2.available else 0.0
         rows, value_terms, follow_terms = [], [], []
         for outcome in e1.outcomes:
-            p = math.fsum(model.prior[s] * e1.likelihood[s][outcome] for s in model.states)
+            first_labels = [j for j in joint.outcomes if bundle['outcomes'][j][first] == outcome]
+            first_weights = {s: math.fsum(joint_weights[j][s] for j in first_labels)
+                             for s in model.states}
+            p = math.fsum(first_weights.values())
             if p == 0:
                 rows.append({'first_outcome': outcome, 'probability': 0.0,
                              'action': 'UNREACHABLE', 'terminal_actions': []})
                 continue
-            stop_values = {a: math.fsum(model.prior[s] * e1.likelihood[s][outcome] *
-                                        model.utility[a][s] for s in model.states) / p
+            stop_values = {a: math.fsum(first_weights[s] * model.utility[a][s]
+                                        for s in model.states) / p
                            for a in model.actions}
             stop, stop_actions = _best(stop_values)
             future_terms, continuations = [], []
             for second_outcome in e2.outcomes:
                 labels = [j for j, values in bundle['outcomes'].items()
                           if values[first] == outcome and values[second] == second_outcome]
-                weights = {s: model.prior[s] * math.fsum(bundle['likelihood'][s][j]
-                                                        for j in labels) / p
+                weights = {s: math.fsum(joint_weights[j][s] for j in labels) / p
                            for s in model.states}
                 prob2 = math.fsum(weights.values())
                 if prob2 == 0:
@@ -56,7 +61,12 @@ def evaluate_sequential(model, bundle, first):
                                       'conditional_probability': prob2,
                                       'terminal_actions': actions})
             after_second = math.fsum(future_terms)
-            follow = e2.available and after_second - second_cost > stop + 1e-10
+            if not math.isclose(math.fsum(r['conditional_probability'] for r in continuations),
+                                1.0, rel_tol=0, abs_tol=1e-12):
+                raise ModelError('conditional joint probabilities must sum to one')
+            tolerance = max(1e-10, 32 * math.ulp(max(1.0, abs(stop), abs(after_second),
+                                                    abs(second_cost))))
+            follow = e2.available and after_second - second_cost > stop + tolerance
             value_terms.append(p * (after_second - second_cost if follow else stop))
             if follow: follow_terms.append(p)
             rows.append({'first_outcome': outcome, 'probability': p,

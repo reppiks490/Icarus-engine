@@ -45,7 +45,8 @@ def text(value, label):
 def number(value, label, low=-1e12, high=1e12):
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         raise ModelError(f'{label} must be numeric')
-    if not math.isfinite(value) or not low <= value <= high:
+    # Reject arbitrary-precision JSON integers before converting them to floats.
+    if not low <= value <= high or not math.isfinite(value):
         raise ModelError(f'{label} must be finite and in [{low}, {high}]')
     return float(value)
 

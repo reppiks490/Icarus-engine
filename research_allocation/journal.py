@@ -102,7 +102,6 @@ class Journal:
             raise JournalError('experiment is unknown or unavailable')
         if candidate['net_decision_value'] is None:
             raise JournalError('unknown cost cannot be registered as an assessed recommendation')
-        stamp = self.clock()
         utc(expires_at)
         semantic = {'record_id': record_id, 'model': model,
                     'model_hash': analysis['model_hash'], 'experiment_id': experiment_id,
@@ -119,6 +118,7 @@ class Journal:
                 result = {'idempotent': True, 'payload': prior['payload'],
                           'event_hash': prior['event_hash'], **flags()}
             else:
+                stamp = self.clock()
                 if utc(expires_at) <= utc(stamp):
                     raise JournalError('expiry must be in the future')
                 result = self._append_locked('recommendation', key,
@@ -132,11 +132,8 @@ class Journal:
     def observe(self, record_id, outcome, observed_at, actual_cost, unit):
         text(record_id, 'record_id')
         text(outcome, 'outcome')
-        now = self.clock()
         observed = utc(observed_at)
         amount = number(actual_cost, 'actual_cost', 0)
-        if observed > utc(now):
-            raise JournalError('outcome cannot be from the future')
         self.db.execute('BEGIN IMMEDIATE')
         try:
             events = self._verified()
@@ -176,6 +173,9 @@ class Journal:
                 result = {'idempotent': True, 'payload': prior['payload'],
                           'event_hash': prior['event_hash'], **flags()}
             else:
+                now = self.clock()
+                if observed > utc(now):
+                    raise JournalError('outcome cannot be from the future')
                 result = self._append_locked('outcome', key, dict(payload, received_at=now), events)
             self.db.execute('COMMIT')
             return result

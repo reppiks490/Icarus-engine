@@ -4,7 +4,7 @@ from .contracts import Cost, Experiment, ModelError, distribution, names, obj, t
 from .decision import evaluate_experiment
 
 
-def evaluate_bundle(model, raw):
+def _validated_bundle(model, raw):
     obj(raw, 'bundle', ('id', 'members', 'outcomes', 'likelihood', 'reference'))
     bid = text(raw['id'], 'bundle.id')
     members = names(raw['members'], 'members', 8)
@@ -35,13 +35,18 @@ def evaluate_bundle(model, raw):
                 marginal = math.fsum(likelihood[state][j] for j in outcomes
                                     if raw['outcomes'][j][member] == outcome)
                 if not math.isclose(marginal, known[member].likelihood[state][outcome],
-                                    rel_tol=0, abs_tol=1e-9):
+                                    rel_tol=1e-10, abs_tol=0):
                     raise ModelError('joint likelihood contradicts component marginal')
     costs = [known[m].cost for m in members]
     total_cost = None if any(c is None for c in costs) else Cost(
         math.fsum(c.low for c in costs), math.fsum(c.high for c in costs), model.unit)
     joint = Experiment(bid, outcomes, likelihood, total_cost,
                        all(known[m].available for m in members), text(raw['reference'], 'reference'))
+    return joint, members, known
+
+
+def evaluate_bundle(model, raw):
+    joint, members, known = _validated_bundle(model, raw)
     result = evaluate_experiment(model, joint)
     singles = {m: evaluate_experiment(model, known[m])['gross_decision_value'] for m in members}
     result.update({'members': list(members), 'joint_outcomes': raw['outcomes'],

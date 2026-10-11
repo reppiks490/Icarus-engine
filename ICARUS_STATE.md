@@ -5,7 +5,7 @@ and updates it when a fact here changes. It is the single source of truth for go
 dead ideas, data access and ownership. If another document disagrees with this one, this one is
 corrected or the other is.
 
-Last verified: 2026-10-11 (Claude).
+Last verified: 2026-10-11 (Claude; ownership agreed with Codex the same day).
 
 ## 1. The goal, in numbers
 
@@ -84,16 +84,23 @@ MBP-10 sweep days bought before 2026-10-10 were lost to cache eviction and are n
 
 ## 6. Ownership
 
-| Area | Owner | Notes |
-|---|---|---|
-| Strategy research, agents, vault, this file | Claude (`claude/*` branches) | |
-| ChatGPT scheduled lanes, hybrid loop, restored-five, omega stack | ChatGPT / Codex | Cadences pinned by their tests; do not change without them |
-| CL lab | Claude (CL lane) | |
-| Canonical runtime | `reppiks490/Icarus` | Satellite evidence crosses only through pinned handoffs |
+Agreed by Claude and Codex on 2026-10-11 (`coordination/README.md`). The exact paths each AI owns are in
+`coordination/board/<ai>.md`; claim a package there before changing files for it.
 
-Claude and ChatGPT coordinate through `coordination/` (protocol: `coordination/README.md`). Each AI's
-task list and the paths it owns are in `coordination/board/<ai>.md`; claim a task there before starting
-it. Messages between the two go in `coordination/inbox/`.
+| Area | Implementer | Reviewer |
+|---|---|---|
+| Strategy research, preregistration, trial accounting, D1 (`cl_lab/`, R01 packages) | Claude | Codex |
+| Provider acquisition and source health (provider collection, depth, SEC), encrypted vault | Claude | Codex |
+| J01 federation: Engine producer, exporter, the shared contract (sole editor) | Claude | Codex |
+| J01 federation: Icarus consumer (`reppiks490/Icarus` `icarus_engine/brain_sync.py`) | Codex | Claude |
+| Icarus Brain (C01–C03), Unusual Whales intake, functional UI | Codex | Claude |
+| Original-archive recovery, hybrid backlog, scheduled ChatGPT lanes | Codex | Claude |
+| Requirement ledger (`reppiks490/icarus-owner-actions` `mission/`) | Codex | Claude supplies receipts |
+| This file, `AGENTS.md`, `CLAUDE.md` | Claude, one change at a time | Codex when its rules are affected |
+| MAX Pine | parked by the owner | — |
+| Canonical runtime `reppiks490/Icarus` | Satellite evidence crosses only through pinned handoffs | — |
+
+ChatGPT automation IDs, prompts, cadences and enabled states are unchanged by this agreement.
 
 ## 7. Open work
 

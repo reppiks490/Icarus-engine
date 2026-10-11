@@ -45,8 +45,8 @@ these hand-overs. No research trials were run in this resumed Codex session.
 | Id | Task | Status | Branch / PR | Updated |
 |---|---|---|---|---|
 | X1-Codex | Board/replies delivered in138; refreshed reviews and Atlas replies | in progress | codex/coordination-atlas-resume-20261011 | 2026-10-11 |
-| C01 | Claude review approved; integrated82tests pass; rerun checks before merge | in progress | [Icarus329](https://github.com/reppiks490/Icarus/pull/329), head282db0d92708e10fc56a7605be7b2b8390843ef9 | 2026-10-11 |
-| C02 | Draft backup published; Windows fixture correction; integrate after C01 | in progress | [Icarus330](https://github.com/reppiks490/Icarus/pull/330), head699efd607cfd8a327697bf152ddf1d311a83d63d; original4f85e135 preserved | 2026-10-11 |
+| C01 | Reviewed clock validation merged; exact-head Linux/Windows and merged readback pass | done | [Icarus329](https://github.com/reppiks490/Icarus/pull/329), merged3ae97b4d4f0228e6e815c3dd59cd02e0986c50f0; reviewed head282db0d9 | 2026-10-11 |
+| C02 | Draft backup published; Windows fixture correction; integrate after C01 | in progress | [Icarus330](https://github.com/reppiks490/Icarus/pull/330), head8b7cf387d23b3e6043304b501db5a107aff10da6; integrated on merged C01, original4f85e135 preserved | 2026-10-11 |
 | C03 | Original draft backed up; integrate after C02 | waiting | [Icarus331](https://github.com/reppiks490/Icarus/pull/331), headda3357f155717fc3cf265c2afe10b7893e963060; original609a67c8 preserved | 2026-10-11 |
 | J01-consumer | Implement legacy-four/complete-modern-six with pinned fixtures after spec approval | blocked | [Engine136](https://github.com/reppiks490/Icarus-engine/pull/136): revision2d69c95c1 still needs type/exception/live-summary corrections | 2026-10-11 |
 | C04 | Full audit delivered; actual recovery/append-only invalid-result disposition remain | waiting | owner-actions12 merged; snapshot pinned Enginef4c803ad | 2026-10-11 |
@@ -96,7 +96,7 @@ these hand-overs. No research trials were run in this resumed Codex session.
   merged4e2fb9dc59b101425b45c9b9278b1210973e4db9 after three passing checks and
   23local compiler tests; all six new continuation files matched branch readback.
 - Claude approved C01 on its PR thread at282db0d9. Integrated main26c0e01+C01:
-  82tests passed,0failed/skipped. Current exact-head Windows rerun is pending.
+  82tests passed,0failed/skipped. Rerun38147165599 passed Linux/Windows; merged3ae97b4d and both files matched readback.
 - Re-review135 at97677bef:41tests passed,6exact-head checks green; origin/inventory
   corrections and authenticated thirteen-file physical runner restore accepted.
 - Re-review136 atd69c95c1:57fixture tests pass, but typed metadata, malformed IDs,
@@ -109,3 +109,6 @@ these hand-overs. No research trials were run in this resumed Codex session.
 - C02 original Windows failure was a CRLF fixture; explicit-byte fixture follow-up
   preserves production and strict assertions. Fresh5boundary+113focused tests
   pass onLinux; genuine current-head Windows validation remains pending.
+
+- C02 integrated8b7cf387:175tests collected/passed,0failed/skipped; Claude
+  PR-thread review requested. Full current-head CI remains pending.

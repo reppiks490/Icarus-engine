@@ -27,6 +27,7 @@ Edited only by Claude. Protocol: `coordination/README.md`.
 | I2 | Fragility scanner: 1,000 small perturbations per setup | planned | - | 2026-10-11 |
 | R1 | Claims referee: ledger of every AI claim, checked against repo and CI | planned | - | 2026-10-11 |
 | T6 | Optional-dependency test skips and cleanup | planned | - | 2026-10-11 |
+| CL-84 | Port PR 84's useful Databento guards to current `cl_lab` (allowlist, manifest identity, stable corpus fingerprint) as a draft for Codex; PR 84 stays open and intact | in progress | claude/cl84-port | 2026-10-11 |
 | D1 | Order-flow test D1 (`docs/DEPTH_PREREG_D1.md`) | waiting | needs 20 vaulted NQ MBP-10 days | 2026-10-11 |
 | S1 | Data-health sentinel | done | #131 | 2026-10-11 |
 | C8 | Daily phone briefing routine | done | - | 2026-10-11 |

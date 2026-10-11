@@ -32,6 +32,82 @@ class JournalTests(unittest.TestCase):
         self.now = RECEIVED
         return self.j.observe('r1', 'a', OBSERVED, .1, 'synthetic_utility')
 
+    def after_write_lock_delay(self, operation, stamp, *, intervening=False):
+        ready, start, attempted, release = (threading.Event() for _ in range(4))
+        values, errors = [], []
+
+        def worker():
+            try:
+                with Journal(self.path, clock=lambda: self.now) as journal:
+                    def trace(sql):
+                        if sql == 'BEGIN IMMEDIATE':
+                            attempted.set()
+                            if not release.wait(timeout=5):
+                                raise RuntimeError('test transaction was not released')
+                    journal.db.set_trace_callback(trace)
+                    ready.set()
+                    if not start.wait(timeout=5):
+                        raise RuntimeError('test worker was not started')
+                    values.append(operation(journal))
+            except BaseException as exc:
+                errors.append(exc)
+
+        thread = threading.Thread(target=worker)
+        thread.start()
+        try:
+            self.assertTrue(ready.wait(timeout=5))
+            self.j.db.execute('BEGIN IMMEDIATE')
+            start.set()
+            self.assertTrue(attempted.wait(timeout=5))
+            self.now = stamp
+            self.j.db.execute('COMMIT')
+            if intervening:
+                self.j.register('intervening', model(), 'signal', EXPIRES)
+        finally:
+            if self.j.db.in_transaction:
+                self.j.db.execute('ROLLBACK')
+            start.set()
+            release.set()
+            thread.join(timeout=10)
+        self.assertFalse(thread.is_alive())
+        return values, errors
+
+    def test_registration_expiry_checked_after_write_lock_delay(self):
+        values, errors = self.after_write_lock_delay(
+            lambda j: j.register('r1', model(), 'signal', '2026-10-11T16:00:01Z'),
+            '2026-10-11T16:00:02Z')
+        self.assertEqual(values, [])
+        self.assertEqual(len(errors), 1)
+        self.assertIsInstance(errors[0], JournalError)
+        self.assertEqual(self.j.verify()['events'], 0)
+
+    def test_registration_is_not_backdated_before_lock_acquisition(self):
+        stamp = '2026-10-11T16:00:02Z'
+        values, errors = self.after_write_lock_delay(
+            lambda j: j.register('r1', model(), 'signal', EXPIRES), stamp)
+        self.assertFalse(errors, errors)
+        self.assertEqual(values[0]['payload']['recorded_at'], stamp)
+        with self.assertRaises(JournalError):
+            self.j.observe('r1', 'a', '2026-10-11T16:00:00.5Z', .1, 'synthetic_utility')
+
+    def test_intervening_writer_does_not_cause_false_clock_reversal(self):
+        stamp = '2026-10-11T16:00:02Z'
+        values, errors = self.after_write_lock_delay(
+            lambda j: j.register('r1', model(), 'signal', EXPIRES), stamp,
+            intervening=True)
+        self.assertFalse(errors, errors)
+        self.assertEqual(values[0]['payload']['recorded_at'], stamp)
+        self.assertEqual(self.j.verify()['events'], 2)
+
+    def test_outcome_receipt_time_sampled_after_write_lock_delay(self):
+        self.register()
+        self.now = OBSERVED
+        values, errors = self.after_write_lock_delay(
+            lambda j: j.observe('r1', 'a', '2026-10-11T16:00:30Z', .1,
+                                'synthetic_utility'), RECEIVED)
+        self.assertFalse(errors, errors)
+        self.assertEqual(values[0]['payload']['received_at'], RECEIVED)
+
     def test_full_prospective_lifecycle(self):
         self.register(); observed = self.observe()
         self.assertAlmostEqual(observed['payload']['log_loss_bits'], 1)

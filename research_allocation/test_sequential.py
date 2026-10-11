@@ -16,7 +16,53 @@ def selective_model():
     return m, b
 
 
+def rare_model(component_probability=1e-12, joint_probability=1e-12):
+    m = model()
+    m['utility'] = {'choose_A': {'A': 1e12, 'B': -1e12},
+                    'defer': {'A': 0, 'B': 0}}
+    first = experiment('left', low=1, high=1)
+    first['likelihood'] = {s: {'a': component_probability,
+                               'b': 1-component_probability} for s in m['states']}
+    m['experiments'] = [first, experiment('right', low=7.5e11, high=7.5e11)]
+    b = xor_bundle()
+    b['likelihood'] = {'A': {'aa': joint_probability, 'ab': 0,
+                            'ba': 1-joint_probability, 'bb': 0},
+                       'B': {'aa': 0, 'ab': joint_probability,
+                            'ba': 0, 'bb': 1-joint_probability}}
+    return m, b
+
+
 class SequentialTests(unittest.TestCase):
+    def test_rare_component_marginal_mismatch_rejected(self):
+        m, b = rare_model(joint_probability=5e-10)
+        with self.assertRaises(ModelError):
+            evaluate_sequential(parse_model(m), b, 'left')
+
+    def test_impossible_component_cannot_gain_tiny_joint_mass(self):
+        m, b = rare_model(component_probability=0)
+        with self.assertRaises(ModelError):
+            evaluate_sequential(parse_model(m), b, 'left')
+
+    def test_coherent_rare_event_does_not_justify_expensive_followup(self):
+        m, b = rare_model()
+        r = evaluate_sequential(parse_model(m), b, 'left')
+        self.assertEqual(r['conservative_policy']['probability_acquire_second'], 0)
+        self.assertAlmostEqual(r['conservative_policy']['net_value'], -1)
+        self.assertFalse(r['preferred_to_no_acquisition_at_high_cost'])
+
+    def test_accepted_joint_roundoff_cannot_create_constant_utility_value(self):
+        m = model()
+        m['experiments'] = [experiment('left', .5), experiment('right', .5)]
+        m['utility'] = {'fixed': {'A': 1e12, 'B': 1e12},
+                        'defer': {'A': 0, 'B': 0}}
+        b = xor_bundle()
+        b['likelihood'] = {s: {j: .25+1e-11 for j in b['outcomes']}
+                           for s in m['states']}
+        r = evaluate_sequential(parse_model(m), b, 'left')
+        self.assertEqual(r['conservative_policy']['probability_acquire_second'], 0)
+        self.assertAlmostEqual(r['conservative_policy']['net_value'], -.1, delta=1e-3)
+        self.assertFalse(r['preferred_to_no_acquisition_at_high_cost'])
+
     def test_selective_followup_saves_cost(self):
         m, b = selective_model()
         r = evaluate_sequential(parse_model(m), b, 'first')

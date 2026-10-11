@@ -80,6 +80,19 @@ class CLITests(unittest.TestCase):
         code, r = self.invoke('evaluate', str(p))
         self.assertEqual(code, 2); self.assertEqual(r['status'], 'ERROR')
 
+    def test_oversized_json_integer_has_structured_error(self):
+        for field in ('utility', 'prior', 'cost'):
+            with self.subTest(field=field):
+                raw = model()
+                if field == 'utility': raw['utility']['choose_A']['A'] = 10**400
+                elif field == 'prior': raw['prior']['A'] = 10**400
+                else: raw['experiments'][0]['cost']['low'] = 10**400
+                code, payload = self.invoke('evaluate', self.write('oversized.json', raw))
+                self.assertEqual(code, 2)
+                self.assertEqual(payload['status'], 'ERROR')
+                self.assertFalse(payload['execution_authorized'])
+                self.assertFalse(payload['production_decision_authorized'])
+
     def test_missing_predictive_model_is_explicitly_insufficient(self):
         for field in ('prior', 'utility', 'experiments'):
             with self.subTest(field=field):

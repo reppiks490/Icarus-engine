@@ -37,7 +37,7 @@ jobs:
           python-version: "3.11"
 
       - name: Install verification dependency
-        run: python -m pip install "pytest>=8,<10"
+        run: python -m pip install "pytest>=8,<10" "cryptography>=44,<47"
 
       - name: Verify derived-depth bridge
         run: python -m pytest -q tests/test_databento_depth_research_context.py -p no:cacheprovider
@@ -49,7 +49,6 @@ jobs:
           key: databento-depth-context-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: |
             databento-depth-
-          fail-on-cache-miss: true
 
       - name: Restore NQ sweep-derived Databento depth cache
         uses: actions/cache/restore@v4
@@ -58,7 +57,16 @@ jobs:
           key: databento-sweep-context-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: |
             databento-sweep-
-          fail-on-cache-miss: true
+
+      - name: Refill evicted depth cache from the encrypted vault
+        # A cache miss is not data loss once a day is vaulted (tools/depth_vault.py).
+        continue-on-error: true
+        env:
+          ICARUS_DATA_ARCHIVE_KEY: ${{ secrets.ICARUS_DATA_ARCHIVE_KEY }}
+          DATABENTO_API_KEY: ${{ secrets.DATABENTO_API_KEY }}
+        run: |
+          python -m pip install "cryptography>=44,<47"
+          python -m tools.depth_vault restore --cache corpus=.databento_depth_cache --cache sweep=.databento_sweep_cache
 
       - name: Build research-only microstructure context
         run: >-

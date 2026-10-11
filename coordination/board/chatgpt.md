@@ -21,7 +21,9 @@ Read-only review does not transfer package ownership.
   `mission/register.json`, `mission/compiler.py`, `tests/test_mission_compiler.py`,
   `mission/continuations/**`. Append scoped evidence, preserving original history.
 - X1-Codex, `reppiks490/Icarus-engine`: this board and new immutable files under
-  `coordination/inbox/to-claude/`. Claude owns protocol/tooling and its own board.
+  `coordination/inbox/to-claude/`; Atlas replies use its documented [Atlas]
+  fallback in `coordination/inbox/to-chatgpt/` until registration merges.
+  Claude owns protocol/tooling; each worker edits only its own board.
 - C05/J03, P01, U01, E01: reserve specific files before implementation. Preserve
   Icarus visual/mobile PR318/198, historical PR295 and other owners' open changes.
 
@@ -29,7 +31,11 @@ Confirmed hand-overs: Claude owns Engine J01 specification/contract/fixtures/pro
 K1 provider collector/workflow/tests, acquisition/vault/depth/SEC source health,
 CL strategy science, and Engine state/instruction files. Codex owns Icarus consumer,
 Brain, original archive verification, hybrid lane contracts, mission evidence and
-functional UI. Codex reviews Claude's changes; Engine rules affecting Codex require
+functional runtime. The owner reserved UI, aesthetics and animations for
+Claude Code on2026-10-11; Codex leaves those files alone. Atlas owns
+research_allocation/** and its owner-transferred Icarus discovery-registry
+foundation (AT04) paths; no Brain/J01/mission/collector ownership transfers.
+Codex reviews Claude's changes; Engine rules affecting Codex require
 its review. Engine PR84 overlaps Claude's CL lane and stays open/intact pending a
 concrete preservation/port agreement. No broad historic namespace claim overrides
 these hand-overs. No research trials were run in this resumed Codex session.
@@ -38,21 +44,21 @@ these hand-overs. No research trials were run in this resumed Codex session.
 
 | Id | Task | Status | Branch / PR | Updated |
 |---|---|---|---|---|
-| X1-Codex | Correct seeded board; answer inbox and publish review decisions | in progress | codex/coordination-reviews-20261011 | 2026-10-11 |
-| C01 | Brain clock validation; Claude review required before merge | waiting | [Icarus329](https://github.com/reppiks490/Icarus/pull/329), head282db0d92708e10fc56a7605be7b2b8390843ef9 | 2026-10-11 |
-| C02 | Publish process-lock draft backup; integrated Linux/Windows validation follows C01 | in progress | four-file original draft based on af8dfc5513, equivalent to published C01 tree | 2026-10-11 |
-| C03 | Publish chronological-order draft backup; integrate after C02 | in progress | original609a67c8fbcae96ab9d1b7ac97c2cca09d6e5275 preserved; separate unintegrated draft | 2026-10-11 |
-| J01-consumer | Implement legacy-four/complete-modern-six with pinned fixtures after spec approval | blocked | [Engine136](https://github.com/reppiks490/Icarus-engine/pull/136): corrections requested on12c1c4f | 2026-10-11 |
-| C04 | Refresh full hybrid population and oldest-first recovery evidence | in progress | audit pinned Enginef4c803ad; prior health PR129 merged | 2026-10-11 |
+| X1-Codex | Board/replies delivered in138; refreshed reviews and Atlas replies | in progress | codex/coordination-atlas-resume-20261011 | 2026-10-11 |
+| C01 | Claude review approved; integrated82tests pass; rerun checks before merge | in progress | [Icarus329](https://github.com/reppiks490/Icarus/pull/329), head282db0d92708e10fc56a7605be7b2b8390843ef9 | 2026-10-11 |
+| C02 | Draft backup published; Windows fixture correction; integrate after C01 | in progress | [Icarus330](https://github.com/reppiks490/Icarus/pull/330), head699efd607cfd8a327697bf152ddf1d311a83d63d; original4f85e135 preserved | 2026-10-11 |
+| C03 | Original draft backed up; integrate after C02 | waiting | [Icarus331](https://github.com/reppiks490/Icarus/pull/331), headda3357f155717fc3cf265c2afe10b7893e963060; original609a67c8 preserved | 2026-10-11 |
+| J01-consumer | Implement legacy-four/complete-modern-six with pinned fixtures after spec approval | blocked | [Engine136](https://github.com/reppiks490/Icarus-engine/pull/136): revision2d69c95c1 still needs type/exception/live-summary corrections | 2026-10-11 |
+| C04 | Full audit delivered; actual recovery/append-only invalid-result disposition remain | waiting | owner-actions12 merged; snapshot pinned Enginef4c803ad | 2026-10-11 |
 | C05/J03 | Useful licensed Unusual Whales source-to-consumer qualification | planned | Icarus328 intake merged; dependent on C02 integration | 2026-10-11 |
 | J02-originals | Authenticate original archives; lawful restoration, full coverage and point-in-time qualification | planned | ZIP/ciphertext preservation and owner-actions11 complete within scope | 2026-10-11 |
-| M01 | Append current review, preservation and population receipts; reconcile requirements without inflation | in progress | owner-actions mission/continuations; frozen register unchanged | 2026-10-11 |
+| M01 | Oct11 continuation delivered; append later receipts without inflated credit | in progress | [owner-actions12](https://github.com/reppiks490/icarus-owner-actions/pull/12), merged4e2fb9dc; frozen register unchanged | 2026-10-11 |
 | M02 | Component acceptance, independent leakage review and traceability/certification | planned | owner-actions mission; no global success claim | 2026-10-11 |
-| S01 | Panel rights/public-history exposure judgment and vault-containment review | in progress | [Engine135](https://github.com/reppiks490/Icarus-engine/pull/135): corrections requested; rights unresolved | 2026-10-11 |
+| S01 | Containment re-review passes; rights and history exposure remain unresolved | waiting | [Engine135](https://github.com/reppiks490/Icarus-engine/pull/135), approved97677bef; owner-actions12 exposure receipt | 2026-10-11 |
 | P01 | Master Pump identity, delivery, restart and truthful observability | planned | reserve bounded repository-qualified paths first | 2026-10-11 |
-| U01 | Functional math/stale/unknown/veto and rendered UI | planned | preserve Icarus318/198 owners; reserve bounded files first | 2026-10-11 |
+| U01 | UI, aesthetics and animations reserved for separately active Claude Code | waiting | owner instructed Codex to leave UI work alone on2026-10-11 | 2026-10-11 |
 | E01 | Measured architecture experiments and verified transfer | planned | define hypothesis, baseline and bounded paths first | 2026-10-11 |
-| DB84 | Preserve original cost guards while reviewing Claude's proposed CL port | waiting | [Engine84](https://github.com/reppiks490/Icarus-engine/pull/84), open head8ad1d7eb08305011a43d32dc0c696bc0bd69ecdf | 2026-10-11 |
+| DB84 | Keep original intact; agree P2/P3, defer P1 under no-automation-change limit | waiting | [Engine84](https://github.com/reppiks490/Icarus-engine/pull/84), open head8ad1d7eb08305011a43d32dc0c696bc0bd69ecdf | 2026-10-11 |
 | MAX-Pine | Parked; preserve source/design/plan and incomplete original transport | waiting | max-pine-implementation add4d62211aadfa09924db589842c9bb94943c20 | 2026-10-11 |
 | L5-preserve | Preserve existing owner loops/settings; no automation mutation | waiting | historical reported states not freshly verified here | 2026-10-11 |
 
@@ -82,3 +88,24 @@ these hand-overs. No research trials were run in this resumed Codex session.
   usable authenticated lawful corpus, eligible denominator and consumer readback remain unproven.
 - MAX two exact blobs preserve an incomplete XZ stream and decoded Pine prefix,
   not a complete authenticated original. Keep branches/design/plan intact.
+
+## Latest resumed-session receipts (2026-10-11 evening UTC)
+
+- Engine138 merged889612dc4bef7b21d51845d8272102067cdc68a3 after twelve passing
+  exact-head checks; all three files matched merged readback. owner-actions12
+  merged4e2fb9dc59b101425b45c9b9278b1210973e4db9 after three passing checks and
+  23local compiler tests; all six new continuation files matched branch readback.
+- Claude approved C01 on its PR thread at282db0d9. Integrated main26c0e01+C01:
+  82tests passed,0failed/skipped. Current exact-head Windows rerun is pending.
+- Re-review135 at97677bef:41tests passed,6exact-head checks green; origin/inventory
+  corrections and authenticated thirteen-file physical runner restore accepted.
+- Re-review136 atd69c95c1:57fixture tests pass, but typed metadata, malformed IDs,
+  clock/nonfinite exceptions and live legacy-summary bounds remain blockers.
+- Re-review137 at72f5bdb8: intraday roll availability, null interval ordering and
+  trial identity/full-family DSR accounting remain blockers; no research trials run.
+- Atlas registration143 at5216a4ee:11focused tests+5synthetic checks pass,
+  twelve exact-head checks green; peer review approved. Native routing awaits
+  merge; historical fallback remains manual, not delivery certification.
+- C02 original Windows failure was a CRLF fixture; explicit-byte fixture follow-up
+  preserves production and strict assertions. Fresh5boundary+113focused tests
+  pass onLinux; genuine current-head Windows validation remains pending.

@@ -12,7 +12,7 @@ Potential semantic overlaps go to the existing owner before implementation.
 
 | Id | Task | Status | Branch / PR | Updated |
 |---|---|---|---|---|
-| AT01 | Metadata-only dependency planner: minimal missing-evidence bundles, counterfactual unblock impact, owner routing | waiting | [Engine141](https://github.com/reppiks490/Icarus-engine/pull/141), prototype tested; peer scope/code review pending | 2026-10-11 |
+| AT01 | Metadata-only dependency planner: minimal missing-evidence bundles, counterfactual unblock impact, owner routing | in progress | [Engine141](https://github.com/reppiks490/Icarus-engine/pull/141), prototype tested; peer scope/code review pending | 2026-10-11 |
 | AT02 | Third-worker registration in coordinator, owned by Claude; request via existing inbox | waiting | 20261011T1547Z-atlas-registration-and-scope.md | 2026-10-11 |
 
 ## Operating agreement
@@ -36,3 +36,7 @@ Knowledge delta is contained in this board, research_allocation/README.md and im
 ## Deeper investigation, 2026-10-11
 
 Correction: direct inspection of Icarus 0bf06e98c9fbda627116578f8686a178e6837d68 found existing APEX information ranking, CapabilityGraph, TheoryLibrary and Omnivision's budget-allocation design. Search absence was not reliable. Atlas must reuse these, not claim a novel generic governor. Proposed next scope is derivation/validation of decision value from predictive models and costs, inside the existing isolated namespace. No runtime/E01 or scientific work claimed. See [POTENTIAL.md](https://github.com/reppiks490/Icarus-engine/blob/15cad18d02636c3da94238d87bc971e5fef89c0e/research_allocation/POTENTIAL.md) and synthetic potential_probes.json in PR141; functionality is proposed and peer review remains pending. Four bounded synthetic behavior probes completed; no market research run.
+
+## Owner-authorized implementation, 2026-10-11T15:58Z
+
+User explicitly requested a substantial build and ongoing peer communication while the other models reset. AT03 now in progress within research_allocation/**: finite outcome-model decision value; unknown costs and sensitivity scenarios; explicit joint observations; offline CLI and prospective SQLite recommendation/outcome journal. No existing runtime or scientific-policy ownership transfers. Knowledge delta: README.md, DESIGN.md, examples/, tests, and verification record in this namespace. All inputs synthetic or owner-supplied metadata; no market evaluation, spend or new schedules.

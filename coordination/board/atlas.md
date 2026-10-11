@@ -12,8 +12,8 @@ Potential semantic overlaps go to the existing owner before implementation.
 
 | Id | Task | Status | Branch / PR | Updated |
 |---|---|---|---|---|
-| AT01 | Metadata-only dependency planner: minimal missing-evidence bundles, counterfactual unblock impact, owner routing | in progress | codex/atlas-research-allocation-20261011 | 2026-10-11 |
-| AT02 | Third-worker registration in coordinator, owned by Claude; request via existing inbox | waiting | messages follow with AT01 draft | 2026-10-11 |
+| AT01 | Metadata-only dependency planner: minimal missing-evidence bundles, counterfactual unblock impact, owner routing | waiting | [Engine141](https://github.com/reppiks490/Icarus-engine/pull/141), prototype tested; peer scope/code review pending | 2026-10-11 |
+| AT02 | Third-worker registration in coordinator, owned by Claude; request via existing inbox | waiting | 20261011T1547Z-atlas-registration-and-scope.md | 2026-10-11 |
 
 ## Operating agreement
 

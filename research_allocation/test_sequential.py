@@ -1,3 +1,5 @@
+from decimal import Decimal
+import random
 import unittest
 from research_allocation.contracts import ModelError, parse_model
 from research_allocation.sequential import evaluate_sequential
@@ -33,6 +35,49 @@ def rare_model(component_probability=1e-12, joint_probability=1e-12):
 
 
 class SequentialTests(unittest.TestCase):
+    def test_200_joint_policies_against_decimal_oracle(self):
+        rng = random.Random(8453)
+        d = lambda x: Decimal(str(x))
+        for _ in range(200):
+            m, b = selective_model()
+            p = rng.randint(1, 99)/100
+            m['prior'] = {'A': p, 'B': 1-p}
+            for state in m['states']:
+                weights = {j: rng.randint(0, 20) for j in b['outcomes']}
+                total = sum(weights.values())
+                b['likelihood'][state] = {j: w/total for j, w in weights.items()}
+                for exp in m['experiments']:
+                    exp['likelihood'][state] = {
+                        o: sum(b['likelihood'][state][j] for j, values in b['outcomes'].items()
+                               if values[exp['id']] == o) for o in exp['outcomes']}
+            for values in m['utility'].values():
+                for state in m['states']: values[state] = rng.randint(-30, 30)
+            for exp in m['experiments']:
+                cost = rng.randint(0, 500)/100
+                exp['cost'].update(low=cost, high=cost)
+            prior_total = sum(d(v) for v in m['prior'].values())
+            prior = {s: d(v)/prior_total for s, v in m['prior'].items()}
+            joint = {s: {j: d(v)/sum(d(w) for w in row.values()) for j, v in row.items()}
+                     for s, row in b['likelihood'].items()}
+            baseline = max(sum(prior[s]*d(values[s]) for s in m['states'])
+                           for values in m['utility'].values())
+            terms = []
+            for first in ('a', 'b'):
+                labels = [j for j, values in b['outcomes'].items() if values['first'] == first]
+                mass = sum(prior[s]*joint[s][j] for s in m['states'] for j in labels)
+                stop = max(sum(prior[s]*joint[s][j]*d(values[s])
+                               for s in m['states'] for j in labels)
+                           for values in m['utility'].values())
+                follow = sum(max(sum(prior[s]*joint[s][j]*d(values[s])
+                                      for s in m['states'] for j in labels
+                                      if b['outcomes'][j]['second'] == second)
+                                 for values in m['utility'].values()) for second in ('a', 'b'))
+                terms.append(max(stop, follow-mass*d(m['experiments'][1]['cost']['high'])))
+            expected = sum(terms)-d(m['experiments'][0]['cost']['high'])-baseline
+            actual = evaluate_sequential(parse_model(m), b, 'first')
+            self.assertAlmostEqual(actual['conservative_policy']['net_value'],
+                                   float(expected), places=10)
+
     def test_rare_component_marginal_mismatch_rejected(self):
         m, b = rare_model(joint_probability=5e-10)
         with self.assertRaises(ModelError):

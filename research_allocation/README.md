@@ -1,65 +1,123 @@
-# Atlas: research decision planning
+# Atlas: advisory research decision value
 
-Deeper investigation and correction: [POTENTIAL.md](POTENTIAL.md). Icarus already implements APEX information-ranking functions, a capability graph and a theory library. The next opportunity is deriving and validating decision value for those components, subject to their owners' review; do not build a duplicate governor. Synthetic probes are recorded in potential_probes.json.
+Atlas is a separate third worker. Original ChatGPT/Codex and Claude retain their
+tasks; ownership and delivered messages are on `coordination/board/atlas.md`.
+Both peers accepted this isolated explicit-model scope. This draft changes no
+collector, strategy, runtime, UI, scheduler, credentials or spending policy.
 
-Atlas is a third worker from a separate ChatGPT account. The original ChatGPT and Claude retain all existing tasks. Entry point and ownership: ../coordination/board/atlas.md.
+The useful question is not "how much information can we collect?" but "which
+observation could change a named decision, at what cost, under which assumptions?"
+Icarus already has APEX information ranking, CapabilityGraph and TheoryLibrary.
+This module supplies a bounded derivation/verification layer, **not** another
+governor or a claim of worldwide novelty. See [POTENTIAL.md](POTENTIAL.md) for the
+pinned investigation and correction of the initial search-based assessment.
 
-## Why this lane exists
+## Implemented
 
-The canonical state says no setup is proven. More collection or more variants does not by itself close that gap. Existing owners already implement collectors, scientific tests, regime labels, stress tests, certification and integration. Atlas asks which missing evidence would change a named decision, what prerequisites it needs, and who should supply them.
+| Component | Behavior | Boundary |
+|---|---|---|
+| `planner.py` | Minimal alternative prerequisite bundles, shared conditional unblock impact, owner routing | Metadata structure, not economic value or authenticated evidence |
+| `contracts.py` / `decision.py` | Explicit finite priors, actions, utilities and outcome likelihoods; posterior action policies; expected decision value and perfect-information bound | Model-conditioned arithmetic, not market likelihood estimation |
+| `robust.py` | Declared scenario/cost-range sensitivity, conservative dominance, incomplete-comparison withholding | Supplied scenarios, not statistical confidence intervals |
+| `bundles.py` | Joint observations checked against component marginals; complementary/redundant information | Never manufactures independence or adds single-source scores |
+| `sequential.py` | Two-observation stop/continue policies and fixed-policy cost range | Explicit joint model and fixed acquisition costs; no research execution |
+| `journal.py` | Prospective local recommendation/outcome records, frozen hashes, expiry, predictive scores and unresolved cases | Not the scientific trial ledger, external timestamp attestation or proof of benefit |
+| `handoff.py` / `cli.py` | Hashed owner-review package and offline command-line entry points | No APEX/Omnivision adapter, automatic dispatch or integration certification |
 
-This is cross-workstream planning, complementary to the existing breadth-first/regime-weighted selection in cl_lab/feeds/databento_depth_acquire.py. Searches and a scoped code review did not establish a general cross-workstream planner; this is not a claim of worldwide novelty or exhaustive absence across all branches.
+Every new evaluator/CLI/journal/handoff output keeps `execution_authorized=false`
+and `production_decision_authorized=false`. The original prerequisite-only
+prototype remains intact; its output is advisory and execution-false.
 
-## Implemented in this draft
+Missing required predictive/decision inputs yield `INSUFFICIENT_MODEL` (CLI exits
+2). Malformed, nonfinite or unsupported inputs yield `ERROR`, not inferred
+probabilities. An explicitly unknown cost remains `UNKNOWN_COST`; it never becomes
+zero. Cost intervals must share the declared utility unit, with any conversion
+supplied explicitly by the owner. Availability and provenance claims are inputs,
+not independently authenticated. Numeric results are finite-model expectations
+subject to floating-point rounding, not ICARUS performance estimates.
 
-An offline standard-library module reads an explicit metadata snapshot. Each decision has alternative sufficient prerequisite sets (OR of AND sets). It removes already verified evidence, rejects routes containing rejected evidence, and removes redundant supersets. For each remaining bundle it computes which owner reviews would become possible IF valid evidence were obtained.
+## Run from the repository root
 
-Unknown evidence stays unknown. Verified evidence requires a receipt reference, observation time and validity boundary; expired or future observations do not unlock anything. Receipt contents are NOT automatically authenticated: an authorized curator must substantiate them. A reference alone is not proof.
-
-The output routes bundles to owners and labels every cost unknown. Structural impact counts depend on how decisions were modeled and can be inflated by splitting one decision into many. They are an inspection aid, never a utility score. No optimization over money, time or expected returns is implemented. A rejected prerequisite represents a rejected route, not an invitation to repeat a dead experiment.
-
-### Run
-
-From the repository root:
+No dependency beyond Python's standard library is required for these commands.
 
 ```sh
+python -m research_allocation validate research_allocation/examples/two_state.json
+python -m research_allocation evaluate research_allocation/examples/two_state.json
+python -m research_allocation compare research_allocation/examples/scenarios.json
+python -m research_allocation bundle research_allocation/examples/complementary.json research_allocation/examples/joint.json
+python -m research_allocation sequential research_allocation/examples/sequential.json research_allocation/examples/sequential_joint.json first
 python -m research_allocation.planner research_allocation/snapshot.json --as-of 2026-10-11T15:42:00Z
-python -m unittest discover -s research_allocation -p 'test_*.py' -v
 ```
 
-The CLI prints JSON to stdout. It has no network client, provider calls, credential access, scheduler, runtime hooks, trial execution or automatic dispatch. Its report never authorizes execution.
+CLI JSON is printed to stdout; errors are JSON on stderr with a nonzero exit.
+Inputs are bounded to four million text characters; finite model/evaluation
+budgets and strict schemas reject duplicate keys, boolean numbers and NaN/Inf.
+Synthetic examples are labeled synthetic. The original `snapshot.json` is a
+manually curated, incomplete historical view of Engine `bb736a89`, **not** the
+current live project state or a verified result. Do not silently update it to
+erase the provenance of earlier recommendations.
 
-## Initial findings and provenance
+The journal takes an explicit database path. Use a location outside the git
+tree; never commit the database/WAL or market/vendor payloads. `register` is the
+only command that creates a journal. `report`, `export` and `verify-journal` do
+not create a missing database. Export is reviewable JSON text; externally anchor
+its head hash if independent timing/integrity matters. A user able to rewrite
+the whole local hash chain can rewrite history; this is not tamper-proof storage.
 
-snapshot.json is a manually curated, incomplete view of Engine main bb736a898fc8803d212f410c7e7f783430bd7ae1, based on pinned documents and messages. Six evidence items are unknown, not asserted missing in the live system. No current PR state or underlying scientific outcome is certified.
+An observation must be after local registration, not future-dated, within the
+frozen validity window and in the frozen outcome vocabulary. Actual costs and
+overruns remain recorded. Zero-probability observations are model contradictions,
+not dropped cases or infinite numbers in JSON. Unresolved/expired recommendations
+remain in reports. Brier/log-loss scores assess prediction calibration only;
+`decision_benefit_proven` remains false. No counterfactual realized benefit is
+inferred from a completed record.
 
-- J01 spec approval is a shared prerequisite for producer and consumer implementation. Claude reported corrections; that message does not establish ChatGPT approval.
-- C01 review approval does not establish merged/integrated C01 or C02. C03 validation depends on their actual integration.
-- D1 requires eligible distinct days and event counts. Vaulted feature-file totals cannot substitute for that denominator.
-- Consumer/producer receipts are mapped to an integration review; Atlas does not perform the peer's acceptance work or certify the integration.
+## Scientific and integration boundaries
 
-These findings support asking owners for receipts before suggesting more acquisition. They do not authorize prioritizing J01 above D1 economically or scientifically.
+Claude's `cl_lab/trial_ledger.py` / research JSONL ledger remains the single
+scientific trial count. Atlas's journal is **not** another experiment registry,
+trial count, claims referee or acceptance ledger. Before a recommendation selects
+which real hypothesis is tested, its selection and tests need the existing
+pre-registration and global-ledger identity, cited by the owner in the supplied
+provenance. Atlas does not verify that ledger, launch the trial or certify
+compliance. Failure/timeout/unavailable outcomes must be represented explicitly
+in a predictive model; the evaluator does not invent them.
 
-## Path to the larger capability
+No real decision is ready merely because a synthetic model parses. Owner review
+must substantiate priors/likelihoods/utilities, evidence identity and availability
+clocks, lawful source access, feasibility, uncertainty and costs. Missing source
+evidence remains unknown. Runtime adapters require Codex's bounded contract and
+path agreement first; none is implemented or approved here. M02 independent
+evidence/leakage review remains separate from planning scores.
 
-1. Owner-reviewed decision graph and immutable evidence references; refreshes preserve past snapshots.
-2. Explicit failure branches: what to do if a prerequisite fails, not only if it passes.
-3. Owner-provided cost/time intervals and feasible actions; report a Pareto set and sensitivity to assumptions instead of fabricated point scores.
-4. Expected value of information only for decisions with an agreed utility, defensible predictive model and calibration evidence. Otherwise output INSUFFICIENT_MODEL.
-5. A pre-outcome recommendation log with later observed results to test whether Atlas actually reduced time/cost to decisions. Never claim benefit merely because the tool ran.
+Still unimplemented: validated real decision packages; APEX/CapabilityGraph/
+TheoryLibrary adapters; automatic hypothesis generation/failure-scope learning;
+prospective equal-budget comparison against fixed baselines; and demonstrated
+improvement in research cost, decision resolution or market outcomes. The module
+does not buy data, read market corpora, retest dead strategies or change schedules.
 
-These are proposed extensions, not implemented features. Scientific experiments and allocations remain with their owners; no research is silently launched and no global trial accounting is bypassed. New inference against market outcomes requires the existing preregistration rules.
+## Verification and handoff
 
-## Collaboration and changes
+```sh
+python -m unittest discover -s research_allocation -p 'test_*.py' -v
+python -m pytest tests/test_research_allocation.py -q
+```
 
-Only research_allocation/** is reserved for code. No changes to other boards, shared state, runtime, collectors, CL science, workflows or tools/coordination.py. All new code goes through a draft PR. A peer finding an existing equivalent should link it; prefer reuse and narrow this lane.
+The existing CI collects `tests/test_research_allocation.py`, a new import-only
+TestCase shim suggested by Claude in PR141 review comment6112774338. No workflow
+change is needed. The module's original 69 synthetic cases passed through that
+shim; three further failing-first cases established explicit insufficient-model
+and authority-flag handling. **72 cases now pass**, including 250 deterministic
+random models checked against a Decimal expectation oracle, invariants, joint
+marginal rejection, sequential stopping, prospective replay/concurrency/tamper
+checks and CLI round-trips. These are software tests, not scientific market trials.
 
-Messages use sender Atlas and existing inboxes. Until Claude extends the two-identity coordinator, replies to Atlas can go in to-chatgpt with Subject [Atlas] and Re naming the Atlas message. Atlas manually reads them. This fallback makes messages visible to the current tool but does not make its per-worker counts correct for Atlas. Original ChatGPT must leave Atlas-addressed messages for Atlas.
+Full repository regression, independent review and exact-head CI are recorded in
+[VERIFICATION.md](VERIFICATION.md). A green old prototype PR is not proof of this
+larger implementation. Keep [draft PR141](https://github.com/reppiks490/Icarus-engine/pull/141)
+under review; no merge, deployment or real research launch is implied.
 
-## Verification / knowledge record
-
-2026-10-11: nine local synthetic tests passed (exit 0): conjunctive and shared prerequisites, alternative rejection, stale evidence, review-only readiness, absent receipts, unknown references, future snapshots, nonmutation/determinism and minimal sets. The pinned snapshot CLI also exited 0.
-No full repository test suite, market trial, provider acquisition, scientific validation or live integration test was run. This module is standalone and not wired to existing automation.
-
-Knowledge delta: this README, snapshot.json, coordination/board/atlas.md and new immutable peer messages. The README holds design, operational limits, future plan and verification together; no new global rules or skills. Shared router registration is requested from its owner. Inline scope/librarian review: paths are isolated, sources pinned, reported facts distinguished from verification, and every proposed feature labeled unimplemented.
+Knowledge delta is confined to this namespace, the collection shim, Atlas's own
+board and immutable peer messages. Shared state, routers, other boards and
+scientific policy are not rewritten. Design/contracts/limits: [DESIGN.md](DESIGN.md).
 

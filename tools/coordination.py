@@ -1,4 +1,4 @@
-"""Read the Claude <-> ChatGPT coordination folder: who owes whom a reply, and what each AI is working on.
+"""Read the coordination folder of the AIs working in this repo: who owes whom a reply, and what each is doing.
 
 The protocol is in ``coordination/README.md``. In short:
 
@@ -18,7 +18,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path("coordination")
-AIS = ("claude", "chatgpt")
+AIS = ("claude", "chatgpt", "atlas")   # Atlas: third worker, owner-verified 2026-10-11
 STATUSES = ("planned", "in progress", "blocked", "waiting", "done")
 NAME = re.compile(r"^\d{8}T\d{4}Z-[a-z0-9]+-[a-z0-9-]+\.md$")
 REQUIRED = ("from", "to", "date", "subject", "reply-needed")

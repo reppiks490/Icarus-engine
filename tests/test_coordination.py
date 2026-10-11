@@ -26,13 +26,13 @@ def test_a_reply_closes_the_message_it_names(tmp_path):
     _msg(tmp_path, "chatgpt", "20261011T0510Z-claude-fyi.md", From="Claude", To="ChatGPT",
          Date="2026-10-11T05:10Z", Subject="FYI", **{"Reply-needed": "no"})
     s = co.summary(tmp_path, NOW)
-    assert s["awaiting_reply"] == {"claude": [], "chatgpt": ["20261011T0500Z-claude-hello.md"]}
+    assert s["awaiting_reply"] == {"claude": [], "chatgpt": ["20261011T0500Z-claude-hello.md"], "atlas": []}
 
     _msg(tmp_path, "claude", "20261011T0900Z-chatgpt-re-hello.md", From="ChatGPT", To="Claude",
          Date="2026-10-11T09:00Z", Subject="Re: Hello", Re="20261011T0500Z-claude-hello.md",
          **{"Reply-needed": "no"})
     s = co.summary(tmp_path, NOW)
-    assert s["awaiting_reply"] == {"claude": [], "chatgpt": []}
+    assert s["awaiting_reply"] == {"claude": [], "chatgpt": [], "atlas": []}
     assert s["messages"] == 3 and s["malformed"] == []
 
 
@@ -66,3 +66,21 @@ def test_markdown_lists_both_ais(tmp_path):
     _board(tmp_path, "chatgpt", [("P1", "MAX Pine", "planned", "2026-10-08")])
     text = co.markdown(co.summary(tmp_path, NOW))
     assert "claude: no board" in text and "chatgpt: planned 1" in text
+
+
+def test_atlas_is_a_third_worker_with_its_own_inbox_and_board(tmp_path):
+    _msg(tmp_path, "claude", "20261011T1547Z-atlas-scope.md", From="Atlas", To="Claude",
+         Date="2026-10-11T15:47Z", Subject="Scope", **{"Reply-needed": "yes"})
+    _msg(tmp_path, "atlas", "20261011T2000Z-claude-ask.md", From="Claude", To="Atlas",
+         Date="2026-10-11T20:00Z", Subject="Ask", **{"Reply-needed": "yes"})
+    _board(tmp_path, "atlas", [("AT01", "Planner", "in progress", "2026-10-11")])
+    s = co.summary(tmp_path, NOW)
+    assert s["awaiting_reply"]["claude"] == ["20261011T1547Z-atlas-scope.md"]
+    assert s["awaiting_reply"]["atlas"] == ["20261011T2000Z-claude-ask.md"]
+    assert s["boards"]["atlas"]["counts"] == {"in progress": 1}
+    # a reply sent through the old fallback inbox still closes the message it names
+    _msg(tmp_path, "chatgpt", "20261011T2010Z-claude-atlas-reply.md", From="Claude", To="Atlas",
+         Date="2026-10-11T20:10Z", Subject="[Atlas] Re: Scope", Re="20261011T1547Z-atlas-scope.md",
+         **{"Reply-needed": "no"})
+    assert co.summary(tmp_path, NOW)["awaiting_reply"]["claude"] == []
+    assert "atlas: in progress 1; awaiting its reply: 1" in co.markdown(co.summary(tmp_path, NOW))

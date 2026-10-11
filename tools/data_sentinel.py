@@ -208,7 +208,7 @@ def markdown(report: dict) -> str:
     lines += ["", "## Research", "", f"Champions: {r['champions']}. Pulse variants: {r['pulse']}. "
               f"CL lab last run: {r['cl_last_run']}.", ""]
     if report.get("coordination"):
-        lines += ["## Claude <-> ChatGPT", "", coordination.markdown(report["coordination"]), ""]
+        lines += ["## Coordination (Claude, ChatGPT, Atlas)", "", coordination.markdown(report["coordination"]), ""]
     return "\n".join(lines)
 
 

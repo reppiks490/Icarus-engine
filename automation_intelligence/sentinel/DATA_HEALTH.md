@@ -1,4 +1,4 @@
-# Data health — 2026-10-11 04:16 UTC
+# Data health — 2026-10-11 04:50 UTC
 
 **FAILING** 1 · **BLOCKED** 4 · **STALE** 1 · **DEGRADED** 5 · **OK** 68
 
@@ -6,12 +6,12 @@
 
 | Source | Verdict | Why |
 |---|---|---|
-| workflow:databento-depth-research-context.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/38110352091 |
+| workflow:databento-depth-research-context.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/38111203264 |
 | provider:alpaca | BLOCKED | no key reaches the runner |
 | provider:intrinio | BLOCKED | no key reaches the runner |
 | provider:quiver | BLOCKED | no key reaches the runner |
 | provider:tickstream | BLOCKED | no key reaches the runner |
-| workflow:native-five-research.yml | STALE | last success 3.1 h ago (expected within 3 h) |
+| workflow:native-five-research.yml | STALE | last success 3.6 h ago (expected within 3 h) |
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
 | provider:eodhd | DEGRADED | 21291 rows; 29 endpoints denied by plan |
 | provider:fmp | DEGRADED | key present but 0 rows (COLLECTED_PARTIAL) |
@@ -41,3 +41,8 @@ Vaulted files: {'corpus': 133} (key: HKDF(DATABENTO_API_KEY)). D1 status: {'D1-A
 ## Research
 
 Champions: 0. Pulse variants: {'CANDLES': 'REJECTED', 'HA_HA_FILLS': 'ARTIFACT_REFERENCE', 'HA_REAL_FILLS': 'REJECTED'}. CL lab last run: 2026-10-11T04:16:16.381568+00:00.
+
+## Claude <-> ChatGPT
+
+- claude: done 5, in progress 1, planned 9, waiting 1; awaiting its reply: 0
+- chatgpt: blocked 1, in progress 3, waiting 1; awaiting its reply: 1

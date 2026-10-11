@@ -4,8 +4,8 @@ import json
 import sys
 import sqlite3
 from .bundles import evaluate_bundle
-from .contracts import ModelError, parse_model
-from .decision import evaluate
+from .contracts import InsufficientModelError, ModelError, parse_model
+from .decision import evaluate, flags
 from .journal import Journal, JournalError
 from .robust import compare_scenarios
 from .sequential import evaluate_sequential
@@ -54,7 +54,7 @@ def main(argv=None):
         if args.command == 'validate':
             m = parse_model(read_json(args.model))
             result = {'status': 'VALID_FINITE_MODEL', 'model_hash': m.model_hash,
-                      'market_validated': False, 'execution_authorized': False}
+                      'market_validated': False, **flags()}
         elif args.command == 'evaluate':
             result = evaluate(read_json(args.model))
         elif args.command == 'bundle':
@@ -81,7 +81,8 @@ def main(argv=None):
         print(json.dumps(result, sort_keys=True, indent=2, allow_nan=False))
         return 0
     except (ModelError, JournalError, OSError, ValueError, sqlite3.Error) as exc:
-        print(json.dumps({'status': 'ERROR', 'reason': str(exc), 'execution_authorized': False}),
+        status = 'INSUFFICIENT_MODEL' if isinstance(exc, InsufficientModelError) else 'ERROR'
+        print(json.dumps({'status': status, 'reason': str(exc), **flags()}),
               file=sys.stderr)
         return 2
 

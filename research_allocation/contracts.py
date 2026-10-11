@@ -10,6 +10,10 @@ class ModelError(ValueError):
     pass
 
 
+class InsufficientModelError(ModelError):
+    """Required predictive/decision inputs are missing; never synthesize them."""
+
+
 def canonical(value):
     return json.dumps(value, sort_keys=True, separators=(',', ':'), allow_nan=False)
 
@@ -47,12 +51,16 @@ def number(value, label, low=-1e12, high=1e12):
 
 
 def obj(value, label, required, optional=()):
+    if value is None:
+        raise InsufficientModelError(f'{label} is missing')
     if not isinstance(value, dict):
         raise ModelError(f'{label} must be an object')
     missing = set(required) - value.keys()
     extra = value.keys() - set(required) - set(optional)
-    if missing or extra:
+    if extra:
         raise ModelError(f'{label}: missing={sorted(missing)}, unknown={sorted(extra)}')
+    if missing:
+        raise InsufficientModelError(f'{label}: missing={sorted(missing)}')
     return value
 
 

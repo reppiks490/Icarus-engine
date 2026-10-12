@@ -1,4 +1,4 @@
-# Data health — 2026-10-12 10:46 UTC
+# Data health — 2026-10-12 11:01 UTC
 
 **FAILING** 3 · **BLOCKED** 4 · **STALE** 1 · **DEGRADED** 5 · **OK** 66
 
@@ -8,12 +8,12 @@
 |---|---|---|
 | feed:databento_dx_5m | FAILING | FeedError: Databento historical request failed for DX.v.0: BentoClientError: 422 dataset_unavailable_range Part or all of your request for dataset 'IFUS.IMPACT' |
 | feed:databento_vxm_5m | FAILING | FeedError: Databento historical request failed for VXM.v.0: BentoClientError: 403 license_not_found_unauthorized A live data license is required to access XCBF. |
-| workflow:databento-depth-research-context.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/38221911581 |
+| workflow:databento-depth-research-context.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/38239916445 |
 | provider:alpaca | BLOCKED | no key reaches the runner |
 | provider:intrinio | BLOCKED | no key reaches the runner |
 | provider:quiver | BLOCKED | no key reaches the runner |
 | provider:tickstream | BLOCKED | no key reaches the runner |
-| workflow:native-five-research.yml | STALE | last success 4.3 h ago (expected within 3 h) |
+| workflow:native-five-research.yml | STALE | last success 4.6 h ago (expected within 3 h) |
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
 | provider:eodhd | DEGRADED | 324 rows; 29 endpoints denied by plan |
 | provider:fmp | DEGRADED | 6954 rows; 85 endpoints denied by plan |
@@ -26,14 +26,14 @@ economic_events, feed:btcusd_cb_5m, feed:btcusdt_5m, feed:cboe_skew, feed:cboe_v
 
 ## Order-book data
 
-Vaulted files: {'corpus': 133} (key: HKDF(DATABENTO_API_KEY)). D1 status: {'D1-A': 'INSUFFICIENT_DATA', 'D1-B': 'INSUFFICIENT_DATA', 'days': 0}.
+Vaulted files: {'corpus': 135} (key: HKDF(DATABENTO_API_KEY)). D1 status: {'D1-A': 'INSUFFICIENT_DATA', 'D1-B': 'INSUFFICIENT_DATA', 'days': 0}.
 
 | Budget | Cap | Spent | Left |
 |---|---|---|---|
 | corpus__primary | $11.33 | $0.83 | $10.49 |
 | corpus__secondary | $3.56 | $0.3 | $3.26 |
 | depth__diversifier | $95.0 | $94.99 | $0.01 |
-| depth__index | $93.0 | $92.97 | $0.03 |
+| depth__index | $93.0 | $92.99 | $0.01 |
 | depth__sweep__primary | $35.04 | $26.53 | $8.51 |
 | depth__sweep__secondary | $4.0 | $1.94 | $2.06 |
 | depth__sweep__third | $12.0 | $5.96 | $6.04 |

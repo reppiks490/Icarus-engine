@@ -12,7 +12,7 @@
   },
   "chatgpt_tokens_used": 0,
   "checkpoint_status": "ENCRYPTED_AES256_GCM",
-  "completed_at_utc": "2026-10-12T02:24:42.505209+00:00",
+  "completed_at_utc": "2026-10-12T10:45:05.270997+00:00",
   "databento_excluded": true,
   "execution_authorized": false,
   "paid_model_calls": 0,
@@ -25,27 +25,17 @@
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/custom-discounted-cash-flow"
+          "operation": "fmp:get:/esg-disclosures"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/custom-levered-discounted-cash-flow"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "400",
-          "operation": "fmp:get:/exchange-market-hours"
+          "operation": "fmp:get:/esg-ratings"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/discounted-cash-flow"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/dividends"
+          "operation": "fmp:get:/etf/asset-exposure"
         },
         {
           "asset_specific": true,
@@ -55,42 +45,72 @@
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/earning-call-transcript"
+          "operation": "fmp:get:/etf/country-weightings"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/earning-call-transcript-dates"
+          "operation": "fmp:get:/etf/holdings"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/earnings"
+          "operation": "fmp:get:/etf/info"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/employee-count"
+          "operation": "fmp:get:/etf/sector-weightings"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "400",
+          "operation": "fmp:get:/exchange-market-hours"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/enterprise-values"
+          "operation": "fmp:get:/financial-growth"
         }
       ],
-      "collected_pages": 9,
-      "collected_rows": 508,
+      "collected_pages": 10,
+      "collected_rows": 6954,
       "credential_present": true,
       "endpoint_count": 230,
       "requests": 20,
-      "research_features": [],
+      "research_features": [
+        {
+          "features": {
+            "price": {
+              "maximum": 225.0,
+              "mean": 15.755671999999999,
+              "minimum": 0.11,
+              "samples": 50,
+              "standard_deviation": 40.728093684556555
+            }
+          },
+          "operation": "fmp:get:/biggest-gainers"
+        },
+        {
+          "features": {
+            "price": {
+              "maximum": 148.58,
+              "mean": 8.18471,
+              "minimum": 0.0753,
+              "samples": 50,
+              "standard_deviation": 21.82828378010741
+            }
+          },
+          "operation": "fmp:get:/biggest-losers"
+        }
+      ],
       "status": "COLLECTED_PARTIAL",
       "substantive_work_performed": true
     }
   },
   "raw_payloads_public": false,
   "requests": 20,
-  "run_id": "providers-38195384716-1-fmp",
+  "run_id": "providers-38237822263-1-fmp",
   "schema_version": "icarus-provider-collection-cycle-v1",
-  "started_at_utc": "2026-10-12T02:20:31.114459+00:00"
+  "started_at_utc": "2026-10-12T10:40:55.933706+00:00"
 }

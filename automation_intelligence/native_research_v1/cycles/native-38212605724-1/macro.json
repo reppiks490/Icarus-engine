@@ -1,0 +1,89 @@
+{
+  "automation_id": "github-native-research-v1",
+  "blockers": [
+    "Release titles establish publication, not macro surprise or causal impact.",
+    "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+    "No consensus estimates acquired; economic surprise remains unknown."
+  ],
+  "chatgpt_tokens_used": 0,
+  "code_revision": "c03d58448d96223e014218f7983eb261cf4ef3eb",
+  "completed_at_utc": "2026-10-12T06:28:08.590313Z",
+  "event_paths": [],
+  "evidence": [
+    "automation_intelligence/native_research_v1/cycles/native-38212605724-1/evidence.json"
+  ],
+  "execution_authorized": false,
+  "input_sha256": "dd250c25694cc0e5a3e6a11c402129f1bcd6a0a4b71e783ffbce673177f940db",
+  "lane": "macro",
+  "local_interpretation": {
+    "authority": "UNVERIFIED_MODEL_INFERENCE",
+    "reason": "No semantic change",
+    "status": "NOT_RUN"
+  },
+  "measurements": {
+    "gaps": [
+      "Release titles establish publication, not macro surprise or causal impact.",
+      "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+      "No consensus estimates acquired; economic surprise remains unknown."
+    ],
+    "limits": "Publication and daily change are facts; surprise, causality and intraday propagation remain unverified.",
+    "releases": [
+      {
+        "published_epoch": 1791554400.0,
+        "retrieval_finished": 1791786475.6986942,
+        "retrieval_started": 1791786475.6290565,
+        "source": "FED",
+        "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/other20261009a.htm",
+        "title": "Federal Reserve Board releases results of the 2025 Survey of Consumer Finances, which provides the public and policymakers with detailed insights into the economic condition of American families"
+      },
+      {
+        "published_epoch": 1791554429.0,
+        "retrieval_finished": 1791786476.3255413,
+        "retrieval_started": 1791786476.1744633,
+        "source": "BLS",
+        "source_url": "https://www.bls.gov/bls/",
+        "title": "Major Economic Indicators Latest Numbers"
+      }
+    ],
+    "series": [
+      {
+        "change": -0.0600000000000005,
+        "date": "2026-10-08",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-10-07",
+        "series": "DGS10",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10",
+        "value": 5.22
+      },
+      {
+        "change": -0.019999999999999574,
+        "date": "2026-10-08",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-10-07",
+        "series": "DGS2",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2",
+        "value": 4.75
+      },
+      {
+        "change": -0.40340000000000487,
+        "date": "2026-10-02",
+        "freshness": "STALE",
+        "prior_date": "2026-10-01",
+        "series": "DTWEXBGS",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DTWEXBGS",
+        "value": 121.3848
+      }
+    ],
+    "status": "VERIFIED",
+    "summary": "2 dated official release headlines; 3 daily macro series measured."
+  },
+  "outcome": "NO_MATERIAL_DELTA",
+  "paid_model_calls": 0,
+  "prior_receipt_path": "automation_intelligence/native_research_v1/cycles/native-38186127302-1/macro.json",
+  "run_id": "native-38212605724-1-macro",
+  "schema_version": "icarus-research-run-v1",
+  "started_at_utc": "2026-10-12T06:27:56.738199Z",
+  "substantive_work_performed": true,
+  "summary": "2 dated official release headlines; 3 daily macro series measured.",
+  "worker": "GITHUB_ACTIONS"
+}

@@ -1,0 +1,72 @@
+{
+  "automation_id": "github-native-research-v1",
+  "blockers": [
+    "Release titles establish publication, not macro surprise or causal impact.",
+    "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+    "No consensus estimates acquired; economic surprise remains unknown."
+  ],
+  "chatgpt_tokens_used": 0,
+  "code_revision": "1c99758756a1329e6b77dbd55166be48913a19ef",
+  "completed_at_utc": "2026-10-12T23:11:57.033019Z",
+  "event_paths": [],
+  "evidence": [
+    "automation_intelligence/native_research_v1/cycles/native-38320816637-1/evidence.json"
+  ],
+  "execution_authorized": false,
+  "input_sha256": "30a938f885d9dac555e9722a271367c649382e2d74aed42894fb2858f1224234",
+  "lane": "macro",
+  "local_interpretation": {
+    "authority": "UNVERIFIED_MODEL_INFERENCE",
+    "reason": "No semantic change",
+    "status": "NOT_RUN"
+  },
+  "measurements": {
+    "gaps": [
+      "Release titles establish publication, not macro surprise or causal impact.",
+      "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+      "No consensus estimates acquired; economic surprise remains unknown."
+    ],
+    "limits": "Publication and daily change are facts; surprise, causality and intraday propagation remain unverified.",
+    "releases": [],
+    "series": [
+      {
+        "change": -0.0600000000000005,
+        "date": "2026-10-08",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-10-07",
+        "series": "DGS10",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10",
+        "value": 5.22
+      },
+      {
+        "change": -0.019999999999999574,
+        "date": "2026-10-08",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-10-07",
+        "series": "DGS2",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2",
+        "value": 4.75
+      },
+      {
+        "change": -0.40340000000000487,
+        "date": "2026-10-02",
+        "freshness": "STALE",
+        "prior_date": "2026-10-01",
+        "series": "DTWEXBGS",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DTWEXBGS",
+        "value": 121.3848
+      }
+    ],
+    "status": "VERIFIED",
+    "summary": "0 dated official release headlines; 3 daily macro series measured."
+  },
+  "outcome": "NO_MATERIAL_DELTA",
+  "paid_model_calls": 0,
+  "prior_receipt_path": "automation_intelligence/native_research_v1/cycles/native-38274529302-1/macro.json",
+  "run_id": "native-38320816637-1-macro",
+  "schema_version": "icarus-research-run-v1",
+  "started_at_utc": "2026-10-12T23:11:56.983494Z",
+  "substantive_work_performed": true,
+  "summary": "0 dated official release headlines; 3 daily macro series measured.",
+  "worker": "GITHUB_ACTIONS"
+}

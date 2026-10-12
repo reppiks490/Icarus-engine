@@ -3,16 +3,16 @@
     "asset_datasets_collected": 13,
     "asset_templates": 109,
     "assets": 6770,
-    "collected_operations": 42,
+    "collected_operations": 32,
     "denied_operations": 85,
     "operations": 230,
-    "pending_pages": 1,
+    "pending_pages": 12,
     "qualification": "INCOMPLETE_UNTIL_EVERY_OPERATION_ASSET_PAGE_TIME_RANGE_AND_TRANSPORT_IS_VERIFIED",
     "unresolved_operations": 0
   },
   "chatgpt_tokens_used": 0,
   "checkpoint_status": "ENCRYPTED_AES256_GCM",
-  "completed_at_utc": "2026-10-12T10:45:05.270997+00:00",
+  "completed_at_utc": "2026-10-12T20:20:17.834363+00:00",
   "databento_excluded": true,
   "execution_authorized": false,
   "paid_model_calls": 0,
@@ -25,92 +25,67 @@
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/esg-disclosures"
+          "operation": "fmp:get:/financial-reports-json"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/esg-ratings"
+          "operation": "fmp:get:/financial-reports-xlsx"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/etf/asset-exposure"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "400",
-          "operation": "fmp:get:/holidays-by-exchange"
+          "operation": "fmp:get:/financial-scores"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/etf/country-weightings"
+          "operation": "fmp:get:/financial-statement-full-as-reported"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/etf/holdings"
+          "operation": "fmp:get:/funds/disclosure"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/etf/info"
+          "operation": "fmp:get:/funds/disclosure-dates"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/etf/sector-weightings"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "400",
-          "operation": "fmp:get:/exchange-market-hours"
+          "operation": "fmp:get:/funds/disclosure-holders-latest"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/financial-growth"
+          "operation": "fmp:get:/governance-executive-compensation"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/grades"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/grades-consensus"
         }
       ],
       "collected_pages": 10,
-      "collected_rows": 6954,
+      "collected_rows": 366,
       "credential_present": true,
       "endpoint_count": 230,
       "requests": 20,
-      "research_features": [
-        {
-          "features": {
-            "price": {
-              "maximum": 225.0,
-              "mean": 15.755671999999999,
-              "minimum": 0.11,
-              "samples": 50,
-              "standard_deviation": 40.728093684556555
-            }
-          },
-          "operation": "fmp:get:/biggest-gainers"
-        },
-        {
-          "features": {
-            "price": {
-              "maximum": 148.58,
-              "mean": 8.18471,
-              "minimum": 0.0753,
-              "samples": 50,
-              "standard_deviation": 21.82828378010741
-            }
-          },
-          "operation": "fmp:get:/biggest-losers"
-        }
-      ],
+      "research_features": [],
       "status": "COLLECTED_PARTIAL",
       "substantive_work_performed": true
     }
   },
   "raw_payloads_public": false,
   "requests": 20,
-  "run_id": "providers-38237822263-1-fmp",
+  "run_id": "providers-38303047947-1-fmp",
   "schema_version": "icarus-provider-collection-cycle-v1",
-  "started_at_utc": "2026-10-12T10:40:55.933706+00:00"
+  "started_at_utc": "2026-10-12T20:16:03.525820+00:00"
 }

@@ -5,18 +5,18 @@
    "integrity": {
     "dup_index": 0,
     "first": "2026-10-01T18:50:00+00:00",
-    "last": "2026-10-11T18:25:00+00:00",
+    "last": "2026-10-12T00:45:00+00:00",
     "max_gap_minutes": 5.0,
     "non_monotonic": 0,
     "nonpositive": 0,
     "ohlc_violations": 0,
-    "rows": 2876
+    "rows": 2952
    },
    "kind": "coinbase",
    "name": "btcusd_cb_5m",
    "notes": [],
    "requests": null,
-   "sha256": "b63d11f0acf9d7201d52ba8100524b3b14529c7a7a4cb3c509649d3874bff3a7",
+   "sha256": "de554a63f3e7905207b5a53674ea7ceafd5f0b45ca4cde36e4018348158516c1",
    "source": null,
    "status": "ok"
   },
@@ -34,8 +34,10 @@
    },
    "kind": "binance",
    "name": "btcusdt_5m",
-   "notes": [],
-   "requests": 0,
+   "notes": [
+    "2026-10-11: HTTP 404 for https://data.binance.vision/data/spot/daily/klines/BTCUSDT/5m/BTCUSDT-5m-2026-10-11.zip"
+   ],
+   "requests": 1,
    "sha256": "a79ed5f89ba536bd2f19b2cb02d50ebe490b7064fdb08cd80a895fc49b9f6d86",
    "source": null,
    "status": "ok"
@@ -211,7 +213,7 @@
     "symbol=6A.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-09T20:55:00+00:00..2026-10-11T10:00:00+00:00",
+    "range=2026-10-09T20:55:00+00:00..2026-10-11T16:20:00+00:00",
     "account=primary"
    ],
    "requests": 1,
@@ -241,7 +243,7 @@
     "symbol=6B.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-09T20:55:00+00:00..2026-10-11T10:00:00+00:00",
+    "range=2026-10-09T20:55:00+00:00..2026-10-11T16:20:00+00:00",
     "account=primary"
    ],
    "requests": 1,
@@ -271,7 +273,7 @@
     "symbol=6E.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-09T20:55:00+00:00..2026-10-11T10:00:00+00:00",
+    "range=2026-10-09T20:55:00+00:00..2026-10-11T16:20:00+00:00",
     "account=primary"
    ],
    "requests": 1,
@@ -301,7 +303,7 @@
     "symbol=6J.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-09T20:55:00+00:00..2026-10-11T10:00:00+00:00",
+    "range=2026-10-09T20:55:00+00:00..2026-10-11T16:20:00+00:00",
     "account=primary"
    ],
    "requests": 1,
@@ -318,26 +320,26 @@
    "integrity": {
     "dup_index": 0,
     "first": "2024-09-01T22:00:00+00:00",
-    "last": "2026-10-11T06:50:00+00:00",
+    "last": "2026-10-11T15:55:00+00:00",
     "max_gap_minutes": 4385.0,
     "non_monotonic": 0,
     "nonpositive": 0,
     "ohlc_violations": 0,
-    "rows": 142133
+    "rows": 142151
    },
    "kind": "databento",
    "name": "databento_btc_5m",
    "notes": [
     "symbol=BTC.v.0",
-    "estimated_cost_usd=0.000047",
+    "estimated_cost_usd=0.000080",
     "request_performed=True",
-    "range=2026-10-10T23:00:00+00:00..2026-10-11T10:00:00+00:00",
+    "range=2026-10-11T06:50:00+00:00..2026-10-11T16:20:00+00:00",
     "account=primary"
    ],
    "requests": 1,
    "research_role": "core",
    "root": "BTC",
-   "sha256": "baaafda3387d9b7f755c6a398981b595c55d0dba9b480231e6b0750aaf1de40d",
+   "sha256": "802aa4036a6e6497f654935972a9aaab809dc428595d93be8ddb9b4e6a83e64a",
    "source": null,
    "status": "ok"
   },
@@ -361,7 +363,7 @@
     "symbol=CL.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-09T20:55:00+00:00..2026-10-11T10:00:00+00:00",
+    "range=2026-10-09T20:55:00+00:00..2026-10-11T16:20:00+00:00",
     "account=primary"
    ],
    "requests": 1,
@@ -374,17 +376,32 @@
   "databento_dx_5m": {
    "continuous_symbol": "DX.v.0",
    "dataset": "IFUS.IMPACT",
-   "error": "FeedError: Databento historical request failed for DX.v.0: BentoClientError: 422 dataset_unavailable_range\nPart or all of your request for dataset 'IFUS.IMPACT' requires a subscription and/or license to access. Try again with an end time before 2026-10-10T22:05:00.000000000Z.\ndocumentation: https://",
+   "error": null,
    "integrity": {
-    "rows": 0
+    "dup_index": 0,
+    "first": "2025-07-01T00:00:00+00:00",
+    "last": "2026-10-09T20:55:00+00:00",
+    "max_gap_minutes": 3290.0,
+    "non_monotonic": 0,
+    "nonpositive": 0,
+    "ohlc_violations": 0,
+    "rows": 83616
    },
    "kind": "databento",
    "name": "databento_dx_5m",
+   "notes": [
+    "symbol=DX.v.0",
+    "estimated_cost_usd=0.000130",
+    "request_performed=True",
+    "range=2026-10-09T20:55:00+00:00..2026-10-11T16:20:00+00:00",
+    "account=secondary"
+   ],
+   "requests": 1,
    "research_role": "dollar_index",
    "root": "DX",
-   "sha256": null,
+   "sha256": "173da6bd7471a31d1671e5be9c649b1374124023b5767013d403b0ffe3dfb36f",
    "source": null,
-   "status": "error"
+   "status": "ok"
   },
   "databento_es_5m": {
    "continuous_symbol": "ES.v.0",
@@ -406,7 +423,7 @@
     "symbol=ES.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-09T20:55:00+00:00..2026-10-11T10:00:00+00:00",
+    "range=2026-10-09T20:55:00+00:00..2026-10-11T16:20:00+00:00",
     "account=primary"
    ],
    "requests": 1,
@@ -436,7 +453,7 @@
     "symbol=GC.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-09T20:55:00+00:00..2026-10-11T10:00:00+00:00",
+    "range=2026-10-09T20:55:00+00:00..2026-10-11T16:20:00+00:00",
     "account=primary"
    ],
    "requests": 1,
@@ -466,7 +483,7 @@
     "symbol=HG.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-09T20:55:00+00:00..2026-10-11T10:00:00+00:00",
+    "range=2026-10-09T20:55:00+00:00..2026-10-11T16:20:00+00:00",
     "account=primary"
    ],
    "requests": 1,
@@ -496,7 +513,7 @@
     "symbol=M2K.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-09T20:55:00+00:00..2026-10-11T10:00:00+00:00",
+    "range=2026-10-09T20:55:00+00:00..2026-10-11T16:20:00+00:00",
     "account=primary"
    ],
    "requests": 1,
@@ -513,26 +530,26 @@
    "integrity": {
     "dup_index": 0,
     "first": "2024-09-01T22:00:00+00:00",
-    "last": "2026-10-11T09:30:00+00:00",
+    "last": "2026-10-11T16:15:00+00:00",
     "max_gap_minutes": 4385.0,
     "non_monotonic": 0,
     "nonpositive": 0,
     "ohlc_violations": 0,
-    "rows": 154872
+    "rows": 154914
    },
    "kind": "databento",
    "name": "databento_mbt_5m",
    "notes": [
     "symbol=MBT.v.0",
-    "estimated_cost_usd=0.000350",
+    "estimated_cost_usd=0.000281",
     "request_performed=True",
-    "range=2026-10-10T23:15:00+00:00..2026-10-11T10:00:00+00:00",
+    "range=2026-10-11T09:30:00+00:00..2026-10-11T16:20:00+00:00",
     "account=primary"
    ],
    "requests": 1,
    "research_role": "core",
    "root": "MBT",
-   "sha256": "bd912f1898bc15d8d3accdb523d41cb9a1a5acb4c6f8fb8de14870b6574fdb24",
+   "sha256": "36e90c092ad5a7966749ae37e9074986352940b1079fbe7360e9b2f46d6949c4",
    "source": null,
    "status": "ok"
   },
@@ -556,7 +573,7 @@
     "symbol=MCL.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-09T20:55:00+00:00..2026-10-11T10:00:00+00:00",
+    "range=2026-10-09T20:55:00+00:00..2026-10-11T16:20:00+00:00",
     "account=primary"
    ],
    "requests": 1,
@@ -586,7 +603,7 @@
     "symbol=MES.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-09T20:55:00+00:00..2026-10-11T10:00:00+00:00",
+    "range=2026-10-09T20:55:00+00:00..2026-10-11T16:20:00+00:00",
     "account=primary"
    ],
    "requests": 1,
@@ -616,7 +633,7 @@
     "symbol=MGC.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-09T20:55:00+00:00..2026-10-11T10:00:00+00:00",
+    "range=2026-10-09T20:55:00+00:00..2026-10-11T16:20:00+00:00",
     "account=primary"
    ],
    "requests": 1,
@@ -646,7 +663,7 @@
     "symbol=MNQ.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-09T20:55:00+00:00..2026-10-11T10:00:00+00:00",
+    "range=2026-10-09T20:55:00+00:00..2026-10-11T16:20:00+00:00",
     "account=primary"
    ],
    "requests": 1,
@@ -676,7 +693,7 @@
     "symbol=MYM.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-09T20:55:00+00:00..2026-10-11T10:00:00+00:00",
+    "range=2026-10-09T20:55:00+00:00..2026-10-11T16:20:00+00:00",
     "account=primary"
    ],
    "requests": 1,
@@ -706,7 +723,7 @@
     "symbol=NG.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-09T20:55:00+00:00..2026-10-11T10:00:00+00:00",
+    "range=2026-10-09T20:55:00+00:00..2026-10-11T16:20:00+00:00",
     "account=primary"
    ],
    "requests": 1,
@@ -736,7 +753,7 @@
     "symbol=NQ.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-09T20:55:00+00:00..2026-10-11T10:00:00+00:00",
+    "range=2026-10-09T20:55:00+00:00..2026-10-11T16:20:00+00:00",
     "account=primary"
    ],
    "requests": 1,
@@ -766,7 +783,7 @@
     "symbol=PA.v.0",
     "estimated_cost_usd=0.000015",
     "request_performed=True",
-    "range=2026-10-09T20:55:00+00:00..2026-10-11T10:00:00+00:00",
+    "range=2026-10-09T20:55:00+00:00..2026-10-11T16:20:00+00:00",
     "account=primary"
    ],
    "requests": 1,
@@ -796,7 +813,7 @@
     "symbol=PL.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-09T20:55:00+00:00..2026-10-11T10:00:00+00:00",
+    "range=2026-10-09T20:55:00+00:00..2026-10-11T16:20:00+00:00",
     "account=primary"
    ],
    "requests": 1,
@@ -826,7 +843,7 @@
     "symbol=RTY.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-09T20:55:00+00:00..2026-10-11T10:00:00+00:00",
+    "range=2026-10-09T20:55:00+00:00..2026-10-11T16:20:00+00:00",
     "account=primary"
    ],
    "requests": 1,
@@ -856,7 +873,7 @@
     "symbol=SI.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-09T20:55:00+00:00..2026-10-11T10:00:00+00:00",
+    "range=2026-10-09T20:55:00+00:00..2026-10-11T16:20:00+00:00",
     "account=primary"
    ],
    "requests": 1,
@@ -886,7 +903,7 @@
     "symbol=SIL.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-09T20:55:00+00:00..2026-10-11T10:00:00+00:00",
+    "range=2026-10-09T20:55:00+00:00..2026-10-11T16:20:00+00:00",
     "account=primary"
    ],
    "requests": 1,
@@ -916,7 +933,7 @@
     "symbol=SR3.v.0",
     "estimated_cost_usd=0.000015",
     "request_performed=True",
-    "range=2026-10-09T20:55:00+00:00..2026-10-11T10:00:00+00:00",
+    "range=2026-10-09T20:55:00+00:00..2026-10-11T16:20:00+00:00",
     "account=primary"
    ],
    "requests": 1,
@@ -929,17 +946,32 @@
   "databento_vxm_5m": {
    "continuous_symbol": "VXM.v.0",
    "dataset": "XCBF.PITCH",
-   "error": "FeedError: Databento historical request failed for VXM.v.0: BentoClientError: 403 license_not_found_unauthorized\nA live data license is required to access XCBF.PITCH data after 2026-10-10T22:00:00.000000000Z.\ndocumentation: https://databento.com/docs",
+   "error": null,
    "integrity": {
-    "rows": 0
+    "dup_index": 0,
+    "first": "2025-07-01T00:00:00+00:00",
+    "last": "2026-10-09T20:55:00+00:00",
+    "max_gap_minutes": 3395.0,
+    "non_monotonic": 0,
+    "nonpositive": 0,
+    "ohlc_violations": 0,
+    "rows": 59705
    },
    "kind": "databento",
    "name": "databento_vxm_5m",
+   "notes": [
+    "symbol=VXM.v.0",
+    "estimated_cost_usd=0.000261",
+    "request_performed=True",
+    "range=2026-10-09T20:55:00+00:00..2026-10-11T16:20:00+00:00",
+    "account=secondary"
+   ],
+   "requests": 1,
    "research_role": "volatility",
    "root": "VXM",
-   "sha256": null,
+   "sha256": "19567aa54ffd0ba35521cce33f36ab53a7e75eec4522fa9634af5dbeb8dcb0df",
    "source": null,
-   "status": "error"
+   "status": "ok"
   },
   "databento_ym_5m": {
    "continuous_symbol": "YM.v.0",
@@ -961,7 +993,7 @@
     "symbol=YM.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-09T20:55:00+00:00..2026-10-11T10:00:00+00:00",
+    "range=2026-10-09T20:55:00+00:00..2026-10-11T16:20:00+00:00",
     "account=primary"
    ],
    "requests": 1,
@@ -991,7 +1023,7 @@
     "symbol=ZB.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-09T20:55:00+00:00..2026-10-11T10:00:00+00:00",
+    "range=2026-10-09T20:55:00+00:00..2026-10-11T16:20:00+00:00",
     "account=primary"
    ],
    "requests": 1,
@@ -1021,7 +1053,7 @@
     "symbol=ZC.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-09T18:15:00+00:00..2026-10-11T10:00:00+00:00",
+    "range=2026-10-09T18:15:00+00:00..2026-10-11T16:20:00+00:00",
     "account=primary"
    ],
    "requests": 1,
@@ -1051,7 +1083,7 @@
     "symbol=ZF.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-09T20:55:00+00:00..2026-10-11T10:00:00+00:00",
+    "range=2026-10-09T20:55:00+00:00..2026-10-11T16:20:00+00:00",
     "account=primary"
    ],
    "requests": 1,
@@ -1081,7 +1113,7 @@
     "symbol=ZN.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-09T20:55:00+00:00..2026-10-11T10:00:00+00:00",
+    "range=2026-10-09T20:55:00+00:00..2026-10-11T16:20:00+00:00",
     "account=primary"
    ],
    "requests": 1,
@@ -1111,7 +1143,7 @@
     "symbol=ZS.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-09T18:15:00+00:00..2026-10-11T10:00:00+00:00",
+    "range=2026-10-09T18:15:00+00:00..2026-10-11T16:20:00+00:00",
     "account=primary"
    ],
    "requests": 1,
@@ -1141,7 +1173,7 @@
     "symbol=ZT.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-09T20:55:00+00:00..2026-10-11T10:00:00+00:00",
+    "range=2026-10-09T20:55:00+00:00..2026-10-11T16:20:00+00:00",
     "account=primary"
    ],
    "requests": 1,
@@ -1171,7 +1203,7 @@
     "symbol=ZW.v.0",
     "estimated_cost_usd=0.000018",
     "request_performed=True",
-    "range=2026-10-09T18:15:00+00:00..2026-10-11T10:00:00+00:00",
+    "range=2026-10-09T18:15:00+00:00..2026-10-11T16:20:00+00:00",
     "account=primary"
    ],
    "requests": 1,
@@ -1195,8 +1227,10 @@
    },
    "kind": "binance",
    "name": "ethusdt_5m",
-   "notes": [],
-   "requests": 0,
+   "notes": [
+    "2026-10-11: HTTP 404 for https://data.binance.vision/data/spot/daily/klines/ETHUSDT/5m/ETHUSDT-5m-2026-10-11.zip"
+   ],
+   "requests": 1,
    "sha256": "f1fa056013239be7290062ac7fa40232002d3a5a760d801f08883f30a1ee50be",
    "source": null,
    "status": "ok"
@@ -1376,6 +1410,6 @@
    "status": "ok"
   }
  },
- "generated_at": "2026-10-11T18:27:24.966397+00:00",
+ "generated_at": "2026-10-12T00:45:06.600731+00:00",
  "schema": "cl_lab.feeds.manifest/1"
 }

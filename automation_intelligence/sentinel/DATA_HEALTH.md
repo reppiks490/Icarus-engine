@@ -1,4 +1,4 @@
-# Data health — 2026-10-13 00:28 UTC
+# Data health — 2026-10-13 00:34 UTC
 
 **FAILING** 3 · **BLOCKED** 4 · **STALE** 3 · **DEGRADED** 5 · **OK** 64
 
@@ -13,9 +13,9 @@
 | provider:intrinio | BLOCKED | no key reaches the runner |
 | provider:quiver | BLOCKED | no key reaches the runner |
 | provider:tickstream | BLOCKED | no key reaches the runner |
-| workflow:official-economic-events.yml | STALE | last success 9.0 h ago (expected within 8 h) |
-| workflow:provider-exhaustive-collection.yml | STALE | last success 4.1 h ago (expected within 3 h) |
-| workflow:sec-edgar-data.yml | STALE | last success 5.5 h ago (expected within 3 h) |
+| workflow:official-economic-events.yml | STALE | last success 9.1 h ago (expected within 8 h) |
+| workflow:provider-exhaustive-collection.yml | STALE | last success 4.2 h ago (expected within 3 h) |
+| workflow:sec-edgar-data.yml | STALE | last success 5.6 h ago (expected within 3 h) |
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
 | provider:eodhd | DEGRADED | 2050 rows; 29 endpoints denied by plan |
 | provider:fmp | DEGRADED | 366 rows; 85 endpoints denied by plan |

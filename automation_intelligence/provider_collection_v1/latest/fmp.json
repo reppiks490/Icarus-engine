@@ -3,16 +3,16 @@
     "asset_datasets_collected": 7,
     "asset_templates": 109,
     "assets": 6770,
-    "collected_operations": 28,
+    "collected_operations": 38,
     "denied_operations": 85,
     "operations": 230,
-    "pending_pages": 23,
+    "pending_pages": 13,
     "qualification": "INCOMPLETE_UNTIL_EVERY_OPERATION_ASSET_PAGE_TIME_RANGE_AND_TRANSPORT_IS_VERIFIED",
     "unresolved_operations": 0
   },
   "chatgpt_tokens_used": 0,
   "checkpoint_status": "ENCRYPTED_AES256_GCM",
-  "completed_at_utc": "2026-10-13T02:38:00.136742+00:00",
+  "completed_at_utc": "2026-10-13T10:32:47.274520+00:00",
   "databento_excluded": true,
   "execution_authorized": false,
   "paid_model_calls": 0,
@@ -25,72 +25,92 @@
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/grades-historical"
+          "operation": "fmp:get:/historical-price-eod/full"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/historical-chart/15min"
+          "operation": "fmp:get:/historical-price-eod/light"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/historical-chart/1hour"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/historical-chart/1min"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/historical-chart/30min"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/historical-chart/4hour"
+          "operation": "fmp:get:/historical-price-eod/non-split-adjusted"
         },
         {
           "asset_specific": true,
           "failure_code": "400",
-          "operation": "fmp:get:/exchange-market-hours"
+          "operation": "fmp:get:/holidays-by-exchange"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/historical-chart/5min"
+          "operation": "fmp:get:/house-trades"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/historical-employee-count"
+          "operation": "fmp:get:/income-statement"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/historical-market-capitalization"
+          "operation": "fmp:get:/income-statement-as-reported"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/historical-price-eod/dividend-adjusted"
+          "operation": "fmp:get:/income-statement-growth"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/income-statement-ttm"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/insider-trading/statistics"
         }
       ],
-      "collected_pages": 9,
-      "collected_rows": 321,
+      "collected_pages": 10,
+      "collected_rows": 527,
       "credential_present": true,
       "endpoint_count": 230,
       "requests": 20,
-      "research_features": [],
+      "research_features": [
+        {
+          "features": {
+            "price": {
+              "maximum": 50410.8,
+              "mean": 540.2779109999998,
+              "minimum": 0.0,
+              "samples": 100,
+              "standard_deviation": 5012.845625914238
+            }
+          },
+          "operation": "fmp:get:/insider-trading/latest"
+        },
+        {
+          "features": {
+            "price": {
+              "maximum": 226.32,
+              "mean": 24.687502,
+              "minimum": 0.0515,
+              "samples": 50,
+              "standard_deviation": 44.45804428632231
+            }
+          },
+          "operation": "fmp:get:/most-actives"
+        }
+      ],
       "status": "COLLECTED_PARTIAL",
       "substantive_work_performed": true
     }
   },
   "raw_payloads_public": false,
   "requests": 20,
-  "run_id": "providers-38337439541-1-fmp",
+  "run_id": "providers-38383567639-1-fmp",
   "schema_version": "icarus-provider-collection-cycle-v1",
-  "started_at_utc": "2026-10-13T02:33:46.063800+00:00"
+  "started_at_utc": "2026-10-13T10:28:34.504127+00:00"
 }

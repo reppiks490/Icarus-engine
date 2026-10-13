@@ -64,7 +64,7 @@ these hand-overs. No research trials were run in this resumed Codex session.
 | M02 | Component acceptance, independent leakage review and traceability/certification | planned | owner-actions mission; no global success claim | 2026-10-11 |
 | S01 | Containment re-review passes; rights and history exposure remain unresolved | waiting | [Engine135](https://github.com/reppiks490/Icarus-engine/pull/135), approved97677bef; owner-actions12 exposure receipt | 2026-10-11 |
 | P01 | Master Pump identity, delivery, restart and truthful observability | planned | reserve bounded repository-qualified paths first | 2026-10-11 |
-| U01 | Owner-priority animation reference audit and browser baseline; scoped implementation awaits Dropbox access and UI integration split | blocked | newest Dropbox upload not accessible yet; Claude Code UI work preserved; candidate new paths below | 2026-10-13 |
+| U01 | Reference downloaded, verified and inspected; implement isolated nebula/contour choreography and bounded reviewable hooks | in progress | codex/reference-cosmic-animation-20261013 in Icarus; Claude Code broad UI preserved, integration reviewed before merge | 2026-10-13 |
 | E01 | Measured architecture experiments and verified transfer | planned | define hypothesis, baseline and bounded paths first | 2026-10-11 |
 | DB84 | Keep original intact; agree P2/P3, defer P1 under no-automation-change limit | waiting | [Engine84](https://github.com/reppiks490/Icarus-engine/pull/84), open head8ad1d7eb08305011a43d32dc0c696bc0bd69ecdf | 2026-10-11 |
 | MAX-Pine | Parked; preserve source/design/plan and incomplete original transport | waiting | max-pine-implementation add4d62211aadfa09924db589842c9bb94943c20 | 2026-10-11 |
@@ -145,3 +145,26 @@ these hand-overs. No research trials were run in this resumed Codex session.
 - Verification will compare actual motion with the reference, cover desktop/touch,
   reduced motion, scene lifecycle, frame times and read-only behavior. Existing
   backend packages remain saved and do not transfer to another worker.
+
+## U01 reference available and implementation claim (2026-10-13T05:12Z)
+
+- Dropbox file tools are available in this new turn. Retrieved the newest root
+  upload, Video Oct12 2026,9 12 14PM.mov (uploaded2026-10-13T04:46:37Z),
+  42,780,477bytes. Original local file is unchanged; Dropbox content hash matches
+  583f3ae95875307ca16d2dd85ca0e614a107737826ac0a78bb8fba809a29dc1a.
+  Visual analysis of its22.84second timeline supersedes the earlier access blocker.
+- Codex claims new Icarus files: icarus_engine/reference-choreography.js and .css,
+  tests_engine/reference_choreography_lifecycle.cjs,
+  tests_engine/test_reference_choreography.py, and docs/ui/REFERENCE_CHOREOGRAPHY.md.
+  They implement original procedural nebula material, dark depth contours with
+  luminous rims and coherent camera/light motion using existing motion lifecycle.
+- dashboard.html script/style includes and server.py's exact static-asset tuple
+  are proposed narrow integration hooks in an isolated PR. Do not merge them
+  around Claude Code's unpublished UI changes; peer review must establish the
+  current integration base. Broad existing UI files, world modules and artwork
+  are preserved. No source video/frame/audio enters public git.
+- Design targets cinematic scenery with readable text, reduced-motion/offscreen
+  stops, bounded GPU resolution and graceful unavailable/lost-context fallback.
+  Existing dashboard controls/data/execution/automation/registry behavior is outside
+  this change. Shader output is an original approximation of the reference's
+  visual language, not a claim of matching authored anime production in full.

@@ -35,7 +35,11 @@ K1 provider collector/workflow/tests, acquisition/vault/depth/SEC source health,
 CL strategy science, and Engine state/instruction files. Codex owns Icarus consumer,
 Brain, original archive verification, hybrid lane contracts, mission evidence and
 functional runtime. The owner reserved UI, aesthetics and animations for
-Claude Code on2026-10-11; Codex leaves those files alone. Atlas owns
+Claude Code on2026-10-11. On2026-10-13 the owner made animation upgrades against
+the newest Dropbox upload the immediate Codex priority. Codex is auditing the
+reference and browser baseline and proposing new choreography files; Claude
+Code's existing UI files and unpublished work remain preserved. Shared integration
+hooks require a concrete file-level split through the inbox before edits. Atlas owns
 research_allocation/** and its owner-transferred Icarus discovery-registry
 foundation (AT04) paths; no Brain/J01/mission/collector ownership transfers.
 Codex reviews Claude's changes; Engine rules affecting Codex require
@@ -60,7 +64,7 @@ these hand-overs. No research trials were run in this resumed Codex session.
 | M02 | Component acceptance, independent leakage review and traceability/certification | planned | owner-actions mission; no global success claim | 2026-10-11 |
 | S01 | Containment re-review passes; rights and history exposure remain unresolved | waiting | [Engine135](https://github.com/reppiks490/Icarus-engine/pull/135), approved97677bef; owner-actions12 exposure receipt | 2026-10-11 |
 | P01 | Master Pump identity, delivery, restart and truthful observability | planned | reserve bounded repository-qualified paths first | 2026-10-11 |
-| U01 | UI, aesthetics and animations reserved for separately active Claude Code | waiting | owner instructed Codex to leave UI work alone on2026-10-11 | 2026-10-11 |
+| U01 | Owner-priority animation reference audit and browser baseline; scoped implementation awaits Dropbox access and UI integration split | blocked | newest Dropbox upload not accessible yet; Claude Code UI work preserved; candidate new paths below | 2026-10-13 |
 | E01 | Measured architecture experiments and verified transfer | planned | define hypothesis, baseline and bounded paths first | 2026-10-11 |
 | DB84 | Keep original intact; agree P2/P3, defer P1 under no-automation-change limit | waiting | [Engine84](https://github.com/reppiks490/Icarus-engine/pull/84), open head8ad1d7eb08305011a43d32dc0c696bc0bd69ecdf | 2026-10-11 |
 | MAX-Pine | Parked; preserve source/design/plan and incomplete original transport | waiting | max-pine-implementation add4d62211aadfa09924db589842c9bb94943c20 | 2026-10-11 |
@@ -116,3 +120,28 @@ these hand-overs. No research trials were run in this resumed Codex session.
 
 - C02 integrated8b7cf387:175tests collected/passed,0failed/skipped; Claude
   PR-thread review requested. Full current-head CI remains pending.
+## U01 animation reference scope (2026-10-13)
+
+- User requested extensive animation upgrades to match the newest Dropbox upload.
+  Dropbox setup is confirmed, but its file tools are not exposed in this running
+  session; direct reference access remains pending. No reference has been viewed
+  and no product animation change is claimed.
+- Read-only baseline pinned to Icarus1b1a35a403a80f7dd9d2d02387909647af23d731.
+  Preserve UI318 at aab4a4f78d6e7a83fd35961239a0b47ed5ea16e0 and the existing
+  ui-evolution-day3 branch at a72509e2; neither establishes Claude Code's latest work.
+- Proposed bounded Codex reservation, once the reference and split are established:
+  reppiks490/Icarus: icarus_engine/reference-choreography.js,
+  icarus_engine/reference-choreography.css,
+  tests_engine/browser_reference_choreography.cjs,
+  docs/ui/REFERENCE_CHOREOGRAPHY.md. These new paths are not product edits yet.
+- Ask Claude for Claude Code's latest branch/pin and an agreed hook in dashboard.html
+  plus the exact server.py asset allowlist. Do not overwrite broad experience CSS,
+  world modules, subsystem UI or artwork without a specific split.
+- Seven private Chromium captures passed desktop/mobile/reduced-motion checks:
+  no page/console errors or horizontal overflow, four navigation tabs active,
+  cinematic canvas changes and reduced motion stops DOM/canvas/GPU activity.
+  All39requests used local assets or labelled synthetic empty-engine fixtures;
+  populated charts and similarity to the reference remain unverified.
+- Verification will compare actual motion with the reference, cover desktop/touch,
+  reduced motion, scene lifecycle, frame times and read-only behavior. Existing
+  backend packages remain saved and do not transfer to another worker.

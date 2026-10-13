@@ -26,6 +26,9 @@ Read-only review does not transfer package ownership.
   Claude owns protocol/tooling; each worker edits only its own board.
 - C05/J03, P01, U01, E01: reserve specific files before implementation. Preserve
   Icarus visual/mobile PR318/198, historical PR295 and other owners' open changes.
+- IB01, `reppiks490/Icarus`: new backend-only `icarus_engine/intelligence_fabric.py`,
+  `tests_engine/test_intelligence_fabric.py`, and its Superpowers design/plan docs.
+  Phase 1 does not edit Brain, brain_sync, server, workflows, execution, UI or Atlas registry paths.
 
 Confirmed hand-overs: Claude owns Engine J01 specification/contract/fixtures/producer,
 K1 provider collector/workflow/tests, acquisition/vault/depth/SEC source health,
@@ -45,6 +48,7 @@ these hand-overs. No research trials were run in this resumed Codex session.
 | Id | Task | Status | Branch / PR | Updated |
 |---|---|---|---|---|
 | X1-Codex | Board/replies delivered in138; refreshed reviews and Atlas replies | in progress | codex/coordination-atlas-resume-20261011 | 2026-10-11 |
+| IB01 | Beyond-IB intelligence fabric: durable causal event bus, semantic threading, deterministic priority and replay/query over Unified Intelligence | in progress | chatgpt/beyond-ib-intelligence-fabric-20261012 | 2026-10-12 |
 | C01 | Reviewed clock validation merged; exact-head Linux/Windows and merged readback pass | done | [Icarus329](https://github.com/reppiks490/Icarus/pull/329), merged3ae97b4d4f0228e6e815c3dd59cd02e0986c50f0; reviewed head282db0d9 | 2026-10-11 |
 | C02 | Draft backup published; Windows fixture correction; integrate after C01 | in progress | [Icarus330](https://github.com/reppiks490/Icarus/pull/330), head8b7cf387d23b3e6043304b501db5a107aff10da6; integrated on merged C01, original4f85e135 preserved | 2026-10-11 |
 | C03 | Original draft backed up; integrate after C02 | waiting | [Icarus331](https://github.com/reppiks490/Icarus/pull/331), headda3357f155717fc3cf265c2afe10b7893e963060; original609a67c8 preserved | 2026-10-11 |

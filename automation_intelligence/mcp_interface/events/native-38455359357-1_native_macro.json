@@ -1,0 +1,92 @@
+{
+  "at_utc": "2026-10-13T19:31:00.374150Z",
+  "category": "AUDIT",
+  "event_id": "native-38455359357-1-native-macro",
+  "evidence": [
+    {
+      "classification": "FACT",
+      "code_revision": "a3ea5fafb098402beefa3fe15d2f59a71d45ba44",
+      "evidence_sha256": "5b8f7623133a3e0b99c99c5793d581d96e41f31473cd5103b86aacebfad380f9",
+      "measurement": {
+        "gaps": [
+          "Release titles establish publication, not macro surprise or causal impact.",
+          "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+          "No consensus estimates acquired; economic surprise remains unknown."
+        ],
+        "limits": "Publication and daily change are facts; surprise, causality and intraday propagation remain unverified.",
+        "releases": [
+          {
+            "published_epoch": 1791914400.0,
+            "retrieval_finished": 1791919858.9031377,
+            "retrieval_started": 1791919858.7936704,
+            "source": "FED",
+            "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261013a.htm",
+            "title": "Minutes of the Board's discount rate meetings on August 17, September 9, and September 16, 2026"
+          },
+          {
+            "published_epoch": 1791916200.0,
+            "retrieval_finished": 1791919859.6582882,
+            "retrieval_started": 1791919858.9035301,
+            "source": "ECB",
+            "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261013~9db9bf4fd6.en.html",
+            "title": "Philip R. Lane: The AI opportunity for Europe"
+          }
+        ],
+        "series": [
+          {
+            "change": -0.0600000000000005,
+            "date": "2026-10-08",
+            "freshness": "DAILY_OBSERVATION",
+            "prior_date": "2026-10-07",
+            "series": "DGS10",
+            "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10",
+            "value": 5.22
+          },
+          {
+            "change": -0.019999999999999574,
+            "date": "2026-10-08",
+            "freshness": "DAILY_OBSERVATION",
+            "prior_date": "2026-10-07",
+            "series": "DGS2",
+            "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2",
+            "value": 4.75
+          },
+          {
+            "change": -0.40340000000000487,
+            "date": "2026-10-02",
+            "freshness": "STALE",
+            "prior_date": "2026-10-01",
+            "series": "DTWEXBGS",
+            "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DTWEXBGS",
+            "value": 121.3848
+          }
+        ],
+        "status": "VERIFIED",
+        "summary": "2 dated official release headlines; 3 daily macro series measured."
+      }
+    }
+  ],
+  "execution_authorized": false,
+  "interpretation_authority": "UNVERIFIED_MODEL_INFERENCE",
+  "oracle": {
+    "finding": "2 dated official release headlines; 3 daily macro series measured.",
+    "status": "VERIFIED"
+  },
+  "paths": [
+    "automation_intelligence/native_research_v1/cycles/native-38455359357-1/evidence.json",
+    "automation_intelligence/native_research_v1/cycles/native-38455359357-1/macro.json"
+  ],
+  "schema_version": "icarus-mcp-event-v1",
+  "severity": "MEDIUM",
+  "source": "MACRO_AUTOMATION",
+  "status": "VERIFIED",
+  "summary": "2 dated official release headlines; 3 daily macro series measured.",
+  "supermesh_x": {
+    "finding": "2 dated official release headlines; 3 daily macro series measured.",
+    "status": "VERIFIED"
+  },
+  "surface": [
+    "macro native research"
+  ],
+  "worker": "GITHUB_NATIVE_RESEARCH_V1"
+}

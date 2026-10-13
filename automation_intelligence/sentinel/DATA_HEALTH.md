@@ -1,4 +1,4 @@
-# Data health — 2026-10-12 23:52 UTC
+# Data health — 2026-10-13 00:28 UTC
 
 **FAILING** 3 · **BLOCKED** 4 · **STALE** 3 · **DEGRADED** 5 · **OK** 64
 
@@ -13,9 +13,9 @@
 | provider:intrinio | BLOCKED | no key reaches the runner |
 | provider:quiver | BLOCKED | no key reaches the runner |
 | provider:tickstream | BLOCKED | no key reaches the runner |
-| workflow:official-economic-events.yml | STALE | last success 8.4 h ago (expected within 8 h) |
-| workflow:provider-exhaustive-collection.yml | STALE | last success 3.5 h ago (expected within 3 h) |
-| workflow:sec-edgar-data.yml | STALE | last success 4.9 h ago (expected within 3 h) |
+| workflow:official-economic-events.yml | STALE | last success 9.0 h ago (expected within 8 h) |
+| workflow:provider-exhaustive-collection.yml | STALE | last success 4.1 h ago (expected within 3 h) |
+| workflow:sec-edgar-data.yml | STALE | last success 5.5 h ago (expected within 3 h) |
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
 | provider:eodhd | DEGRADED | 2050 rows; 29 endpoints denied by plan |
 | provider:fmp | DEGRADED | 366 rows; 85 endpoints denied by plan |
@@ -48,6 +48,6 @@ Champions: 0. Pulse variants: {'CANDLES': 'REJECTED', 'HA_HA_FILLS': 'ARTIFACT_R
 
 ## Claude <-> ChatGPT
 
-- claude: done 5, in progress 2, planned 9, waiting 1; awaiting its reply: 5
-- chatgpt: blocked 1, done 1, in progress 3, planned 5, waiting 7; awaiting its reply: 2
+- claude: done 5, in progress 2, planned 9, waiting 1; awaiting its reply: 6
+- chatgpt: blocked 1, done 1, in progress 4, planned 5, waiting 7; awaiting its reply: 2
 - malformed messages: to-claude/20261011T213350Z-atlas-registry-checkpoint.md: to, date, reply-needed, file name; to-chatgpt/20261011T213350Z-atlas-registry-checkpoint.md: to, date, reply-needed, file name

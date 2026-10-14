@@ -42,8 +42,9 @@ functional runtime. The owner reserved UI, aesthetics and animations for
 Claude Code on2026-10-11. On2026-10-13 the owner made animation upgrades against
 the newest Dropbox upload the immediate Codex priority. Codex is auditing the
 reference and browser baseline and proposing new choreography files; Claude
-Code's existing UI files and unpublished work remain preserved. Shared integration
-hooks require a concrete file-level split through the inbox before edits. Atlas owns
+Code's existing UI files and unpublished work remain preserved. The owner's renewed UI direction was implemented through isolated files and two
+additive hooks whose current-main base and final diff were independently reviewed.
+No unpublished Claude Code changes were available to inspect or overwrite. Atlas owns
 research_allocation/** and its owner-transferred Icarus discovery-registry
 foundation (AT04) paths; no Brain/J01/mission/collector ownership transfers.
 Codex reviews Claude's changes; Engine rules affecting Codex require
@@ -70,7 +71,7 @@ these hand-overs. No research trials were run in this resumed Codex session.
 | M02 | Component acceptance, independent leakage review and traceability/certification | planned | owner-actions mission; no global success claim | 2026-10-11 |
 | S01 | Containment re-review passes; rights and history exposure remain unresolved | waiting | [Engine135](https://github.com/reppiks490/Icarus-engine/pull/135), approved97677bef; owner-actions12 exposure receipt | 2026-10-11 |
 | P01 | Master Pump identity, delivery, restart and truthful observability | planned | reserve bounded repository-qualified paths first | 2026-10-11 |
-| U01 | Reference downloaded, verified and inspected; implement isolated nebula/contour choreography and bounded reviewable hooks | in progress | codex/reference-cosmic-animation-20261013 in Icarus; Claude Code broad UI preserved, integration reviewed before merge | 2026-10-13 |
+| U01 | Original sculpted cosmic choreography, complete opening timing and scoped interaction polish merged; browser and engine verification complete within stated limits | done | [Icarus337](https://github.com/reppiks490/Icarus/pull/337), head7d502ea3; mergedb6aa7333 | 2026-10-14 |
 | E01 | Measured architecture experiments and verified transfer | planned | define hypothesis, baseline and bounded paths first | 2026-10-11 |
 | DB84 | Keep original intact; agree P2/P3, defer P1 under no-automation-change limit | waiting | [Engine84](https://github.com/reppiks490/Icarus-engine/pull/84), open head8ad1d7eb08305011a43d32dc0c696bc0bd69ecdf | 2026-10-11 |
 | MAX-Pine | Parked; preserve source/design/plan and incomplete original transport | waiting | max-pine-implementation add4d62211aadfa09924db589842c9bb94943c20 | 2026-10-11 |
@@ -174,3 +175,20 @@ these hand-overs. No research trials were run in this resumed Codex session.
   Existing dashboard controls/data/execution/automation/registry behavior is outside
   this change. Shader output is an original approximation of the reference's
   visual language, not a claim of matching authored anime production in full.
+
+## U01 delivered (2026-10-14)
+
+- Icarus337 merged b6aa7333933dd67bbec747fe76949324e8bfc306 from reviewed head
+  7d502ea31b1ef814987368730d424e82f76cf290. All seven merged files match readback.
+- Full local suite: 2,184 passed, 3 Windows-only skips, 90 subtests passed; no errors.
+  Six focused pytest cases include 23 Node lifecycle cases. All 12 exact-head
+  Linux/Windows engine, contract and config checks pass.
+- The full private reference was studied before the final material pass. Real
+  Chromium verified all themes, four viewport widths, context recovery, stop gates
+  and a natural opening reaching 98.7% before removal. All 14 captures have zero
+  overflow; 108 requests were local synthetic GETs; no page/console/shader errors.
+- Receipt: coordination/inbox/to-claude/20261014T1650Z-chatgpt-u01-animation-receipt.md.
+  Synthetic fixtures do not prove live data or hardware FPS; Windows CI's explicit
+  list omits the new test module. Film-production equivalence is not claimed.
+- Earlier U01 access/blocker paragraphs are historical and superseded. Broader
+  UI/artwork/other-agent reservations and backend review gates remain preserved.

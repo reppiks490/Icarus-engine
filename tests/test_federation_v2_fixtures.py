@@ -73,6 +73,108 @@ def test_malformed_inputs_reject_instead_of_raising():
                                    expected["consumer_now"]) == "INVALID_PACKET_CLOCK"
 
 
+def test_frozen_contract_comparison_is_json_type_sensitive():
+    contract, block, sources, expected = BF.load_case(HERE / "cases" / "accept_modern6")
+    widened_head = dict(contract, execution_authorized=0)
+    assert BF.reference_verify(widened_head, block, sources, expected["consumer_now"]) == "AUTHORITY_EXPANSION"
+
+    for field, value in (("execution_authorized", 0), ("collection_only", 1)):
+        changed = json.loads(json.dumps(contract))
+        changed["sources"][0][field] = value
+        assert BF.reference_verify(changed, block, sources, expected["consumer_now"]) == \
+            "CONTRACT_SOURCE_SET_MISMATCH"
+
+
+def test_malformed_contract_and_packet_ids_reject_without_raising():
+    contract, block, sources, expected = BF.load_case(HERE / "cases" / "accept_modern6")
+    malformed_contract = json.loads(json.dumps(contract))
+    malformed_contract["sources"][0]["id"] = []
+    assert BF.reference_verify(malformed_contract, block, sources, expected["consumer_now"]) == \
+        "CONTRACT_SOURCE_SET_MISMATCH"
+
+    bad_lane = json.loads(json.dumps(block))
+    bad_lane["historical_artifacts"][0]["lane"] = []
+    assert BF.reference_verify(contract, bad_lane, sources, expected["consumer_now"]) == "UNKNOWN_SOURCE"
+
+    bad_artifact_id = json.loads(json.dumps(block))
+    bad_artifact_id["historical_artifacts"][0]["artifact_id"] = []
+    assert BF.reference_verify(contract, bad_artifact_id, sources, expected["consumer_now"]) == \
+        "ARTIFACT_ID_MISMATCH"
+
+
+@pytest.mark.parametrize("clock", [
+    "0001-01-01T00:00:00+23:59",
+    "9999-12-31T23:59:59-23:59",
+])
+def test_utc_offset_overflow_clocks_reject_deterministically(clock):
+    contract, block, sources, expected = BF.load_case(HERE / "cases" / "accept_modern6")
+    assert BF.reference_verify(contract, dict(block, observed_at=clock), sources,
+                               expected["consumer_now"]) == "INVALID_PACKET_CLOCK"
+
+    path = "automation_intelligence/provider_collection_v1/research_context.json"
+    doc = json.loads(sources[path])
+    doc["snapshot_at_utc"] = clock
+    live = BF.reference_live_verify(contract, dict(sources, **{path: BF._dump(doc)}), expected["consumer_now"])
+    assert live["provider_collection"] == "INVALID_SOURCE_CLOCK"
+
+
+@pytest.mark.parametrize("summary_value,expected_result", [
+    (float("nan"), "SCHEMA_MISMATCH"),
+    ("x" * 70000, "SUMMARY_TOO_LARGE"),
+])
+def test_live_path_preserves_finite_and_bounded_summary_guards(summary_value, expected_result):
+    contract, _, sources, expected = BF.load_case(HERE / "cases" / "accept_modern6")
+    path = "automation_intelligence/provider_collection_v1/research_context.json"
+    doc = json.loads(sources[path])
+    doc["summary"]["providers_total"] = summary_value
+    live = BF.reference_live_verify(contract, dict(sources, **{path: BF._dump(doc)}), expected["consumer_now"])
+    assert live["provider_collection"] == expected_result
+
+    legacy_path = "automation_intelligence/flow/latest.json"
+    legacy_doc = json.loads(sources[legacy_path])
+    legacy_doc["NET_NEW_DELTA"] = {"synthetic": summary_value}
+    live = BF.reference_live_verify(
+        contract,
+        dict(sources, **{legacy_path: BF._dump(legacy_doc)}),
+        expected["consumer_now"],
+    )
+    assert live["flow_microstructure"] == expected_result
+
+
+def test_malformed_artifact_values_reject_without_raising():
+    contract, block, sources, expected = BF.load_case(HERE / "cases" / "accept_modern6")
+    for artifact_kind, field in (("RESEARCH_CONTEXT_DOCUMENT", "fields_bytes"),
+                                 ("HISTORICAL_LATEST", "findings")):
+        malformed = json.loads(json.dumps(block))
+        art = next(a for a in malformed["historical_artifacts"] if a["artifact_kind"] == artifact_kind)
+        if artifact_kind == "RESEARCH_CONTEXT_DOCUMENT":
+            art["summary"][field] = float("nan")
+        else:
+            art["summary"][field] = [float("nan")]
+        assert BF.reference_verify(contract, malformed, sources, expected["consumer_now"]) == \
+            "ARTIFACT_ID_MISMATCH"
+
+
+def test_live_paths_reject_nonfinite_allowlisted_values():
+    contract, _, sources, expected = BF.load_case(HERE / "cases" / "accept_modern6")
+
+    provider_path = "automation_intelligence/provider_collection_v1/research_context.json"
+    provider_doc = json.loads(sources[provider_path])
+    provider_doc["summary"]["providers_total"] = float("nan")
+    live = BF.reference_live_verify(
+        contract, dict(sources, **{provider_path: BF._dump(provider_doc)}), expected["consumer_now"]
+    )
+    assert live["provider_collection"] == "SCHEMA_MISMATCH"
+
+    flow_path = "automation_intelligence/flow/latest.json"
+    flow_doc = json.loads(sources[flow_path])
+    flow_doc["NET_NEW_DELTA"] = {"synthetic_metric": float("nan")}
+    live = BF.reference_live_verify(
+        contract, dict(sources, **{flow_path: BF._dump(flow_doc)}), expected["consumer_now"]
+    )
+    assert live["flow_microstructure"] == "SCHEMA_MISMATCH"
+
+
 def test_legacy_artifacts_are_todays_exporter_output():
     contract, block, sources, _ = BF.load_case(HERE / "cases" / "accept_legacy4")
     for art in block["historical_artifacts"]:

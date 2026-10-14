@@ -107,6 +107,19 @@ def canonical(value) -> str:
     return json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False)
 
 
+def _same_json_value(left, right) -> bool:
+    """Compare JSON values without Python's bool/int equivalence."""
+    if type(left) is not type(right):
+        return False
+    if isinstance(right, dict):
+        return left.keys() == right.keys() and all(
+            _same_json_value(left[k], value) for k, value in right.items()
+        )
+    if isinstance(right, list):
+        return len(left) == len(right) and all(_same_json_value(a, b) for a, b in zip(left, right))
+    return left == right
+
+
 def _sha256(value) -> str:
     return hashlib.sha256(canonical(value).encode("utf-8")).hexdigest()
 
@@ -204,14 +217,17 @@ def _clock(value):
     """Timezone-aware ISO-8601 normalized to UTC 'Z', or None when missing, naive or malformed."""
     try:
         return _time(value)
-    except (TypeError, ValueError):
+    except (OverflowError, TypeError, ValueError):
         return None
 
 
 def document_projection(entry: dict, doc: dict) -> dict:
     """The §5 summary and clocks of a RESEARCH_CONTEXT_DOCUMENT. An invalid clock is carried as given."""
     fields = {f: doc[f] for f in entry["summary_fields"] if f in doc}
-    encoded = canonical(fields)
+    try:
+        encoded = canonical(fields)
+    except (OverflowError, TypeError, ValueError) as ex:
+        raise Reject("SCHEMA_MISMATCH") from ex
     raw_clock = doc.get(entry["collection_clock_field"])
     return {
         "summary": {"fields_present": sorted(fields), "fields_sha256": hashlib.sha256(encoded.encode()).hexdigest(),
@@ -294,12 +310,18 @@ def check_contract(contract: dict) -> int:
         raise Reject("UNDECLARED_MODERN_CONTRACT")
     if version == 2 and ids != sorted(MODERN_IDS):
         raise Reject("CONTRACT_SOURCE_SET_MISMATCH")
-    if any(contract.get(k) != v for k, v in _BLOCK_HEAD.items()):
+    if any(not _same_json_value(contract.get(k), v) for k, v in _BLOCK_HEAD.items()):
         raise Reject("AUTHORITY_EXPANSION")
     for source in sources:
-        want = expected_entry(source["id"], version)
-        if source != want:
-            if any(source.get(k) == v for k, v in WIDENING.items()):
+        source_id = source.get("id")
+        if (
+            not isinstance(source_id, str)
+            or (source_id not in _LEGACY_SOURCES and source_id not in _DOCUMENT_SOURCES)
+        ):
+            raise Reject("CONTRACT_SOURCE_SET_MISMATCH")
+        want = expected_entry(source_id, version)
+        if not _same_json_value(source, want):
+            if any(_same_json_value(source.get(k), v) for k, v in WIDENING.items()):
                 raise Reject("AUTHORITY_EXPANSION")
             raise Reject("CONTRACT_SOURCE_SET_MISMATCH")
     return version
@@ -334,8 +356,25 @@ def _check_document(entry: dict, doc: dict) -> str:
     return clock
 
 
+def _summary_projection(entry: dict, doc: dict) -> dict:
+    fields = {}
+    for path in entry["summary_fields"]:
+        current = doc
+        for part in path.split("."):
+            if not isinstance(current, dict) or part not in current:
+                break
+            current = current[part]
+        else:
+            fields[path] = current
+    return fields
+
+
 def _check_size(entry: dict, doc: dict) -> None:
-    if len(canonical({f: doc[f] for f in entry["summary_fields"] if f in doc}).encode("utf-8")) > SUMMARY_BOUND:
+    try:
+        size = len(canonical(_summary_projection(entry, doc)).encode("utf-8"))
+    except (OverflowError, TypeError, ValueError) as ex:
+        raise Reject("SCHEMA_MISMATCH") from ex
+    if size > SUMMARY_BOUND:
         raise Reject("SUMMARY_TOO_LARGE")
 
 
@@ -347,10 +386,15 @@ def _check_run_latest_document(entry: dict, doc: dict) -> None:
         raise Reject("AUTHORITY_EXPANSION")
     if entry["collection_only"] and doc.get("COLLECTION_ONLY") is not True:
         raise Reject("SOURCE_NOT_ELIGIBLE")
+    _check_size(entry, doc)
 
 
 def _same_id(art: dict) -> bool:
-    return art.get("artifact_id") == _sha256({k: v for k, v in art.items() if k != "artifact_id"})
+    try:
+        expected = _sha256({k: v for k, v in art.items() if k != "artifact_id"})
+    except (OverflowError, TypeError, ValueError):
+        return False
+    return art.get("artifact_id") == expected
 
 
 def _check_document_artifact(entry: dict, art: dict, sources: dict[str, bytes], observed_at: str) -> None:
@@ -429,14 +473,15 @@ def reference_verify(contract: dict, block: dict, sources: dict[str, bytes], con
             if not isinstance(art, dict):
                 raise Reject("ARTIFACT_FIELD_MISMATCH")
             sid = art.get("lane")
-            if sid not in by_id:
+            if not isinstance(sid, str) or sid not in by_id:
                 raise Reject("UNKNOWN_SOURCE")
             if sid in seen:
                 raise Reject("DUPLICATE_SOURCE")
             seen.add(sid)
-            if art.get("artifact_id") in ids:
+            artifact_id = art.get("artifact_id")
+            if not isinstance(artifact_id, str) or artifact_id in ids:
                 raise Reject("ARTIFACT_ID_MISMATCH")
-            ids.add(art.get("artifact_id"))
+            ids.add(artifact_id)
             if by_id[sid].get("kind") == "RESEARCH_CONTEXT_DOCUMENT":
                 _check_document_artifact(by_id[sid], art, sources, observed)
             else:

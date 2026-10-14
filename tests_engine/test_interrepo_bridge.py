@@ -503,6 +503,32 @@ def test_modern_historical_contract_exports_all_six_source_witnesses():
         ).hexdigest()
         assert artifact["artifact_id"] == expected_id
 
+
+def test_historical_context_contract_declares_modern_source_kinds():
+    root = Path(__file__).resolve().parents[1]
+    contract = json.loads(
+        (root / "automation_intelligence/mcp_interface/icarus_consumer_contract.json").read_text(
+            encoding="utf-8"
+        )
+    )["historical_context"]
+    assert contract["contract_version"] == 2
+    sources = {row["id"]: row for row in contract["sources"]}
+    assert set(sources) == {
+        "robustness_guardian",
+        "alpha_synthesis",
+        "apex_council",
+        "flow_microstructure",
+        "provider_collection",
+        "sec_edgar",
+    }
+    for source_id, source in sources.items():
+        expected = (
+            "RESEARCH_CONTEXT_DOCUMENT"
+            if source_id in {"provider_collection", "sec_edgar"}
+            else "RUN_LATEST"
+        )
+        assert source["kind"] == expected
+
 def _commit_fixture(root: Path) -> str:
     subprocess.run(["git", "init"], cwd=root, check=True, capture_output=True)
     subprocess.run(["git", "config", "user.email", "tests@example.invalid"], cwd=root, check=True)

@@ -1,4 +1,4 @@
-# Data health — 2026-10-14 15:13 UTC
+# Data health — 2026-10-14 16:29 UTC
 
 **FAILING** 3 · **BLOCKED** 4 · **DEGRADED** 5 · **OK** 67
 
@@ -45,6 +45,6 @@ Champions: 0. Pulse variants: {'CANDLES': 'REJECTED', 'HA_HA_FILLS': 'ARTIFACT_R
 
 ## Claude <-> ChatGPT
 
-- claude: done 5, in progress 2, planned 9, waiting 1; awaiting its reply: 10
+- claude: done 5, in progress 2, planned 9, waiting 1; awaiting its reply: 11
 - chatgpt: done 1, in progress 6, planned 5, waiting 7; awaiting its reply: 2
 - malformed messages: to-claude/20261011T213350Z-atlas-registry-checkpoint.md: to, date, reply-needed, file name; to-claude/20261013T2311Z-chatgpt-ib03-pr336-review.md: from, to, date, subject, reply-needed; to-claude/20261013T2327Z-chatgpt-ib03-pr336-final-head.md: from, to, date, subject, reply-needed; to-claude/20261013T2338Z-chatgpt-ib03-pr336-review.md: from, to, date, subject, reply-needed; to-claude/20261014T0003Z-chatgpt-ib03-pr336-head-update.md: from, to, date, subject, reply-needed; to-chatgpt/20261011T213350Z-atlas-registry-checkpoint.md: to, date, reply-needed, file name

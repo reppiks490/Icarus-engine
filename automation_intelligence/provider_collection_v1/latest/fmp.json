@@ -1,18 +1,18 @@
 {
   "catalog": {
-    "asset_datasets_collected": 16,
+    "asset_datasets_collected": 17,
     "asset_templates": 109,
     "assets": 6770,
-    "collected_operations": 29,
+    "collected_operations": 39,
     "denied_operations": 85,
     "operations": 230,
-    "pending_pages": 15,
+    "pending_pages": 5,
     "qualification": "INCOMPLETE_UNTIL_EVERY_OPERATION_ASSET_PAGE_TIME_RANGE_AND_TRANSPORT_IS_VERIFIED",
     "unresolved_operations": 0
   },
   "chatgpt_tokens_used": 0,
   "checkpoint_status": "ENCRYPTED_AES256_GCM",
-  "completed_at_utc": "2026-10-14T04:51:54.209745+00:00",
+  "completed_at_utc": "2026-10-14T10:12:47.927630+00:00",
   "databento_excluded": true,
   "execution_authorized": false,
   "paid_model_calls": 0,
@@ -25,87 +25,62 @@
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/ratios"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "400",
-          "operation": "fmp:get:/exchange-market-hours"
+          "operation": "fmp:get:/splits"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/ratios-ttm"
+          "operation": "fmp:get:/stock-price-change"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/revenue-geographic-segmentation"
+          "operation": "fmp:get:/technical-indicators/adx"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/revenue-product-segmentation"
+          "operation": "fmp:get:/technical-indicators/dema"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/search-exchange-variants"
+          "operation": "fmp:get:/technical-indicators/ema"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/sec-filings-search/symbol"
+          "operation": "fmp:get:/technical-indicators/rsi"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/senate-trades"
+          "operation": "fmp:get:/technical-indicators/sma"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/shares-float"
+          "operation": "fmp:get:/technical-indicators/standarddeviation"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/technical-indicators/tema"
         }
       ],
       "collected_pages": 11,
-      "collected_rows": 243,
+      "collected_rows": 482,
       "credential_present": true,
       "endpoint_count": 230,
       "requests": 20,
-      "research_features": [
-        {
-          "features": {
-            "price": {
-              "maximum": 27.54,
-              "mean": 3.31958,
-              "minimum": 0.0801,
-              "samples": 50,
-              "standard_deviation": 4.530118431432008
-            }
-          },
-          "operation": "fmp:get:/biggest-gainers"
-        },
-        {
-          "features": {
-            "price": {
-              "maximum": 38.61,
-              "mean": 3.005624,
-              "minimum": 0.055,
-              "samples": 50,
-              "standard_deviation": 6.516351762621781
-            }
-          },
-          "operation": "fmp:get:/biggest-losers"
-        }
-      ],
+      "research_features": [],
       "status": "COLLECTED_PARTIAL",
       "substantive_work_performed": true
     }
   },
   "raw_payloads_public": false,
   "requests": 20,
-  "run_id": "providers-38513204866-1-fmp",
+  "run_id": "providers-38547443795-1-fmp",
   "schema_version": "icarus-provider-collection-cycle-v1",
-  "started_at_utc": "2026-10-14T04:47:39.398074+00:00"
+  "started_at_utc": "2026-10-14T10:08:37.915941+00:00"
 }

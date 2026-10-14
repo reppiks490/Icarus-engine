@@ -539,6 +539,7 @@ def test_historical_context_contract_declares_modern_source_kinds():
         "availability_clock": None,
         "eligibility": None,
     }
+    assert "causal_timestamp" not in sources["sec_edgar"]
     assert {key: sources["sec_edgar"][key] for key in (
         "schema_key", "schema_value", "raw_exclusion_field", "collection_clock_field",
         "availability_clock", "eligibility",

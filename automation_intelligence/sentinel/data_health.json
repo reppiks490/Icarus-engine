@@ -53,8 +53,8 @@
  "counts": {
   "BLOCKED": 4,
   "DEGRADED": 5,
-  "FAILING": 1,
-  "OK": 68,
+  "FAILING": 2,
+  "OK": 67,
   "STALE": 1
  },
  "depth": {
@@ -116,7 +116,7 @@
   "vault_key_source": "HKDF(DATABENTO_API_KEY)"
  },
  "execution_authorized": false,
- "generated_at": "2026-10-14T02:47:34+00:00",
+ "generated_at": "2026-10-14T02:48:05+00:00",
  "research": {
   "champions": 0,
   "cl_last_run": "2026-10-14T00:52:53.559344+00:00",
@@ -150,6 +150,12 @@
    "source": "workflow:databento-depth-research-context.yml",
    "verdict": "FAILING",
    "why": "latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/38493059194"
+  },
+  {
+   "age_h": 1.9,
+   "source": "workflow:tests.yml",
+   "verdict": "FAILING",
+   "why": "latest run cancelled: https://github.com/reppiks490/Icarus-engine/actions/runs/38502789975"
   },
   {
    "age_h": 3.5,
@@ -222,7 +228,7 @@
    "why": "2 rows; 4 endpoints denied by plan"
   },
   {
-   "age_h": 3.4,
+   "age_h": 3.5,
    "path": "automation_intelligence/provider_collection_v1/latest/twelve.json",
    "rows": 0,
    "source": "provider:twelve",
@@ -630,7 +636,7 @@
    "why": "26 rows"
   },
   {
-   "age_h": 3.4,
+   "age_h": 3.5,
    "path": "automation_intelligence/provider_collection_v1/latest/massive.json",
    "rows": 20000,
    "source": "provider:massive",
@@ -657,10 +663,10 @@
    "why": "last success 1.9 h ago"
   },
   {
-   "age_h": 1.8,
+   "age_h": 1.9,
    "source": "workflow:databento-depth-corpus.yml",
    "verdict": "OK",
-   "why": "last success 1.8 h ago"
+   "why": "last success 1.9 h ago"
   },
   {
    "age_h": 1.8,
@@ -687,16 +693,10 @@
    "why": "last success 4.0 h ago"
   },
   {
-   "age_h": 0.9,
+   "age_h": 1.0,
    "source": "workflow:sec-edgar-data.yml",
    "verdict": "OK",
-   "why": "last success 0.9 h ago"
-  },
-  {
-   "age_h": 1.9,
-   "source": "workflow:tests.yml",
-   "verdict": "OK",
-   "why": "last success 1.9 h ago"
+   "why": "last success 1.0 h ago"
   }
  ]
 }

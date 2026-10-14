@@ -390,7 +390,11 @@ def _check_run_latest_document(entry: dict, doc: dict) -> None:
 
 
 def _same_id(art: dict) -> bool:
-    return art.get("artifact_id") == _sha256({k: v for k, v in art.items() if k != "artifact_id"})
+    try:
+        expected = _sha256({k: v for k, v in art.items() if k != "artifact_id"})
+    except (OverflowError, TypeError, ValueError):
+        return False
+    return art.get("artifact_id") == expected
 
 
 def _check_document_artifact(entry: dict, art: dict, sources: dict[str, bytes], observed_at: str) -> None:

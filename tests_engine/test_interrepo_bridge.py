@@ -446,6 +446,7 @@ def test_modern_historical_contract_exports_all_six_source_witnesses():
     observed_at = datetime.now(timezone.utc).isoformat()
     packet = build_peer_packet(root, source_commit=head, observed_at=observed_at)
 
+    assert packet["historical_context_version"] == 2
     artifacts = {row["lane"]: row for row in packet["historical_artifacts"]}
     assert set(artifacts) == {
         "robustness_guardian",

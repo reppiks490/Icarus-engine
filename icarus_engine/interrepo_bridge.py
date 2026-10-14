@@ -472,8 +472,10 @@ def _historical_document_artifact(
     return artifact
 
 
-def _historical_context_artifacts(root: Path, observed_at: str) -> list[dict[str, Any]] | None:
-    """Build artifacts from the declared 4-source or complete 6-source consumer contract."""
+def _historical_context_artifacts(
+    root: Path, observed_at: str
+) -> tuple[list[dict[str, Any]], int] | None:
+    """Build artifacts and version from the declared historical-context contract."""
     contract_path = root / _HISTORICAL_CONTEXT_CONTRACT
     contract = _read_json(contract_path, required=False)
     if contract is None:
@@ -513,13 +515,23 @@ def _historical_context_artifacts(root: Path, observed_at: str) -> list[dict[str
     document_ids = set(_DOCUMENT_HISTORICAL_SOURCES)
     if len(source_ids) != len(set(source_ids)):
         raise ValueError("historical context contract has duplicate source IDs")
-    if set(source_ids) not in (legacy_ids, legacy_ids | document_ids):
-        raise ValueError("historical context contract must declare the legacy four or complete modern six")
+    version = context.get("contract_version", 1)
+    if type(version) is not int or version not in (1, 2):
+        raise ValueError("historical context contract version must be integer 1 or 2")
+    expected_ids = legacy_ids if version == 1 else legacy_ids | document_ids
+    if set(source_ids) != expected_ids:
+        raise ValueError("historical context contract source set does not match its version")
 
     artifacts = []
     for source in sources:
         source_id = source["id"]
         if source_id in _LEGACY_HISTORICAL_PATHS:
+            expected_kind = "RUN_LATEST" if version == 2 else None
+            if (
+                (version == 2 and source.get("kind") != expected_kind)
+                or (version == 1 and "kind" in source)
+            ):
+                raise ValueError("legacy historical source kind/version mismatch")
             expected_path = _LEGACY_HISTORICAL_PATHS[source_id]
             expected_contract = _LEGACY_HISTORICAL_CONTRACT[source_id]
             if (
@@ -542,11 +554,13 @@ def _historical_context_artifacts(root: Path, observed_at: str) -> list[dict[str
                 raise ValueError(f"required historical source is missing: {expected_path}")
             artifacts.append(artifact)
         else:
+            if version != 2 or source.get("kind") != "RESEARCH_CONTEXT_DOCUMENT":
+                raise ValueError("historical document kind/version mismatch")
             artifacts.append(
                 _historical_document_artifact(root, source, observed_at=observed_at)
             )
     artifacts.sort(key=lambda row: (row["lane"], str(row.get("run_id") or "")))
-    return artifacts
+    return artifacts, version
 
 
 def build_peer_packet(
@@ -601,8 +615,9 @@ def build_peer_packet(
         if isinstance(lane, Mapping)
     ]
     lanes.sort(key=lambda row: row["name"])
-    historical_artifacts = _historical_context_artifacts(root, at)
-    if historical_artifacts is None:
+    historical_context = _historical_context_artifacts(root, at)
+    historical_context_version = None
+    if historical_context is None:
         historical_artifacts = []
         for lane in raw_lanes:
             if not isinstance(lane, Mapping):
@@ -615,6 +630,8 @@ def build_peer_packet(
             if artifact is not None:
                 historical_artifacts.append(artifact)
         historical_artifacts.sort(key=lambda row: (row["lane"], str(row.get("run_id") or "")))
+    else:
+        historical_artifacts, historical_context_version = historical_context
 
     mcp_view = {
         "schema_version": mcp.get("schema_version"),
@@ -658,5 +675,7 @@ def build_peer_packet(
         "production_decision_authorized": False,
         "peer_write_authorized": False,
     }
+    if historical_context_version == 2:
+        packet["historical_context_version"] = 2
     packet["packet_id"] = _hash(packet)
     return packet

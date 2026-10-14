@@ -1,9 +1,9 @@
 {
   "catalog": {
-    "asset_datasets_collected": 18,
+    "asset_datasets_collected": 17,
     "asset_templates": 109,
     "assets": 6770,
-    "collected_operations": 36,
+    "collected_operations": 39,
     "denied_operations": 85,
     "operations": 230,
     "pending_pages": 6,
@@ -12,7 +12,7 @@
   },
   "chatgpt_tokens_used": 0,
   "checkpoint_status": "ENCRYPTED_AES256_GCM",
-  "completed_at_utc": "2026-10-14T15:11:57.812648+00:00",
+  "completed_at_utc": "2026-10-14T19:25:25.325770+00:00",
   "databento_excluded": true,
   "execution_authorized": false,
   "paid_model_calls": 0,
@@ -25,102 +25,62 @@
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/technical-indicators/williams"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "400",
-          "operation": "fmp:get:/exchange-market-hours"
+          "operation": "fmp:get:/batch-aftermarket-quote"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/technical-indicators/wma"
+          "operation": "fmp:get:/batch-aftermarket-trade"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/acquisition-of-beneficial-ownership"
+          "operation": "fmp:get:/batch-exchange-quote"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/aftermarket-quote"
+          "operation": "fmp:get:/batch-quote"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/aftermarket-trade"
+          "operation": "fmp:get:/batch-quote-short"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/analyst-estimates"
+          "operation": "fmp:get:/cash-flow-statement"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/balance-sheet-statement"
+          "operation": "fmp:get:/cash-flow-statement-as-reported"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/balance-sheet-statement-as-reported"
+          "operation": "fmp:get:/cash-flow-statement-growth"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/balance-sheet-statement-growth"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "400",
-          "operation": "fmp:get:/holidays-by-exchange"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/balance-sheet-statement-ttm"
+          "operation": "fmp:get:/cash-flow-statement-ttm"
         }
       ],
-      "collected_pages": 8,
-      "collected_rows": 423,
+      "collected_pages": 11,
+      "collected_rows": 7026,
       "credential_present": true,
       "endpoint_count": 230,
       "requests": 20,
-      "research_features": [
-        {
-          "features": {
-            "price": {
-              "maximum": 752.0,
-              "mean": 23.926513,
-              "minimum": 0.0,
-              "samples": 100,
-              "standard_deviation": 82.12243269130143
-            }
-          },
-          "operation": "fmp:get:/insider-trading/latest"
-        },
-        {
-          "features": {
-            "price": {
-              "maximum": 223.6,
-              "mean": 27.44118999999999,
-              "minimum": 0.0302,
-              "samples": 50,
-              "standard_deviation": 45.688802769038496
-            }
-          },
-          "operation": "fmp:get:/most-actives"
-        }
-      ],
+      "research_features": [],
       "status": "COLLECTED_PARTIAL",
       "substantive_work_performed": true
     }
   },
   "raw_payloads_public": false,
   "requests": 20,
-  "run_id": "providers-38586554380-1-fmp",
+  "run_id": "providers-38622911923-1-fmp",
   "schema_version": "icarus-provider-collection-cycle-v1",
-  "started_at_utc": "2026-10-14T15:07:44.890955+00:00"
+  "started_at_utc": "2026-10-14T19:21:15.055868+00:00"
 }

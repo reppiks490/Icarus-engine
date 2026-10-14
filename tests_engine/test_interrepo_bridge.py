@@ -528,6 +528,28 @@ def test_historical_context_contract_declares_modern_source_kinds():
             else "RUN_LATEST"
         )
         assert source["kind"] == expected
+    assert {key: sources["provider_collection"][key] for key in (
+        "schema_key", "schema_value", "raw_exclusion_field", "collection_clock_field",
+        "availability_clock", "eligibility",
+    )} == {
+        "schema_key": "schema_version",
+        "schema_value": "icarus-provider-research-context-v1",
+        "raw_exclusion_field": "raw_payloads_included",
+        "collection_clock_field": "snapshot_at_utc",
+        "availability_clock": None,
+        "eligibility": None,
+    }
+    assert {key: sources["sec_edgar"][key] for key in (
+        "schema_key", "schema_value", "raw_exclusion_field", "collection_clock_field",
+        "availability_clock", "eligibility",
+    )} == {
+        "schema_key": "schema",
+        "schema_value": "icarus.sec_edgar.research_context/1",
+        "raw_exclusion_field": "raw_documents_included",
+        "collection_clock_field": "generated_at",
+        "availability_clock": "accepted_at",
+        "eligibility": {"field": "status", "equals": "ok"},
+    }
 
 def _commit_fixture(root: Path) -> str:
     subprocess.run(["git", "init"], cwd=root, check=True, capture_output=True)

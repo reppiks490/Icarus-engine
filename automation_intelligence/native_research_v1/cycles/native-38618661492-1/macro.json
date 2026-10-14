@@ -1,0 +1,105 @@
+{
+  "automation_id": "github-native-research-v1",
+  "blockers": [
+    "Release titles establish publication, not macro surprise or causal impact.",
+    "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+    "No consensus estimates acquired; economic surprise remains unknown."
+  ],
+  "chatgpt_tokens_used": 0,
+  "code_revision": "b9fe4593055ef3022e53a97f8a991e4e3283f553",
+  "completed_at_utc": "2026-10-14T18:51:56.350768Z",
+  "event_paths": [],
+  "evidence": [
+    "automation_intelligence/native_research_v1/cycles/native-38618661492-1/evidence.json"
+  ],
+  "execution_authorized": false,
+  "input_sha256": "ed538df279abf61fd853e35954dbe4215e02dd9b2edfa7d78ef3672297641077",
+  "lane": "macro",
+  "local_interpretation": {
+    "authority": "UNVERIFIED_MODEL_INFERENCE",
+    "reason": "No semantic change",
+    "status": "NOT_RUN"
+  },
+  "measurements": {
+    "gaps": [
+      "Release titles establish publication, not macro surprise or causal impact.",
+      "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+      "No consensus estimates acquired; economic surprise remains unknown."
+    ],
+    "limits": "Publication and daily change are facts; surprise, causality and intraday propagation remain unverified.",
+    "releases": [
+      {
+        "published_epoch": 1791914400.0,
+        "retrieval_finished": 1792003899.8376715,
+        "retrieval_started": 1792003899.7246692,
+        "source": "FED",
+        "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261013a.htm",
+        "title": "Minutes of the Board's discount rate meetings on August 17, September 9, and September 16, 2026"
+      },
+      {
+        "published_epoch": 1791936000.0,
+        "retrieval_finished": 1792003900.6039798,
+        "retrieval_started": 1792003899.8382137,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261014~e4ca33588e.en.html",
+        "title": "Frank Elderson: Ensuring resilience in the face of uncertainty"
+      },
+      {
+        "published_epoch": 1791916200.0,
+        "retrieval_finished": 1792003900.6039798,
+        "retrieval_started": 1792003899.8382137,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261013~9db9bf4fd6.en.html",
+        "title": "Philip R. Lane: The AI opportunity for Europe"
+      },
+      {
+        "published_epoch": 1791981014.0,
+        "retrieval_finished": 1792003900.9031131,
+        "retrieval_started": 1792003900.6044173,
+        "source": "BLS",
+        "source_url": "https://www.bls.gov/bls/",
+        "title": "Major Economic Indicators Latest Numbers"
+      }
+    ],
+    "series": [
+      {
+        "change": 0.020000000000000462,
+        "date": "2026-10-09",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-10-08",
+        "series": "DGS10",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10",
+        "value": 5.24
+      },
+      {
+        "change": 0.04999999999999982,
+        "date": "2026-10-09",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-10-08",
+        "series": "DGS2",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2",
+        "value": 4.8
+      },
+      {
+        "change": 0.1554000000000002,
+        "date": "2026-10-09",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-10-08",
+        "series": "DTWEXBGS",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DTWEXBGS",
+        "value": 121.6023
+      }
+    ],
+    "status": "VERIFIED",
+    "summary": "4 dated official release headlines; 3 daily macro series measured."
+  },
+  "outcome": "NO_MATERIAL_DELTA",
+  "paid_model_calls": 0,
+  "prior_receipt_path": "automation_intelligence/native_research_v1/cycles/native-38576498030-1/macro.json",
+  "run_id": "native-38618661492-1-macro",
+  "schema_version": "icarus-research-run-v1",
+  "started_at_utc": "2026-10-14T18:51:44.959531Z",
+  "substantive_work_performed": true,
+  "summary": "4 dated official release headlines; 3 daily macro series measured.",
+  "worker": "GITHUB_ACTIONS"
+}

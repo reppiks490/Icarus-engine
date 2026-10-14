@@ -17,12 +17,94 @@ from typing import Any, Mapping
 
 SCHEMA_VERSION = "icarus-peer-intelligence-packet-v1"
 _SHA40 = re.compile(r"^[0-9a-f]{40}$")
+_HISTORICAL_CONTEXT_CONTRACT = Path(
+    "automation_intelligence/mcp_interface/icarus_consumer_contract.json"
+)
+_LEGACY_HISTORICAL_PATHS = {
+    "robustness_guardian": "automation_intelligence/agent_fabric/robustness_guardian/latest.json",
+    "alpha_synthesis": "automation_intelligence/agent_fabric/alpha_synthesis/latest.json",
+    "apex_council": "automation_intelligence/agent_fabric/apex_council/latest.json",
+    "flow_microstructure": "automation_intelligence/flow/latest.json",
+}
+_LEGACY_HISTORICAL_CONTRACT = {
+    "robustness_guardian": {
+        "evidence_status": "HISTORICAL_RESEARCH_EVIDENCE",
+        "collection_only": False,
+        "summary_fields": [
+            "RUN_CORE.findings", "RUN_CORE.built_changes", "RUN_CORE.unresolved_risks",
+            "RUN_CORE.NEXT", "RUN_CORE.test_state", "RUN_CORE.base_main_sha",
+            "RUN_CORE.final_main_sha", "RUN_CORE_SHA256", "history_blob_sha",
+        ],
+    },
+    "alpha_synthesis": {
+        "evidence_status": "HISTORICAL_RESEARCH_EVIDENCE",
+        "collection_only": False,
+        "summary_fields": [
+            "RUN_CORE.evidence_dataset_identity", "RUN_CORE.findings", "RUN_CORE.built_changes",
+            "RUN_CORE.unresolved_risks", "RUN_CORE.NEXT", "RUN_CORE_SHA256",
+            "history_blob_sha", "ledger_blob_sha",
+        ],
+    },
+    "apex_council": {
+        "evidence_status": "HISTORICAL_RESEARCH_EVIDENCE",
+        "collection_only": False,
+        "summary_fields": [
+            "RUN_CORE.specialist_states_consumed", "RUN_CORE.evidence_contract",
+            "RUN_CORE.decision_contract", "RUN_CORE.disagreements_collisions",
+            "RUN_CORE.built_changes", "RUN_CORE.NEXT", "RUN_CORE.base_main_sha",
+            "RUN_CORE.final_main_sha", "RUN_CORE_SHA256", "history_blob_sha",
+            "ledger_blob_sha",
+        ],
+    },
+    "flow_microstructure": {
+        "evidence_status": "HISTORICAL_COLLECTION_EVIDENCE",
+        "collection_only": True,
+        "summary_fields": [
+            "NET_NEW_DELTA", "observations", "PROVIDER_CONFLICTS", "DATA_GAPS",
+            "source_provenance", "quality_notes", "history_blob_sha",
+        ],
+    },
+}
+_DOCUMENT_HISTORICAL_SOURCES = {
+    "provider_collection": {
+        "path": "automation_intelligence/provider_collection_v1/research_context.json",
+        "evidence_status": "HISTORICAL_COLLECTION_EVIDENCE",
+        "collection_only": True,
+        "schema_key": "schema_version",
+        "schema_value": "icarus-provider-research-context-v1",
+        "raw_exclusion_field": "raw_payloads_included",
+        "collection_clock_field": "snapshot_at_utc",
+        "availability_clock": None,
+        "eligibility": None,
+        "summary_fields": ["summary", "providers", "snapshot_at_utc"],
+    },
+    "sec_edgar": {
+        "path": "automation_intelligence/cl_lab/sec_edgar_research_context.json",
+        "evidence_status": "HISTORICAL_COLLECTION_EVIDENCE",
+        "collection_only": True,
+        "schema_key": "schema",
+        "schema_value": "icarus.sec_edgar.research_context/1",
+        "raw_exclusion_field": "raw_documents_included",
+        "collection_clock_field": "generated_at",
+        "availability_clock": "accepted_at",
+        "eligibility": {"field": "status", "equals": "ok"},
+        "summary_fields": ["status", "filing_rows", "fact_rows", "tickers"],
+    },
+}
+_HISTORICAL_CONTEXT_FLAGS = {
+    "direct_candidate_evidence": False,
+    "automatic_candidate_creation": False,
+    "automatic_model_promotion": False,
+    "execution_authorized": False,
+    "production_decision_authorized": False,
+}
+_HISTORICAL_SUMMARY_BOUND = 65536
 
 
 def _canonical(value: Any) -> str:
     try:
         return json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False)
-    except (TypeError, ValueError) as ex:
+    except (OverflowError, TypeError, ValueError) as ex:
         raise ValueError("peer packet values must be finite JSON") from ex
 
 
@@ -65,11 +147,15 @@ def _time(value: Any) -> str:
     probe = raw[:-1] + "+00:00" if raw.endswith("Z") else raw
     try:
         dt = datetime.fromisoformat(probe)
-    except ValueError as ex:
+    except (OverflowError, ValueError) as ex:
         raise ValueError("observed_at must be timezone-aware ISO-8601") from ex
     if dt.tzinfo is None or dt.utcoffset() is None:
         raise ValueError("observed_at must be timezone-aware ISO-8601")
-    return dt.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+    try:
+        utc = dt.astimezone(timezone.utc)
+    except (OverflowError, ValueError) as ex:
+        raise ValueError("observed_at must be timezone-aware ISO-8601") from ex
+    return utc.isoformat().replace("+00:00", "Z")
 
 
 def _assert_no_execution_authority(value: Mapping[str, Any], label: str) -> None:
@@ -293,6 +379,176 @@ def _historical_artifact(
     return artifact
 
 
+def _historical_document_artifact(
+    root: Path,
+    source: Mapping[str, Any],
+    *,
+    observed_at: str,
+) -> dict[str, Any]:
+    """Build the contract-pinned projection artifact for one modern source document."""
+    source_id = source.get("id")
+    expected = _DOCUMENT_HISTORICAL_SOURCES.get(source_id) if isinstance(source_id, str) else None
+    if expected is None or source.get("path") != expected["path"]:
+        raise ValueError("historical document source identity/path mismatch")
+    if (
+        source.get("evidence_status") != expected["evidence_status"]
+        or source.get("collection_only") is not True
+        or source.get("research_context_eligible") is not True
+        or source.get("candidate_evidence_eligible") is not False
+        or source.get("execution_authorized") is not False
+        or source.get("raw_payloads_eligible") is not False
+        or source.get("summary_fields") != expected["summary_fields"]
+    ):
+        raise ValueError("historical document source contract mismatch")
+
+    rel = expected["path"]
+    source_path = root / rel
+    raw = source_path.read_bytes()
+    try:
+        doc = json.loads(raw.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as ex:
+        raise ValueError("historical document JSON is invalid") from ex
+    if not isinstance(doc, dict):
+        raise ValueError("historical document must be a JSON object")
+    if (
+        doc.get(expected["schema_key"]) != expected["schema_value"]
+        or doc.get("authority") != "RESEARCH_CONTEXT_ONLY"
+        or doc.get(expected["raw_exclusion_field"]) is not False
+        or any(
+            doc.get(key) is not False
+            for key in (
+                "execution_authorized",
+                "production_decision_authorized",
+                "automatic_model_promotion",
+            )
+        )
+        or any(str(key).startswith("RUN_") or key == "COLLECTION_ONLY" for key in doc)
+    ):
+        raise ValueError("historical document schema/authority mismatch")
+    eligibility = expected["eligibility"]
+    if eligibility and doc.get(eligibility["field"]) != eligibility["equals"]:
+        raise ValueError("historical document is not eligible")
+
+    raw_clock = doc.get(expected["collection_clock_field"])
+    collected_at = _time(raw_clock)
+    observed = _time(observed_at)
+    collected_dt = datetime.fromisoformat(collected_at.replace("Z", "+00:00"))
+    observed_dt = datetime.fromisoformat(observed.replace("Z", "+00:00"))
+    if (collected_dt - observed_dt).total_seconds() > 300:
+        raise ValueError("historical document clock is too far in the future")
+
+    fields = {key: doc[key] for key in expected["summary_fields"] if key in doc}
+    encoded = _canonical(fields).encode("utf-8")
+    if len(encoded) > _HISTORICAL_SUMMARY_BOUND:
+        raise ValueError("historical document summary exceeds the bounded payload size")
+    projection = {
+        "summary": {
+            "fields_present": sorted(fields),
+            "fields_sha256": hashlib.sha256(encoded).hexdigest(),
+            "fields_bytes": len(encoded),
+        },
+        "clocks": {
+            "collection_clock_field": expected["collection_clock_field"],
+            "collected_at": collected_at,
+            "availability_clock": expected["availability_clock"],
+        },
+    }
+    artifact: dict[str, Any] = {
+        "lane": source_id,
+        "artifact_kind": "RESEARCH_CONTEXT_DOCUMENT",
+        "path": rel,
+        "schema_value": expected["schema_value"],
+        "source_artifact_blob_sha": _git_blob_sha(raw),
+        "run_id": None,
+        "run_status": None,
+        "evidence_status": expected["evidence_status"],
+        "research_context_eligible": True,
+        "candidate_evidence_eligible": False,
+        "summary": projection["summary"],
+        "clocks": projection["clocks"],
+        "execution_authorized": False,
+    }
+    artifact["artifact_id"] = _hash(artifact)
+    return artifact
+
+
+def _historical_context_artifacts(root: Path, observed_at: str) -> list[dict[str, Any]] | None:
+    """Build artifacts from the declared 4-source or complete 6-source consumer contract."""
+    contract_path = root / _HISTORICAL_CONTEXT_CONTRACT
+    contract = _read_json(contract_path, required=False)
+    if contract is None:
+        return None
+    context = contract.get("historical_context")
+    if context is None:
+        return None
+    if (
+        not isinstance(context, Mapping)
+        or context.get("mode") != "RESEARCH_CONTEXT_ONLY"
+        or any(context.get(key) is not False for key in _HISTORICAL_CONTEXT_FLAGS)
+        or context.get("source_artifact_blob_required") is not True
+        or context.get("artifact_id_sha256_required") is not True
+        or context.get("packet_projection_verification_required") is not True
+    ):
+        raise ValueError("historical context contract authority/integrity mismatch")
+    truth_contract = context.get("truth_contract")
+    if not isinstance(truth_contract, Mapping) or any(
+        truth_contract.get(key) is not True
+        for key in (
+            "foreign_repository_state_is_context_not_native_truth",
+            "historical_context_never_bypasses_foundry",
+            "historical_context_never_bypasses_evaluator",
+            "historical_context_never_grants_shadow_qualification",
+            "historical_context_never_grants_execution_authority",
+            "historical_packet_projection_is_source_derived",
+        )
+    ):
+        raise ValueError("historical context truth contract mismatch")
+    sources = context.get("sources")
+    if not isinstance(sources, list):
+        raise ValueError("historical context contract sources must be a list")
+    source_ids = [source.get("id") if isinstance(source, Mapping) else None for source in sources]
+    if not all(isinstance(source_id, str) for source_id in source_ids):
+        raise ValueError("historical context contract source IDs must be strings")
+    legacy_ids = set(_LEGACY_HISTORICAL_PATHS)
+    document_ids = set(_DOCUMENT_HISTORICAL_SOURCES)
+    if len(source_ids) != len(set(source_ids)):
+        raise ValueError("historical context contract has duplicate source IDs")
+    if set(source_ids) not in (legacy_ids, legacy_ids | document_ids):
+        raise ValueError("historical context contract must declare the legacy four or complete modern six")
+
+    artifacts = []
+    for source in sources:
+        source_id = source["id"]
+        if source_id in _LEGACY_HISTORICAL_PATHS:
+            expected_path = _LEGACY_HISTORICAL_PATHS[source_id]
+            expected_contract = _LEGACY_HISTORICAL_CONTRACT[source_id]
+            if (
+                source.get("path") != expected_path
+                or source.get("evidence_status") != expected_contract["evidence_status"]
+                or source.get("collection_only") is not expected_contract["collection_only"]
+                or source.get("research_context_eligible") is not True
+                or source.get("candidate_evidence_eligible") is not False
+                or source.get("execution_authorized") is not False
+                or source.get("summary_fields") != expected_contract["summary_fields"]
+            ):
+                raise ValueError("legacy historical source contract mismatch")
+            worker_root = expected_path.rsplit("/", 1)[0]
+            artifact = _historical_artifact(
+                root,
+                {"name": source_id, "worker_root": worker_root},
+                source_repository="reppiks490/Icarus-engine",
+            )
+            if artifact is None:
+                raise ValueError(f"required historical source is missing: {expected_path}")
+            artifacts.append(artifact)
+        else:
+            artifacts.append(
+                _historical_document_artifact(root, source, observed_at=observed_at)
+            )
+    artifacts.sort(key=lambda row: (row["lane"], str(row.get("run_id") or "")))
+    return artifacts
+
+
 def build_peer_packet(
     base_dir: str | Path,
     *,
@@ -345,18 +601,20 @@ def build_peer_packet(
         if isinstance(lane, Mapping)
     ]
     lanes.sort(key=lambda row: row["name"])
-    historical_artifacts = []
-    for lane in raw_lanes:
-        if not isinstance(lane, Mapping):
-            continue
-        artifact = _historical_artifact(
-            root,
-            lane,
-            source_repository=source_repository,
-        )
-        if artifact is not None:
-            historical_artifacts.append(artifact)
-    historical_artifacts.sort(key=lambda row: (row["lane"], str(row.get("run_id") or "")))
+    historical_artifacts = _historical_context_artifacts(root, at)
+    if historical_artifacts is None:
+        historical_artifacts = []
+        for lane in raw_lanes:
+            if not isinstance(lane, Mapping):
+                continue
+            artifact = _historical_artifact(
+                root,
+                lane,
+                source_repository=source_repository,
+            )
+            if artifact is not None:
+                historical_artifacts.append(artifact)
+        historical_artifacts.sort(key=lambda row: (row["lane"], str(row.get("run_id") or "")))
 
     mcp_view = {
         "schema_version": mcp.get("schema_version"),

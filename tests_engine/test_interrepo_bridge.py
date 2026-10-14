@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import subprocess
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pytest
 
-from icarus_engine.interrepo_bridge import build_peer_packet
+from icarus_engine.interrepo_bridge import _git_blob_sha, build_peer_packet
 from tools.export_peer_intelligence import (
     _normalize_canonical_acceptance,
     export_packet,
@@ -434,6 +436,72 @@ def test_historical_context_contract_requires_exact_artifact_blob_binding():
         historical["truth_contract"]["historical_packet_projection_is_source_derived"]
         is True
     )
+
+
+def test_modern_historical_contract_exports_all_six_source_witnesses():
+    root = Path(__file__).resolve().parents[1]
+    head = subprocess.run(
+        ["git", "rev-parse", "HEAD"], cwd=root, check=True, capture_output=True, text=True
+    ).stdout.strip()
+    observed_at = datetime.now(timezone.utc).isoformat()
+    packet = build_peer_packet(root, source_commit=head, observed_at=observed_at)
+
+    artifacts = {row["lane"]: row for row in packet["historical_artifacts"]}
+    assert set(artifacts) == {
+        "robustness_guardian",
+        "alpha_synthesis",
+        "apex_council",
+        "flow_microstructure",
+        "provider_collection",
+        "sec_edgar",
+    }
+    for source_id, path, schema_key, schema_value, summary_fields, clock_field, availability_clock in (
+        (
+            "provider_collection",
+            "automation_intelligence/provider_collection_v1/research_context.json",
+            "schema_version",
+            "icarus-provider-research-context-v1",
+            ["summary", "providers", "snapshot_at_utc"],
+            "snapshot_at_utc",
+            None,
+        ),
+        (
+            "sec_edgar",
+            "automation_intelligence/cl_lab/sec_edgar_research_context.json",
+            "schema",
+            "icarus.sec_edgar.research_context/1",
+            ["status", "filing_rows", "fact_rows", "tickers"],
+            "generated_at",
+            "accepted_at",
+        ),
+    ):
+        artifact = artifacts[source_id]
+        source_path = root / path
+        raw = source_path.read_bytes()
+        source = json.loads(raw)
+        fields = {key: source[key] for key in summary_fields if key in source}
+        encoded = json.dumps(fields, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()
+        assert artifact["artifact_kind"] == "RESEARCH_CONTEXT_DOCUMENT"
+        assert artifact["path"] == path
+        assert artifact["schema_value"] == source[schema_key] == schema_value
+        assert artifact["source_artifact_blob_sha"] == _git_blob_sha(raw)
+        assert artifact["run_id"] is None and artifact["run_status"] is None
+        assert artifact["evidence_status"] == "HISTORICAL_COLLECTION_EVIDENCE"
+        assert artifact["research_context_eligible"] is True
+        assert artifact["candidate_evidence_eligible"] is False
+        assert artifact["execution_authorized"] is False
+        assert artifact["summary"] == {
+            "fields_present": sorted(fields),
+            "fields_sha256": hashlib.sha256(encoded).hexdigest(),
+            "fields_bytes": len(encoded),
+        }
+        assert artifact["clocks"]["collection_clock_field"] == clock_field
+        assert artifact["clocks"]["availability_clock"] == availability_clock
+        unsigned = {key: value for key, value in artifact.items() if key != "artifact_id"}
+        expected_id = hashlib.sha256(
+            json.dumps(unsigned, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()
+        ).hexdigest()
+        assert artifact["artifact_id"] == expected_id
 
 def _commit_fixture(root: Path) -> str:
     subprocess.run(["git", "init"], cwd=root, check=True, capture_output=True)

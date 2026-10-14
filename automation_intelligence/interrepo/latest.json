@@ -138,6 +138,34 @@
       }
     },
     {
+      "artifact_id": "e7f4efe24e3c8814c331f356a4fddbe9e616b0832cdfdec01c382473757d88af",
+      "artifact_kind": "RESEARCH_CONTEXT_DOCUMENT",
+      "candidate_evidence_eligible": false,
+      "clocks": {
+        "availability_clock": null,
+        "collected_at": "2026-10-14T19:26:19.520548Z",
+        "collection_clock_field": "snapshot_at_utc"
+      },
+      "evidence_status": "HISTORICAL_COLLECTION_EVIDENCE",
+      "execution_authorized": false,
+      "lane": "provider_collection",
+      "path": "automation_intelligence/provider_collection_v1/research_context.json",
+      "research_context_eligible": true,
+      "run_id": null,
+      "run_status": null,
+      "schema_value": "icarus-provider-research-context-v1",
+      "source_artifact_blob_sha": "3a8a5187ad912f75cf2878b9fc1420bd45047426",
+      "summary": {
+        "fields_bytes": 6817,
+        "fields_present": [
+          "providers",
+          "snapshot_at_utc",
+          "summary"
+        ],
+        "fields_sha256": "38883a33f5481f9b13ec50ef5d7bd85a1c5240c2dfde6c083ea8dcfda5ae63e6"
+      }
+    },
+    {
       "artifact_id": "78a8f4e40b06d184d388456bc304416caa6601b7704f6058cd81320f021b10d0",
       "artifact_kind": "HISTORICAL_LATEST",
       "candidate_evidence_eligible": false,
@@ -171,6 +199,35 @@
         "next": "After PR #2 collision is reconciled, add backward-compatible immutable dataset_id, split_id, evaluation_cutoff_id and protected_final_holdout_id lineage test-first on a run-specific branch; fail closed on missing/inconsistent lineage and merge only after full CI and verified main readback.",
         "observation_keys": [],
         "source_provenance_count": 0
+      }
+    },
+    {
+      "artifact_id": "80d735b1515a24bdde1cc38d53198610e6b89674935ced671b4ffd8befaa7234",
+      "artifact_kind": "RESEARCH_CONTEXT_DOCUMENT",
+      "candidate_evidence_eligible": false,
+      "clocks": {
+        "availability_clock": "accepted_at",
+        "collected_at": "2026-10-14T18:32:43.074259Z",
+        "collection_clock_field": "generated_at"
+      },
+      "evidence_status": "HISTORICAL_COLLECTION_EVIDENCE",
+      "execution_authorized": false,
+      "lane": "sec_edgar",
+      "path": "automation_intelligence/cl_lab/sec_edgar_research_context.json",
+      "research_context_eligible": true,
+      "run_id": null,
+      "run_status": null,
+      "schema_value": "icarus.sec_edgar.research_context/1",
+      "source_artifact_blob_sha": "d0aeaa0c262377d76b2b151755e4138dcc99a20b",
+      "summary": {
+        "fields_bytes": 20077,
+        "fields_present": [
+          "fact_rows",
+          "filing_rows",
+          "status",
+          "tickers"
+        ],
+        "fields_sha256": "13531c52b0c89e15c92151620459e653df589adc7d892d88fd94406d210d3ddb"
       }
     }
   ],
@@ -289,12 +346,12 @@
     "ui_api": "/api/mcp/control",
     "ui_tab": "MCP / Automation"
   },
-  "observed_at": "2026-10-14T21:34:42Z",
-  "packet_id": "d17bfd235c82f6429d7d8ed6c2a3569760758dfd3cfaa2feb135e75051c84826",
+  "observed_at": "2026-10-14T21:38:18Z",
+  "packet_id": "d7bdc295064c532e68715a165e321326d9b9007b41e4ac8f8556efc72f79d6a9",
   "peer_write_authorized": false,
   "production_decision_authorized": false,
   "schema_version": "icarus-peer-intelligence-packet-v1",
-  "source_commit": "1745a2300c937737b9d4a75cc0cfe7c3994bfa19",
+  "source_commit": "a0f770b002f9d4be92c78551979c09de7e8389e5",
   "source_contract_blobs": {
     "agent_fabric": "73b35492bd720881f9e493c260c009d0ed72198c",
     "control_plane": "6a296974fe910bf54fb584a169f90ee8564c1dfd",

@@ -115,7 +115,8 @@ def test_brain_federation_declares_historical_research_context_sources():
     assert sec["path"] == "automation_intelligence/cl_lab/sec_edgar_research_context.json"
     assert "tickers" in sec["summary_fields"]
     assert sec["raw_payloads_eligible"] is False
-    assert sec["causal_timestamp"] == "accepted_at"
+    assert sec["availability_clock"] == "accepted_at"
+    assert "causal_timestamp" not in sec
 
     for row in sources:
         if row["id"] not in collection_only:

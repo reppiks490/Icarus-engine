@@ -141,6 +141,20 @@ def test_live_path_preserves_finite_and_bounded_summary_guards(summary_value, ex
     assert live["flow_microstructure"] == expected_result
 
 
+def test_malformed_artifact_values_reject_without_raising():
+    contract, block, sources, expected = BF.load_case(HERE / "cases" / "accept_modern6")
+    for artifact_kind, field in (("RESEARCH_CONTEXT_DOCUMENT", "fields_bytes"),
+                                 ("HISTORICAL_LATEST", "findings")):
+        malformed = json.loads(json.dumps(block))
+        art = next(a for a in malformed["historical_artifacts"] if a["artifact_kind"] == artifact_kind)
+        if artifact_kind == "RESEARCH_CONTEXT_DOCUMENT":
+            art["summary"][field] = float("nan")
+        else:
+            art["summary"][field] = [float("nan")]
+        assert BF.reference_verify(contract, malformed, sources, expected["consumer_now"]) == \
+            "ARTIFACT_ID_MISMATCH"
+
+
 def test_legacy_artifacts_are_todays_exporter_output():
     contract, block, sources, _ = BF.load_case(HERE / "cases" / "accept_legacy4")
     for art in block["historical_artifacts"]:

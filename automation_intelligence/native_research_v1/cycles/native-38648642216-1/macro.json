@@ -1,0 +1,116 @@
+{
+  "automation_id": "github-native-research-v1",
+  "blockers": [
+    "Release titles establish publication, not macro surprise or causal impact.",
+    "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+    "No consensus estimates acquired; economic surprise remains unknown."
+  ],
+  "chatgpt_tokens_used": 0,
+  "code_revision": "e2abefb0f860ce42e3695c08ec40c796666d703a",
+  "completed_at_utc": "2026-10-14T22:35:50.799199Z",
+  "event_paths": [
+    "automation_intelligence/mcp_interface/events/native-38648642216-1_native_macro.json"
+  ],
+  "evidence": [
+    "automation_intelligence/native_research_v1/cycles/native-38648642216-1/evidence.json"
+  ],
+  "execution_authorized": false,
+  "input_sha256": "1a1ba190cbf1ab4a9cfa7733be885bce90ec9bf897a949f5a2bf5571244e01d2",
+  "lane": "macro",
+  "local_interpretation": {
+    "authority": "UNVERIFIED_MODEL_INFERENCE",
+    "model": "Qwen/Qwen3-1.7B-GGUF@90862c4:Q8_0",
+    "payload": {
+      "conflicts": [],
+      "data_gaps": [],
+      "execution_authorized": false,
+      "lane": "macro",
+      "net_new_delta": "LOCAL_NEXT_TEST_SELECTION",
+      "summary": "Does the next official release change the daily macro context?"
+    },
+    "response_id": "local-3dc1754c694e11cb5673d914",
+    "status": "GENERATED"
+  },
+  "measurements": {
+    "gaps": [
+      "Release titles establish publication, not macro surprise or causal impact.",
+      "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+      "No consensus estimates acquired; economic surprise remains unknown."
+    ],
+    "limits": "Publication and daily change are facts; surprise, causality and intraday propagation remain unverified.",
+    "releases": [
+      {
+        "published_epoch": 1791914400.0,
+        "retrieval_finished": 1792017334.1154847,
+        "retrieval_started": 1792017334.0592968,
+        "source": "FED",
+        "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261013a.htm",
+        "title": "Minutes of the Board's discount rate meetings on August 17, September 9, and September 16, 2026"
+      },
+      {
+        "published_epoch": 1791936000.0,
+        "retrieval_finished": 1792017334.6705713,
+        "retrieval_started": 1792017334.11614,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261014~e4ca33588e.en.html",
+        "title": "Frank Elderson: Ensuring resilience in the face of uncertainty"
+      },
+      {
+        "published_epoch": 1791916200.0,
+        "retrieval_finished": 1792017334.6705713,
+        "retrieval_started": 1792017334.11614,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261013~9db9bf4fd6.en.html",
+        "title": "Philip R. Lane: The AI opportunity for Europe"
+      },
+      {
+        "published_epoch": 1791981014.0,
+        "retrieval_finished": 1792017334.7517142,
+        "retrieval_started": 1792017334.6711278,
+        "source": "BLS",
+        "source_url": "https://www.bls.gov/bls/",
+        "title": "Major Economic Indicators Latest Numbers"
+      }
+    ],
+    "series": [
+      {
+        "change": -0.03000000000000025,
+        "date": "2026-10-13",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-10-09",
+        "series": "DGS10",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10",
+        "value": 5.21
+      },
+      {
+        "change": -0.009999999999999787,
+        "date": "2026-10-13",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-10-09",
+        "series": "DGS2",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2",
+        "value": 4.79
+      },
+      {
+        "change": 0.1554000000000002,
+        "date": "2026-10-09",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-10-08",
+        "series": "DTWEXBGS",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DTWEXBGS",
+        "value": 121.6023
+      }
+    ],
+    "status": "VERIFIED",
+    "summary": "4 dated official release headlines; 3 daily macro series measured."
+  },
+  "outcome": "MATERIAL_DELTA",
+  "paid_model_calls": 0,
+  "prior_receipt_path": "automation_intelligence/native_research_v1/cycles/native-38618661492-1/macro.json",
+  "run_id": "native-38648642216-1-macro",
+  "schema_version": "icarus-research-run-v1",
+  "started_at_utc": "2026-10-14T22:35:34.985208Z",
+  "substantive_work_performed": true,
+  "summary": "4 dated official release headlines; 3 daily macro series measured.",
+  "worker": "GITHUB_ACTIONS"
+}

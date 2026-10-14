@@ -155,6 +155,26 @@ def test_malformed_artifact_values_reject_without_raising():
             "ARTIFACT_ID_MISMATCH"
 
 
+def test_live_paths_reject_nonfinite_allowlisted_values():
+    contract, _, sources, expected = BF.load_case(HERE / "cases" / "accept_modern6")
+
+    provider_path = "automation_intelligence/provider_collection_v1/research_context.json"
+    provider_doc = json.loads(sources[provider_path])
+    provider_doc["summary"]["providers_total"] = float("nan")
+    live = BF.reference_live_verify(
+        contract, dict(sources, **{provider_path: BF._dump(provider_doc)}), expected["consumer_now"]
+    )
+    assert live["provider_collection"] == "SCHEMA_MISMATCH"
+
+    flow_path = "automation_intelligence/flow/latest.json"
+    flow_doc = json.loads(sources[flow_path])
+    flow_doc["NET_NEW_DELTA"] = {"synthetic_metric": float("nan")}
+    live = BF.reference_live_verify(
+        contract, dict(sources, **{flow_path: BF._dump(flow_doc)}), expected["consumer_now"]
+    )
+    assert live["flow_microstructure"] == "SCHEMA_MISMATCH"
+
+
 def test_legacy_artifacts_are_todays_exporter_output():
     contract, block, sources, _ = BF.load_case(HERE / "cases" / "accept_legacy4")
     for art in block["historical_artifacts"]:

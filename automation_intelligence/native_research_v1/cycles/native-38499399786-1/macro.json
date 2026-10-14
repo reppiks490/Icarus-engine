@@ -1,0 +1,89 @@
+{
+  "automation_id": "github-native-research-v1",
+  "blockers": [
+    "Release titles establish publication, not macro surprise or causal impact.",
+    "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+    "No consensus estimates acquired; economic surprise remains unknown."
+  ],
+  "chatgpt_tokens_used": 0,
+  "code_revision": "78cbcd6930de4760080d32e72cf743f722fc20ea",
+  "completed_at_utc": "2026-10-14T02:08:13.575059Z",
+  "event_paths": [],
+  "evidence": [
+    "automation_intelligence/native_research_v1/cycles/native-38499399786-1/evidence.json"
+  ],
+  "execution_authorized": false,
+  "input_sha256": "e640ccab680a63586d86f7f51c2df0bfb49b21ff7c8d97a7e6f0932c03e3ffa4",
+  "lane": "macro",
+  "local_interpretation": {
+    "authority": "UNVERIFIED_MODEL_INFERENCE",
+    "reason": "No semantic change",
+    "status": "NOT_RUN"
+  },
+  "measurements": {
+    "gaps": [
+      "Release titles establish publication, not macro surprise or causal impact.",
+      "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+      "No consensus estimates acquired; economic surprise remains unknown."
+    ],
+    "limits": "Publication and daily change are facts; surprise, causality and intraday propagation remain unverified.",
+    "releases": [
+      {
+        "published_epoch": 1791914400.0,
+        "retrieval_finished": 1791943692.512428,
+        "retrieval_started": 1791943692.4377265,
+        "source": "FED",
+        "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261013a.htm",
+        "title": "Minutes of the Board's discount rate meetings on August 17, September 9, and September 16, 2026"
+      },
+      {
+        "published_epoch": 1791916200.0,
+        "retrieval_finished": 1791943693.1775777,
+        "retrieval_started": 1791943692.5129042,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261013~9db9bf4fd6.en.html",
+        "title": "Philip R. Lane: The AI opportunity for Europe"
+      }
+    ],
+    "series": [
+      {
+        "change": 0.020000000000000462,
+        "date": "2026-10-09",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-10-08",
+        "series": "DGS10",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10",
+        "value": 5.24
+      },
+      {
+        "change": 0.04999999999999982,
+        "date": "2026-10-09",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-10-08",
+        "series": "DGS2",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2",
+        "value": 4.8
+      },
+      {
+        "change": 0.1554000000000002,
+        "date": "2026-10-09",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-10-08",
+        "series": "DTWEXBGS",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DTWEXBGS",
+        "value": 121.6023
+      }
+    ],
+    "status": "VERIFIED",
+    "summary": "2 dated official release headlines; 3 daily macro series measured."
+  },
+  "outcome": "NO_MATERIAL_DELTA",
+  "paid_model_calls": 0,
+  "prior_receipt_path": "automation_intelligence/native_research_v1/cycles/native-38484053982-1/macro.json",
+  "run_id": "native-38499399786-1-macro",
+  "schema_version": "icarus-research-run-v1",
+  "started_at_utc": "2026-10-14T02:08:13.535837Z",
+  "substantive_work_performed": true,
+  "summary": "2 dated official release headlines; 3 daily macro series measured.",
+  "worker": "GITHUB_ACTIONS"
+}

@@ -127,8 +127,7 @@ these hand-overs. No research trials were run in this resumed Codex session.
   corrections and authenticated thirteen-file physical runner restore accepted.
 - Re-review136 atd69c95c1:57fixture tests pass, but typed metadata, malformed IDs,
   clock/nonfinite exceptions and live legacy-summary bounds remain blockers.
-- Re-review137 at72f5bdb8: intraday roll availability, null interval ordering and
-  trial identity/full-family DSR accounting remain blockers; no research trials run.
+- Re-review137 at72f5bdb8: current blockers are cross-source duplicate historical trial identities and a DSR snapshot that omits the registered 120-config FR-1 family while leaving the DSR method undefined; no research trials run.
 - Atlas registration143 at5216a4ee:11focused tests+5synthetic checks pass,
   twelve exact-head checks green; peer review approved. Native routing awaits
   merge; historical fallback remains manual, not delivery certification.

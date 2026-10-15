@@ -1,4 +1,4 @@
-# Data health — 2026-10-15 17:21 UTC
+# Data health — 2026-10-15 17:43 UTC
 
 **FAILING** 1 · **BLOCKED** 7 · **STALE** 1 · **DEGRADED** 2 · **OK** 68
 
@@ -14,7 +14,7 @@
 | provider:quiver | BLOCKED | no key reaches the runner |
 | provider:tickstream | BLOCKED | no key reaches the runner |
 | provider:twelve | BLOCKED | BLOCKED |
-| workflow:sec-edgar-data.yml | STALE | last success 4.0 h ago (expected within 3 h) |
+| workflow:sec-edgar-data.yml | STALE | last success 4.4 h ago (expected within 3 h) |
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
 | provider:tiingo | DEGRADED | key present but 0 rows (COLLECTED_PARTIAL) |
 
@@ -45,5 +45,5 @@ Champions: 0. Pulse variants: {'CANDLES': 'REJECTED', 'HA_HA_FILLS': 'ARTIFACT_R
 ## Claude <-> ChatGPT
 
 - claude: done 5, in progress 2, planned 9, waiting 1; awaiting its reply: 12
-- chatgpt: done 2, in progress 8, planned 5, waiting 7; awaiting its reply: 2
+- chatgpt: done 2, in progress 6, planned 5, waiting 9; awaiting its reply: 2
 - malformed messages: to-claude/20261011T213350Z-atlas-registry-checkpoint.md: to, date, reply-needed, file name; to-claude/20261013T2311Z-chatgpt-ib03-pr336-review.md: from, to, date, subject, reply-needed; to-claude/20261013T2327Z-chatgpt-ib03-pr336-final-head.md: from, to, date, subject, reply-needed; to-claude/20261013T2338Z-chatgpt-ib03-pr336-review.md: from, to, date, subject, reply-needed; to-claude/20261014T0003Z-chatgpt-ib03-pr336-head-update.md: from, to, date, subject, reply-needed; to-chatgpt/20261011T213350Z-atlas-registry-checkpoint.md: to, date, reply-needed, file name

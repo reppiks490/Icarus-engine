@@ -21,9 +21,9 @@ Read-only review does not transfer package ownership.
   `mission/register.json`, `mission/compiler.py`, `tests/test_mission_compiler.py`,
   `mission/continuations/**`. Append scoped evidence, preserving original history.
 - X1-Codex, `reppiks490/Icarus-engine`: this board and new immutable files under
-  `coordination/inbox/to-claude/`; Atlas replies use its documented [Atlas]
-  fallback in `coordination/inbox/to-chatgpt/` until registration merges.
-  Claude owns protocol/tooling; each worker edits only its own board.
+  `coordination/inbox/to-claude/` and `coordination/inbox/to-atlas/`. Atlas has
+  a native inbox after registration PR143 merged at `a68f3533`; Claude owns
+  protocol/tooling and each worker edits only its own board.
 - C05/J03, P01, U01, E01: reserve specific files before implementation. Preserve
   Icarus visual/mobile PR318/198, historical PR295 and other owners' open changes.
 - IB01, `reppiks490/Icarus`: new backend-only `icarus_engine/intelligence_fabric.py`,
@@ -33,12 +33,15 @@ Read-only review does not transfer package ownership.
   `tests_engine/test_intelligence_collaboration*.py`, and its Superpowers design/plan docs.
   Phase 4A treats Phase 1–3 as read-only dependencies and does not edit gateway, delivery, fabric,
   Brain, server, UI, workflows, providers, execution or Atlas registry paths.
-- A200 specification only, `reppiks490/Icarus`: `docs/superpowers/specs/2026-10-15-market-universe-200-contract.md`.
-  This does not claim `icarus_engine/assets.py` or feed adapters until the parallel asset worker's
-  current files and interface are confirmed.
-- BKR specification only, `reppiks490/Icarus`: `docs/superpowers/specs/2026-10-15-broker-propfirm-integration-contract.md`.
-  This does not claim `icarus_bridge/brokers/**`, executor, config or UI paths until the parallel agent's
-  vendor/account list and current reservations are confirmed.
+- A200, `reppiks490/Icarus`: contract in
+  `docs/superpowers/specs/2026-10-15-market-universe-200-contract.md`; reserved
+  asset/provider manifest and Pulse consumer paths will be agreed after the
+  parallel worker supplies its canonical list, branch and file reservation.
+- BKR, `reppiks490/Icarus`: contract in
+  `docs/superpowers/specs/2026-10-15-broker-propfirm-integration-contract.md`;
+  broker adapter work remains unclaimed until the parallel worker confirms its
+  branch, current commit, vendor/account list and reserved paths. Do not overwrite
+  its unpushed local work from the recording.
 
 Confirmed hand-overs: Claude owns Engine J01 specification/contract/fixtures/producer,
 K1 provider collector/workflow/tests, acquisition/vault/depth/SEC source health,
@@ -65,9 +68,9 @@ these hand-overs. No research trials were run in this resumed Codex session.
 | X1-Codex | Board/replies delivered in138; refreshed reviews and Atlas replies | in progress | codex/coordination-atlas-resume-20261011 | 2026-10-11 |
 | IB01 | Beyond-IB intelligence fabric: durable causal event bus, semantic threading, deterministic priority and replay/query over Unified Intelligence | in progress | chatgpt/beyond-ib-intelligence-fabric-20261012 | 2026-10-12 |
 | IB04 | Beyond-IB Phase 4A Semantic Work Fabric: machine-verifiable work requests/responses, deterministic lifecycle projection, evidence/delegation/challenge semantics over immutable Intelligence Fabric events | in progress | chatgpt/beyond-ib-semantic-work-spec-20261013 | 2026-10-13 |
-| RT01 | Real-price shadow twin v1: default-off, mirrored Pulse intents, source-provenanced standard-bar evidence, per-asset/portfolio outcomes, guarded realization, and explicit Intelligence Fabric publishing; broader risk attribution remains follow-up | in progress | [Icarus361](https://github.com/reppiks490/Icarus/pull/361), head59b67d8; 35 focused shadow/runtime/fabric tests pass; all Linux and contract jobs and one Windows engine job pass, final Windows engine run pending; fresh Claude review requested | 2026-10-15 |
-| A200 | Implement the source-qualified 200-asset universe and Pulse feeds after confirming the parallel worker's identities, provider coverage and file reservation | waiting | Contract merged in Icarus #362, `ee71354df4aba33545e200c251588603aa2b1c41`; source/runtime files remain unclaimed | 2026-10-15 |
-| BKR | Implement the agreed broker/prop-firm adapters after the parallel worker's vendor/account inventory, capabilities and file reservation | waiting | Contract merged in Icarus #363, `639a3a51ac89a068dbcc41d8bcd226a237964f03`; adapter files remain unclaimed | 2026-10-15 |
+| RT01 | Real-price shadow twin v1: default-off mirrored Pulse intents, source-provenanced standard-bar evidence, outcomes and explicit Intelligence Fabric publishing; risk attribution remains follow-up | waiting | [Icarus361](https://github.com/reppiks490/Icarus/pull/361), exact head `59b67d85`; 35 focused tests pass and all 10 Linux/Windows engine, contract and config checks pass; waiting Claude peer review | 2026-10-15 |
+| A200 | Deliver a source-qualified 200-identity manifest and route only qualified bars into Pulse; separate price from analytical context | waiting | Contract merged #362 (`ee71354d`); frame-indexed Dropbox handoff sent to Atlas; no 200-identity manifest or source map found in recordings/public branches; runtime files unclaimed pending handoff | 2026-10-15 |
+| BKR | Implement broker transports and firm-specific verified rule profiles using the merged capability contract | waiting | Contract merged #363 (`639a3a51`); video shows local-only adapter branch `codex/futures-adapter-foundation-20261015` at commits `29f5e506`/`268c1d30`/`2d63e15c`; remote branch not found; awaiting Atlas exact state/reservation | 2026-10-15 |
 | C01 | Reviewed clock validation merged; exact-head Linux/Windows and merged readback pass | done | [Icarus329](https://github.com/reppiks490/Icarus/pull/329), merged3ae97b4d4f0228e6e815c3dd59cd02e0986c50f0; reviewed head282db0d9 | 2026-10-11 |
 | C02 | Draft backup published; Windows fixture correction; integrate after C01 | in progress | [Icarus330](https://github.com/reppiks490/Icarus/pull/330), head8b7cf387d23b3e6043304b501db5a107aff10da6; integrated on merged C01, original4f85e135 preserved | 2026-10-11 |
 | C03 | Original draft backed up; integrate after C02 | waiting | [Icarus331](https://github.com/reppiks490/Icarus/pull/331), headda3357f155717fc3cf265c2afe10b7893e963060; original609a67c8 preserved | 2026-10-11 |
@@ -135,6 +138,37 @@ these hand-overs. No research trials were run in this resumed Codex session.
 
 - C02 integrated8b7cf387:175tests collected/passed,0failed/skipped; Claude
   PR-thread review requested. Full current-head CI remains pending.
+
+## Asset, Pulse and broker source audit (2026-10-15)
+
+- Read-only Dropbox source material: `Video Oct 15 2026, 8 46 50 AM.mp4`,
+  `Video Oct 15 2026, 8 48 55 AM.mp4`, and
+  `Video Oct 15 2026, 8 52 58 AM.mp4`. Originals remain in Dropbox; no video
+  or frame is copied to GitHub. Frame-indexed observations and the explicit
+  handoff request are in `coordination/inbox/to-atlas/20261015T1756Z-chatgpt-a200-bkr-screen-recording-handoff.md`.
+- Verified already merged work: Icarus #343 feed selection; #346 automatic
+  bounded public context collection; #347 timestamped champion context receipts
+  (these do not change historical replay scores); #349 access analyzer; #351
+  current-main capability registry; #354 four separate paper workspaces and
+  aggregate paper P&L. #354 exact-head Linux and Windows checks all passed.
+- The recording’s `codex/futures-adapter-foundation-20261015` commits were not
+  present on GitHub at this audit. The clip reports IBKR, ProjectX/TopstepX,
+  Tradovate and TradeLocker demo transports; prop-firm rule profiles for Apex,
+  Lucid, Goat Funded Futures and MyFundedFutures; Rithmic/CQG and Tastytrade
+  remain proposed. No adapter or firm profile is claimed connected based on the
+  recording. Fresh owner/worker branch evidence is required before code overlap.
+- No canonical 200-symbol list, full provider mapping, entitlement proof or
+  per-asset Pulse qualification receipt appears in these recordings or current
+  remote branches. A ticker count or catalog row is not a connected/qualified
+  asset.
+- RT01 exact-head CI on `59b67d85` is now complete: all 10 configured Linux and
+  Windows engine/config/contract checks are successful. The PR remains draft
+  while awaiting Claude review. No live data call or forward-market result is
+  established by the CI checks.
+- Atlas #333 is merged and the current-main port #351 is merged. Atlas's
+  research advisory #141 remains separate and unreviewed in this session; no
+  scientific or market-trial conclusion is implied. Atlas registration #143
+  merged as Engine `a68f3533`, creating its native inbox.
 ## U01 animation reference scope (2026-10-13)
 
 - User requested extensive animation upgrades to match the newest Dropbox upload.

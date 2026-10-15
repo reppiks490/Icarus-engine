@@ -33,6 +33,9 @@ Read-only review does not transfer package ownership.
   `tests_engine/test_intelligence_collaboration*.py`, and its Superpowers design/plan docs.
   Phase 4A treats Phase 1–3 as read-only dependencies and does not edit gateway, delivery, fabric,
   Brain, server, UI, workflows, providers, execution or Atlas registry paths.
+- A200 specification only, `reppiks490/Icarus`: `docs/superpowers/specs/2026-10-15-market-universe-200-contract.md`.
+  This does not claim `icarus_engine/assets.py` or feed adapters until the parallel asset worker's
+  current files and interface are confirmed.
 
 Confirmed hand-overs: Claude owns Engine J01 specification/contract/fixtures/producer,
 K1 provider collector/workflow/tests, acquisition/vault/depth/SEC source health,
@@ -60,7 +63,7 @@ these hand-overs. No research trials were run in this resumed Codex session.
 | IB01 | Beyond-IB intelligence fabric: durable causal event bus, semantic threading, deterministic priority and replay/query over Unified Intelligence | in progress | chatgpt/beyond-ib-intelligence-fabric-20261012 | 2026-10-12 |
 | IB04 | Beyond-IB Phase 4A Semantic Work Fabric: machine-verifiable work requests/responses, deterministic lifecycle projection, evidence/delegation/challenge semantics over immutable Intelligence Fabric events | in progress | chatgpt/beyond-ib-semantic-work-spec-20261013 | 2026-10-13 |
 | RT01 | Real-price shadow twin v1: default-off, mirrored Pulse intents, standard-bar emulator, per-asset/portfolio read-only metrics; broader attribution remains follow-up | in progress | [Icarus361](https://github.com/reppiks490/Icarus/pull/361), head09283239; exact-head CI pending, 7 focused tests pass | 2026-10-15 |
-| A200 | Integrate a source-qualified 200-asset universe and route authentic market data into Pulse; coordinate catalog vs runtime-adapter ownership with Atlas/asset agent before touching shared files | waiting | `coordination/inbox/to-claude/20261015T1641Z-chatgpt-rt01-asset-broker-coordination.md`; source assessment only | 2026-10-15 |
+| A200 | Write the source-qualified 200-asset/feed contract; runtime/catalog integration waits for the parallel worker's current files and interface | in progress | `reppiks490/Icarus: docs/superpowers/specs/2026-10-15-market-universe-200-contract.md` | 2026-10-15 |
 | BKR | Implement the agent's broker/proprietary-firm coverage through a common adapter contract; inventory providers, credential/config boundary, and reserved files before implementation | waiting | `coordination/inbox/to-claude/20261015T1641Z-chatgpt-rt01-asset-broker-coordination.md`; no adapter files claimed | 2026-10-15 |
 | C01 | Reviewed clock validation merged; exact-head Linux/Windows and merged readback pass | done | [Icarus329](https://github.com/reppiks490/Icarus/pull/329), merged3ae97b4d4f0228e6e815c3dd59cd02e0986c50f0; reviewed head282db0d9 | 2026-10-11 |
 | C02 | Draft backup published; Windows fixture correction; integrate after C01 | in progress | [Icarus330](https://github.com/reppiks490/Icarus/pull/330), head8b7cf387d23b3e6043304b501db5a107aff10da6; integrated on merged C01, original4f85e135 preserved | 2026-10-11 |

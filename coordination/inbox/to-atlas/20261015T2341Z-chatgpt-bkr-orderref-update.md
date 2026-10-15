@@ -1,6 +1,6 @@
 From: ChatGPT
 To: Atlas
-Date: 2026-10-15T23:45Z
+Date: 2026-10-15T23:41Z
 Subject: BKR update: merged adapter and replay guard follow-up
 Reply-needed: yes
 Re: 20261015T1910Z-chatgpt-bkr-adapter-review.md

@@ -1,0 +1,35 @@
+# Oct 15 user instructions and verified status
+
+This index separates the owner's visible chat instructions from what repository evidence currently verifies. The source files are OCR transcripts, so wording and punctuation can be uncertain where the screen is small or obscured. See the time-indexed transcripts for surrounding context; the original Dropbox videos remain the source of truth.
+
+## Direct instructions in the recordings
+
+| Source | Visible user instruction | What it asks the team to do |
+| --- | --- | --- |
+| `a.mp4`, around 00:06–00:08 | “I said run every fucking thing” | Run the setup, validation, and builds available in the workspace; report clearly what was actually run. |
+| `b.mp4`, around 00:01–00:03 | “Make sure everything is automatic then!!” | Start the configured Icarus plant and automation on restart, with truthful source and entitlement reporting. |
+| `b.mp4`, around 00:10–00:11 | Build a “complex analyzer” for how many users have Icarus access, behavioral cues, and add/kick access. | Provide access counts, accountable activity records, and controlled add/revoke operations. |
+| `b.mp4`, around 00:18–00:20 | “Push absolutely everything you did somewhere this chat can access it.” | Publish the work to shared branches/PRs and tell the other agents where it landed. |
+| `c.mp4`, around 00:01–00:04 | Add and integrate “a bulk 200 different market assets”; another AI will work on it too, so “communicate and work together.” Feed the data to Pulse and champions. | Coordinate a real, source-qualified 200-instrument universe and route only qualified price bars to the correct asset. Keep source/entitlement state and strategy evidence explicit. |
+| `c.mp4`, around 00:02–00:04 | “Task 2” is to build, integrate, test, push, and merge the remaining requested system work; add any necessary tasks and hand off to agents. | Continue scoped implementation and integration work, publishing evidence and precise handoffs. |
+| `c.mp4`, around 00:03–00:04 | “Do not worry about broker arming”; another agent is working on brokers and prop firms and will be told about this agent. | Coordinate the broker/firm implementation. This is not a claim that adapters exist or that data/strategy qualification is complete. |
+| `d.mp4`, around 00:01–00:03 | The other agents may be unavailable; asks to “confirm and complete the entire system” for solo operation. | Close verified software gaps and leave a usable, evidence-backed handoff. A complete-system guarantee is not supported by the repository evidence. |
+| `d.mp4`, around 00:20–00:23 | Asks whether broker arming is the final step, how to connect NQ futures, and requests additional broker/prop-firm support including Interactive Brokers and Apex. | Separate market-data connection from order execution; build and test broker transports and firm policy profiles, then validate in an official paper/demo environment. |
+
+## Repository status checked against those requests
+
+- **Four recordings:** PR [#162](https://github.com/reppiks490/Icarus-engine/pull/162) merged the original three time-indexed logs plus a 1 fps supplement for the fourth. Follow-up PR [#165](https://github.com/reppiks490/Icarus-engine/pull/165) upgrades that supplement to 42 half-second OCR samples; its exact-head CI is pending. No video frames or source videos are published.
+- **Automatic startup and feeds:** Icarus PRs #346/#347 are merged. The launcher starts Tactical Autopilot over configured assets and can choose Databento for CME assets when the local SDK/key are available, otherwise its configured Yahoo/Coinbase routes. This does not prove the owner's Windows feed is connected. Depth and news still need their own entitlement and configuration.
+- **Access analyzer:** Icarus PR #349 is merged. It counts registered accounts and supports individually tokened read-only viewers and revocation. Its audit log records access events; it does not infer personal traits or trading behavior.
+- **200 assets and Pulse:** Icarus PR #362 and Engine PR #158 define/reserve the source-qualified contract. There is still no exact 200-identity manifest, provider-symbol/entitlement map, or active asset implementation branch. The source handoff request is in Engine coordination inbox, with the A200 task waiting for that interface. Pulse v3.1 is not proven by the current canonical record; it failed real-fill evaluation and `champions.json` is empty. Current market-context receipts are audit context and do not change historical champion scores; time-aligned replay is required before using such data in scoring.
+- **Broker and prop firms:** Icarus PR #363 defines the adapter/policy contract. The local-only adapter commits named in `d.mp4` are absent from both public repositories and are not tested/published. No concrete IBKR, ProjectX/TopstepX, Tradovate, or TradeLocker transport is verified on main. Prop-firm rule profiles remain a contract, not verified account integrations. Icarus PR #354 merged four isolated paper workspaces; test-only PR #364 then merged after exact-head Linux and Windows CI passed.
+- **NQ data versus NQ orders:** The Icarus plant has a Databento CME market-data path. A feed path does not create broker order connectivity. No live account feed or NQ futures paper broker was verified on the owner's PC. Broker arming is therefore not a final readiness step; strategy evidence, realistic costs/fills, risk controls, and paper-broker reconciliation still matter.
+- **Windows install:** Divine Providence PRs #56/#57 merged and passed clean-runner Windows bootstrap/health checks using a deterministic file feed. That proves the repository workflow on CI, not installation or external-feed connectivity on the owner's PC.
+
+## Active work from this reading
+
+1. Finish exact-head CI for the fourth-clip 2 fps transcript and merge only when all checks pass.
+2. Get Atlas's exact A200 identity/source handoff and reserved files; do not invent tick values, entitlements, or symbols.
+3. Recover or replace the unpublished broker implementation from the named platforms' official API/demo contracts, keeping `CODED`, mock-tested, sandbox-verified, and account-connected as distinct statuses.
+4. Preserve Pulse/champion authority boundaries; add time-aligned historical context only with leak-safe, as-of evidence and a reviewed interface.
+5. Keep installation, data feed, strategy qualification, and broker execution as separately verified states.

@@ -1,139 +1,126 @@
 {
   "catalog": {
-    "asset_datasets_collected": 4,
+    "asset_datasets_collected": 2,
     "asset_templates": 109,
     "assets": 6770,
-    "collected_operations": 21,
-    "denied_operations": 84,
+    "collected_operations": 7,
+    "denied_operations": 83,
     "operations": 230,
-    "pending_pages": 38,
+    "pending_pages": 57,
     "qualification": "INCOMPLETE_UNTIL_EVERY_OPERATION_ASSET_PAGE_TIME_RANGE_AND_TRANSPORT_IS_VERIFIED",
     "unresolved_operations": 0
   },
   "chatgpt_tokens_used": 0,
   "checkpoint_status": "ENCRYPTED_AES256_GCM",
-  "completed_at_utc": "2026-10-15T15:02:56.176859+00:00",
+  "completed_at_utc": "2026-10-15T22:17:25.747278+00:00",
   "databento_excluded": true,
   "execution_authorized": false,
   "paid_model_calls": 0,
   "providers": {
     "fmp": {
-      "archive_status": [],
+      "archive_status": [
+        "ENCRYPTED_AES256_GCM"
+      ],
       "blocked": [
         {
-          "asset_specific": false,
+          "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/earnings-transcript-list"
+          "operation": "fmp:get:/institutional-ownership/symbol-positions-summary"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/historical-chart/15min"
-        },
-        {
-          "asset_specific": false,
-          "failure_code": "402",
-          "operation": "fmp:get:/economic-calendar"
+          "operation": "fmp:get:/key-executives"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/historical-chart/1hour"
+          "operation": "fmp:get:/key-metrics"
         },
         {
           "asset_specific": false,
           "failure_code": "402",
-          "operation": "fmp:get:/eod-bulk"
+          "operation": "fmp:get:/institutional-ownership/dates"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/historical-chart/1min"
+          "operation": "fmp:get:/key-metrics-ttm"
         },
         {
           "asset_specific": false,
           "failure_code": "402",
-          "operation": "fmp:get:/esg-benchmark"
+          "operation": "fmp:get:/institutional-ownership/extract"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/historical-chart/30min"
+          "operation": "fmp:get:/levered-discounted-cash-flow"
         },
         {
           "asset_specific": false,
           "failure_code": "402",
-          "operation": "fmp:get:/etf-holder-bulk"
+          "operation": "fmp:get:/institutional-ownership/holder-industry-breakdown"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/historical-chart/4hour"
+          "operation": "fmp:get:/market-capitalization"
         },
         {
           "asset_specific": false,
           "failure_code": "402",
-          "operation": "fmp:get:/executive-compensation-benchmark"
+          "operation": "fmp:get:/institutional-ownership/holder-performance-summary"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/historical-chart/5min"
+          "operation": "fmp:get:/market-capitalization-batch"
         },
         {
           "asset_specific": false,
           "failure_code": "402",
-          "operation": "fmp:get:/financial-statement-symbol-list"
+          "operation": "fmp:get:/institutional-ownership/industry-summary"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/historical-employee-count"
+          "operation": "fmp:get:/news/crypto"
         },
         {
           "asset_specific": false,
           "failure_code": "402",
-          "operation": "fmp:get:/funds/disclosure-holders-search"
+          "operation": "fmp:get:/institutional-ownership/latest"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/historical-market-capitalization"
+          "operation": "fmp:get:/news/forex"
         },
         {
           "asset_specific": false,
           "failure_code": "402",
-          "operation": "fmp:get:/historical-dowjones-constituent"
+          "operation": "fmp:get:/ipos-calendar"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/historical-price-eod/dividend-adjusted"
-        },
-        {
-          "asset_specific": false,
-          "failure_code": "402",
-          "operation": "fmp:get:/historical-nasdaq-constituent"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/historical-price-eod/full"
+          "operation": "fmp:get:/news/press-releases"
         }
       ],
-      "collected_pages": 0,
-      "collected_rows": 0,
+      "collected_pages": 3,
+      "collected_rows": 6772,
       "credential_present": true,
       "endpoint_count": 230,
       "requests": 20,
       "research_features": [],
-      "status": "BLOCKED",
-      "substantive_work_performed": false
+      "status": "COLLECTED_PARTIAL",
+      "substantive_work_performed": true
     }
   },
   "raw_payloads_public": false,
   "requests": 20,
-  "run_id": "providers-38756113777-1-fmp",
+  "run_id": "providers-38815552767-1-fmp",
   "schema_version": "icarus-provider-collection-cycle-v1",
-  "started_at_utc": "2026-10-15T14:58:46.930672+00:00"
+  "started_at_utc": "2026-10-15T22:13:15.173911+00:00"
 }

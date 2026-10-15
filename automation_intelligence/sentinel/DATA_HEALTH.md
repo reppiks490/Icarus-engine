@@ -1,4 +1,4 @@
-# Data health — 2026-10-15 19:01 UTC
+# Data health — 2026-10-15 19:06 UTC
 
 **FAILING** 4 · **BLOCKED** 7 · **STALE** 1 · **DEGRADED** 2 · **OK** 65
 
@@ -9,7 +9,7 @@
 | feed:databento_dx_5m | FAILING | FeedError: Databento historical request failed for DX.v.0: BentoClientError: 422 dataset_unavailable_range Part or all of your request for dataset 'IFUS.IMPACT' |
 | feed:databento_vxm_5m | FAILING | FeedError: Databento historical request failed for VXM.v.0: BentoClientError: 403 license_not_found_unauthorized A live data license is required to access XCBF. |
 | workflow:databento-depth-research-context.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/38784933086 |
-| workflow:tests.yml | FAILING | latest run cancelled: https://github.com/reppiks490/Icarus-engine/actions/runs/38790364798 |
+| workflow:tests.yml | FAILING | latest run cancelled: https://github.com/reppiks490/Icarus-engine/actions/runs/38790401695 |
 | provider:alpaca | BLOCKED | no key reaches the runner |
 | provider:eodhd | BLOCKED | BLOCKED |
 | provider:fmp | BLOCKED | BLOCKED |
@@ -17,7 +17,7 @@
 | provider:quiver | BLOCKED | no key reaches the runner |
 | provider:tickstream | BLOCKED | no key reaches the runner |
 | provider:twelve | BLOCKED | BLOCKED |
-| workflow:provider-exhaustive-collection.yml | STALE | last success 3.9 h ago (expected within 3 h) |
+| workflow:provider-exhaustive-collection.yml | STALE | last success 4.0 h ago (expected within 3 h) |
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
 | provider:tiingo | DEGRADED | key present but 0 rows (COLLECTED_PARTIAL) |
 
@@ -48,6 +48,6 @@ Champions: 0. Pulse variants: {'CANDLES': 'REJECTED', 'HA_HA_FILLS': 'ARTIFACT_R
 ## Coordination (Claude, ChatGPT, Atlas)
 
 - claude: done 5, in progress 2, planned 9, waiting 1; awaiting its reply: 13
-- chatgpt: done 2, in progress 7, planned 5, waiting 10; awaiting its reply: 2
+- chatgpt: done 2, in progress 8, planned 5, waiting 10; awaiting its reply: 2
 - atlas: waiting 4; awaiting its reply: 2
 - malformed messages: to-claude/20261011T213350Z-atlas-registry-checkpoint.md: to, date, reply-needed, file name; to-claude/20261013T2311Z-chatgpt-ib03-pr336-review.md: from, to, date, subject, reply-needed; to-claude/20261013T2327Z-chatgpt-ib03-pr336-final-head.md: from, to, date, subject, reply-needed; to-claude/20261013T2338Z-chatgpt-ib03-pr336-review.md: from, to, date, subject, reply-needed; to-claude/20261014T0003Z-chatgpt-ib03-pr336-head-update.md: from, to, date, subject, reply-needed; to-chatgpt/20261011T213350Z-atlas-registry-checkpoint.md: to, date, reply-needed, file name

@@ -1,4 +1,4 @@
-# Data health — 2026-10-15 18:53 UTC
+# Data health — 2026-10-15 18:59 UTC
 
 **FAILING** 3 · **BLOCKED** 7 · **STALE** 1 · **DEGRADED** 2 · **OK** 66
 
@@ -16,7 +16,7 @@
 | provider:quiver | BLOCKED | no key reaches the runner |
 | provider:tickstream | BLOCKED | no key reaches the runner |
 | provider:twelve | BLOCKED | BLOCKED |
-| workflow:provider-exhaustive-collection.yml | STALE | last success 3.8 h ago (expected within 3 h) |
+| workflow:provider-exhaustive-collection.yml | STALE | last success 3.9 h ago (expected within 3 h) |
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
 | provider:tiingo | DEGRADED | key present but 0 rows (COLLECTED_PARTIAL) |
 

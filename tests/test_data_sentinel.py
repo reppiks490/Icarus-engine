@@ -62,7 +62,7 @@ def test_report_carries_the_claude_chatgpt_mailbox(tmp_path):
     msg.write_text("From: ChatGPT\nTo: Claude\nDate: 2026-10-11\nSubject: Ask\nReply-needed: yes\n\nBody\n")
     report = ds.build(tmp_path, now=NOW)
     assert report["coordination"]["awaiting_reply"]["claude"] == ["20261011T0500Z-chatgpt-ask.md"]
-    assert "## Claude <-> ChatGPT" in ds.markdown(report)
+    assert "## Coordination (Claude, ChatGPT, Atlas)" in ds.markdown(report)
     quiet = ds.build(tmp_path, now=NOW)
     reply = tmp_path / "coordination/inbox/to-chatgpt/20261011T0600Z-claude-answer.md"
     reply.parent.mkdir(parents=True)

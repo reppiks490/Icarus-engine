@@ -168,7 +168,7 @@ def test_manifest_forces_three_stage_truth_and_federated_access() -> None:
     assert sources['unusual_whales']['access_mode'] == 'github_actions+connector'
     assert sources['unusual_whales']['workflow'] == '.github/workflows/provider-supplemental-collection.yml'
     assert sources['unusual_whales']['ingestion_state'] == 'BLOCKED'
-    assert sources['unusual_whales']['consumption_state'] == 'BLOCKED'
+    assert sources['unusual_whales']['consumption_state'] == 'PARTIAL'
     assert sources['unusual_whales']['runtime_status'] == 'BLOCKED_AUTHENTICATION'
     assert sources['yahoo_cme_futures_seed']['ingestion_state'] == 'STAGED'
     assert sources['yahoo_cme_futures_seed']['consumption_state'] == 'BLOCKED'

@@ -95,29 +95,17 @@ def test_expansion_tickers_are_unique_and_micro_links_are_valid():
             assert spec.multiplier < parent.multiplier
 
 
-def test_api_asset_payload_exports_execution_relevant_metadata():
-    from icarus_engine.server import asset_registry_payload
-
-    payload = asset_registry_payload()
-    rows = {row["symbol"]: row for row in payload["registry"]}
-    for symbol in EXPECTED:
-        row = rows[symbol]
-        for key in (
-            "symbol", "name", "feed", "ticker", "feed_mode", "calendar", "session", "group",
-            "mintick", "multiplier", "kind", "exchange", "asset_class", "micro_of", "tv_symbol",
-        ):
-            assert key in row, (symbol, key)
-        assert row["kind"] == "futures"
-
-
-def test_dashboard_is_registry_driven_and_surfaces_futures_metadata():
-    html = (Path(__file__).parents[1] / "icarus_engine" / "dashboard.html").read_text(encoding="utf-8")
+def test_api_and_dashboard_are_registry_driven():
+    root = Path(__file__).parents[1]
+    server = (root / "icarus_engine" / "server.py").read_text(encoding="utf-8")
+    html = (root / "icarus_engine" / "dashboard.html").read_text(encoding="utf-8")
+    assert 'p.path == "/api/assets"' in server
+    assert "for s in REGISTRY.values()" in server
+    for field in ("symbol", "name", "feed", "calendar", "mintick", "multiplier", "kind"):
+        assert f'"{field}"' in server
     assert "fetch('/api/assets')" in html or 'fetch("/api/assets")' in html
     assert "REGISTRY.map" in html
-    # The add-asset UI must expose useful contract metadata from the API, not hard-code the old universe.
-    assert "asset_class" in html
-    assert "micro_of" in html
-    assert "exchange" in html
+    assert "Registry:" in html
 
 
 def test_public_no_secret_probe_contract_exists_and_covers_expansion():

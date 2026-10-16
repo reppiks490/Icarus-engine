@@ -5,7 +5,7 @@ on:
     - cron: '41 * * * *'
   workflow_dispatch:
   workflow_run:
-    workflows: ["provider-exhaustive-collection"]
+    workflows: ["restored-five-local-shadow"]
     types: [completed]
     branches: [main]
   push:
@@ -25,11 +25,48 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  freshness:
+    runs-on: ubuntu-latest
+    outputs:
+      run_needed: ${{ steps.gate.outputs.run_needed }}
+    steps:
+      - name: Check out main for freshness gate
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Evaluate schedule-fallback freshness gate
+        id: gate
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          UPSTREAM_EVENT: ${{ github.event.workflow_run.event }}
+          UPSTREAM_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          FALLBACK_MAX_AGE_SECONDS: '4500'
+          FRESHNESS_MARKER: automation_intelligence/native_research_v1/latest.json
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$EVENT_NAME" != 'workflow_run' ]; then
+            echo 'run_needed=true' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [ "$UPSTREAM_EVENT" != 'schedule' ] || [ "$UPSTREAM_CONCLUSION" != 'success' ]; then
+            echo 'run_needed=false' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          last_epoch="$(git log -1 --format=%ct -- "$FRESHNESS_MARKER" || true)"
+          now_epoch="$(date -u +%s)"
+          if [ -n "$last_epoch" ] && [ "$((now_epoch - last_epoch))" -lt "$FALLBACK_MAX_AGE_SECONDS" ]; then
+            echo 'run_needed=false' >> "$GITHUB_OUTPUT"
+            echo "native research is fresh; fallback suppressed"
+          else
+            echo 'run_needed=true' >> "$GITHUB_OUTPUT"
+            echo "native research is stale or absent; fallback authorized"
+          fi
+
   research:
-    if: >-
-      github.event_name != 'workflow_run' ||
-      (github.event.workflow_run.event == 'schedule' &&
-       github.event.workflow_run.conclusion == 'success')
+    needs: freshness
+    if: needs.freshness.outputs.run_needed == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:

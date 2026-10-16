@@ -8,6 +8,7 @@ import pytest
 
 
 WORKFLOW = Path('.github/workflows/provider-supplemental-collection.yml')
+PROMOTER = Path('.github/workflows/provider-supplemental-promote.yml')
 SUPPLEMENT = Path('config/provider_endpoint_catalog_supplemental.json')
 MANIFEST = Path('config/data_ingestion_manifest.json')
 DIRECTIVE = Path('docs/agent-handoffs/FEDERATED_DATA_COLLECTION.md')
@@ -75,6 +76,19 @@ def test_provider_workflow_runs_missing_github_native_providers_and_injects_cano
         'automation_intelligence/mcp_interface/events/provider-coverage-supplemental-${{ github.run_id }}-${{ matrix.provider }}.json',
         '',
     )
+
+
+def test_promoter_only_accepts_trusted_main_runs_and_never_commits_raw_archives() -> None:
+    text = PROMOTER.read_text()
+    assert "github.event.workflow_run.head_branch == 'main'" in text
+    assert 'github.event.workflow_run.head_repository.full_name == github.repository' in text
+    for event in ("'schedule'", "'workflow_dispatch'", "'push'"):
+        assert event in text
+    assert 'actions: read' in text
+    assert 'contents: write' in text
+    assert 'python -m tools.provider_research_context --repo-root .' in text
+    assert '.provider_collection_archives' not in text.split('git add', 1)[1]
+    assert 'provider_collection_v1/research_context.json' in text
 
 
 def test_supplemental_catalog_covers_missing_provider_families() -> None:

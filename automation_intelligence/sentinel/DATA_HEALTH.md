@@ -1,21 +1,21 @@
-# Data health — 2026-10-16 01:40 UTC
+# Data health — 2026-10-16 01:44 UTC
 
-**FAILING** 1 · **BLOCKED** 5 · **DEGRADED** 4 · **OK** 69
+**FAILING** 1 · **BLOCKED** 4 · **DEGRADED** 5 · **OK** 69
 
 ## Needs attention
 
 | Source | Verdict | Why |
 |---|---|---|
-| workflow:databento-depth-research-context.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/38835018938 |
+| workflow:databento-depth-research-context.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/38836681805 |
 | provider:alpaca | BLOCKED | no key reaches the runner |
-| provider:eodhd | BLOCKED | BLOCKED |
 | provider:intrinio | BLOCKED | no key reaches the runner |
 | provider:quiver | BLOCKED | no key reaches the runner |
 | provider:tickstream | BLOCKED | no key reaches the runner |
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
+| provider:eodhd | DEGRADED | 553 rows; 29 endpoints denied by plan |
 | provider:fmp | DEGRADED | key present but 0 rows (COLLECTED_PARTIAL) |
 | provider:tiingo | DEGRADED | key present but 0 rows (QUOTA_OR_RATE_LIMIT_PAUSED) |
-| provider:twelve | DEGRADED | 8 rows; 1 endpoints denied by plan |
+| provider:twelve | DEGRADED | key present but 0 rows (COLLECTED_PARTIAL) |
 
 ## Delivering
 

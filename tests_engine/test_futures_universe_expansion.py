@@ -13,8 +13,8 @@ EXPECTED = {
     "MNQ": ("MNQ=F", 0.25, 2.0, "CME", "equity_index", "NQ", "rth"),
     "MES": ("MES=F", 0.25, 5.0, "CME", "equity_index", "ES", "rth"),
     "MYM": ("MYM=F", 1.0, 0.5, "CBOT", "equity_index", "YM", "rth"),
-    "MGC": ("MGC=F", 0.10, 10.0, "COMEX", "metal", "GC", "eth"),
-    "SIL": ("SIL=F", 0.005, 1000.0, "COMEX", "metal", "SI", "eth"),
+    "MGC": ("MGC=F", 0.10, 10.0, "COMEX", "metal", "GC", "rth"),
+    "SIL": ("SIL=F", 0.005, 1000.0, "COMEX", "metal", "SI", "rth"),
     # Handpicked expansion.
     "RTY": ("RTY=F", 0.10, 50.0, "CME", "equity_index", None, "rth"),
     "M2K": ("M2K=F", 0.10, 5.0, "CME", "equity_index", "RTY", "rth"),

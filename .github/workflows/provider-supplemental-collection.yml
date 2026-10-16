@@ -14,11 +14,14 @@ on:
       - 'tools/native_provider_access.py'
       - 'config/provider_endpoint_catalog_supplemental.json'
       - 'config/data_ingestion_manifest.json'
+      - 'config/federated_repo_evidence.json'
       - 'config/credential_contract.json'
+      - 'docs/agent-handoffs/CROSS_REPO_EVIDENCE.md'
       - 'tests/test_ingestion_surface_contract.py'
       - 'tests/test_provider_supplemental_transport.py'
       - 'tests/test_supplemental_resilience.py'
       - 'tests/test_federated_data_surface.py'
+      - 'tests/test_crossrepo_evidence_federation.py'
       - 'tests/test_native_provider_access.py'
       - '.github/workflows/provider-supplemental-collection.yml'
   pull_request:
@@ -28,10 +31,13 @@ on:
       - 'tools/native_provider_access.py'
       - 'config/provider_endpoint_catalog_supplemental.json'
       - 'config/data_ingestion_manifest.json'
+      - 'config/federated_repo_evidence.json'
+      - 'docs/agent-handoffs/CROSS_REPO_EVIDENCE.md'
       - 'tests/test_ingestion_surface_contract.py'
       - 'tests/test_provider_supplemental_transport.py'
       - 'tests/test_supplemental_resilience.py'
       - 'tests/test_federated_data_surface.py'
+      - 'tests/test_crossrepo_evidence_federation.py'
       - 'tests/test_native_provider_access.py'
       - '.github/workflows/provider-supplemental-collection.yml'
 
@@ -53,6 +59,7 @@ jobs:
           tests/test_provider_supplemental_transport.py
           tests/test_supplemental_resilience.py
           tests/test_federated_data_surface.py
+          tests/test_crossrepo_evidence_federation.py
           tests/test_native_provider_access.py
           tests/test_provider_exhaustive_collection.py
           tests/test_provider_research_context.py

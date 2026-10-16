@@ -1,0 +1,76 @@
+{
+  "catalog": {
+    "asset_datasets_collected": 0,
+    "asset_templates": 11,
+    "assets": 500,
+    "collected_operations": 6,
+    "denied_operations": 0,
+    "operations": 21,
+    "pending_pages": 4,
+    "qualification": "INCOMPLETE_UNTIL_EVERY_OPERATION_ASSET_PAGE_TIME_RANGE_AND_TRANSPORT_IS_VERIFIED",
+    "unresolved_operations": 0
+  },
+  "chatgpt_tokens_used": 0,
+  "checkpoint_status": "ENCRYPTED_AES256_GCM",
+  "completed_at_utc": "2026-10-16T06:32:35.138833+00:00",
+  "databento_excluded": true,
+  "execution_authorized": false,
+  "paid_model_calls": 0,
+  "providers": {
+    "unusual_whales": {
+      "archive_status": [
+        "ENCRYPTED_AES256_GCM"
+      ],
+      "blocked": [
+        {
+          "asset_specific": false,
+          "failure_code": "422",
+          "operation": "unusual_whales:get:/api/congress/unusual-trades"
+        },
+        {
+          "asset_specific": false,
+          "failure_code": "502",
+          "operation": "unusual_whales:get:/api/crypto/candles/{interval}"
+        },
+        {
+          "asset_specific": false,
+          "failure_code": "400",
+          "operation": "unusual_whales:get:/api/crypto/trades"
+        }
+      ],
+      "collected_pages": 2,
+      "collected_rows": 113,
+      "credential_present": true,
+      "endpoint_count": 21,
+      "requests": 5,
+      "research_features": [
+        {
+          "features": {
+            "price": {
+              "maximum": 1374.8,
+              "mean": 443.299519,
+              "minimum": 8.81,
+              "samples": 100,
+              "standard_deviation": 412.14823111782766
+            },
+            "volume": {
+              "maximum": 147146180.0,
+              "mean": 52492397.95,
+              "minimum": 986957.0,
+              "samples": 100,
+              "standard_deviation": 44366665.21865928
+            }
+          },
+          "operation": "unusual_whales:get:/api/darkpool/recent"
+        }
+      ],
+      "status": "COLLECTED_PARTIAL",
+      "substantive_work_performed": true
+    }
+  },
+  "raw_payloads_public": false,
+  "requests": 5,
+  "run_id": "supplemental-38860609020-unusual_whales",
+  "schema_version": "icarus-provider-collection-cycle-v1",
+  "started_at_utc": "2026-10-16T06:31:42.575126+00:00"
+}

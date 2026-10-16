@@ -69,8 +69,7 @@
   "BLOCKED": 7,
   "DEGRADED": 5,
   "FAILING": 1,
-  "OK": 72,
-  "STALE": 1
+  "OK": 73
  },
  "depth": {
   "budgets": {
@@ -137,7 +136,7 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-10-16T17:40:43+00:00",
+ "generated_at": "2026-10-16T17:41:17+00:00",
  "research": {
   "champions": 0,
   "cl_last_run": "2026-10-16T06:31:29.957898+00:00",
@@ -181,7 +180,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 4.2,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/finnhub.json",
    "rows": 0,
    "source": "provider:finnhub",
@@ -221,7 +220,7 @@
    "why": "BLOCKED"
   },
   {
-   "age_h": 4.2,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/unusual_whales.json",
    "rows": 0,
    "source": "provider:unusual_whales",
@@ -229,18 +228,12 @@
    "why": "BLOCKED_AUTHENTICATION"
   },
   {
-   "age_h": 4.2,
-   "source": "workflow:provider-supplemental-promote.yml",
-   "verdict": "STALE",
-   "why": "last success 4.2 h ago (expected within 3 h)"
-  },
-  {
-   "age_h": 4.2,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/alphavantage.json",
-   "rows": 1365,
+   "rows": 0,
    "source": "provider:alphavantage",
    "verdict": "DEGRADED",
-   "why": "1365 rows; 3 endpoints denied by plan"
+   "why": "key present but 0 rows (NO_READY_JOBS)"
   },
   {
    "age_h": 0.3,
@@ -282,7 +275,7 @@
    "why": "245 events, 109 high impact"
   },
   {
-   "age_h": 11.3,
+   "age_h": 11.4,
    "rows": 4171,
    "source": "feed:btcusd_cb_5m",
    "verdict": "OK",
@@ -380,7 +373,7 @@
    "why": "150830 rows to 2026-10-15T20:55"
   },
   {
-   "age_h": 19.8,
+   "age_h": 19.9,
    "rows": 143275,
    "source": "feed:databento_btc_5m",
    "verdict": "OK",
@@ -696,10 +689,10 @@
    "why": "last success 7.5 h ago"
   },
   {
-   "age_h": 11.1,
+   "age_h": 11.2,
    "source": "workflow:cl-lab.yml",
    "verdict": "OK",
-   "why": "last success 11.1 h ago"
+   "why": "last success 11.2 h ago"
   },
   {
    "age_h": 9.4,
@@ -732,10 +725,10 @@
    "why": "last success 0.7 h ago"
   },
   {
-   "age_h": 0.6,
+   "age_h": 0.7,
    "source": "workflow:native-provider-access.yml",
    "verdict": "OK",
-   "why": "last success 0.6 h ago"
+   "why": "last success 0.7 h ago"
   },
   {
    "age_h": 1.0,
@@ -752,6 +745,12 @@
   {
    "age_h": 0.0,
    "source": "workflow:provider-supplemental-collection.yml",
+   "verdict": "OK",
+   "why": "last success 0.0 h ago"
+  },
+  {
+   "age_h": 0.0,
+   "source": "workflow:provider-supplemental-promote.yml",
    "verdict": "OK",
    "why": "last success 0.0 h ago"
   },

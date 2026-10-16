@@ -11,6 +11,37 @@ HANDOFF = Path("docs/agent-handoffs/GITHUB_NATIVE_CREDENTIALS.md")
 WORKFLOW = Path(".github/workflows/github-native-credential-health.yml")
 PROVIDER_WORKFLOW = Path(".github/workflows/provider-exhaustive-collection.yml")
 
+SCHEDULED_WORKFLOW_CREDENTIALS = {
+    Path(".github/workflows/external-data-fabric.yml"): (
+        "EODHD_API_TOKEN",
+        "FMP_API_KEY",
+        "TIINGO_API_TOKEN",
+    ),
+    Path(".github/workflows/cl-lab.yml"): (
+        "FRED_API_KEY",
+        "DATABENTO_API_KEY",
+        "DATABENTO_API_KEY_SECONDARY",
+        "DATABENTO_API_KEY_THIRD",
+    ),
+    Path(".github/workflows/cl-depth-sweep.yml"): (
+        "ICARUS_DATA_ARCHIVE_KEY",
+        "DATABENTO_API_KEY",
+    ),
+    Path(".github/workflows/databento-depth-corpus.yml"): (
+        "ICARUS_DATA_ARCHIVE_KEY",
+        "DATABENTO_API_KEY",
+        "DATABENTO_API_KEY_SECONDARY",
+    ),
+    Path(".github/workflows/depth-vault.yml"): (
+        "ICARUS_DATA_ARCHIVE_KEY",
+        "DATABENTO_API_KEY",
+    ),
+    Path(".github/workflows/databento-depth-research-context.yml"): (
+        "ICARUS_DATA_ARCHIVE_KEY",
+        "DATABENTO_API_KEY",
+    ),
+}
+
 
 def _contract() -> dict:
     return json.loads(CONTRACT.read_text())
@@ -20,9 +51,19 @@ def _credential(canonical: str) -> dict:
     return next(item for item in _contract()["credentials"] if item["canonical"] == canonical)
 
 
-def _env_expression(text: str, name: str) -> str:
-    prefix = f"          {name}: "
-    return next(line[len(prefix) :] for line in text.splitlines() if line.startswith(prefix))
+def _env_expressions(text: str, name: str) -> list[str]:
+    stripped = name + ": "
+    return [
+        line.strip()[len(stripped) :]
+        for line in text.splitlines()
+        if line.strip().startswith(stripped)
+    ]
+
+
+def _assert_contract_expression(expression: str, canonical: str) -> None:
+    for alias in _credential(canonical)["aliases"]:
+        assert f"secrets.{alias}" in expression
+        assert f"vars.{alias}" in expression
 
 
 def test_contract_exists_and_uses_unique_canonical_names() -> None:
@@ -90,7 +131,8 @@ def test_health_workflow_is_explicit_and_never_enumerates_secrets() -> None:
     assert "credential_health.py" in text
     for item in data["credentials"]:
         for alias in item["aliases"]:
-            assert f"secrets.{alias}" in text
+            expected = f"{alias}: ${{{{ secrets.{alias} || vars.{alias} }}}}"
+            assert expected in text
 
 
 def test_provider_adapter_resolves_legacy_names_through_contract() -> None:
@@ -116,7 +158,8 @@ def test_provider_adapter_exports_legacy_process_names_without_logging_values() 
     assert env["ALPACA_API_KEY"] == "public-id"
     assert env["ALPACA_SECRET_KEY"] == "private-secret"
     assert env["ALPACA_API_SECRET"] == "private-secret"
-    assert "private-secret" not in repr({"provider": "alpaca", "credential_present": bool(env["ALPACA_API_KEY"])})
+    public_status = {"provider": "alpaca", "credential_present": bool(env["ALPACA_API_KEY"])}
+    assert "private-secret" not in repr(public_status)
 
 
 def test_provider_workflow_exports_canonical_names_with_every_contract_alias() -> None:
@@ -135,11 +178,9 @@ def test_provider_workflow_exports_canonical_names_with_every_contract_alias() -
         "ALPACA_API_SECRET",
     ]
     for canonical in canonical_names:
-        expression = _env_expression(text, canonical)
-        spec = _credential(canonical)
-        for alias in spec["aliases"]:
-            assert f"secrets.{alias}" in expression
-            assert f"vars.{alias}" in expression
+        expressions = _env_expressions(text, canonical)
+        assert expressions, canonical
+        _assert_contract_expression(expressions[0], canonical)
 
     legacy_runtime_names = [
         "TICK_STREAM_API_KEY",
@@ -157,6 +198,16 @@ def test_provider_workflow_exports_canonical_names_with_every_contract_alias() -
     for legacy in legacy_runtime_names:
         assert f"          {legacy}:" not in env_block
     assert "python -m tools.provider_credentials" in text
+
+
+def test_every_scheduled_data_workflow_uses_full_canonical_alias_contract() -> None:
+    for path, canonical_names in SCHEDULED_WORKFLOW_CREDENTIALS.items():
+        text = path.read_text()
+        for canonical in canonical_names:
+            expressions = _env_expressions(text, canonical)
+            assert expressions, f"{path}:{canonical}"
+            for expression in expressions:
+                _assert_contract_expression(expression, canonical)
 
 
 def test_handoff_tells_agents_to_use_github_native_contract_without_plaintext() -> None:

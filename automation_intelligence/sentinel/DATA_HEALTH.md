@@ -1,12 +1,13 @@
-# Data health — 2026-10-16 02:59 UTC
+# Data health — 2026-10-16 03:33 UTC
 
-**FAILING** 1 · **BLOCKED** 8 · **DEGRADED** 3 · **UNKNOWN** 1 · **OK** 73
+**FAILING** 2 · **BLOCKED** 8 · **DEGRADED** 3 · **OK** 73
 
 ## Needs attention
 
 | Source | Verdict | Why |
 |---|---|---|
-| workflow:databento-depth-research-context.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/38842680133 |
+| workflow:databento-depth-research-context.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/38844369831 |
+| workflow:interrepo-peer-intelligence.yml | FAILING | latest run cancelled: https://github.com/reppiks490/Icarus-engine/actions/runs/38846073869 |
 | provider:alpaca | BLOCKED | no key reaches the runner |
 | provider:eodhd | BLOCKED | BLOCKED |
 | provider:finnhub | BLOCKED | BLOCKED_AUTHENTICATION |
@@ -18,7 +19,6 @@
 | provider:alphavantage | DEGRADED | 101 rows; 2 endpoints denied by plan |
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
 | provider:tiingo | DEGRADED | 3 rows; 4 endpoints denied by plan |
-| workflow:interrepo-peer-intelligence.yml | UNKNOWN | no completed run on main |
 
 ## Delivering
 
@@ -30,8 +30,8 @@ Vaulted files: {'corpus': 135} (key: HKDF(DATABENTO_API_KEY)). D1 status: {'D1-A
 
 | Budget | Cap | Spent | Left |
 |---|---|---|---|
-| corpus__primary | $5.39 | $1.49 | $3.9 |
-| corpus__secondary | $3.56 | $0.54 | $3.01 |
+| corpus__primary | $5.39 | $1.5 | $3.89 |
+| corpus__secondary | $3.56 | $0.55 | $3.01 |
 | depth__diversifier | $95.0 | $94.99 | $0.01 |
 | depth__index | $93.0 | $92.99 | $0.01 |
 | depth__sweep__primary | $34.5 | $32.47 | $2.03 |
@@ -42,7 +42,7 @@ Vaulted files: {'corpus': 135} (key: HKDF(DATABENTO_API_KEY)). D1 status: {'D1-A
 
 ## Research
 
-Champions: 0. Pulse variants: {'CANDLES': 'REJECTED', 'HA_HA_FILLS': 'ARTIFACT_REFERENCE', 'HA_REAL_FILLS': 'REJECTED'}. CL lab last run: 2026-10-16T01:40:20.859589+00:00.
+Champions: 0. Pulse variants: {'CANDLES': 'REJECTED', 'HA_HA_FILLS': 'ARTIFACT_REFERENCE', 'HA_REAL_FILLS': 'REJECTED'}. CL lab last run: 2026-10-16T03:09:09.700236+00:00.
 
 ## Coordination (Claude, ChatGPT, Atlas)
 

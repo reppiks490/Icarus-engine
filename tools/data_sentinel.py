@@ -28,6 +28,9 @@ OUT = AI / "sentinel"
 # Workflows whose latest conclusion is part of the verdict, and how stale (hours) a success may get.
 WORKFLOWS = {
     "provider-exhaustive-collection.yml": 3,
+    "provider-supplemental-collection.yml": 3,
+    "provider-supplemental-promote.yml": 3,
+    "native-provider-access.yml": 8,
     "external-data-fabric.yml": 80,          # weekdays only
     "cl-lab.yml": 14,
     "databento-depth-corpus.yml": 26,
@@ -37,6 +40,7 @@ WORKFLOWS = {
     "sec-edgar-data.yml": 3,
     "official-economic-events.yml": 8,
     "native-five-research.yml": 3,
+    "interrepo-peer-intelligence.yml": 1,
     "tests.yml": 9999,
 }
 

@@ -30,22 +30,161 @@
       "model_family": "openai",
       "phase": "repair",
       "pr": "pending",
+      "reclaimable": true,
+      "reserved_paths": [],
+      "reserved_targets": [],
+      "session_id": "chatgpt-20261016-atlas-coordination-compiler-durability",
+      "stale": true,
+      "status": "active"
+    },
+    {
+      "actor": "ChatGPT / Atlas",
+      "branch": "atlas/icarus-system-convergence-20261016",
+      "cooperates_with": [],
+      "coordination_mode": "independent",
+      "declared_paths": [
+        "docs/superpowers/specs/2026-10-16-icarus-system-convergence-design.md",
+        "docs/superpowers/plans/2026-10-16-icarus-system-convergence.md",
+        "icarus_engine/system_index.py",
+        "icarus_engine/futures_catalog.py",
+        "icarus_engine/assets.py",
+        "icarus_futures/contracts.py",
+        "icarus_engine/asset_command_center.py",
+        "icarus_engine/brain_evidence.py",
+        "tests_engine/test_system_index.py",
+        "tests_engine/test_futures_catalog.py",
+        "tests_engine/test_asset_command_center.py",
+        "tests_engine/test_brain_evidence.py"
+      ],
+      "declared_targets": [
+        {
+          "path": "docs/superpowers/specs/2026-10-16-icarus-system-convergence-design.md",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "docs/superpowers/plans/2026-10-16-icarus-system-convergence.md",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/system_index.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/futures_catalog.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/assets.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_futures/contracts.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/asset_command_center.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/brain_evidence.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "tests_engine/test_system_index.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "tests_engine/test_futures_catalog.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "tests_engine/test_asset_command_center.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "tests_engine/test_brain_evidence.py",
+          "repo": "reppiks490/Icarus"
+        }
+      ],
+      "dependencies": [
+        "coordination:reppiks490/icarus-owner-actions:coordination/ACTIVE.md",
+        "pr:reppiks490/Icarus#411",
+        "policy:live-execution-disabled"
+      ],
+      "goal": "Converge ICARUS discovery, futures, corpus/Brain provenance, and asset-centric paper-trading state without colliding with active dashboard UI work; preserve fail-closed continuous research identities and live-disabled execution policy.",
+      "home_repo": "reppiks490/Icarus",
+      "last_event_at_utc": "2026-10-16T12:05:16Z",
+      "latest_summary": "Implement the post-audit convergence layer: canonical capability index, unified 32-root futures authority/execution qualification, backend asset-centric paper dashboard state, corpus-to-Brain provenance contracts, and rigid exact-head tests while avoiding active command-center UI collision paths.",
+      "latest_type": "PLAN",
+      "model_family": "openai",
+      "phase": "system-convergence",
+      "pr": null,
       "reclaimable": false,
       "reserved_paths": [
-        ".github/workflows/coordination-maintenance.yml",
-        "tests/test_coordination_automation.py"
+        "docs/superpowers/specs/2026-10-16-icarus-system-convergence-design.md",
+        "docs/superpowers/plans/2026-10-16-icarus-system-convergence.md",
+        "icarus_engine/system_index.py",
+        "icarus_engine/futures_catalog.py",
+        "icarus_engine/assets.py",
+        "icarus_futures/contracts.py",
+        "icarus_engine/asset_command_center.py",
+        "icarus_engine/brain_evidence.py",
+        "tests_engine/test_system_index.py",
+        "tests_engine/test_futures_catalog.py",
+        "tests_engine/test_asset_command_center.py",
+        "tests_engine/test_brain_evidence.py"
       ],
       "reserved_targets": [
         {
-          "path": ".github/workflows/coordination-maintenance.yml",
-          "repo": "reppiks490/icarus-owner-actions"
+          "path": "docs/superpowers/specs/2026-10-16-icarus-system-convergence-design.md",
+          "repo": "reppiks490/Icarus"
         },
         {
-          "path": "tests/test_coordination_automation.py",
-          "repo": "reppiks490/icarus-owner-actions"
+          "path": "docs/superpowers/plans/2026-10-16-icarus-system-convergence.md",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/system_index.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/futures_catalog.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/assets.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_futures/contracts.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/asset_command_center.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/brain_evidence.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "tests_engine/test_system_index.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "tests_engine/test_futures_catalog.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "tests_engine/test_asset_command_center.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "tests_engine/test_brain_evidence.py",
+          "repo": "reppiks490/Icarus"
         }
       ],
-      "session_id": "chatgpt-20261016-atlas-coordination-compiler-durability",
+      "session_id": "chatgpt-20261016-atlas-system-convergence",
       "stale": false,
       "status": "active"
     },
@@ -74,17 +213,69 @@
       "model_family": "openai",
       "phase": "exact-head-verification",
       "pr": null,
+      "reclaimable": true,
+      "reserved_paths": [],
+      "reserved_targets": [],
+      "session_id": "codex-20261016-a200-provider-scope",
+      "stale": true,
+      "status": "active"
+    },
+    {
+      "actor": "Codex",
+      "branch": "codex/a200-receipt-timezone-evidence",
+      "cooperates_with": [],
+      "coordination_mode": "independent",
+      "declared_paths": [
+        "icarus_engine/calendar.py",
+        "icarus_engine/market_universe_adapter.py",
+        "tests_engine/test_market_universe.py"
+      ],
+      "declared_targets": [
+        {
+          "path": "icarus_engine/calendar.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/market_universe_adapter.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "tests_engine/test_market_universe.py",
+          "repo": "reppiks490/Icarus"
+        }
+      ],
+      "dependencies": [
+        "pr:reppiks490/Icarus#419 exact-head CI"
+      ],
+      "goal": "Carry authoritative US equities timezone through the A200 history adapter into receipt provenance and verify the follow-up PR.",
+      "home_repo": "reppiks490/Icarus",
+      "last_event_at_utc": "2026-10-16T12:27:25Z",
+      "latest_summary": "The same timezone-provenance integration was independently implemented on PR #419; PR #418 was closed as a duplicate. PR #419 carries the authoritative timezone through the adapter and adds adapter-level coverage.",
+      "latest_type": "HANDOFF",
+      "model_family": "openai",
+      "phase": "handoff",
+      "pr": 418,
       "reclaimable": false,
       "reserved_paths": [
-        "coordination/events/2026/10/16/codex-20261016-a200-provider-scope/20261016T072304Z-a200-provider-calls-update.json"
+        "icarus_engine/calendar.py",
+        "icarus_engine/market_universe_adapter.py",
+        "tests_engine/test_market_universe.py"
       ],
       "reserved_targets": [
         {
-          "path": "coordination/events/2026/10/16/codex-20261016-a200-provider-scope/20261016T072304Z-a200-provider-calls-update.json",
-          "repo": "reppiks490/icarus-owner-actions"
+          "path": "icarus_engine/calendar.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/market_universe_adapter.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "tests_engine/test_market_universe.py",
+          "repo": "reppiks490/Icarus"
         }
       ],
-      "session_id": "codex-20261016-a200-provider-scope",
+      "session_id": "codex-20261016-a200-timezone-provenance",
       "stale": false,
       "status": "active"
     },
@@ -120,22 +311,38 @@
       "model_family": "openai",
       "phase": "verification",
       "pr": null,
-      "reclaimable": false,
-      "reserved_paths": [
-        "icarus_engine/experience-ui.css",
-        "icarus_engine/experience-ui.js"
-      ],
-      "reserved_targets": [
-        {
-          "path": "icarus_engine/experience-ui.css",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "icarus_engine/experience-ui.js",
-          "repo": "reppiks490/Icarus"
-        }
-      ],
+      "reclaimable": true,
+      "reserved_paths": [],
+      "reserved_targets": [],
       "session_id": "codex-20261016-dashboard-cinema-followup",
+      "stale": true,
+      "status": "active"
+    },
+    {
+      "actor": "ChatGPT / Codex",
+      "branch": "read-only-review",
+      "cooperates_with": [],
+      "coordination_mode": "independent",
+      "declared_paths": [],
+      "declared_targets": [],
+      "dependencies": [
+        "pr:reppiks490/Icarus#415@6c60e18d6e1225dc284c8429dbc9ed3ba7638276",
+        "github-run:38905446953",
+        "pr:reppiks490/Icarus#428@636c65de5212fb714a89e2be6f2c15536a73a097",
+        "github-run:38905721195"
+      ],
+      "goal": "Independently review the in-progress canonical 32-root futures PRs for contract failures and cross-PR collisions, and provide exact-head findings to their author.",
+      "home_repo": "reppiks490/Icarus",
+      "last_event_at_utc": "2026-10-16T13:11:10Z",
+      "latest_summary": "Re-reviewed Atlas convergence PR #415 at 6c60e18d6e1225dc284c8429dbc9ed3ba7638276. The stale CL qualification test is corrected. Calendar-coverage and simulated-paper-control projection findings remain blocking; exact-head run 38905446953 was cancelled by a superseding commit, so await the current run after fixes. Separately reviewed A200 public-listing crosswalk PR #428: per-source freshness finding from ee06b2ce81fad0a1c43345362768b7fd0cda3c2f is corrected at 636c65de5212fb714a89e2be6f2c15536a73a097 and exact-head CI run 38905721195 is in progress.",
+      "latest_type": "WAITING",
+      "model_family": "openai",
+      "phase": "exact-head-review",
+      "pr": null,
+      "reclaimable": false,
+      "reserved_paths": [],
+      "reserved_targets": [],
+      "session_id": "codex-20261016-futures-pr-review",
       "stale": false,
       "status": "active"
     },
@@ -179,33 +386,11 @@
       "model_family": "openai",
       "phase": "documentation",
       "pr": null,
-      "reclaimable": false,
-      "reserved_paths": [
-        "coordination/START_HERE.md",
-        "coordination/directives/2026-10-16-mass-chat-operating-contract.md",
-        "coordination/directives/2026-10-16-owner-contact-boundary.md",
-        "coordination/events/2026/10/16/codex-20261016-owner-contact-boundary/20261016T071400Z-owner-contact-docs-update.json"
-      ],
-      "reserved_targets": [
-        {
-          "path": "coordination/START_HERE.md",
-          "repo": "reppiks490/icarus-owner-actions"
-        },
-        {
-          "path": "coordination/directives/2026-10-16-mass-chat-operating-contract.md",
-          "repo": "reppiks490/icarus-owner-actions"
-        },
-        {
-          "path": "coordination/directives/2026-10-16-owner-contact-boundary.md",
-          "repo": "reppiks490/icarus-owner-actions"
-        },
-        {
-          "path": "coordination/events/2026/10/16/codex-20261016-owner-contact-boundary/20261016T071400Z-owner-contact-docs-update.json",
-          "repo": "reppiks490/icarus-owner-actions"
-        }
-      ],
+      "reclaimable": true,
+      "reserved_paths": [],
+      "reserved_targets": [],
       "session_id": "codex-20261016-owner-contact-boundary",
-      "stale": false,
+      "stale": true,
       "status": "active"
     },
     {
@@ -223,16 +408,7 @@
         "icarus_engine/world-immersion.js",
         "icarus_engine/world-motion.js",
         "assets/dashboard.html",
-        "assets/command-centers-ui.js",
-        "assets/experience-ui.css",
-        "assets/experience-ui.js",
-        "assets/world-aura.js",
-        "assets/world-cinema.js",
-        "assets/world-immersion.js",
-        "assets/world-motion.js",
-        "scripts/build-worker.mjs",
-        "worker/index.js",
-        "dist/server/index.js"
+        "assets/command-centers-ui.js"
       ],
       "declared_targets": [
         {
@@ -274,56 +450,19 @@
         {
           "path": "assets/command-centers-ui.js",
           "repo": "sites/icarus-command-center-mobile"
-        },
-        {
-          "path": "assets/experience-ui.css",
-          "repo": "sites/icarus-command-center-mobile"
-        },
-        {
-          "path": "assets/experience-ui.js",
-          "repo": "sites/icarus-command-center-mobile"
-        },
-        {
-          "path": "assets/world-aura.js",
-          "repo": "sites/icarus-command-center-mobile"
-        },
-        {
-          "path": "assets/world-cinema.js",
-          "repo": "sites/icarus-command-center-mobile"
-        },
-        {
-          "path": "assets/world-immersion.js",
-          "repo": "sites/icarus-command-center-mobile"
-        },
-        {
-          "path": "assets/world-motion.js",
-          "repo": "sites/icarus-command-center-mobile"
-        },
-        {
-          "path": "scripts/build-worker.mjs",
-          "repo": "sites/icarus-command-center-mobile"
-        },
-        {
-          "path": "worker/index.js",
-          "repo": "sites/icarus-command-center-mobile"
-        },
-        {
-          "path": "dist/server/index.js",
-          "repo": "sites/icarus-command-center-mobile"
         }
       ],
       "dependencies": [
-        "reppiks490/Icarus `origin/main` current at source checkout",
-        "backend contract review by command_center_backend",
-        "mobile UI review by mobile_audit"
+        "PR #421 backend CI and merge",
+        "PR #423 UI visual/test/configuration CI"
       ],
       "goal": "Bring the current four-isolated-paper-portfolio Command Center, combined net P&L, and current atmosphere assets into the owner-private phone Site, then validate and publish the same source state.",
       "home_repo": "sites/icarus-command-center-mobile",
-      "last_event_at_utc": "2026-10-16T06:10:00Z",
-      "latest_summary": "The desktop UI source is being completed by the delegated desktop worker on `feat/command-center-desktop`. This event adds its source paths to the coordinated workstream so the phone Site can consume the exact reviewed source. The desktop diff predates this central claim; no further mutations in these paths should occur until the refreshed collision view is checked. UI imports the legacy tail/reference renderer out; dormant backend routes/files remain a separate server concern.",
+      "last_event_at_utc": "2026-10-16T12:30:34Z",
+      "latest_summary": "The desktop UI is now proposed on current main as PR #423 after preserving the intervening trade-history (#379) and Style-popup (#ec44170) updates. Independent Chromium review on the current-main cherry-pick passed desktop and mobile mock screens and viewport checks. PR #423 visual, test, and configuration workflows are queued. PR #421 adds the backend P&L/feed API and partial-flatten receipt; its workflows are also queued. Phone Site v14 is already deployed privately.",
       "latest_type": "UPDATE",
       "model_family": "openai",
-      "phase": "desktop-ui-source-and-mobile-integration",
+      "phase": "ci-and-backend-integration",
       "pr": null,
       "reclaimable": false,
       "reserved_paths": [
@@ -336,16 +475,7 @@
         "icarus_engine/world-immersion.js",
         "icarus_engine/world-motion.js",
         "assets/dashboard.html",
-        "assets/command-centers-ui.js",
-        "assets/experience-ui.css",
-        "assets/experience-ui.js",
-        "assets/world-aura.js",
-        "assets/world-cinema.js",
-        "assets/world-immersion.js",
-        "assets/world-motion.js",
-        "scripts/build-worker.mjs",
-        "worker/index.js",
-        "dist/server/index.js"
+        "assets/command-centers-ui.js"
       ],
       "reserved_targets": [
         {
@@ -387,86 +517,86 @@
         {
           "path": "assets/command-centers-ui.js",
           "repo": "sites/icarus-command-center-mobile"
-        },
-        {
-          "path": "assets/experience-ui.css",
-          "repo": "sites/icarus-command-center-mobile"
-        },
-        {
-          "path": "assets/experience-ui.js",
-          "repo": "sites/icarus-command-center-mobile"
-        },
-        {
-          "path": "assets/world-aura.js",
-          "repo": "sites/icarus-command-center-mobile"
-        },
-        {
-          "path": "assets/world-cinema.js",
-          "repo": "sites/icarus-command-center-mobile"
-        },
-        {
-          "path": "assets/world-immersion.js",
-          "repo": "sites/icarus-command-center-mobile"
-        },
-        {
-          "path": "assets/world-motion.js",
-          "repo": "sites/icarus-command-center-mobile"
-        },
-        {
-          "path": "scripts/build-worker.mjs",
-          "repo": "sites/icarus-command-center-mobile"
-        },
-        {
-          "path": "worker/index.js",
-          "repo": "sites/icarus-command-center-mobile"
-        },
-        {
-          "path": "dist/server/index.js",
-          "repo": "sites/icarus-command-center-mobile"
         }
       ],
       "session_id": "codex-20261016-phone-command-center-site",
       "stale": false,
       "status": "active"
-    }
-  ],
-  "collisions": [
+    },
     {
-      "path_pairs": [
-        [
-          "icarus_engine/experience-ui.css",
-          "icarus_engine/experience-ui.css"
-        ],
-        [
-          "icarus_engine/experience-ui.js",
-          "icarus_engine/experience-ui.js"
-        ]
+      "actor": "ChatGPT / Codex",
+      "branch": "codex/provider-data-hardening-20261016",
+      "cooperates_with": [],
+      "coordination_mode": "independent",
+      "declared_paths": [
+        "ICARUS_STATE.md"
       ],
-      "repo": "reppiks490/Icarus",
-      "sessions": [
-        "codex-20261016-dashboard-cinema-followup",
-        "codex-20261016-phone-command-center-site"
+      "declared_targets": [
+        {
+          "path": "ICARUS_STATE.md",
+          "repo": "reppiks490/Icarus-engine"
+        }
       ],
-      "severity": "collision",
-      "target_pairs": [
-        [
-          "icarus_engine/experience-ui.css",
-          "icarus_engine/experience-ui.css"
-        ],
-        [
-          "icarus_engine/experience-ui.js",
-          "icarus_engine/experience-ui.js"
-        ]
-      ]
+      "dependencies": [
+        "PR #198 exact-head verification is running"
+      ],
+      "goal": "Correct shared provider evidence truth and repair the provider manifest contract that currently fails Engine verification.",
+      "home_repo": "reppiks490/Icarus-engine",
+      "last_event_at_utc": "2026-10-16T13:13:47Z",
+      "latest_summary": "Add ICARUS_STATE.md to the repair scope because its data access section is dated 2026-10-11 and now contradicts the current 2026-10-16 health/provider/depth receipts. The repo's own instructions require updating that source of truth when facts change.",
+      "latest_type": "UPDATE",
+      "model_family": "openai",
+      "phase": "verification",
+      "pr": null,
+      "reclaimable": false,
+      "reserved_paths": [
+        "ICARUS_STATE.md"
+      ],
+      "reserved_targets": [
+        {
+          "path": "ICARUS_STATE.md",
+          "repo": "reppiks490/Icarus-engine"
+        }
+      ],
+      "session_id": "codex-20261016-provider-data-hardening",
+      "stale": false,
+      "status": "active"
+    },
+    {
+      "actor": "ChatGPT / Codex",
+      "branch": "codex/command-center-stack-421",
+      "cooperates_with": [],
+      "coordination_mode": "independent",
+      "declared_paths": [],
+      "declared_targets": [],
+      "dependencies": [
+        "reppiks490/Icarus#424 current stack and #421 backend parent",
+        "GitHub Actions ui-visual-contract exact-head run"
+      ],
+      "goal": "Repair browser-depth topology pointer reconciliation contract at the current command-center UI stack after repeat CI failures, then verify exact-head UI checks.",
+      "home_repo": "reppiks490/Icarus",
+      "last_event_at_utc": "2026-10-16T13:13:13Z",
+      "latest_summary": "Repair browser-depth topology pointer reconciliation contract at the current command-center UI stack after repeat CI failures, then verify exact-head UI checks.",
+      "latest_type": "REGISTERED",
+      "model_family": "openai",
+      "phase": "registered",
+      "pr": null,
+      "reclaimable": false,
+      "reserved_paths": [],
+      "reserved_targets": [],
+      "session_id": "codex-20261016-ui-pointer-contract-fix",
+      "stale": false,
+      "status": "active"
     }
   ],
+  "collisions": [],
   "counts": {
-    "active": 5,
-    "collisions": 1,
-    "stale": 0,
-    "terminal": 5
+    "active": 10,
+    "collisions": 0,
+    "stale": 4,
+    "terminal": 15
   },
-  "generated_at_utc": "2026-10-16T07:24:12.111344Z",
+  "generated_at_utc": "2026-10-16T13:14:24.669039Z",
   "owner_status": {
     "claude": {
       "active": false,
@@ -588,6 +718,31 @@
       "status": "complete"
     },
     {
+      "actor": "ChatGPT",
+      "branch": "review/atlas141-exact-head",
+      "cooperates_with": [],
+      "coordination_mode": "independent",
+      "declared_paths": [],
+      "declared_targets": [],
+      "dependencies": [
+        "PR #141 exact head ba05a182b4aa947d81b26b6c4063e33adec9f147"
+      ],
+      "goal": "Review Atlas draft PR #141 at exact published head and record evidence-based findings for the federation.",
+      "home_repo": "reppiks490/Icarus-engine",
+      "last_event_at_utc": "2026-10-16T12:23:00Z",
+      "latest_summary": "Exact-head peer review complete: no Critical/Important finding in scope; GitHub COMMENT review 5547580914 submitted. 84 standard-library tests passed. Pytest unavailable; no runtime/market qualification asserted.",
+      "latest_type": "COMPLETE",
+      "model_family": "openai",
+      "phase": "complete",
+      "pr": 141,
+      "reclaimable": false,
+      "reserved_paths": [],
+      "reserved_targets": [],
+      "session_id": "chatgpt-20261016-atlas141-review",
+      "stale": false,
+      "status": "complete"
+    },
+    {
       "actor": "ChatGPT / Codex",
       "branch": "codex/a200-ledger-validation-20261016",
       "cooperates_with": [],
@@ -610,6 +765,240 @@
       "reserved_paths": [],
       "reserved_targets": [],
       "session_id": "codex-20261016-a200-ledger-hardening",
+      "stale": false,
+      "status": "complete"
+    },
+    {
+      "actor": "ChatGPT / Codex",
+      "branch": "codex/icarus-review-baton-20261016",
+      "cooperates_with": [],
+      "coordination_mode": "independent",
+      "declared_paths": [],
+      "declared_targets": [],
+      "dependencies": [
+        "reppiks490/Icarus@2c06c6d3e29696eaa7f079e621b768b835c94eb5",
+        "reppiks490/Icarus-engine@6c1a0f3c7dc8cb8844628cd398a12205de3bb52d"
+      ],
+      "goal": "Refresh A200 and Unusual Whales source-to-Pulse status against the latest merged Icarus and Engine main commits, without making provider calls or changing UI/data.",
+      "home_repo": "reppiks490/icarus-owner-actions",
+      "last_event_at_utc": "2026-10-16T12:45:48Z",
+      "latest_summary": "Latest merged Icarus main 2c06c6d3 includes PR #425's explicit A200 history-provider selection UI, but provider selection has not qualified any source: the 200-asset catalog still reports 0 connected, entitled, historical-qualified, live-qualified, Pulse-enabled, or strategy-qualified assets. The stored A200 probe remains 200 Yahoo response receipts (2,000 rows total, 10 each) and 200 FMP NOT_CONFIGURED receipts; every Yahoo identity remains PROVISIONAL, mapping UNVERIFIED, entitlement UNKNOWN, and historical qualification false. Latest Engine main 6c1a0f3c retains Unusual Whales supplemental status COLLECTED_PARTIAL (5 requests/pages, 111 rows, 11/21 catalog operations across 500 assets, one pending page) and a separate native canary status BLOCKED_AUTHENTICATION despite credential_present=true. Icarus intake remains metadata-only and no UW-to-Pulse/champion adapter was found. The UI change and credential presence are not evidence of a fully connected strategy source.",
+      "latest_type": "COMPLETE",
+      "model_family": "openai",
+      "phase": "read-only-audit",
+      "pr": null,
+      "reclaimable": false,
+      "reserved_paths": [],
+      "reserved_targets": [],
+      "session_id": "codex-20261016-a200-uw-head-refresh",
+      "stale": false,
+      "status": "complete"
+    },
+    {
+      "actor": "ChatGPT / Codex",
+      "branch": "codex/futures-review-update-20261016",
+      "cooperates_with": [],
+      "coordination_mode": "independent",
+      "declared_paths": [],
+      "declared_targets": [],
+      "dependencies": [
+        "pr:reppiks490/Icarus#369@3e2ef806b35883db6a8b143cb75b8c657f23d261",
+        "github-run:38789304122",
+        "merge:reppiks490/Icarus@862a1ca38d4adcc11cb4ddc9093fcf857fe2e46f"
+      ],
+      "goal": "Independently review and record the merge receipt for the process-safe Brain journal and Unusual Whales intake persistence port; preserve the metadata-only provider boundary.",
+      "home_repo": "reppiks490/icarus-owner-actions",
+      "last_event_at_utc": "2026-10-16T13:03:17Z",
+      "latest_summary": "Merged C02 process-safe Brain journal append and Unusual Whales receipt persistence PR #369. Exact head 3e2ef806b35883db6a8b143cb75b8c657f23d261 merged as 862a1ca38d4adcc11cb4ddc9093fcf857fe2e46f; Icarus main readback resolves to that SHA and the metadata-only UW intake file is present. Independent review found no blocking lock/persistence issue. Hosted exact-head run 38789304122 passed Linux engine and Windows engine-windows.",
+      "latest_type": "COMPLETE",
+      "model_family": "openai",
+      "phase": "receipt-verification",
+      "pr": null,
+      "reclaimable": false,
+      "reserved_paths": [],
+      "reserved_targets": [],
+      "session_id": "codex-20261016-c02-brain-uw-merge",
+      "stale": false,
+      "status": "complete"
+    },
+    {
+      "actor": "ChatGPT / Codex",
+      "branch": "codex/icarus-review-baton-20261016",
+      "cooperates_with": [],
+      "coordination_mode": "independent",
+      "declared_paths": [],
+      "declared_targets": [],
+      "dependencies": [
+        "reppiks490/Icarus-engine@6c1a0f3c7dc8cb8844628cd398a12205de3bb52d"
+      ],
+      "goal": "Recompute the active hybrid-lane backlog from immutable requests and validated result receipts on exact Engine main, and publish current C04 evidence without mutating Engine data.",
+      "home_repo": "reppiks490/icarus-owner-actions",
+      "last_event_at_utc": "2026-10-16T12:43:30Z",
+      "latest_summary": "Recomputed C04 from all immutable active-lane request files and matching result receipts on Engine main 6c1a0f3c7dc8cb8844628cd398a12205de3bb52d. The four active lanes contain 1,120 requests in total; 1,115 remain unresolved, five have valid resolving receipts, and zero requests have invalid identity/clock diagnostics. Each lane is BACKLOG with 24 unresolved items in its bounded hot window. Persisted health counts/status/latest/oldest fields match the recomputation; their observation timestamp is 09:38Z, while the independent read-only calculation was 12:43Z. All four health records and the registry retain execution_authorized=false.",
+      "latest_type": "COMPLETE",
+      "model_family": "openai",
+      "phase": "read-only-audit",
+      "pr": null,
+      "reclaimable": false,
+      "reserved_paths": [],
+      "reserved_targets": [],
+      "session_id": "codex-20261016-c04-population-audit",
+      "stale": false,
+      "status": "complete"
+    },
+    {
+      "actor": "ChatGPT / Codex",
+      "branch": "codex/intrinio-repo-scoped-credential-truth-20261016",
+      "cooperates_with": [],
+      "coordination_mode": "independent",
+      "declared_paths": [],
+      "declared_targets": [],
+      "dependencies": [
+        "run:reppiks490/Icarus#38865138563",
+        "pr:reppiks490/Icarus-engine#192"
+      ],
+      "goal": "Align canonical credential handoff with verified repository-scoped Intrinio credential and authentication evidence without exposing secrets.",
+      "home_repo": "reppiks490/Icarus-engine",
+      "last_event_at_utc": "2026-10-16T12:51:32Z",
+      "latest_summary": "Merged the repository-scoped Intrinio credential/authentication correction into both canonical handoff surfaces. Icarus reports its present-but-rejected credential (401); Icarus-engine accurately states its local secret set lacks Intrinio. Neither doc implies secrets are readable or shared. The separate DATA_GAP_LEDGER update remains under review in PR #192 and was not changed by this session.",
+      "latest_type": "COMPLETE",
+      "model_family": "openai",
+      "phase": "documentation-consistency",
+      "pr": null,
+      "reclaimable": false,
+      "reserved_paths": [],
+      "reserved_targets": [],
+      "session_id": "codex-20261016-intrinio-doc-consistency",
+      "stale": false,
+      "status": "complete"
+    },
+    {
+      "actor": "ChatGPT / Codex",
+      "branch": "atlas/intrinio-federated-auth-truth-20261016",
+      "cooperates_with": [],
+      "coordination_mode": "independent",
+      "declared_paths": [],
+      "declared_targets": [],
+      "dependencies": [
+        "pr:reppiks490/Icarus-engine#192",
+        "run:reppiks490/Icarus-engine#38904933071"
+      ],
+      "goal": "Refresh the stale Intrinio, Databento primary-sweep, and post-merge cadence claims on Icarus-engine PR #192 against persisted receipts.",
+      "home_repo": "reppiks490/Icarus-engine",
+      "last_event_at_utc": "2026-10-16T13:07:34Z",
+      "latest_summary": "Refreshed the stale provider/depth/cadence claims and repaired the ingestion contract test for valid staged/unverified source states. PR #192 merged at exact head after the focused test and all exact-head CI checks passed.",
+      "latest_type": "COMPLETE",
+      "model_family": "openai",
+      "phase": "merged",
+      "pr": null,
+      "reclaimable": false,
+      "reserved_paths": [],
+      "reserved_targets": [],
+      "session_id": "codex-20261016-intrinio-ledger-refresh",
+      "stale": false,
+      "status": "complete"
+    },
+    {
+      "actor": "ChatGPT / Codex",
+      "branch": "codex/icarus-review-baton-20261016",
+      "cooperates_with": [],
+      "coordination_mode": "independent",
+      "declared_paths": [],
+      "declared_targets": [],
+      "dependencies": [
+        "reppiks490/Icarus@3c32947f516156c95eee1df9b8ec8157bf346bb1",
+        "reppiks490/Icarus-engine@3e29e9527f9e9a8eb20346e38ee807616d8b7a6a"
+      ],
+      "goal": "Refresh C04 full-population backlog and A200/Unusual Whales qualification against the latest merged main snapshots, using persisted evidence only.",
+      "home_repo": "reppiks490/icarus-owner-actions",
+      "last_event_at_utc": "2026-10-16T12:52:10Z",
+      "latest_summary": "Reconciled Icarus main 3c32947 and Engine main 3e29e95. A200 remains 200 catalogued with zero source-connected, entitlement-verified, historical/live-qualified, Pulse-enabled or strategy-qualified assets; the 400-row probe has 200 Yahoo RESPONSE_RECEIVED rows (2,000 summarized rows) and 200 FMP NOT_CONFIGURED rows, with provisional identities, unverified mappings, unknown entitlements and zero historical qualification. Unusual Whales remains COLLECTED_PARTIAL (5 requests/pages, 111 rows, 11/21 operations across 500 assets, one pending page, encrypted checkpoint); its native canary remains BLOCKED_AUTHENTICATION despite credential_present=true, and no direct UW-to-Pulse/champion feature consumer is present. Four active hybrid lanes now contain 1,132 immutable requests, 1,127 unresolved, five resolved and zero invalid; each is BACKLOG with 24 unresolved in its hot window. Persisted health counts match the read-only recomputation; execution_authorized remains false.",
+      "latest_type": "COMPLETE",
+      "model_family": "openai",
+      "phase": "read-only-audit",
+      "pr": null,
+      "reclaimable": false,
+      "reserved_paths": [],
+      "reserved_targets": [],
+      "session_id": "codex-20261016-latest-main-readback",
+      "stale": false,
+      "status": "complete"
+    },
+    {
+      "actor": "ChatGPT / Codex",
+      "branch": "codex/real-price-shadow-twin-v1",
+      "cooperates_with": [],
+      "coordination_mode": "independent",
+      "declared_paths": [],
+      "declared_targets": [],
+      "dependencies": [
+        "merged:reppiks490/Icarus#361",
+        "merged:reppiks490/Icarus#386",
+        "merged:reppiks490/Icarus#391"
+      ],
+      "goal": "Complete exact-head review, regression validation, and draft publication for the default-off real-price shadow twin without changing live execution authority.",
+      "home_repo": "reppiks490/Icarus",
+      "last_event_at_utc": "2026-10-16T12:30:31Z",
+      "latest_summary": "Confirmed the real-price shadow twin v1 implementation is already integrated: PR #361 merged as commit 4c2c9c8; later closed-excursion evidence follow-ups #386 and #391 are also merged. Revalidated current Icarus main at ce271f1: 32 focused shadow/evidence tests and 96 execution-control, emulator-regression, and activation-runtime tests pass. No additional shadow-twin source change is needed in this session; releasing its runtime reservation so the active paper-workspace session has no collision.",
+      "latest_type": "COMPLETE",
+      "model_family": "openai",
+      "phase": "verification",
+      "pr": null,
+      "reclaimable": false,
+      "reserved_paths": [],
+      "reserved_targets": [],
+      "session_id": "codex-20261016-real-price-shadow-twin",
+      "stale": false,
+      "status": "complete"
+    },
+    {
+      "actor": "Codex",
+      "branch": "codex/shadow-dashboard-fixed-overlay-20261016",
+      "cooperates_with": [],
+      "coordination_mode": "independent",
+      "declared_paths": [],
+      "declared_targets": [],
+      "dependencies": [
+        "PR #417 Windows engine check",
+        "PR #417 historical-context consumer check"
+      ],
+      "goal": "Finish the RT01 Shadow Twin dashboard overlay follow-up, preserve existing cinematic layout, and verify the exact shared PR head while keeping all execution read-only.",
+      "home_repo": "reppiks490/Icarus",
+      "last_event_at_utc": "2026-10-16T12:46:33Z",
+      "latest_summary": "RT01 Shadow Twin dashboard overlay follow-up merged to main. The launcher is fixed-position and hidden during the cinematic intro; the separate portfolio/per-asset evidence panel remains read-only.",
+      "latest_type": "COMPLETE",
+      "model_family": "openai",
+      "phase": "complete",
+      "pr": 417,
+      "reclaimable": false,
+      "reserved_paths": [],
+      "reserved_targets": [],
+      "session_id": "codex-20261016-shadow-dashboard-overlay",
+      "stale": false,
+      "status": "complete"
+    },
+    {
+      "actor": "ChatGPT / Codex",
+      "branch": "codex/icarus-review-baton-20261016",
+      "cooperates_with": [],
+      "coordination_mode": "independent",
+      "declared_paths": [],
+      "declared_targets": [],
+      "dependencies": [
+        "handoff:reppiks490/Icarus-engine:coordination/inbox/to-chatgpt/20261016T0212Z-atlas-federated-data-closure.md"
+      ],
+      "goal": "Read the latest A200 and Unusual Whales shared evidence plane and verify the distinction between credential, ingestion, qualification, and downstream Pulse consumption.",
+      "home_repo": "reppiks490/icarus-owner-actions",
+      "last_event_at_utc": "2026-10-16T12:31:45Z",
+      "latest_summary": "Current Icarus main ce271f192 has 200 catalogued equities but 0 source-connected, entitlement-verified, historically qualified, live-qualified, Pulse-enabled, or strategy-qualified assets. Its A200 receipt (updated 2026-10-16T06:17:50Z) has 200 Yahoo RESPONSE_RECEIVED rows and 200 FMP NOT_CONFIGURED rows, but all Yahoo mappings/identities are unverified/provisional and no raw bars persist. Engine main fadac657d confirms Unusual Whales credential presence in the shared secret contract, while the latest supplemental collector is PARTIAL (5 requests/pages, 111 rows, 11 of 21 operations, 500 assets, one page pending) and the separate native canary is BLOCKED_AUTHENTICATION. Icarus unusual_whales_intake.py is metadata-only: it hashes connector responses, declares rights and entitlement unknown, excludes raw payloads, marks PIT and candidate eligibility false, and writes a learning event; no direct UW-to-Pulse/champion feature adapter was found. This is not proof that every plugin call or every provider endpoint is unavailable; it is an explicit incomplete downstream-use and qualification gap.",
+      "latest_type": "COMPLETE",
+      "model_family": "openai",
+      "phase": "research",
+      "pr": null,
+      "reclaimable": false,
+      "reserved_paths": [],
+      "reserved_targets": [],
+      "session_id": "codex-20261016-uw-pulse-consumption-audit",
       "stale": false,
       "status": "complete"
     }

@@ -41,9 +41,15 @@ def test_native_client_injects_auth_without_accepting_auth_from_caller() -> None
     assert 'token=f' in finnhub.full_url
     assert finnhub.get_header('Authorization') is None
 
-    whales = build_request('unusual_whales', '/api/market/market-tide', {'interval_5m': 'true'}, {'UNUSUAL_WHALES_API_KEY': 'u'})
-    assert 'u' not in whales.full_url
-    assert whales.get_header('Authorization') == 'Bearer u'
+    bearer_secret = 'UW_SECRET_SENTINEL_123'
+    whales = build_request(
+        'unusual_whales',
+        '/api/market/market-tide',
+        {'interval_5m': 'true'},
+        {'UNUSUAL_WHALES_API_KEY': bearer_secret},
+    )
+    assert bearer_secret not in whales.full_url
+    assert whales.get_header('Authorization') == f'Bearer {bearer_secret}'
 
     with pytest.raises(ValueError, match='caller may not supply authentication'):
         build_request('finnhub', '/api/v1/quote', {'symbol': 'SPY', 'token': 'override'}, {'FINNHUB_API_KEY': 'f'})

@@ -1,6 +1,6 @@
 # CL (Claude, Anthropic) — 2026-10-05 — leftover Databento credit -> NQ MBP-10 order-book days on keys #1-#3
 # Owner decision 2026-10-05: everything left once the other lanes are paid for goes to MBO/MBP data.
-# Own cache and concurrency group: no other workflow writes the sweep cache or the sweep ledgers.
+# Own cache and ledgers. Vault writers share one concurrency group on main.
 name: cl-depth-sweep
 
 on:
@@ -15,7 +15,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: cl-depth-sweep
+  group: depth-vault-main
   cancel-in-progress: false
 
 jobs:
@@ -93,6 +93,41 @@ jobs:
           --depth-cache .databento_sweep_cache
           --out automation_intelligence/cl_lab/databento_depth_sweep_third.json
 
+      - name: Seal reduced sweep data before the cache can be evicted
+        id: vault
+        env:
+          ICARUS_DATA_ARCHIVE_KEY: ${{ secrets.ICARUS_DATA_ARCHIVE_KEY }}
+          DATABENTO_API_KEY: ${{ secrets.DATABENTO_API_KEY || secrets.DATABENTO_KEY }}
+        run: |
+          set -euo pipefail
+          python -m pip install "cryptography>=44,<47"
+          python -m tools.depth_vault seal --cache sweep=.databento_sweep_cache
+          python -m tools.depth_vault label
+          python -m tools.depth_vault verify --out automation_intelligence/sentinel/vault_verify.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          manifest = json.loads(Path("data/depth_vault/manifest.json").read_text())
+          sealed = manifest.get("caches", {}).get("sweep", {})
+          count = 0
+          for account in ("primary", "secondary", "third"):
+              receipt = json.loads(Path(f"automation_intelligence/cl_lab/databento_depth_sweep_{account}.json").read_text())
+              for purchase in receipt.get("bought", []):
+                  if purchase.get("status") != "ok":
+                      continue
+                  day = purchase["day"]
+                  expected = (
+                      f"features/{account}/mbp10/nq/{day}.csv.gz",
+                      f"resilience/{account}/nq/{day}.csv.gz",
+                  )
+                  missing = [path for path in expected if path not in sealed]
+                  if missing:
+                      raise SystemExit(f"paid sweep reduction was not vaulted: {account} {day}")
+                  count += 1
+          print(f"Authenticated vault includes all {count} newly reduced sweep purchases")
+          PY
+
       - name: Save sweep cache
         if: always()
         uses: actions/cache/save@v4
@@ -107,6 +142,9 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add automation_intelligence/cl_lab/databento_depth_sweep_*.json 2>/dev/null || true
           if [ -d automation_intelligence/cl_lab/spend ]; then git add automation_intelligence/cl_lab/spend; fi
+          if [ '${{ steps.vault.outcome }}' = 'success' ]; then
+            git add data/depth_vault automation_intelligence/sentinel/vault_verify.json
+          fi
           if git diff --cached --quiet; then echo "no sweep changes"; exit 0; fi
           git commit -m "[CL] depth sweep manifests [skip ci]"
           for i in 1 2 3 4 5; do

@@ -14,8 +14,10 @@ def _assert_redundant_hourly_trigger(name: str, cron: str, marker: str) -> None:
     assert "workflow_run:" in text
     assert 'workflows: ["restored-five-local-shadow"]' in text or "workflows: ['restored-five-local-shadow']" in text
     assert "types: [completed]" in text
-    assert "github.event.workflow_run.event == 'schedule'" in text or 'github.event.workflow_run.event == "schedule"' in text
-    assert "github.event.workflow_run.conclusion == 'success'" in text or 'github.event.workflow_run.conclusion == "success"' in text
+    assert "UPSTREAM_EVENT: ${{ github.event.workflow_run.event }}" in text
+    assert "UPSTREAM_CONCLUSION: ${{ github.event.workflow_run.conclusion }}" in text
+    assert '"$UPSTREAM_EVENT" != \'schedule\'' in text
+    assert '"$UPSTREAM_CONCLUSION" != \'success\'' in text
     assert marker in text
     assert "FALLBACK_MAX_AGE_SECONDS: '4500'" in text or 'FALLBACK_MAX_AGE_SECONDS: "4500"' in text
     assert "git log -1 --format=%ct --" in text

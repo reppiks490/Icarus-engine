@@ -1,0 +1,74 @@
+{
+  "schema_version": "icarus-federated-repo-evidence-v1",
+  "required_for_every_ai_unit": true,
+  "authority": "RESEARCH_EVIDENCE_ONLY",
+  "canonical_data_ledger": "config/data_ingestion_manifest.json",
+  "handoff_document": "docs/agent-handoffs/CROSS_REPO_EVIDENCE.md",
+  "repositories": [
+    {
+      "repository": "reppiks490/Icarus",
+      "role": "runtime_engine_consumers_and_intrinio_preferred_provider_owner",
+      "state": "ACTIVE",
+      "data_authority": "CONSUMER_AND_BOUNDED_PROVIDER_FAILOVER",
+      "evidence_paths": [
+        "automation_intelligence/federation/icarus_engine_acceptance.json",
+        "icarus_engine/unusual_whales_intake.py",
+        "docs/AI_DATA_ACCESS.md",
+        "GITHUB_NATIVE_DATA_FEDERATION.md"
+      ]
+    },
+    {
+      "repository": "reppiks490/Icarus-engine",
+      "role": "canonical_github_native_data_and_health_plane",
+      "state": "ACTIVE",
+      "data_authority": "CANONICAL_LEDGER_AND_COLLECTION",
+      "evidence_paths": [
+        "config/data_ingestion_manifest.json",
+        "automation_intelligence/sentinel/data_health.json",
+        "automation_intelligence/provider_collection_v1/research_context.json",
+        "automation_intelligence/interrepo/latest.json"
+      ]
+    },
+    {
+      "repository": "reppiks490/divine-providence",
+      "role": "research_institution_observatory_and_independent_official_announcement_evidence",
+      "state": "ACTIVE",
+      "data_authority": "EVIDENCE_PRODUCER",
+      "public_sources": ["Federal Reserve press feed", "ECB press feed", "SEC press-release feed"],
+      "evidence_paths": [
+        ".github/workflows/icarus-institution.yml",
+        ".github/workflows/icarus-observatory.yml",
+        "scripts/institution/sources.py",
+        "AGENTS.md"
+      ]
+    },
+    {
+      "repository": "reppiks490/icarus-csv-evidence-lab",
+      "role": "advanced_csv_persisted_evidence_and_restored_five_liveness",
+      "state": "ACTIVE",
+      "data_authority": "EVIDENCE_PRODUCER",
+      "evidence_paths": [
+        "automation_intelligence/advanced_csv/latest.json",
+        "automation_intelligence/advanced_csv/heartbeat.json",
+        "automation_intelligence/advanced_csv/finalization_state.json",
+        "automation_intelligence/advanced_csv/history_ledger.jsonl",
+        "AGENTS.md"
+      ]
+    },
+    {
+      "repository": "reppiks490/icarus-causal-router",
+      "role": "deterministic_synthetic_causal_research_assurance",
+      "state": "ACTIVE",
+      "data_authority": "SYNTHETIC_ASSURANCE_ONLY",
+      "limitations": ["not live market validation", "not provider entitlement proof", "not execution authority"],
+      "evidence_paths": [".github/workflows/assurance.yml", "AGENTS.md"]
+    },
+    {
+      "repository": "reppiks490/icarus-owner-actions",
+      "role": "mission_register_governance_and_acceptance_evidence",
+      "state": "ACTIVE",
+      "data_authority": "GOVERNANCE_EVIDENCE_ONLY",
+      "evidence_paths": ["mission/register.json", ".github/workflows/mission-register.yml", "AGENTS.md"]
+    }
+  ]
+}

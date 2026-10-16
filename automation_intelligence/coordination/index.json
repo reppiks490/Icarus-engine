@@ -1,0 +1,153 @@
+{
+  "active_sessions": [
+    {
+      "actor": "ChatGPT / Atlas",
+      "branch": "multi-repo/continuous",
+      "cooperates_with": [],
+      "coordination_mode": "independent",
+      "declared_paths": [
+        "automation_intelligence/mcp_interface/events/20261016T032700Z-futures-universe-integration.json"
+      ],
+      "declared_targets": [
+        {
+          "path": "automation_intelligence/mcp_interface/events/20261016T032700Z-futures-universe-integration.json",
+          "repo": "reppiks490/Icarus-engine"
+        }
+      ],
+      "dependencies": [
+        "pr:reppiks490/Icarus-engine#181"
+      ],
+      "goal": "Finish federation closure, deploy and harden multi-chat coordination, reclaim Claude-stalled work, then research and integrate a collision-free high-value futures expansion with UI visibility.",
+      "home_repo": "reppiks490/icarus-owner-actions",
+      "last_event_at_utc": "2026-10-16T03:27:00Z",
+      "latest_summary": "Engine MCP provenance gate correctly rejected the futures registry change because icarus_engine/assets.py is a critical interface path without a same-changeset MCP event. Extending the claim to the required provenance event; the gate will not be weakened or bypassed.",
+      "latest_type": "UPDATE",
+      "model_family": "openai",
+      "phase": "futures-universe-expansion",
+      "pr": null,
+      "reclaimable": false,
+      "reserved_paths": [
+        "automation_intelligence/mcp_interface/events/20261016T032700Z-futures-universe-integration.json"
+      ],
+      "reserved_targets": [
+        {
+          "path": "automation_intelligence/mcp_interface/events/20261016T032700Z-futures-universe-integration.json",
+          "repo": "reppiks490/Icarus-engine"
+        }
+      ],
+      "session_id": "chatgpt-20261016-atlas-coordination-futures",
+      "stale": false,
+      "status": "active"
+    },
+    {
+      "actor": "ChatGPT / Atlas",
+      "branch": "atlas/coordination-dashboard",
+      "cooperates_with": [],
+      "coordination_mode": "independent",
+      "declared_paths": [
+        ".github/workflows/coordination-mirror.yml",
+        "icarus_engine/mcp_control.py",
+        "icarus_engine/mcp-ui.js",
+        "tests_engine/test_mcp_control.py",
+        "tests/test_multichat_coordination_entrypoint.py",
+        "automation_intelligence/mcp_interface/events/20261016T032700Z-multichat-coordination-ui.json"
+      ],
+      "declared_targets": [
+        {
+          "path": ".github/workflows/coordination-mirror.yml",
+          "repo": "reppiks490/Icarus-engine"
+        },
+        {
+          "path": "icarus_engine/mcp_control.py",
+          "repo": "reppiks490/Icarus-engine"
+        },
+        {
+          "path": "icarus_engine/mcp-ui.js",
+          "repo": "reppiks490/Icarus-engine"
+        },
+        {
+          "path": "tests_engine/test_mcp_control.py",
+          "repo": "reppiks490/Icarus-engine"
+        },
+        {
+          "path": "tests/test_multichat_coordination_entrypoint.py",
+          "repo": "reppiks490/Icarus-engine"
+        },
+        {
+          "path": "automation_intelligence/mcp_interface/events/20261016T032700Z-multichat-coordination-ui.json",
+          "repo": "reppiks490/Icarus-engine"
+        }
+      ],
+      "dependencies": [
+        "pr:reppiks490/Icarus-engine#182",
+        "github-run:38845896424"
+      ],
+      "goal": "Integrate the central many-chat coordination state into the Engine MCP / Automation UI through a read-only local mirror and verify it end-to-end without live broker arming.",
+      "home_repo": "reppiks490/Icarus-engine",
+      "last_event_at_utc": "2026-10-16T03:32:00Z",
+      "latest_summary": "Waiting on Engine PR #182 exact-head run 38845896424. MCP provenance, zero-dependency core, CLI, brain-federation, and Python 3.12 are green; Python 3.11 and 3.13 are still running. Static backend/JS audit found no runtime network writes, admin controls, unescaped coordination strings, or authority escalation.",
+      "latest_type": "WAITING",
+      "model_family": "openai",
+      "phase": "verification",
+      "pr": "reppiks490/Icarus-engine#182",
+      "reclaimable": false,
+      "reserved_paths": [
+        ".github/workflows/coordination-mirror.yml",
+        "icarus_engine/mcp_control.py",
+        "icarus_engine/mcp-ui.js",
+        "tests_engine/test_mcp_control.py",
+        "tests/test_multichat_coordination_entrypoint.py",
+        "automation_intelligence/mcp_interface/events/20261016T032700Z-multichat-coordination-ui.json"
+      ],
+      "reserved_targets": [
+        {
+          "path": ".github/workflows/coordination-mirror.yml",
+          "repo": "reppiks490/Icarus-engine"
+        },
+        {
+          "path": "icarus_engine/mcp_control.py",
+          "repo": "reppiks490/Icarus-engine"
+        },
+        {
+          "path": "icarus_engine/mcp-ui.js",
+          "repo": "reppiks490/Icarus-engine"
+        },
+        {
+          "path": "tests_engine/test_mcp_control.py",
+          "repo": "reppiks490/Icarus-engine"
+        },
+        {
+          "path": "tests/test_multichat_coordination_entrypoint.py",
+          "repo": "reppiks490/Icarus-engine"
+        },
+        {
+          "path": "automation_intelligence/mcp_interface/events/20261016T032700Z-multichat-coordination-ui.json",
+          "repo": "reppiks490/Icarus-engine"
+        }
+      ],
+      "session_id": "chatgpt-20261016-atlas-coordination-ui-182",
+      "stale": false,
+      "status": "active"
+    }
+  ],
+  "collisions": [],
+  "counts": {
+    "active": 2,
+    "collisions": 0,
+    "stale": 0,
+    "terminal": 0
+  },
+  "generated_at_utc": "2026-10-16T03:32:00.856401Z",
+  "owner_status": {
+    "claude": {
+      "active": false,
+      "note": "Owner reports Claude will be inactive for roughly one to two months. Unfinished Claude work is reclaimable after a takeover/cooperation note; absence is not completion.",
+      "return_date": null
+    },
+    "live_broker_arming": false,
+    "schema_version": "icarus-coordination-owner-status-v1",
+    "updated_at_utc": "2026-10-16T02:50:00Z"
+  },
+  "schema_version": "icarus-coordination-index-v2",
+  "terminal_sessions": []
+}

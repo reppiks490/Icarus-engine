@@ -18,6 +18,18 @@ def test_agent_entrypoint_uses_central_many_chat_bus_and_no_model_task_gate():
     assert "never start a task that is on the other ai's board" not in text
 
 
+def test_agent_entrypoint_routes_provider_work_to_github_native_data_access():
+    text = AGENTS.read_text(encoding='utf-8').lower()
+    assert 'agent_credentials.md' in text
+    assert 'github_native_credentials.md' in text
+    assert 'config/credential_contract.json' in text
+    assert 'config/data_ingestion_manifest.json' in text
+    assert 'github_native_data_access.md' in text
+    assert 'do not search' in text and '.env' in text
+    assert 'github actions' in text
+    assert 'plaintext' in text
+
+
 def test_legacy_engine_coordination_is_historical_not_authoritative():
     text = COORD.read_text(encoding='utf-8').lower()
     assert 'historical evidence' in text

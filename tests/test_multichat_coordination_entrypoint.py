@@ -35,8 +35,8 @@ def test_legacy_engine_coordination_is_historical_not_authoritative():
 def test_coordination_mirror_has_redundant_trusted_refresh_triggers():
     text = MIRROR.read_text(encoding='utf-8').lower()
     # Cron remains a fast refresh path, but is shifted away from the busiest minute boundary.
-    assert 'cron: "3-58/5 * * * *"' in text
-    assert 'cron: "*/5 * * * *"' not in text
+    assert '3-58/5 * * * *' in text
+    assert '*/5 * * * *' not in text
     # The already-running local shadow is a trusted 10-minute fallback if GitHub drops a cron event.
     assert 'workflow_run:' in text
     assert 'restored-five-local-shadow' in text

@@ -1,6 +1,6 @@
-# Data health — 2026-10-16 20:10 UTC
+# Data health — 2026-10-16 20:13 UTC
 
-**FAILING** 4 · **BLOCKED** 6 · **DEGRADED** 6 · **OK** 70
+**FAILING** 3 · **BLOCKED** 6 · **DEGRADED** 6 · **UNKNOWN** 1 · **OK** 70
 
 ## Needs attention
 
@@ -9,7 +9,6 @@
 | feed:databento_dx_5m | FAILING | FeedError: Databento historical request failed for DX.v.0: BentoClientError: 422 dataset_unavailable_range Part or all of your request for dataset 'IFUS.IMPACT' |
 | feed:databento_vxm_5m | FAILING | FeedError: Databento historical request failed for VXM.v.0: BentoClientError: 403 license_not_found_unauthorized A live data license is required to access XCBF. |
 | workflow:databento-depth-research-context.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/38960230544 |
-| workflow:interrepo-peer-intelligence.yml | FAILING | latest run cancelled: https://github.com/reppiks490/Icarus-engine/actions/runs/38960077296 |
 | provider:alpaca | BLOCKED | no key reaches the runner |
 | provider:finnhub | BLOCKED | BLOCKED_AUTHENTICATION |
 | provider:intrinio | BLOCKED | no key reaches the runner |
@@ -22,6 +21,7 @@
 | provider:fmp | DEGRADED | dedicated fabric live (3 calls, 56 known rows); generic sampler blocked; 85 endpoints denied by plan |
 | provider:tiingo | DEGRADED | 47477 rows; 4 endpoints denied by plan |
 | provider:twelve | DEGRADED | 140 rows; 1 endpoints denied by plan |
+| workflow:interrepo-peer-intelligence.yml | UNKNOWN | no completed run on main |
 
 ## Delivering
 

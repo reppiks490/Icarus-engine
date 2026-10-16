@@ -68,8 +68,8 @@ jobs:
 
       - name: Seal and commit
         env:
-          ICARUS_DATA_ARCHIVE_KEY: ${{ secrets.ICARUS_DATA_ARCHIVE_KEY || vars.ICARUS_DATA_ARCHIVE_KEY }}
-          DATABENTO_API_KEY: ${{ secrets.DATABENTO_API_KEY || vars.DATABENTO_API_KEY || secrets.DATABENTO_KEY || vars.DATABENTO_KEY }}
+          ICARUS_DATA_ARCHIVE_KEY: ${{ secrets.ICARUS_DATA_ARCHIVE_KEY }}
+          DATABENTO_API_KEY: ${{ secrets.DATABENTO_API_KEY || secrets.DATABENTO_KEY }}
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"

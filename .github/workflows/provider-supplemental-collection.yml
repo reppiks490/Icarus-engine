@@ -1,14 +1,19 @@
 name: provider-supplemental-collection
 
 on:
+  schedule:
+    - cron: '37 * * * *'
   workflow_dispatch:
   push:
-    branches: [atlas/ingestion-surface-closure]
+    branches: [main]
     paths:
       - 'tools/provider_supplemental_collection.py'
       - 'tools/provider_supplemental_transport.py'
+      - 'tools/provider_credentials.py'
+      - 'tools/provider_research_context.py'
       - 'config/provider_endpoint_catalog_supplemental.json'
       - 'config/data_ingestion_manifest.json'
+      - 'config/credential_contract.json'
       - 'tests/test_ingestion_surface_contract.py'
       - 'tests/test_provider_supplemental_transport.py'
       - '.github/workflows/provider-supplemental-collection.yml'
@@ -43,11 +48,18 @@ jobs:
           tests/test_github_native_credentials.py -q
 
   collect:
-    if: github.event_name == 'workflow_dispatch' || github.event_name == 'push'
+    if: >-
+      github.event_name == 'schedule' ||
+      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'push' && github.ref == 'refs/heads/main')
     strategy:
       fail-fast: false
+      max-parallel: 3
       matrix:
         provider: [unusual_whales, alphavantage, finnhub]
+    concurrency:
+      group: provider-supplemental-${{ matrix.provider }}
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:

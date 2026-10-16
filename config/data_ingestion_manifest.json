@@ -225,8 +225,8 @@
       "ingestion_state": "DEDICATED_LANE",
       "consumption_state": "DEDICATED_LANE",
       "workflow": ".github/workflows/databento-depth-corpus.yml",
-      "runtime_status": "DEDICATED_WITH_INTEGRITY_GATE",
-      "blocker": "ICARUS_DATA_ARCHIVE_KEY is absent; when primary depth features are missing the research-context integrity gate correctly refuses incomplete publication instead of fabricating context.",
+      "runtime_status": "INTEGRITY_BLOCKED_PRIMARY_FEATURE_GAP",
+      "blocker": "The integrity gate refuses publication because the persisted depth vault contains 156,928 derived feature rows for secondary/third accounts but no primary-account feature files. The vault key fallback is working: data/depth_vault/manifest.json records HKDF(DATABENTO_API_KEY), so the absent ICARUS_DATA_ARCHIVE_KEY is not the recovery blocker. The primary sweep ledger records $34.317511 spent against $34.344215 allocated ($0.026704 remaining); recovery/reacquisition needs a valid source for the already-paid primary feature files or a separately recorded budget allocation. Do not weaken the integrity gate.",
       "evidence_paths": [
         "data/depth_vault/",
         "automation_intelligence/depth_research_context_v1/",

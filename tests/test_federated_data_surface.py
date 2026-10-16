@@ -5,11 +5,16 @@ from pathlib import Path
 
 
 MANIFEST = Path('config/data_ingestion_manifest.json')
+DIRECTIVE = Path('docs/agent-handoffs/FEDERATED_DATA_COLLECTION.md')
 NATIVE_WORKFLOW = Path('.github/workflows/native-five-research.yml')
 CL_WORKFLOW = Path('.github/workflows/cl-lab.yml')
 INTERREPO_WORKFLOW = Path('.github/workflows/interrepo-peer-intelligence.yml')
 NATIVE_SOURCES = Path('tools/native_research_sources.py')
 CL_REGISTRY = Path('cl_lab/feeds/registry.py')
+MARKET_SOURCES = Path('icarus_engine/market_sources.py')
+SOURCE_WATCH = Path('icarus_engine/source_watch.py')
+ENGINE_FEEDS = Path('icarus_engine/feeds/__init__.py')
+YAHOO_FEED = Path('icarus_engine/feeds/yahoo.py')
 
 
 def _sources() -> dict[str, dict]:
@@ -30,6 +35,8 @@ def test_every_active_public_data_fabric_is_federated() -> None:
         'us_treasury_fiscal',
         'official_release_feeds',
         'interrepo_peer_intelligence',
+        'runtime_market_sources',
+        'engine_market_feeds',
     }
     assert required <= set(sources)
 
@@ -37,8 +44,8 @@ def test_every_active_public_data_fabric_is_federated() -> None:
         row = sources[source_id]
         assert row['required_for_all_ai_units'] is True
         assert row['evidence_paths']
-        assert row['ingestion_state'] in {'LIVE', 'PARTIAL', 'DEDICATED_LANE'}
-        assert row['consumption_state'] in {'LIVE', 'PARTIAL', 'DEDICATED_LANE', 'EVIDENCE_ONLY'}
+        assert row['ingestion_state'] in {'LIVE', 'PARTIAL', 'DEDICATED_LANE', 'RUNTIME_CAPABILITY'}
+        assert row['consumption_state'] in {'LIVE', 'PARTIAL', 'DEDICATED_LANE', 'EVIDENCE_ONLY', 'RUNTIME_CAPABILITY'}
 
 
 def test_public_venue_and_agency_sources_match_live_collectors() -> None:
@@ -63,6 +70,46 @@ def test_public_venue_and_agency_sources_match_live_collectors() -> None:
     assert release['credential_state'] == 'PUBLIC'
     for needle in ('federalreserve.gov', 'ecb.europa.eu', 'bls.gov'):
         assert needle in native
+
+
+def test_runtime_public_collectors_are_explicit_but_not_misreported_as_always_on() -> None:
+    sources = _sources()
+    market = MARKET_SOURCES.read_text()
+    watch = SOURCE_WATCH.read_text()
+    feeds = ENGINE_FEEDS.read_text() + '\n' + YAHOO_FEED.read_text()
+
+    runtime = sources['runtime_market_sources']
+    assert runtime['credential_state'] == 'PUBLIC'
+    assert runtime['ingestion_state'] == 'RUNTIME_CAPABILITY'
+    assert runtime['consumption_state'] == 'RUNTIME_CAPABILITY'
+    assert runtime['default_enabled'] is False
+    for needle in ('cftc', 'bls', 'federal-reserve', 'bea', 'sec', 'coinbase', 'yahoo-dxy'):
+        assert needle in market.lower()
+    assert '"enabled": False' in watch
+
+    engine = sources['engine_market_feeds']
+    assert engine['credential_state'] == 'PUBLIC'
+    assert engine['ingestion_state'] == 'RUNTIME_CAPABILITY'
+    for needle in ('api.exchange.coinbase.com', 'api.kraken.com', 'query1.finance.yahoo.com'):
+        assert needle in feeds
+
+
+def test_federation_directive_names_runtime_and_internal_evidence_surfaces() -> None:
+    text = DIRECTIVE.read_text().lower()
+    for phrase in (
+        'automation_intelligence/manifest.json',
+        'native-five-research',
+        'yahoo-dxy',
+        'icarus_engine/market_sources.py',
+        'robustness guardian',
+        'advanced csv',
+        'alpha synthesis',
+        'flow microstructure',
+        'apex council',
+        'automation_intelligence/interrepo/latest.json',
+        'automation_intelligence/sentinel/data_health.json',
+    ):
+        assert phrase in text
 
 
 def test_active_fabric_workflows_are_named_in_manifest() -> None:

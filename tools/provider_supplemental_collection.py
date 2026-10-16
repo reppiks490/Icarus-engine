@@ -1,22 +1,21 @@
 """Additive collection bridge for credentialed providers missing from K1.
 
 This module deliberately reuses the existing provider collection state, encrypted
-archive, receipts, MCP events and research-context aggregation.  It does not
-replace the Claude-owned K1 collector.  It extends it at runtime for the
+archive, receipts, MCP events and research-context aggregation. It does not
+replace the Claude-owned K1 collector. It extends it at runtime for the
 supplemental official endpoint catalog only.
 """
 from __future__ import annotations
 
 import argparse
 import json
-import math
 import os
 import re
 import urllib.error
 import urllib.request
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from urllib.parse import urlencode
+from urllib.parse import parse_qsl, urlencode, urlsplit
 
 from tools import provider_exhaustive_collection as core
 
@@ -117,8 +116,8 @@ def bind(op, asset=None):
         prepared["parameters"].append({**parameter, "example": _date_example(parameter.get("example"))})
     path, params, unresolved = _ORIGINAL["bind"](prepared, asset)
 
-    # The legacy binder uses one generic interval default.  For official
-    # supplemental operations preserve the provider-specific documented example.
+    # Preserve provider-specific documented examples rather than applying one
+    # generic interval/default across unrelated APIs.
     for parameter in prepared.get("parameters", []):
         name = parameter["name"]
         value = parameter.get("example")
@@ -170,9 +169,32 @@ def seed(db, operations):
     db.commit()
 
 
+def _pagination_container(data):
+    if not isinstance(data, dict):
+        return {}
+    nested = data.get("data")
+    if isinstance(nested, dict):
+        return nested
+    return data
+
+
 def next_page(provider, data, current):
-    if isinstance(data, dict) and data.get("next_token"):
-        return {"params": {**current, "next_token": data["next_token"]}}
+    container = _pagination_container(data)
+    token = container.get("next_token") or container.get("nextToken")
+    if token:
+        return {"params": {**current, "next_token": token}}
+
+    # Some UW endpoints return a relative next_url. The K1 core deliberately
+    # rejects hostless URLs because its providers normally return absolute URLs;
+    # normalize only same-authority relative UW pagination here.
+    next_url = container.get("next_url")
+    if provider == "unusual_whales" and isinstance(next_url, str) and next_url.startswith("/"):
+        parsed = urlsplit(next_url)
+        return {
+            "path": parsed.path,
+            "params": {k: v for k, v in parse_qsl(parsed.query) if not core.SECRET.search(k)},
+        }
+
     continuation = _ORIGINAL["next_page"](provider, data, current)
     if continuation:
         return continuation
@@ -213,7 +235,9 @@ def request(provider, path, params, key):
     elif provider == "alphavantage":
         safe["apikey"] = key
     elif provider == "finnhub":
-        safe["token"] = key
+        # Finnhub documents both query-token and header authentication. Keep
+        # credentials out of the URL and use the header form.
+        headers["X-Finnhub-Token"] = key
     else:
         return core.request(provider, path, safe, key)
 

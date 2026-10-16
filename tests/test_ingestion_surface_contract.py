@@ -160,7 +160,7 @@ def test_manifest_forces_three_stage_truth_and_federated_access() -> None:
         assert source['required_for_all_ai_units'] is True
         assert source['access_mode']
         assert source['credential_state'] in {'PRESENT', 'MISSING', 'PUBLIC', 'NOT_APPLICABLE', 'EXTERNAL_CONNECTOR'}
-        assert source['ingestion_state'] in {'LIVE', 'PARTIAL', 'BLOCKED', 'INTERACTIVE_ONLY', 'DEDICATED_LANE'}
+        assert source['ingestion_state'] in {'LIVE', 'PARTIAL', 'BLOCKED', 'STAGED', 'INTERACTIVE_ONLY', 'DEDICATED_LANE'}
         assert source['consumption_state'] in {'LIVE', 'PARTIAL', 'BLOCKED', 'EVIDENCE_ONLY', 'DEDICATED_LANE'}
         assert source['evidence_paths']
 

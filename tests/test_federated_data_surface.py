@@ -89,3 +89,25 @@ def test_internal_peer_packet_is_mandatory_federated_evidence() -> None:
     assert row['credential_state'] == 'NOT_APPLICABLE'
     assert row['access_mode'] == 'repository'
     assert 'automation_intelligence/interrepo/latest.json' in row['evidence_paths']
+
+
+def test_data_sentinel_monitors_every_federated_collection_and_promotion_lane() -> None:
+    from tools.data_sentinel import WORKFLOWS
+
+    required = {
+        'provider-exhaustive-collection.yml',
+        'provider-supplemental-collection.yml',
+        'provider-supplemental-promote.yml',
+        'native-provider-access.yml',
+        'native-five-research.yml',
+        'cl-lab.yml',
+        'databento-depth-corpus.yml',
+        'databento-depth-research-context.yml',
+        'depth-vault.yml',
+        'cl-depth-sweep.yml',
+        'sec-edgar-data.yml',
+        'official-economic-events.yml',
+        'external-data-fabric.yml',
+        'interrepo-peer-intelligence.yml',
+    }
+    assert required <= set(WORKFLOWS)

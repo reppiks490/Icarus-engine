@@ -15,7 +15,7 @@ WORKFLOW = Path('.github/workflows/provider-supplemental-collection.yml')
 PROMOTER = Path('.github/workflows/provider-supplemental-promote.yml')
 
 
-def test_workflow_accepts_secret_and_variable_aliases_and_restores_cache() -> None:
+def test_workflow_accepts_secret_aliases_only_and_restores_cache() -> None:
     text = WORKFLOW.read_text()
     required = {
         'UNUSUAL_WHALES_API_KEY': ('UNUSUAL_WHALES_API_KEY', 'UNUSUAL_WHALES_TOKEN', 'UW_API_KEY'),
@@ -26,7 +26,7 @@ def test_workflow_accepts_secret_and_variable_aliases_and_restores_cache() -> No
         line = next(line for line in text.splitlines() if line.strip().startswith(canonical + ':'))
         for alias in aliases:
             assert f'secrets.{alias}' in line
-            assert f'vars.{alias}' in line
+            assert f'vars.{alias}' not in line
 
     assert 'actions/cache/restore@v4' in text
     assert 'actions/cache/save@v4' in text

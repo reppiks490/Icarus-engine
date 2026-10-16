@@ -69,8 +69,8 @@
   "BLOCKED": 7,
   "DEGRADED": 5,
   "FAILING": 1,
-  "OK": 71,
-  "UNKNOWN": 2
+  "OK": 72,
+  "UNKNOWN": 1
  },
  "depth": {
   "budgets": {
@@ -137,7 +137,7 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-10-16T13:30:58+00:00",
+ "generated_at": "2026-10-16T13:31:34+00:00",
  "research": {
   "champions": 0,
   "cl_last_run": "2026-10-16T06:31:29.957898+00:00",
@@ -173,7 +173,7 @@
    "why": "latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/38885552834"
   },
   {
-   "age_h": 1.1,
+   "age_h": 1.2,
    "path": "automation_intelligence/provider_collection_v1/latest/alpaca.json",
    "rows": 0,
    "source": "provider:alpaca",
@@ -181,7 +181,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 0.4,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/finnhub.json",
    "rows": 0,
    "source": "provider:finnhub",
@@ -205,7 +205,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 1.1,
+   "age_h": 1.2,
    "path": "automation_intelligence/provider_collection_v1/latest/tickstream.json",
    "rows": 0,
    "source": "provider:tickstream",
@@ -221,7 +221,7 @@
    "why": "BLOCKED"
   },
   {
-   "age_h": 0.4,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/unusual_whales.json",
    "rows": 0,
    "source": "provider:unusual_whales",
@@ -229,12 +229,12 @@
    "why": "BLOCKED_AUTHENTICATION"
   },
   {
-   "age_h": 0.4,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/alphavantage.json",
-   "rows": 25002,
+   "rows": 1365,
    "source": "provider:alphavantage",
    "verdict": "DEGRADED",
-   "why": "25002 rows; 3 endpoints denied by plan"
+   "why": "1365 rows; 3 endpoints denied by plan"
   },
   {
    "age_h": 1.1,
@@ -270,11 +270,6 @@
   },
   {
    "source": "workflow:interrepo-peer-intelligence.yml",
-   "verdict": "UNKNOWN",
-   "why": "no completed run on main"
-  },
-  {
-   "source": "workflow:provider-supplemental-promote.yml",
    "verdict": "UNKNOWN",
    "why": "no completed run on main"
   },
@@ -671,7 +666,7 @@
    "why": "39/39 series ok"
   },
   {
-   "age_h": 1.0,
+   "age_h": 1.1,
    "path": "automation_intelligence/provider_collection_v1/latest/fred.json",
    "rows": 289,
    "source": "provider:fred",
@@ -724,10 +719,10 @@
    "why": "last success 0.7 h ago"
   },
   {
-   "age_h": 1.6,
+   "age_h": 1.7,
    "source": "workflow:native-five-research.yml",
    "verdict": "OK",
-   "why": "last success 1.6 h ago"
+   "why": "last success 1.7 h ago"
   },
   {
    "age_h": 1.6,
@@ -750,6 +745,12 @@
   {
    "age_h": 0.0,
    "source": "workflow:provider-supplemental-collection.yml",
+   "verdict": "OK",
+   "why": "last success 0.0 h ago"
+  },
+  {
+   "age_h": 0.0,
+   "source": "workflow:provider-supplemental-promote.yml",
    "verdict": "OK",
    "why": "last success 0.0 h ago"
   },

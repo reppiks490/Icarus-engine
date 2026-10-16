@@ -10,6 +10,73 @@ def _write_latest(root: Path, provider: str, payload: dict) -> None:
     (latest / f"{provider}.json").write_text(json.dumps(payload) + "\n", encoding="utf-8")
 
 
+
+def _write_cycle(root: Path, cycle: str, payload: dict) -> None:
+    receipts = root / "automation_intelligence" / "provider_collection_v1" / "cycles" / cycle
+    receipts.mkdir(parents=True, exist_ok=True)
+    (receipts / "receipt.json").write_text(json.dumps(payload) + "\n", encoding="utf-8")
+
+
+def test_build_context_preserves_last_success_as_historical_when_latest_is_blocked(tmp_path):
+    _write_latest(
+        tmp_path,
+        "unusual_whales",
+        {
+            "run_id": "supplemental-new-unusual_whales",
+            "completed_at_utc": "2026-10-16T13:07:11+00:00",
+            "providers": {
+                "unusual_whales": {
+                    "status": "BLOCKED_AUTHENTICATION",
+                    "credential_present": True,
+                    "requests": 1,
+                    "collected_pages": 0,
+                    "collected_rows": 0,
+                    "substantive_work_performed": False,
+                    "research_features": [],
+                }
+            },
+            "raw_payloads_public": False,
+        },
+    )
+    _write_cycle(
+        tmp_path,
+        "supplemental-old-unusual_whales",
+        {
+            "run_id": "supplemental-old-unusual_whales",
+            "completed_at_utc": "2026-10-16T08:29:27+00:00",
+            "providers": {
+                "unusual_whales": {
+                    "status": "COLLECTED_PARTIAL",
+                    "credential_present": True,
+                    "requests": 5,
+                    "collected_pages": 5,
+                    "collected_rows": 111,
+                    "substantive_work_performed": True,
+                    "research_features": [
+                        {"operation": "unusual_whales:get:/api/darkpool/{ticker}", "features": {"price": {"samples": 100, "mean": 771.48}}}
+                    ],
+                }
+            },
+            "raw_payloads_public": False,
+            "raw_payload": {"licensed_price": "must never be projected"},
+        },
+    )
+
+    context = prc.build_context(tmp_path)
+    row = context["providers"]["unusual_whales"]
+    historical = row["last_successful_receipt"]
+
+    assert row["status"] == "BLOCKED_AUTHENTICATION"
+    assert row["collected_rows"] == 0
+    assert historical["run_id"] == "supplemental-old-unusual_whales"
+    assert historical["collected_rows"] == 111
+    assert historical["historical_only"] is True
+    assert historical["research_features"][0]["operation"].startswith("unusual_whales:")
+    encoded = json.dumps(context)
+    assert "must never be projected" not in encoded
+    assert "licensed_price" not in encoded
+
+
 def test_build_context_surfaces_substantive_provider_features_without_raw_payloads(tmp_path):
     _write_latest(
         tmp_path,

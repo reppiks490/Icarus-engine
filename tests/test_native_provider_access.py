@@ -10,15 +10,15 @@ import pytest
 WORKFLOW = Path('.github/workflows/native-provider-access.yml')
 
 
-def test_provider_registry_admits_stored_unwired_credentials() -> None:
-    from tools.provider_exhaustive_collection import PROVIDERS
+def test_native_registry_admits_stored_unwired_credentials() -> None:
+    from tools.native_provider_access import PROVIDERS
 
     assert PROVIDERS['alphavantage']['base'] == 'https://www.alphavantage.co'
-    assert PROVIDERS['alphavantage']['keys'] == ['ALPHAVANTAGE_API_KEY']
+    assert PROVIDERS['alphavantage']['canonical'] == 'ALPHAVANTAGE_API_KEY'
     assert PROVIDERS['finnhub']['base'] == 'https://finnhub.io'
-    assert PROVIDERS['finnhub']['keys'] == ['FINNHUB_API_KEY']
+    assert PROVIDERS['finnhub']['canonical'] == 'FINNHUB_API_KEY'
     assert PROVIDERS['unusual_whales']['base'] == 'https://api.unusualwhales.com'
-    assert PROVIDERS['unusual_whales']['keys'] == ['UNUSUAL_WHALES_API_KEY']
+    assert PROVIDERS['unusual_whales']['canonical'] == 'UNUSUAL_WHALES_API_KEY'
 
 
 def test_adapter_resolves_each_new_provider_from_canonical_contract() -> None:

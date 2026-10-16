@@ -12,54 +12,33 @@
   },
   "chatgpt_tokens_used": 0,
   "checkpoint_status": "ENCRYPTED_AES256_GCM",
-  "completed_at_utc": "2026-10-16T08:29:31.917827+00:00",
+  "completed_at_utc": "2026-10-16T12:52:34.776550+00:00",
   "databento_excluded": true,
   "execution_authorized": false,
   "paid_model_calls": 0,
   "providers": {
     "alphavantage": {
-      "archive_status": [
-        "ENCRYPTED_AES256_GCM"
-      ],
-      "blocked": [],
-      "collected_pages": 5,
-      "collected_rows": 43418,
-      "credential_present": true,
-      "endpoint_count": 28,
-      "requests": 5,
-      "research_features": [
+      "archive_status": [],
+      "blocked": [
         {
-          "features": {
-            "value": {
-              "maximum": 15.84,
-              "mean": 5.804219763920655,
-              "minimum": 0.52,
-              "samples": 16181,
-              "standard_deviation": 2.926957160567256
-            }
-          },
-          "operation": "alphavantage:get:TREASURY_YIELD"
-        },
-        {
-          "features": {
-            "value": {
-              "maximum": 22.36,
-              "mean": 4.593662323890531,
-              "minimum": 0.04,
-              "samples": 26404,
-              "standard_deviation": 3.5413174366312004
-            }
-          },
-          "operation": "alphavantage:get:FEDERAL_FUNDS_RATE"
+          "asset_specific": false,
+          "failure_code": "429",
+          "operation": "alphavantage:get:CPI"
         }
       ],
-      "status": "COLLECTED_PARTIAL",
-      "substantive_work_performed": true
+      "collected_pages": 0,
+      "collected_rows": 0,
+      "credential_present": true,
+      "endpoint_count": 28,
+      "requests": 1,
+      "research_features": [],
+      "status": "QUOTA_OR_RATE_LIMIT_PAUSED",
+      "substantive_work_performed": false
     }
   },
   "raw_payloads_public": false,
-  "requests": 5,
-  "run_id": "supplemental-38873907446-alphavantage",
+  "requests": 1,
+  "run_id": "supplemental-38902990406-alphavantage",
   "schema_version": "icarus-provider-collection-cycle-v1",
-  "started_at_utc": "2026-10-16T08:28:39.077929+00:00"
+  "started_at_utc": "2026-10-16T12:52:34.692367+00:00"
 }

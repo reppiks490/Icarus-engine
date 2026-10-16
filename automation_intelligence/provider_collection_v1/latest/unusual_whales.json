@@ -12,61 +12,33 @@
   },
   "chatgpt_tokens_used": 0,
   "checkpoint_status": "ENCRYPTED_AES256_GCM",
-  "completed_at_utc": "2026-10-16T08:29:27.244080+00:00",
+  "completed_at_utc": "2026-10-16T12:52:54.764315+00:00",
   "databento_excluded": true,
   "execution_authorized": false,
   "paid_model_calls": 0,
   "providers": {
     "unusual_whales": {
-      "archive_status": [
-        "ENCRYPTED_AES256_GCM"
-      ],
-      "blocked": [],
-      "collected_pages": 5,
-      "collected_rows": 111,
-      "credential_present": true,
-      "endpoint_count": 21,
-      "requests": 5,
-      "research_features": [
+      "archive_status": [],
+      "blocked": [
         {
-          "features": {
-            "price": {
-              "maximum": 771.99,
-              "mean": 771.483842,
-              "minimum": 770.31,
-              "samples": 100,
-              "standard_deviation": 0.4258171016246279
-            },
-            "volume": {
-              "maximum": 43260539.0,
-              "mean": 41988430.0,
-              "minimum": 39305787.0,
-              "samples": 100,
-              "standard_deviation": 1176825.247624098
-            }
-          },
-          "operation": "unusual_whales:get:/api/darkpool/{ticker}"
-        },
-        {
-          "features": {
-            "price": {
-              "maximum": 775.0,
-              "mean": 764.1818181818181,
-              "minimum": 719.0,
-              "samples": 11,
-              "standard_deviation": 14.615173819873782
-            }
-          },
-          "operation": "unusual_whales:get:/api/darkpool/{ticker}/price-levels"
+          "asset_specific": true,
+          "failure_code": "401",
+          "operation": "unusual_whales:get:/api/stock/{ticker}/greek-exposure"
         }
       ],
-      "status": "COLLECTED_PARTIAL",
-      "substantive_work_performed": true
+      "collected_pages": 0,
+      "collected_rows": 0,
+      "credential_present": true,
+      "endpoint_count": 21,
+      "requests": 1,
+      "research_features": [],
+      "status": "BLOCKED_AUTHENTICATION",
+      "substantive_work_performed": false
     }
   },
   "raw_payloads_public": false,
-  "requests": 5,
-  "run_id": "supplemental-38873907446-unusual_whales",
+  "requests": 1,
+  "run_id": "supplemental-38902990406-unusual_whales",
   "schema_version": "icarus-provider-collection-cycle-v1",
-  "started_at_utc": "2026-10-16T08:28:34.749930+00:00"
+  "started_at_utc": "2026-10-16T12:52:54.629150+00:00"
 }

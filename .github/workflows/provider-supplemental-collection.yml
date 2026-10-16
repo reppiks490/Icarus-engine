@@ -11,22 +11,28 @@ on:
       - 'tools/provider_supplemental_transport.py'
       - 'tools/provider_credentials.py'
       - 'tools/provider_research_context.py'
+      - 'tools/native_provider_access.py'
       - 'config/provider_endpoint_catalog_supplemental.json'
       - 'config/data_ingestion_manifest.json'
       - 'config/credential_contract.json'
       - 'tests/test_ingestion_surface_contract.py'
       - 'tests/test_provider_supplemental_transport.py'
       - 'tests/test_supplemental_resilience.py'
+      - 'tests/test_federated_data_surface.py'
+      - 'tests/test_native_provider_access.py'
       - '.github/workflows/provider-supplemental-collection.yml'
   pull_request:
     paths:
       - 'tools/provider_supplemental_collection.py'
       - 'tools/provider_supplemental_transport.py'
+      - 'tools/native_provider_access.py'
       - 'config/provider_endpoint_catalog_supplemental.json'
       - 'config/data_ingestion_manifest.json'
       - 'tests/test_ingestion_surface_contract.py'
       - 'tests/test_provider_supplemental_transport.py'
       - 'tests/test_supplemental_resilience.py'
+      - 'tests/test_federated_data_surface.py'
+      - 'tests/test_native_provider_access.py'
       - '.github/workflows/provider-supplemental-collection.yml'
 
 permissions:
@@ -46,6 +52,8 @@ jobs:
           tests/test_ingestion_surface_contract.py
           tests/test_provider_supplemental_transport.py
           tests/test_supplemental_resilience.py
+          tests/test_federated_data_surface.py
+          tests/test_native_provider_access.py
           tests/test_provider_exhaustive_collection.py
           tests/test_provider_research_context.py
           tests/test_github_native_credentials.py -q

@@ -1,23 +1,28 @@
 {
   "event_id": "20261016T032700Z-futures-universe-integration",
-  "at_utc": "2026-10-16T03:27:00Z",
+  "at_utc": "2026-10-16T03:29:30Z",
   "category": "INTEGRATION",
-  "status": "in_progress_verified_source_probe",
+  "status": "implementation_complete_pending_exact_head_ci",
   "severity": "medium",
-  "summary": "Promote a macro-diverse futures set and true micro contract identities into the ICARUS runtime registry. Repairs MNQ/MES/MYM/MGC/SIL identity/P&L semantics, adds RTY/M2K, CL/MCL, NG/MNG, HG/MHG, 6E/M6E, 6J/MJY, 6B/M6B, 6A/M6A, ZN and ZB, and preserves live execution as disabled.",
-  "surface": "icarus_engine.asset_registry_and_dashboard_feed",
+  "summary": "Promote a macro-diverse futures set and true micro contract identities into the ICARUS runtime registry, API and dashboard. Repairs MNQ/MES/MYM/MGC/SIL identity/P&L semantics; adds RTY/M2K, CL/MCL, NG/MNG, HG/MHG, 6E/M6E, 6J/MJY, 6B/M6B, 6A/M6A, ZN and ZB; exposes contract metadata through /api/assets and the registry-driven add-asset UI; preserves live execution as disabled.",
+  "surface": "icarus_engine.asset_registry_api_dashboard_and_public_probe",
   "source": "owner_directive_plus_current_exchange_contract_specs_and_public_delayed_source_probe",
   "paths": [
-    "icarus_engine/assets.py"
+    "icarus_engine/assets.py",
+    "icarus_engine/server.py",
+    "icarus_engine/dashboard.html",
+    "tools/futures_universe_probe.py",
+    "docs/FUTURES_UNIVERSE_2026_10_16.md"
   ],
   "evidence": [
     "tests_engine/test_futures_universe_expansion.py",
-    "tools/futures_universe_probe.py",
-    "docs/FUTURES_UNIVERSE_2026_10_16.md",
+    "github-run:38844849546:red-contract-confirmed-on-python-3.11-3.12-3.13",
     "github-run:38845410144:success",
     "github-artifact:12022408688:futures-universe-probe",
-    "public-delayed-probe:23/23-connected"
+    "public-delayed-probe:23/23-connected",
+    "api-readback:asset_registry_payload",
+    "dashboard-readback:exchange-asset_class-micro_of-mintick-multiplier-feed_mode"
   ],
   "execution_authorized": false,
-  "notes": "Research/replay/paper registry integration only. Yahoo is a delayed public research feed. Broker-specific dated-contract mapping, entitlement and owner live arming remain separate gates."
+  "notes": "Research/replay/paper integration only. Yahoo is a delayed public research feed. Broker-specific dated-contract mapping, entitlement and owner live arming remain separate gates. Exact final-head CI is required before merge."
 }

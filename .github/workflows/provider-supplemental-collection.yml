@@ -2,6 +2,14 @@ name: provider-supplemental-collection
 
 on:
   workflow_dispatch:
+  push:
+    branches: [atlas/ingestion-surface-closure]
+    paths:
+      - 'tools/provider_supplemental_collection.py'
+      - 'config/provider_endpoint_catalog_supplemental.json'
+      - 'config/data_ingestion_manifest.json'
+      - 'tests/test_ingestion_surface_contract.py'
+      - '.github/workflows/provider-supplemental-collection.yml'
   pull_request:
     paths:
       - 'tools/provider_supplemental_collection.py'
@@ -25,7 +33,7 @@ jobs:
       - run: python -m pytest tests/test_ingestion_surface_contract.py tests/test_provider_exhaustive_collection.py tests/test_provider_research_context.py tests/test_github_native_credentials.py -q
 
   collect:
-    if: github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'push'
     strategy:
       fail-fast: false
       matrix:
@@ -40,10 +48,11 @@ jobs:
       - run: python -m pip install 'cryptography>=44,<47'
       - name: Collect provider evidence
         env:
-          UNUSUAL_WHALES_API_KEY: ${{ secrets.UNUSUAL_WHALES_API_KEY }}
-          ALPHAVANTAGE_API_KEY: ${{ secrets.ALPHAVANTAGE_API_KEY }}
-          FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
+          UNUSUAL_WHALES_API_KEY: ${{ secrets.UNUSUAL_WHALES_API_KEY || secrets.UNUSUAL_WHALES_TOKEN || secrets.UW_API_KEY }}
+          ALPHAVANTAGE_API_KEY: ${{ secrets.ALPHAVANTAGE_API_KEY || secrets.ALPHA_VANTAGE_API_KEY || secrets.ALPHA_VANTAGE_KEY }}
+          FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY || secrets.FINNHUB_KEY }}
         run: >-
+          python -m tools.provider_credentials --provider '${{ matrix.provider }}' --
           python -m tools.provider_supplemental_collection
           --provider '${{ matrix.provider }}'
           --run-id 'supplemental-${{ github.run_id }}-${{ matrix.provider }}'

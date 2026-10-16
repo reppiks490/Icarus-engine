@@ -5,7 +5,7 @@ and updates it when a fact here changes. It is the single source of truth for go
 dead ideas, data access and ownership. If another document disagrees with this one, this one is
 corrected or the other is.
 
-Last verified: 2026-10-11 (Claude).
+Last verified: 2026-10-16 (Codex; GitHub-native health and persisted evidence).
 
 ## 1. The goal, in numbers
 
@@ -67,20 +67,24 @@ Full entries in `docs/RESEARCH_LOG.md`.
    runs in a row disables itself and reports why.
 9. Secrets are never printed, pasted or committed.
 
-## 5. Data access (verified 2026-10-11)
+## 5. Data access (verified 2026-10-16)
 
-GitHub Actions secrets present in this repo: `DATABENTO_API_KEY` (+ `_SECONDARY`, `_THIRD`; `_FOURTH`
-exists but no workflow uses it yet), `MASSIVE_API_KEY`, `TWELVE_DATA_API_KEY`, `ALPHA_VANTAGE_API_KEY`,
-`FINNHUB_API_KEY`, `FMP_API_KEY`, `FRED_API_KEY`, `EODHD_API_TOKEN`, `TIINGO_API_TOKEN`,
-`UNUSUAL_WHALES_API_KEY`. Not present: Alpaca, Quiver, Tickstream, Intrinio, `ICARUS_DATA_ARCHIVE_KEY`.
+The redacted GitHub-native health run `38902710676` confirmed Actions-secret presence for Databento primary/secondary/third/fourth, EODHD, Tiingo, Unusual Whales, Alpha Vantage, FMP, FRED, Massive, Finnhub, and Twelve Data. Secret presence is not proof of a successful provider response. Current receipts show:
 
-Claude connectors (interactive sessions and Claude routines only, not GitHub runners): Massive, Alpha
-Vantage, Twelve Data, FMP, Financial Datasets, Coinversa (Hyperliquid), Crypto.com, CoinMarketCap,
-Bigdata.com, Quartr, LunarCrush, Neon, Google Sheets, Notion, Tavily, Firecrawl, Exa, Consensus, Wolfram,
-Hugging Face, Keel, CircleCI, Postman.
+- **EODHD:** the dedicated external-data fabric produced 2,510 daily rows across 10 symbols through 2026-10-15; tick windows are plan-limited (`38902923997`).
+- **Tiingo:** 45,137 daily rows and 2,340 five-minute bars across 6 symbols were produced; news returned HTTP 403 (`38902923997`).
+- **Unusual Whales:** the key is present, but the latest supplemental request returned HTTP 401 and zero rows (`38905397776`); the native canary also returned HTTP 401 (`38897165047`). A safe 111-row/5-page receipt from run `38873907446` remains available in `cycles/` and is exposed separately as historical-only context; it is not current API access. Repair/replace the provider credential or authorization before treating this API lane as live. The separate interactive connector is a distinct transport.
+- **Finnhub:** the key is present but provider authentication has previously returned HTTP 401. Treat the lane as blocked until a current successful receipt exists.
+- **Databento bars:** four key slots are present; the depth workflows use the first three. The public feed manifest lists 34 instruments with five-minute bars. The dedicated depth context remains blocked because no primary-account feature files are in the encrypted vault; 156,928 derived feature rows are currently from secondary/third accounts. Vault recovery works with `HKDF(DATABENTO_API_KEY)`; the missing standalone archive key is not the current cause. Do not weaken the integrity gate or spend beyond a recorded allocation.
+- **FMP/FRED/Massive/Twelve Data and Alpha Vantage:** use their current provider receipts and Sentinel state; presence alone does not establish complete collection.
 
-Paid order-book data: 133 derived feature files sealed in `data/depth_vault/` (encrypted). The 18 NQ
-MBP-10 sweep days bought before 2026-10-10 were lost to cache eviction and are not recoverable.
+EODHD/Tiingo summaries and other permitted derived evidence are in `automation_intelligence/cl_lab/external_data_fabric.json`; provider-level receipts and shared context are under `automation_intelligence/provider_collection_v1/`. Licensed vendor rows stay out of public git and are retained only under approved cache/vault rules.
+
+The Engine health run did not report shared credentials for Alpaca, Intrinio, Quiver, Tickstream, or IBKR. IBKR in `reppiks490/Icarus` is a local loopback TWS/IB Gateway paper adapter, not a shared market-data API lane. Do not infer presence in another repository or runtime from Engine health.
+
+Interactive connectors (for interactive sessions only, not GitHub runners): Massive, Alpha Vantage, Twelve Data, FMP, Financial Datasets, Coinversa (Hyperliquid), Crypto.com, CoinMarketCap, Bigdata.com, Quartr, LunarCrush, Neon, Google Sheets, Notion, Tavily, Firecrawl, Exa, Consensus, Wolfram, Hugging Face, Keel, CircleCI, Postman.
+
+Paid order-book data remains encrypted in `data/depth_vault/`. The vault currently has no primary-account feature entries; earlier paid NQ sweep data was lost to cache eviction. The latest integrity gate correctly refuses to publish incomplete primary-depth context. Recovery needs the already-paid source to be found or a separately recorded budget allocation; do not report those features as available.
 
 ## 6. Ownership
 

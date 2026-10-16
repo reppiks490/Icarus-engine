@@ -13,6 +13,7 @@ from typing import Any
 ROOT = Path("automation_intelligence/provider_collection_v1")
 LATEST = ROOT / "latest"
 OUTPUT = ROOT / "research_context.json"
+CYCLES = ROOT / "cycles"
 
 
 def _provider_row(provider: str, payload: dict[str, Any]) -> dict[str, Any]:
@@ -64,6 +65,34 @@ def _provider_row(provider: str, payload: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _last_successful_receipt(repo_root: Path, provider: str) -> dict[str, Any] | None:
+    """Project one safe, explicitly historical receipt without replacing current state."""
+    cycles = repo_root / CYCLES
+    if not cycles.is_dir():
+        return None
+
+    candidates: list[dict[str, Any]] = []
+    for path in sorted(cycles.glob("*/receipt.json")):
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        entry = payload.get("providers", {}).get(provider)
+        if not isinstance(entry, dict):
+            continue
+        row = _provider_row(provider, payload)
+        if row["status"].startswith("BLOCKED"):
+            continue
+        if not (row["substantive_work_performed"] or row["collected_rows"] or row["research_features"]):
+            continue
+        row["historical_only"] = True
+        candidates.append(row)
+
+    if not candidates:
+        return None
+    return max(candidates, key=lambda row: str(row.get("completed_at_utc") or ""))
+
+
 def build_context(repo_root: Path) -> dict[str, Any]:
     latest = repo_root / LATEST
     providers: dict[str, dict[str, Any]] = {}
@@ -89,6 +118,7 @@ def build_context(repo_root: Path) -> dict[str, Any]:
                 }
                 continue
             row = _provider_row(provider, payload)
+            row["last_successful_receipt"] = _last_successful_receipt(repo_root, provider)
             providers[provider] = row
             if isinstance(row.get("completed_at_utc"), str):
                 timestamps.append(row["completed_at_utc"])
@@ -104,7 +134,7 @@ def build_context(repo_root: Path) -> dict[str, Any]:
         "schema_version": "icarus-provider-research-context-v1",
         "authority": "RESEARCH_CONTEXT_ONLY",
         "snapshot_at_utc": max(timestamps) if timestamps else None,
-        "source_root": str(LATEST),
+        "source_root": f"{LATEST}+{CYCLES}",
         "raw_payloads_included": False,
         "execution_authorized": False,
         "production_decision_authorized": False,

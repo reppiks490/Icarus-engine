@@ -24,7 +24,7 @@ jobs:
         with:
           python-version: '3.11'
       - name: Probe public delayed futures source
-        run: python tools/futures_universe_probe.py > futures-universe-probe.json
+        run: python -m tools.futures_universe_probe > futures-universe-probe.json
       - name: Validate evidence envelope
         run: |
           python - <<'PY'

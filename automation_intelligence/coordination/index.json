@@ -2,45 +2,6 @@
   "active_sessions": [
     {
       "actor": "ChatGPT / Atlas",
-      "branch": "multi-repo/continuous",
-      "cooperates_with": [],
-      "coordination_mode": "independent",
-      "declared_paths": [
-        "automation_intelligence/mcp_interface/events/20261016T032700Z-futures-universe-integration.json"
-      ],
-      "declared_targets": [
-        {
-          "path": "automation_intelligence/mcp_interface/events/20261016T032700Z-futures-universe-integration.json",
-          "repo": "reppiks490/Icarus-engine"
-        }
-      ],
-      "dependencies": [
-        "pr:reppiks490/Icarus-engine#181"
-      ],
-      "goal": "Finish federation closure, deploy and harden multi-chat coordination, reclaim Claude-stalled work, then research and integrate a collision-free high-value futures expansion with UI visibility.",
-      "home_repo": "reppiks490/icarus-owner-actions",
-      "last_event_at_utc": "2026-10-16T03:27:00Z",
-      "latest_summary": "Engine MCP provenance gate correctly rejected the futures registry change because icarus_engine/assets.py is a critical interface path without a same-changeset MCP event. Extending the claim to the required provenance event; the gate will not be weakened or bypassed.",
-      "latest_type": "UPDATE",
-      "model_family": "openai",
-      "phase": "futures-universe-expansion",
-      "pr": null,
-      "reclaimable": false,
-      "reserved_paths": [
-        "automation_intelligence/mcp_interface/events/20261016T032700Z-futures-universe-integration.json"
-      ],
-      "reserved_targets": [
-        {
-          "path": "automation_intelligence/mcp_interface/events/20261016T032700Z-futures-universe-integration.json",
-          "repo": "reppiks490/Icarus-engine"
-        }
-      ],
-      "session_id": "chatgpt-20261016-atlas-coordination-futures",
-      "stale": false,
-      "status": "active"
-    },
-    {
-      "actor": "ChatGPT / Atlas",
       "branch": "atlas/coordination-dashboard",
       "cooperates_with": [],
       "coordination_mode": "independent",
@@ -132,12 +93,12 @@
   ],
   "collisions": [],
   "counts": {
-    "active": 2,
+    "active": 1,
     "collisions": 0,
     "stale": 0,
-    "terminal": 0
+    "terminal": 2
   },
-  "generated_at_utc": "2026-10-16T03:32:00.856401Z",
+  "generated_at_utc": "2026-10-16T04:51:27.767228Z",
   "owner_status": {
     "claude": {
       "active": false,
@@ -149,5 +110,60 @@
     "updated_at_utc": "2026-10-16T02:50:00Z"
   },
   "schema_version": "icarus-coordination-index-v2",
-  "terminal_sessions": []
+  "terminal_sessions": [
+    {
+      "actor": "ChatGPT / Atlas",
+      "branch": "multi-repo/continuous",
+      "cooperates_with": [],
+      "coordination_mode": "independent",
+      "declared_paths": [],
+      "declared_targets": [],
+      "dependencies": [
+        "pr:reppiks490/Icarus-engine#181"
+      ],
+      "goal": "Finish federation closure, deploy and harden multi-chat coordination, reclaim Claude-stalled work, then research and integrate a collision-free high-value futures expansion with UI visibility.",
+      "home_repo": "reppiks490/icarus-owner-actions",
+      "last_event_at_utc": "2026-10-16T03:40:00Z",
+      "latest_summary": "Futures universe expansion is merged to Icarus-engine main. PR #181 merged as 3ca0959a57d8585cb44be4af5a1d7c13ec23a5bb after exact merge-ref verification on Python 3.11/3.12/3.13, core/CLI/MCP/Brain gates, and a 23/23 credential-free public-delayed futures probe. Main tree 943e4908e139a79fd1ecb6766b7edb777537c9ad exactly matches the tested temporary merge tree. All reservations from this workstream are released. Live broker execution remains disabled.",
+      "latest_type": "COMPLETE",
+      "model_family": "openai",
+      "phase": "futures-universe-expansion",
+      "pr": null,
+      "reclaimable": false,
+      "reserved_paths": [],
+      "reserved_targets": [],
+      "session_id": "chatgpt-20261016-atlas-coordination-futures",
+      "stale": false,
+      "status": "complete"
+    },
+    {
+      "actor": "ChatGPT / Atlas",
+      "branch": "atlas/vendor-panel-vault-20261016",
+      "cooperates_with": [],
+      "coordination_mode": "independent",
+      "declared_paths": [],
+      "declared_targets": [],
+      "dependencies": [
+        "merged:reppiks490/Icarus-engine#183",
+        "merge-sha:7ba271f8e7130842308084ac86e6f0ae6fb353c0",
+        "tested-head:817bdc208399a79cd854f26fbfaa27a0ef7ae4c6",
+        "tests-run:38852522074",
+        "vault-run:38852522116"
+      ],
+      "goal": "Reclaim and safely complete L1/J02 vendor-panel containment from superseded Icarus-engine PR #135: prove authenticated encrypted recovery on current main before removing public working-tree vendor CSVs, preserve provenance, and avoid history rewriting or secret exposure.",
+      "home_repo": "reppiks490/Icarus-engine",
+      "last_event_at_utc": "2026-10-16T04:51:10Z",
+      "latest_summary": "L1/J02 vendor-panel containment completed and merged via Icarus-engine PR #183. The 13 plaintext vendor panel CSVs were removed from the current public working tree only after authenticated encrypted recovery was proven. Git history was not rewritten; historical exposure remains explicitly acknowledged. The fail-closed panel loader, provenance labeling, in-memory vault verification, sentinel receipt, and private restore drill are live on main.",
+      "latest_type": "COMPLETE",
+      "model_family": "openai",
+      "phase": "complete",
+      "pr": "pending",
+      "reclaimable": false,
+      "reserved_paths": [],
+      "reserved_targets": [],
+      "session_id": "chatgpt-20261016-atlas-vendor-panel-vault",
+      "stale": false,
+      "status": "complete"
+    }
+  ]
 }

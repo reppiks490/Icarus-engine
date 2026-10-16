@@ -1,78 +1,65 @@
-# Claude ↔ ChatGPT coordination
+# ICARUS coordination — central many-chat bus
 
-Two AIs work in this repository:
+This repository's original Claude ↔ ChatGPT board/inbox system is now **historical**. It solved early
+collisions, and its messages, boards and lane notes remain useful evidence, but its model-specific task
+ownership rules are **superseded** by the central many-chat coordination fabric in
+`reppiks490/icarus-owner-actions`.
 
-- **Claude** (Anthropic), on `claude/*` branches;
-- **ChatGPT / Codex** (OpenAI), on `chatgpt/*` and `codex/*` branches.
+There is **no model-specific task ownership**. Claude, ChatGPT, Codex, Grok, Atlas, local workers and
+future agents may reclaim, divide, review, or cooperate on work when they declare their intent and avoid
+undeclared path collisions. A historical Claude or ChatGPT board row is not a permanent lock.
 
-They cannot talk to each other directly, so this folder is how they talk. The owner set it up on
-2026-10-11 after the two collided twice on the same work (the SEC user agent and the Databento depth
-cache). The older lane notes in this folder (`CL_LANE_*.md`, `PR2_*.md`, `PEER_*.md`) stay as they are.
+## Canonical coordination every session
 
-## Every session, both AIs
+Before substantial work, read:
 
-1. Read `ICARUS_STATE.md`.
-2. Read `config/data_ingestion_manifest.json`, `docs/agent-handoffs/FEDERATED_DATA_COLLECTION.md`, and
-   `docs/agent-handoffs/DATA_GAP_LEDGER.md`. Every AI unit is required to know the complete ICARUS data
-   plane, distinguish credential/ingestion/consumption state, use every applicable live evidence source,
-   and keep explicit blockers visible. Account-local connector or secret access is never the authority.
-3. Read both task lists: `board/claude.md` and `board/chatgpt.md`.
-4. Read every message in your inbox that still needs a reply. `python -m tools.coordination` lists them.
-5. **Claim before you start.** Add the task to your own board as `in progress` before working on it.
-   Never start a task that is on the other AI's board unless its status is `done`. If you think a task
-   should change hands, send a message and wait for the answer.
-6. **Before you stop:** push your work, update your board, and answer every message that needs a reply.
-   Work that is not pushed is invisible to the other AI.
+1. `ICARUS_STATE.md`.
+2. `reppiks490/icarus-owner-actions:coordination/START_HERE.md`.
+3. `reppiks490/icarus-owner-actions:coordination/ACTIVE.md`.
+4. `reppiks490/icarus-owner-actions:coordination/collisions.json`.
+5. Applicable files under `reppiks490/icarus-owner-actions:coordination/directives/`.
+6. `config/data_ingestion_manifest.json`, `docs/agent-handoffs/FEDERATED_DATA_COLLECTION.md`, and
+   `docs/agent-handoffs/DATA_GAP_LEDGER.md` when evidence/data can affect the work.
 
-The owner's standing data directive overrides historical assumptions that a provider belongs to only
-one AI lane: ownership still controls who edits a path, but **evidence access is federated**. If a unit
-discovers a source gap outside its write ownership, it must publish the blocker/evidence path to the
-owning unit rather than silently omitting that source.
+Create or resume a unique central coordination session. Publish `PLAN` or `CLAIM` before modifying
+shared code, workflows, UI, data contracts, or reserved paths. Publish `WAITING` when CI, review,
+provider responses, or another dependency is pending; do not go silent while waiting. Publish `UPDATE`
+when scope/paths change, `HANDOFF` when another session can benefit or take over, and `COMPLETE` only
+with fresh verification evidence.
 
-## Task lists
+Reservations are advisory collision prevention, not ownership. If two sessions need an overlapping
+path, they must either choose different boundaries or explicitly **cooperate** through mutual
+coordination notes. The central compiler reports undeclared repo/path collisions.
 
-- `board/claude.md` is edited only by Claude; `board/chatgpt.md` only by ChatGPT. Never edit the other's.
-- Each has an **Owns** list (the paths that AI writes) and one task table:
+Claude is currently inactive by owner direction. Its unfinished work is reclaimable under the central
+Claude-reclamation directive. Do not wait for Claude authorization and do not mark its unfinished work
+complete merely because Claude is absent.
 
-  | Id | Task | Status | Branch / PR | Updated |
-  |---|---|---|---|---|
+## Data/evidence federation remains mandatory
 
-  Status is one of `planned`, `in progress`, `blocked`, `waiting`, `done`. `Updated` is `YYYY-MM-DD`.
-  An `in progress` row not updated for 7 days is reported as stale.
-- Files outside both Owns lists, and the shared files (`ICARUS_STATE.md`, `AGENTS.md`, `CLAUDE.md`,
-  this README, `docs/RESEARCH_LOG.md`), may be edited by either AI in a PR that says why.
+Every AI unit must know the complete ICARUS data plane, distinguish credential, ingestion and
+consumption state, use applicable live evidence, and keep external blockers explicit. Account-local
+connector or secret access is never the authority. Provider or evidence provenance still controls what
+can be claimed; the removal of model task gates does not weaken licensing, security, timing, or data
+integrity controls.
 
-## Messages
+The historical `board/claude.md`, `board/chatgpt.md`, `inbox/`, `CL_LANE_*.md`, `PR2_*.md`, and
+`PEER_*.md` files remain read-only historical/context evidence unless a specific migration task says
+otherwise. They may help discover unfinished work, but they no longer determine who may start it.
 
-- To send, create a new file in `inbox/to-<recipient>/` (`to-claude` or `to-chatgpt`) named
-  `YYYYMMDDTHHMMZ-<sender>-<short-slug>.md`, in UTC. Example: `20261011T0437Z-claude-hello.md`.
-- The file starts with these header lines, then a blank line, then the body:
+`tools.coordination` may still be used to inspect those historical boards/inboxes. New work state,
+waiting notes, dependencies, reservations and cross-chat handoffs belong in the central
+`icarus-owner-actions` coordination bus.
 
-  ```
-  From: Claude
-  To: ChatGPT
-  Date: 2026-10-11T04:37Z
-  Subject: One line
-  Reply-needed: yes
-  Re: -
-  ```
+## Continuous cooperation standard
 
-- To reply, create a new file in the sender's inbox whose `Re:` line names the file you are answering.
-  That closes it.
-- Never edit or delete a message once it is on `main`. To correct one, send another.
-- Keep messages short and concrete: what you need, the file paths, the PR links. Evidence, not claims
-  (rule 2 in `ICARUS_STATE.md`).
+When a test or CI run takes a long time, publish a `WAITING` note naming the run/PR and continue useful
+non-conflicting work. When new work is discovered, either build/fix/verify it within the current owner
+directive or publish a concrete handoff/blocker. Zero known internal errors is the completion condition
+for declared scope; external provider/account/licensing blockers remain explicit.
 
-## Getting it onto `main`
+## Execution boundary
 
-The other AI reads `main`, so messages and board updates count only once they are there. They hold no
-code, so they may be committed straight to `main`, or merged in a PR without waiting for review. Code
-goes through PRs as usual. To ask for a review of a PR, send a message with its link.
-
-## Automation
-
-- **Claude coordinator** (Claude routine, 06:25 and 18:25 America/Chicago): reads Claude's inbox and
-  answers it, reviews ChatGPT PRs opened or updated since its last run, and updates Claude's board.
-- **Data-health sentinel** (`tools/data_sentinel.py`, every 3 h and on every push here): puts the
-  mailbox and board counts into `automation_intelligence/sentinel/DATA_HEALTH.md`.
-- **Daily briefing** (Claude routine, 06:55 America/Chicago): reports both to the owner's phone.
+Live broker arming is disabled by current owner direction. Research, replay, paper/shadow execution,
+adapters, validation and UI work may continue, but no coordination rule overrides execution gates or
+authorizes live trading.

@@ -81,6 +81,25 @@ def test_wrong_key_source_is_refused(tmp_path):
         depth_vault.restore({"sweep": tmp_path / "x"}, vault, {"DATABENTO_API_KEY": "db-other"})
 
 
+def test_existing_provider_vault_survives_adding_standalone_key(tmp_path):
+    cache, vault = _cache(tmp_path), tmp_path / "vault"
+    provider_env = {"DATABENTO_API_KEY": "db-original"}
+    both_env = {**provider_env, **ENV}
+    assert depth_vault.seal({"sweep": cache}, vault, provider_env)["key_source"] == "HKDF(DATABENTO_API_KEY)"
+
+    # A new archive secret must not silently change encryption for old or new objects.
+    _write(cache / "features/primary/mbp10/nq/2026-10-07.csv.gz", "ts,events\n3,4\n")
+    assert depth_vault.seal({"sweep": cache}, vault, both_env)["added_objects"] == 1
+    assert json.loads((vault / "manifest.json").read_text())["key_source"] == "HKDF(DATABENTO_API_KEY)"
+    receipt = depth_vault.verify(vault, both_env)
+    assert receipt["key_source"] == "HKDF(DATABENTO_API_KEY)"
+    assert receipt["caches"]["sweep"]["authenticated"] == 3
+    assert depth_vault.restore({"sweep": tmp_path / "restored"}, vault, both_env)["restored"] == 3
+
+    with pytest.raises(ValueError, match="sealed with HKDF"):
+        depth_vault.restore({"sweep": tmp_path / "missing-provider"}, vault, ENV)
+
+
 def test_missing_key_fails_closed(tmp_path):
     with pytest.raises(ValueError, match="needs"):
         depth_vault.seal({"sweep": _cache(tmp_path)}, tmp_path / "vault", {})

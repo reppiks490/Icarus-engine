@@ -1,0 +1,73 @@
+# Preserve one encrypted baseline of the paid Databento bars in the CL cache.
+# Rolling updates keep using the cache; the baseline is immutable once sealed.
+name: databento-bars-vault
+
+on:
+  workflow_run:
+    workflows: ["cl-lab"]
+    types: [completed]
+  schedule:
+    - cron: "07 4 * * *"
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/databento-bars-vault.yml"
+      - "tools/databento_bar_baseline.py"
+      - "data/depth_vault/sources.json"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: depth-vault-main
+  cancel-in-progress: false
+
+jobs:
+  seal:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install vault dependency
+        run: python -m pip install "cryptography>=44,<47"
+      - name: Restore paid bar cache
+        uses: actions/cache/restore@v4
+        with:
+          path: .cl_cache
+          key: cl-feeds-bars-vault-${{ github.run_id }}
+          restore-keys: cl-feeds-
+      - name: Seal account-scoped bar baseline and prove recovery
+        env:
+          ICARUS_DATA_ARCHIVE_KEY: ${{ secrets.ICARUS_DATA_ARCHIVE_KEY }}
+          DATABENTO_API_KEY: ${{ secrets.DATABENTO_API_KEY || secrets.DATABENTO_KEY }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          STAGE="$RUNNER_TEMP/icarus-databento-bar-baseline"
+          trap 'rm -rf "$STAGE"' EXIT
+          for attempt in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            rm -rf "$STAGE"
+            python -m tools.databento_bar_baseline --cache .cl_cache --stage "$STAGE"
+            python -m tools.depth_vault seal \
+              --cache bars_primary="$STAGE/bars_primary" \
+              --cache bars_secondary="$STAGE/bars_secondary" \
+              --cache bars_third="$STAGE/bars_third"
+            python -m tools.depth_vault label
+            python -m tools.depth_vault verify --out automation_intelligence/sentinel/vault_verify.json
+            git add data/depth_vault automation_intelligence/sentinel/vault_verify.json
+            if git diff --cached --quiet; then echo "bar baseline already vaulted"; exit 0; fi
+            git commit -m "[vault] preserve Databento bar baseline [skip ci]"
+            if git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt * 5))
+          done
+          exit 1

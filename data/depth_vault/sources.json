@@ -2,6 +2,30 @@
   "schema": "icarus.vault_sources/1",
   "note": "Hand-written provenance per vault cache. tools/depth_vault.py derives per-object origins.json from this file plus spend ledgers. Purchase times are never invented.",
   "caches": {
+    "bars_primary": {
+      "origin": "new_acquisition",
+      "provider": "Databento",
+      "content": "Immutable baseline of primary-account five-minute futures OHLCV and the finished ES historical backfill; rolling updates remain in the feed cache.",
+      "acquired_via": ".github/workflows/cl-lab.yml",
+      "is_restoration": false,
+      "rights": "Licensed vendor derivatives; stored encrypted because the repository is public."
+    },
+    "bars_secondary": {
+      "origin": "new_acquisition",
+      "provider": "Databento",
+      "content": "Immutable baseline of secondary-account five-minute futures OHLCV when entitled and collected.",
+      "acquired_via": ".github/workflows/cl-lab.yml",
+      "is_restoration": false,
+      "rights": "Licensed vendor derivatives; stored encrypted because the repository is public."
+    },
+    "bars_third": {
+      "origin": "new_acquisition",
+      "provider": "Databento",
+      "content": "Immutable baseline of the third-account finished NQ historical backfill and any later qualified bars.",
+      "acquired_via": ".github/workflows/cl-lab.yml",
+      "is_restoration": false,
+      "rights": "Licensed vendor derivatives; stored encrypted because the repository is public."
+    },
     "corpus": {
       "origin": "new_acquisition",
       "provider": "Databento",

@@ -56,6 +56,37 @@ def _reason(body: Dict[str, Any], default: str = "manual") -> str:
     """Free text that ends up in the journal: printable, short."""
     return re.sub(r"[^\w .:()/-]", "", str(body.get("reason", default)))[:40] or default
 
+
+def asset_registry_payload(running=()):
+    """Public registry metadata used by the dashboard and automation clients.
+
+    This describes configured contract identity/economics and feed capability.
+    It does not imply current provider reachability or live execution authority.
+    """
+    return {
+        "registry": [
+            {
+                "symbol": s.symbol,
+                "name": s.name,
+                "feed": s.feed,
+                "ticker": s.ticker,
+                "feed_mode": s.feed_mode,
+                "calendar": s.calendar,
+                "session": s.session,
+                "group": s.group,
+                "mintick": s.mintick,
+                "multiplier": s.multiplier,
+                "kind": s.kind,
+                "exchange": s.exchange,
+                "asset_class": s.asset_class,
+                "micro_of": s.micro_of,
+                "tv_symbol": s.tv_symbol,
+            }
+            for s in REGISTRY.values()
+        ],
+        "running": list(running),
+    }
+
 COMMANDS = [
     {"id": "backtest", "label": "Backtest (Strategy Tester)", "desc": "Run the strategy on the cached bars with any preset / inputs / fill mode and read TradingView's Strategy Tester numbers.", "scope": "asset", "danger": False},
     {"id": "pause", "label": "Pause entries", "desc": "No new entries on the selected asset (or all). Exits keep running.", "scope": "asset|all", "danger": False},
@@ -65,7 +96,7 @@ COMMANDS = [
     {"id": "inputs", "label": "Edit inputs", "desc": "Open the Inputs tab for the asset.", "scope": "asset", "danger": False},
     {"id": "preset", "label": "Apply preset", "desc": "Load one of the presets/ configurations onto the asset and re-warm.", "scope": "asset", "danger": False},
     {"id": "reset-inputs", "label": "Reset asset overrides", "desc": "Delete inputs.<SYM>.json so the asset falls back to the preset.", "scope": "asset", "danger": True},
-    {"id": "add-asset", "label": "Add asset", "desc": "Start a new asset (NQ ES YM GC SI PL PA BTCF MBT BTC ETH SOL …).", "scope": "all", "danger": False},
+    {"id": "add-asset", "label": "Add asset", "desc": "Start any first-class asset from the runtime registry with its own contract economics.", "scope": "all", "danger": False},
     {"id": "remove-asset", "label": "Remove asset", "desc": "Stop and drop an asset from the engine.", "scope": "asset", "danger": True},
     {"id": "export", "label": "Export trades CSV", "desc": "Download the asset's trade list (TradingView-like columns).", "scope": "asset", "danger": False},
     {"id": "open-tab", "label": "Open in its own tab", "desc": "Full-screen view of one asset in a new browser tab.", "scope": "asset", "danger": False},
@@ -205,8 +236,7 @@ def serve(port: Portfolio, http_port: int = 8791, token: str = "icarus", start: 
                             out.append({"name": f[:-5], "meta": d.get("_meta", {}), "count": len([k for k in d if not k.startswith("_")])})
                 return self._json(200, out)
             if p.path == "/api/assets":
-                return self._json(200, {"registry": [{"symbol": s.symbol, "name": s.name, "feed": s.feed, "calendar": s.calendar, "mintick": s.mintick, "multiplier": s.multiplier, "kind": s.kind} for s in REGISTRY.values()],
-                                        "running": list(port.order)})
+                return self._json(200, asset_registry_payload(port.order))
             if p.path == "/api/commands":
                 return self._json(200, COMMANDS)
             if p.path.startswith("/api/export/"):

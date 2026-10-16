@@ -4,6 +4,8 @@ import json
 import re
 from pathlib import Path
 
+import pytest
+
 
 WORKFLOW = Path('.github/workflows/provider-supplemental-collection.yml')
 SUPPLEMENT = Path('config/provider_endpoint_catalog_supplemental.json')
@@ -22,6 +24,44 @@ def test_credentialed_missing_providers_are_admitted_to_additive_runtime_collect
     assert s.EXTENDED_PROVIDERS['finnhub']['auth'] == 'finnhub'
 
 
+def test_supplemental_pagination_accepts_only_relative_uw_next_url_without_secret_query() -> None:
+    from tools import provider_supplemental_collection as s
+
+    page = s.next_page(
+        'unusual_whales',
+        {'data': {'next_url': '/api/crypto/list_tokens?next_token=abc&limit=1000'}},
+        {'limit': 1000},
+    )
+    assert page == {
+        'path': '/api/crypto/list_tokens',
+        'params': {'next_token': 'abc', 'limit': '1000'},
+    }
+    page = s.next_page(
+        'unusual_whales',
+        {'data': {'next_token': 'xyz'}},
+        {'limit': 1000},
+    )
+    assert page == {'params': {'limit': 1000, 'next_token': 'xyz'}}
+
+
+def test_alpha_provider_messages_fail_closed_for_rate_and_entitlement() -> None:
+    from tools import provider_exhaustive_collection as core
+    from tools import provider_supplemental_collection as s
+
+    with pytest.raises(core.ProviderFailure, match='429'):
+        s.check_response({'Information': 'API call frequency limit reached'})
+    with pytest.raises(core.ProviderFailure, match='403'):
+        s.check_response({'Information': 'This is a premium endpoint; upgrade required'})
+
+
+def test_finnhub_credential_never_needs_to_be_serialized_in_catalog() -> None:
+    data = json.loads(SUPPLEMENT.read_text())
+    encoded = json.dumps(data).lower()
+    assert 'x-finnhub-token' not in encoded
+    assert 'apikey' not in encoded
+    assert 'authorization' not in encoded
+
+
 def test_provider_workflow_runs_missing_github_native_providers_and_injects_canonical_credentials() -> None:
     text = WORKFLOW.read_text()
     matrix = re.search(r'provider:\s*\[([^\]]+)\]', text)
@@ -31,6 +71,10 @@ def test_provider_workflow_runs_missing_github_native_providers_and_injects_cano
     for canonical in ('UNUSUAL_WHALES_API_KEY', 'ALPHAVANTAGE_API_KEY', 'FINNHUB_API_KEY'):
         assert f'          {canonical}:' in text
         assert f'secrets.{canonical}' in text
+    assert 'automation_intelligence/mcp_interface/events/' not in text.split('path: |', 1)[1].split('include-hidden-files:', 1)[0].replace(
+        'automation_intelligence/mcp_interface/events/provider-coverage-supplemental-${{ github.run_id }}-${{ matrix.provider }}.json',
+        '',
+    )
 
 
 def test_supplemental_catalog_covers_missing_provider_families() -> None:

@@ -1,0 +1,94 @@
+name: native-provider-access
+
+on:
+  schedule:
+    - cron: "53 */6 * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "tools/native_provider_access.py"
+      - "tools/provider_credentials.py"
+      - "config/credential_contract.json"
+      - "tests/test_native_provider_access.py"
+      - ".github/workflows/native-provider-access.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  collect:
+    strategy:
+      fail-fast: false
+      matrix:
+        provider: [alphavantage, finnhub, unusual_whales]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    concurrency:
+      group: native-provider-access-${{ matrix.provider }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install bounded access dependencies
+        run: python -m pip install "pytest>=8,<10" "cryptography>=44,<47"
+      - name: Verify native provider access contract
+        run: python -m pytest -q tests/test_native_provider_access.py tests/test_github_native_credentials.py -p no:cacheprovider
+      - name: Collect one read-only native provider snapshot
+        env:
+          ALPHAVANTAGE_API_KEY: ${{ secrets.ALPHAVANTAGE_API_KEY || vars.ALPHAVANTAGE_API_KEY || secrets.ALPHA_VANTAGE_API_KEY || vars.ALPHA_VANTAGE_API_KEY || secrets.ALPHA_VANTAGE_KEY || vars.ALPHA_VANTAGE_KEY }}
+          FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY || vars.FINNHUB_API_KEY || secrets.FINNHUB_KEY || vars.FINNHUB_KEY }}
+          UNUSUAL_WHALES_API_KEY: ${{ secrets.UNUSUAL_WHALES_API_KEY || vars.UNUSUAL_WHALES_API_KEY || secrets.UNUSUAL_WHALES_TOKEN || vars.UNUSUAL_WHALES_TOKEN || secrets.UW_API_KEY || vars.UW_API_KEY }}
+          ICARUS_DATA_ARCHIVE_KEY: ${{ secrets.ICARUS_DATA_ARCHIVE_KEY || vars.ICARUS_DATA_ARCHIVE_KEY }}
+        run: >-
+          python -m tools.native_provider_access
+          --provider '${{ matrix.provider }}'
+          --run-id 'native-${{ github.run_id }}-${{ github.run_attempt }}'
+          --repo-root .
+      - name: Preserve encrypted snapshot and redacted receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-provider-${{ matrix.provider }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            automation_intelligence/provider_collection_v1/native_access/native-${{ github.run_id }}-${{ github.run_attempt }}/${{ matrix.provider }}.json
+            .native_provider_archives/native-${{ github.run_id }}-${{ github.run_attempt }}/${{ matrix.provider }}.enc
+          include-hidden-files: true
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Persist only redacted native-access receipts
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          RUN='native-${{ github.run_id }}-${{ github.run_attempt }}'
+          PROVIDER='${{ matrix.provider }}'
+          RUN_PATH="automation_intelligence/provider_collection_v1/native_access/$RUN/$PROVIDER.json"
+          LATEST_PATH="automation_intelligence/provider_collection_v1/native_access/latest/$PROVIDER.json"
+          if [ ! -f "$RUN_PATH" ] || [ ! -f "$LATEST_PATH" ]; then
+            echo "native provider receipt missing" >&2
+            exit 1
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- "$RUN_PATH" "$LATEST_PATH"
+          staged="$(git diff --cached --name-only)"
+          invalid="$(printf '%s\n' "$staged" | grep -Ev "^automation_intelligence/provider_collection_v1/native_access/(native-[0-9]+-[0-9]+/$PROVIDER\.json|latest/$PROVIDER\.json)$" || true)"
+          if [ -n "$invalid" ]; then
+            echo "Refusing out-of-scope native provider mutation: $invalid" >&2
+            exit 1
+          fi
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "research: native provider $PROVIDER $RUN [skip ci]"
+          for attempt in 1 2 3 4 5 6; do
+            git fetch origin main
+            if ! git rebase origin/main; then git rebase --abort; exit 1; fi
+            if git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt * 2))
+          done
+          exit 1

@@ -57,8 +57,8 @@ jobs:
         # A cache miss is not data loss once a day is vaulted (tools/depth_vault.py).
         continue-on-error: true
         env:
-          ICARUS_DATA_ARCHIVE_KEY: ${{ secrets.ICARUS_DATA_ARCHIVE_KEY || vars.ICARUS_DATA_ARCHIVE_KEY }}
-          DATABENTO_API_KEY: ${{ secrets.DATABENTO_API_KEY || vars.DATABENTO_API_KEY || secrets.DATABENTO_KEY || vars.DATABENTO_KEY }}
+          ICARUS_DATA_ARCHIVE_KEY: ${{ secrets.ICARUS_DATA_ARCHIVE_KEY }}
+          DATABENTO_API_KEY: ${{ secrets.DATABENTO_API_KEY || secrets.DATABENTO_KEY }}
         run: |
           python -m pip install "cryptography>=44,<47"
           python -m tools.depth_vault restore --cache sweep=.databento_sweep_cache
@@ -67,7 +67,7 @@ jobs:
         continue-on-error: true
         timeout-minutes: 60
         env:
-          DATABENTO_API_KEY: ${{ secrets.DATABENTO_API_KEY || vars.DATABENTO_API_KEY || secrets.DATABENTO_KEY || vars.DATABENTO_KEY }}
+          DATABENTO_API_KEY: ${{ secrets.DATABENTO_API_KEY || secrets.DATABENTO_KEY }}
         run: >-
           python -m cl_lab.feeds.databento_depth_sweep --account primary --cache .cl_cache
           --depth-cache .databento_sweep_cache
@@ -77,7 +77,7 @@ jobs:
         continue-on-error: true
         timeout-minutes: 60
         env:
-          DATABENTO_API_KEY_SECONDARY: ${{ secrets.DATABENTO_API_KEY_SECONDARY || vars.DATABENTO_API_KEY_SECONDARY }}
+          DATABENTO_API_KEY_SECONDARY: ${{ secrets.DATABENTO_API_KEY_SECONDARY }}
         run: >-
           python -m cl_lab.feeds.databento_depth_sweep --account secondary --cache .cl_cache
           --depth-cache .databento_sweep_cache
@@ -87,7 +87,7 @@ jobs:
         continue-on-error: true
         timeout-minutes: 60
         env:
-          DATABENTO_API_KEY_THIRD: ${{ secrets.DATABENTO_API_KEY_THIRD || vars.DATABENTO_API_KEY_THIRD }}
+          DATABENTO_API_KEY_THIRD: ${{ secrets.DATABENTO_API_KEY_THIRD }}
         run: >-
           python -m cl_lab.feeds.databento_depth_sweep --account third --cache .cl_cache
           --depth-cache .databento_sweep_cache

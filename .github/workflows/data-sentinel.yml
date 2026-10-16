@@ -6,13 +6,25 @@ on:
   schedule:
     - cron: "37 */3 * * *"
   workflow_run:
-    workflows: ["provider-exhaustive-collection", "cl-lab", "depth-vault"]
+    workflows:
+      - "provider-exhaustive-collection"
+      - "provider-supplemental-collection"
+      - "provider-supplemental-promote"
+      - "native-provider-access"
+      - "native-five-research"
+      - "cl-lab"
+      - "depth-vault"
+      - "interrepo-peer-intelligence"
     types: [completed]
+    branches: [main]
   push:
     branches: [main]
     paths:
       - "tools/data_sentinel.py"
       - "tools/coordination.py"
+      - "config/data_ingestion_manifest.json"
+      - "docs/agent-handoffs/FEDERATED_DATA_COLLECTION.md"
+      - "docs/agent-handoffs/DATA_GAP_LEDGER.md"
       - "coordination/**"
       - ".github/workflows/data-sentinel.yml"
   workflow_dispatch:
@@ -38,10 +50,10 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Sentinel tests
+      - name: Sentinel and federation tests
         run: |
           python -m pip install "pytest>=8,<10"
-          python -m pytest -q tests/test_data_sentinel.py -p no:cacheprovider -o addopts= --import-mode=importlib
+          python -m pytest -q tests/test_data_sentinel.py tests/test_federated_data_surface.py -p no:cacheprovider -o addopts= --import-mode=importlib
 
       - name: Report and commit
         env:

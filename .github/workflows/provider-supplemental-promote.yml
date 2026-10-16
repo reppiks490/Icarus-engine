@@ -1,0 +1,165 @@
+name: provider-supplemental-promote
+
+on:
+  workflow_run:
+    workflows: [provider-supplemental-collection]
+    types: [completed]
+
+permissions:
+  actions: read
+  contents: write
+
+concurrency:
+  group: provider-supplemental-promote
+  cancel-in-progress: false
+
+jobs:
+  promote:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.head_repository.full_name == github.repository &&
+      (github.event.workflow_run.event == 'schedule' ||
+       github.event.workflow_run.event == 'workflow_dispatch' ||
+       github.event.workflow_run.event == 'push')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out current main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Download only supplemental collection artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: supplemental-*
+          path: _supplemental_artifacts
+          merge-multiple: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+
+      - name: Validate and promote only safe derived state
+        shell: bash
+        env:
+          SOURCE_RUN: ${{ github.event.workflow_run.id }}
+        run: |
+          set -euo pipefail
+          ROOT='_supplemental_artifacts'
+          test -d "$ROOT"
+
+          # Never promote encrypted raw vendor archives from the transient artifact.
+          # Only cycle receipts, redacted/latest summaries, encrypted checkpoints and
+          # one MCP audit event per provider are permitted into the public repository.
+          while IFS= read -r path; do
+            rel="${path#${ROOT}/}"
+            case "$rel" in
+              automation_intelligence/provider_collection_v1/cycles/supplemental-${SOURCE_RUN}-*/receipt.json|\
+              automation_intelligence/provider_collection_v1/latest/unusual_whales.json|\
+              automation_intelligence/provider_collection_v1/latest/alphavantage.json|\
+              automation_intelligence/provider_collection_v1/latest/finnhub.json|\
+              automation_intelligence/provider_collection_v1/checkpoints/unusual_whales.enc|\
+              automation_intelligence/provider_collection_v1/checkpoints/alphavantage.enc|\
+              automation_intelligence/provider_collection_v1/checkpoints/finnhub.enc|\
+              automation_intelligence/mcp_interface/events/provider-coverage-supplemental-${SOURCE_RUN}-*.json|\
+              .provider_collection_archives/*)
+                ;;
+              *)
+                echo "Unexpected supplemental artifact path: $rel" >&2
+                exit 1
+                ;;
+            esac
+          done < <(find "$ROOT" -type f -print)
+
+          for provider in unusual_whales alphavantage finnhub; do
+            receipt="$ROOT/automation_intelligence/provider_collection_v1/cycles/supplemental-${SOURCE_RUN}-${provider}/receipt.json"
+            latest="$ROOT/automation_intelligence/provider_collection_v1/latest/${provider}.json"
+            event="$ROOT/automation_intelligence/mcp_interface/events/provider-coverage-supplemental-${SOURCE_RUN}-${provider}.json"
+            test -f "$receipt"
+            test -f "$latest"
+            test -f "$event"
+            python - "$latest" "$provider" "$SOURCE_RUN" <<'PY'
+          import json, pathlib, sys
+          path, provider, run = pathlib.Path(sys.argv[1]), sys.argv[2], sys.argv[3]
+          data = json.loads(path.read_text())
+          assert data['schema_version'] == 'icarus-provider-collection-cycle-v1'
+          assert data['run_id'] == f'supplemental-{run}-{provider}'
+          assert set(data['providers']) == {provider}
+          assert data['raw_payloads_public'] is False
+          entry = data['providers'][provider]
+          assert isinstance(entry.get('credential_present'), bool)
+          assert 'status' in entry
+          banned = {'api_key','apikey','authorization','password','secret','access_token'}
+          def walk(value):
+              if isinstance(value, dict):
+                  for key, item in value.items():
+                      assert str(key).lower() not in banned
+                      walk(item)
+              elif isinstance(value, list):
+                  for item in value: walk(item)
+          walk(data)
+          PY
+
+            mkdir -p "automation_intelligence/provider_collection_v1/cycles/supplemental-${SOURCE_RUN}-${provider}"
+            cp "$receipt" "automation_intelligence/provider_collection_v1/cycles/supplemental-${SOURCE_RUN}-${provider}/receipt.json"
+            mkdir -p automation_intelligence/provider_collection_v1/latest
+            cp "$latest" "automation_intelligence/provider_collection_v1/latest/${provider}.json"
+            mkdir -p automation_intelligence/mcp_interface/events
+            cp "$event" "automation_intelligence/mcp_interface/events/provider-coverage-supplemental-${SOURCE_RUN}-${provider}.json"
+            checkpoint="$ROOT/automation_intelligence/provider_collection_v1/checkpoints/${provider}.enc"
+            if [ -f "$checkpoint" ]; then
+              mkdir -p automation_intelligence/provider_collection_v1/checkpoints
+              cp "$checkpoint" "automation_intelligence/provider_collection_v1/checkpoints/${provider}.enc"
+            fi
+          done
+
+          rm -rf "$ROOT"
+
+      - name: Rebuild shared provider research context
+        run: python -m tools.provider_research_context --repo-root .
+
+      - name: Commit only whitelisted federation evidence
+        shell: bash
+        env:
+          SOURCE_RUN: ${{ github.event.workflow_run.id }}
+        run: |
+          set -euo pipefail
+          git add \
+            automation_intelligence/provider_collection_v1/cycles/supplemental-${SOURCE_RUN}-*/receipt.json \
+            automation_intelligence/provider_collection_v1/latest/unusual_whales.json \
+            automation_intelligence/provider_collection_v1/latest/alphavantage.json \
+            automation_intelligence/provider_collection_v1/latest/finnhub.json \
+            automation_intelligence/provider_collection_v1/research_context.json \
+            automation_intelligence/mcp_interface/events/provider-coverage-supplemental-${SOURCE_RUN}-*.json
+          for provider in unusual_whales alphavantage finnhub; do
+            if [ -f "automation_intelligence/provider_collection_v1/checkpoints/${provider}.enc" ]; then
+              git add "automation_intelligence/provider_collection_v1/checkpoints/${provider}.enc"
+            fi
+          done
+          if git diff --cached --quiet; then
+            echo 'Supplemental provider state already converged.'
+            exit 0
+          fi
+          staged="$(git diff --cached --name-only)"
+          invalid="$(printf '%s\n' "$staged" | grep -Ev "^(automation_intelligence/provider_collection_v1/(cycles/supplemental-${SOURCE_RUN}-(unusual_whales|alphavantage|finnhub)/receipt\.json|latest/(unusual_whales|alphavantage|finnhub)\.json|checkpoints/(unusual_whales|alphavantage|finnhub)\.enc|research_context\.json)|automation_intelligence/mcp_interface/events/provider-coverage-supplemental-${SOURCE_RUN}-(unusual_whales|alphavantage|finnhub)\.json)$" || true)"
+          if [ -n "$invalid" ]; then
+            echo "Refusing out-of-scope supplemental promotion:" >&2
+            printf '%s\n' "$invalid" >&2
+            exit 1
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m "research: promote supplemental provider evidence ${SOURCE_RUN} [skip ci]"
+          for attempt in 1 2 3 4 5 6 7 8; do
+            git fetch origin main
+            if ! git rebase origin/main; then git rebase --abort; exit 1; fi
+            if git push origin HEAD:main; then exit 0; fi
+            sleep $((attempt * 2))
+          done
+          exit 1

@@ -17,6 +17,7 @@ def test_native_registry_admits_stored_unwired_credentials() -> None:
     assert PROVIDERS['alphavantage']['canonical'] == 'ALPHAVANTAGE_API_KEY'
     assert PROVIDERS['finnhub']['base'] == 'https://finnhub.io'
     assert PROVIDERS['finnhub']['canonical'] == 'FINNHUB_API_KEY'
+    assert PROVIDERS['finnhub']['auth'] == 'header:x-finnhub-token'
     assert PROVIDERS['unusual_whales']['base'] == 'https://api.unusualwhales.com'
     assert PROVIDERS['unusual_whales']['canonical'] == 'UNUSUAL_WHALES_API_KEY'
 
@@ -37,9 +38,12 @@ def test_native_client_injects_auth_without_accepting_auth_from_caller() -> None
     assert 'apikey=a' in alpha.full_url
     assert alpha.get_header('Authorization') is None
 
-    finnhub = build_request('finnhub', '/api/v1/quote', {'symbol': 'SPY'}, {'FINNHUB_API_KEY': 'f'})
-    assert 'token=f' in finnhub.full_url
-    assert finnhub.get_header('Authorization') is None
+    finnhub_secret = 'FINNHUB_SENTINEL_SECRET'
+    finnhub = build_request('finnhub', '/api/v1/quote', {'symbol': 'SPY'}, {'FINNHUB_API_KEY': finnhub_secret})
+    assert finnhub_secret not in finnhub.full_url
+    assert 'token=' not in finnhub.full_url.lower()
+    finnhub_headers = {name.lower(): value for name, value in finnhub.header_items()}
+    assert finnhub_headers['x-finnhub-token'] == finnhub_secret
 
     bearer_secret = 'UW_SECRET_SENTINEL_123'
     whales = build_request(

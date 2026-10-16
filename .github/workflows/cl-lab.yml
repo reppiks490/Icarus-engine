@@ -53,7 +53,7 @@ jobs:
 
       - name: Refresh FRED + ALFRED point-in-time macro fabric
         env:
-          FRED_API_KEY: ${{ secrets.FRED_API_KEY || vars.FRED_API_KEY || secrets.FRED_KEY || vars.FRED_KEY }}
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY || secrets.FRED_KEY }}
           ICARUS_FRED_CACHE: .cl_cache
           ICARUS_FRED_MANIFEST: automation_intelligence/cl_lab/fred_alfred_manifest.json
         run: python -m cl_lab.feeds.fred_alfred
@@ -64,8 +64,8 @@ jobs:
         timeout-minutes: 40
         continue-on-error: true
         env:
-          DATABENTO_API_KEY: ${{ secrets.DATABENTO_API_KEY || vars.DATABENTO_API_KEY || secrets.DATABENTO_KEY || vars.DATABENTO_KEY }}
-          DATABENTO_API_KEY_SECONDARY: ${{ secrets.DATABENTO_API_KEY_SECONDARY || vars.DATABENTO_API_KEY_SECONDARY }}  # VXM + DX bars only (owner, 2026-10-04)
+          DATABENTO_API_KEY: ${{ secrets.DATABENTO_API_KEY || secrets.DATABENTO_KEY }}
+          DATABENTO_API_KEY_SECONDARY: ${{ secrets.DATABENTO_API_KEY_SECONDARY }}  # VXM + DX bars only (owner, 2026-10-04)
           CL_DATABENTO_OHLCV_ACCOUNT: primary
           CL_DATABENTO_MAX_USD_PER_FEED: "3.50"  # owner cap per asset per request (2026-10-04)
         run: python -m cl_lab.feeds --cache .cl_cache --manifest automation_intelligence/cl_lab/feeds_manifest.json
@@ -76,8 +76,8 @@ jobs:
         timeout-minutes: 30
         continue-on-error: true
         env:
-          DATABENTO_API_KEY: ${{ secrets.DATABENTO_API_KEY || vars.DATABENTO_API_KEY || secrets.DATABENTO_KEY || vars.DATABENTO_KEY }}
-          DATABENTO_API_KEY_THIRD: ${{ secrets.DATABENTO_API_KEY_THIRD || vars.DATABENTO_API_KEY_THIRD }}
+          DATABENTO_API_KEY: ${{ secrets.DATABENTO_API_KEY || secrets.DATABENTO_KEY }}
+          DATABENTO_API_KEY_THIRD: ${{ secrets.DATABENTO_API_KEY_THIRD }}
         run: python -m cl_lab.feeds.databento_history --cache .cl_cache
 
       - name: Save feed cache

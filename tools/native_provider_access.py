@@ -34,7 +34,7 @@ PROVIDERS = {
     "finnhub": {
         "base": "https://finnhub.io",
         "canonical": "FINNHUB_API_KEY",
-        "auth": "query:token",
+        "auth": "header:x-finnhub-token",
         "path": "/api/v1/quote",
         "params": {"symbol": "SPY"},
     },
@@ -117,6 +117,8 @@ def build_request(
         clean["apikey"] = key
     elif auth == "query:token":
         clean["token"] = key
+    elif auth == "header:x-finnhub-token":
+        headers["X-Finnhub-Token"] = key
     elif auth == "bearer":
         headers["Authorization"] = f"Bearer {key}"
     else:
@@ -292,12 +294,12 @@ def collect_snapshot(
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Collect a bounded GitHub-native provider access snapshot.")
+    parser=argparse.ArgumentParser(description="Collect a bounded GitHub-native provider access snapshot.")
     parser.add_argument("--provider", required=True, choices=sorted(PROVIDERS))
     parser.add_argument("--run-id", required=True)
     parser.add_argument("--repo-root", type=Path, default=Path("."))
-    args = parser.parse_args()
-    receipt = collect_snapshot(args.provider, args.repo_root, os.environ, run_id=args.run_id)
+    args=parser.parse_args()
+    receipt=collect_snapshot(args.provider, args.repo_root, os.environ, run_id=args.run_id)
     print(json.dumps(receipt, sort_keys=True, allow_nan=False))
 
 

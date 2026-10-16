@@ -43,7 +43,16 @@ SCHEDULED_WORKFLOW_CREDENTIALS = {
         "ICARUS_DATA_ARCHIVE_KEY",
         "DATABENTO_API_KEY",
     ),
-    Path(".github/workflows/sec-edgar-data.yml"): ("SEC_USER_AGENT",),
+    Path(".github/workflows/native-provider-access.yml"): (
+        "ALPHAVANTAGE_API_KEY",
+        "FINNHUB_API_KEY",
+        "UNUSUAL_WHALES_API_KEY",
+    ),
+    Path(".github/workflows/provider-supplemental-collection.yml"): (
+        "ALPHAVANTAGE_API_KEY",
+        "FINNHUB_API_KEY",
+        "UNUSUAL_WHALES_API_KEY",
+    ),
 }
 
 
@@ -64,10 +73,10 @@ def _env_expressions(text: str, name: str) -> list[str]:
     ]
 
 
-def _assert_contract_expression(expression: str, canonical: str) -> None:
+def _assert_secret_contract_expression(expression: str, canonical: str) -> None:
     for alias in _credential(canonical)["aliases"]:
         assert f"secrets.{alias}" in expression
-        assert f"vars.{alias}" in expression
+        assert f"vars.{alias}" not in expression
 
 
 def test_contract_exists_and_uses_unique_canonical_names() -> None:
@@ -128,15 +137,16 @@ def test_status_repr_and_dict_never_include_secret_value() -> None:
     }
 
 
-def test_health_workflow_is_explicit_and_never_enumerates_secrets() -> None:
+def test_health_workflow_is_explicit_secret_only_and_never_enumerates_secrets() -> None:
     data = _contract()
     text = WORKFLOW.read_text()
     assert "toJSON(secrets)" not in text
     assert "credential_health.py" in text
     for item in data["credentials"]:
         for alias in item["aliases"]:
-            expected = f"{alias}: ${{{{ secrets.{alias} || vars.{alias} }}}}"
+            expected = f"{alias}: ${{{{ secrets.{alias} }}}}"
             assert expected in text
+    assert "vars." not in text
 
 
 def test_provider_adapter_resolves_legacy_names_through_contract() -> None:
@@ -166,7 +176,7 @@ def test_provider_adapter_exports_legacy_process_names_without_logging_values() 
     assert "private-secret" not in repr(public_status)
 
 
-def test_provider_workflow_exports_canonical_names_with_every_contract_alias() -> None:
+def test_provider_workflow_exports_canonical_names_with_every_secret_alias() -> None:
     text = PROVIDER_WORKFLOW.read_text()
     canonical_names = [
         "TICKSTREAM_API_KEY",
@@ -184,7 +194,7 @@ def test_provider_workflow_exports_canonical_names_with_every_contract_alias() -
     for canonical in canonical_names:
         expressions = _env_expressions(text, canonical)
         assert expressions, canonical
-        _assert_contract_expression(expressions[0], canonical)
+        _assert_secret_contract_expression(expressions[0], canonical)
 
     legacy_runtime_names = [
         "TICK_STREAM_API_KEY",
@@ -204,20 +214,29 @@ def test_provider_workflow_exports_canonical_names_with_every_contract_alias() -
     assert "python -m tools.provider_credentials" in text
 
 
-def test_every_scheduled_data_workflow_uses_full_canonical_alias_contract() -> None:
+def test_every_scheduled_sensitive_workflow_uses_secret_only_alias_contract() -> None:
     for path, canonical_names in SCHEDULED_WORKFLOW_CREDENTIALS.items():
         text = path.read_text()
         for canonical in canonical_names:
             expressions = _env_expressions(text, canonical)
             assert expressions, f"{path}:{canonical}"
             for expression in expressions:
-                _assert_contract_expression(expression, canonical)
+                _assert_secret_contract_expression(expression, canonical)
 
 
-def test_handoff_tells_agents_to_use_github_native_contract_without_plaintext() -> None:
+def test_non_sensitive_sec_user_agent_may_use_variable_fallback() -> None:
+    text = Path(".github/workflows/sec-edgar-data.yml").read_text()
+    expression = _env_expressions(text, "SEC_USER_AGENT")[0]
+    assert "secrets.SEC_USER_AGENT" in expression
+    assert "vars.SEC_USER_AGENT" in expression
+
+
+def test_handoff_requires_secrets_for_credentials_and_variables_only_for_non_sensitive_config() -> None:
     text = HANDOFF.read_text().lower()
     assert "config/credential_contract.json" in text
     assert "github-native-credential-health.yml" in text
     assert "do not" in text and "plaintext" in text
     assert "start using" in text
     assert "github actions" in text
+    assert "actions secrets" in text
+    assert "variables" in text and "non-sensitive" in text

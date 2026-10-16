@@ -27,7 +27,9 @@ The resolver prefers the canonical environment name and then checks approved leg
 
 ## Security rule
 
-**Do not request, print, paste, commit, artifact, or otherwise extract plaintext credential values.** Agents do not need the values. GitHub Actions injects them into the job environment at runtime. Health output contains only canonical name, presence, and matched alias name.
+**Sensitive credentials belong in GitHub Actions Secrets only.** GitHub Actions Variables are reserved for non-sensitive configuration such as a public contact/user-agent string; they are not an API-key vault and must not be used as fallback storage for API keys, tokens, passwords, sessions, or private credentials.
+
+**Do not request, print, paste, commit, artifact, or otherwise extract plaintext credential values.** Agents do not need the values. GitHub Actions injects Secrets into the job environment at runtime. Health output contains only canonical name, presence, and matched alias name.
 
 Never use `toJSON(secrets)`, environment dumps, shell tracing around credentials, or provider exception payloads that may echo credentials.
 
@@ -39,13 +41,21 @@ Use the Actions workflow `github-native-credential-health`. It runs the contract
 {"canonical_name":"MASSIVE_API_KEY","matched_alias":"MASSIVE_API_KEY","present":true}
 ```
 
-No credential value is present in that output.
+No credential value is present in that output. The workflow resolves credential aliases from Actions Secrets only.
 
 From a runner that already has the approved environment injection, the equivalent command is:
 
 ```bash
 python -m tools.credential_health --json-lines
 ```
+
+## Verified storage-class audit
+
+A presence-only audit on 2026-10-16 verified that every currently live provider credential used by this data plane is backed by a GitHub Actions Secret: Alpha Vantage, Databento primary/secondary/third/fourth, EODHD, Finnhub, FMP, FRED, Massive/Polygon, Tiingo, Twelve Data, and Unusual Whales. None of those live credential families depended on a GitHub Variable.
+
+The same audit found no Secret or Variable for Intrinio, Quiver, Alpaca key/secret, Tickstream, or `ICARUS_DATA_ARCHIVE_KEY`. Those remain explicit missing-credential blockers until the owner stores the credential as an Actions Secret.
+
+The audit reported booleans only and never emitted credential values.
 
 ## Verified baseline before this migration
 
@@ -57,9 +67,10 @@ The new health workflow supersedes that historical snapshot for credential-prese
 
 1. Read `config/credential_contract.json` before adding provider authentication.
 2. Use canonical names in new code.
-3. Start using provider data whose canonical credential reports `present: true` and whose account entitlement permits the requested endpoint.
-4. Keep existing legacy aliases only as compatibility paths; do not invent new aliases outside the contract.
-5. If a provider reports missing, record the canonical name as the blocker. Do not ask another AI account to reveal a key.
-6. Keep licensed raw vendor rows out of this public repository; follow the existing vault/licensing rules.
+3. Store sensitive values only in GitHub Actions Secrets; use Variables only for non-sensitive configuration.
+4. Start using provider data whose canonical credential reports `present: true` and whose account entitlement permits the requested endpoint.
+5. Keep existing legacy aliases only as compatibility names inside Secrets; do not invent new aliases outside the contract.
+6. If a provider reports missing, record the canonical name as the blocker. Do not ask another AI account to reveal a key.
+7. Keep licensed raw vendor rows out of this public repository; follow the existing vault/licensing rules.
 
 The goal is that every agent can operate the same data plane from repository state and Actions, while no agent needs possession of a secret string.

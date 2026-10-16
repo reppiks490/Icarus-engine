@@ -68,9 +68,10 @@
  "counts": {
   "BLOCKED": 6,
   "DEGRADED": 5,
-  "FAILING": 2,
-  "OK": 71,
-  "STALE": 2
+  "FAILING": 1,
+  "OK": 72,
+  "STALE": 1,
+  "UNKNOWN": 1
  },
  "depth": {
   "budgets": {
@@ -137,7 +138,7 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-10-16T12:52:13+00:00",
+ "generated_at": "2026-10-16T12:53:36+00:00",
  "research": {
   "champions": 0,
   "cl_last_run": "2026-10-16T06:31:29.957898+00:00",
@@ -171,12 +172,6 @@
    "source": "workflow:databento-depth-research-context.yml",
    "verdict": "FAILING",
    "why": "latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/38885552834"
-  },
-  {
-   "age_h": null,
-   "source": "workflow:interrepo-peer-intelligence.yml",
-   "verdict": "FAILING",
-   "why": "latest run cancelled: https://github.com/reppiks490/Icarus-engine/actions/runs/38903272616"
   },
   {
    "age_h": 0.5,
@@ -228,12 +223,6 @@
   },
   {
    "age_h": 4.4,
-   "source": "workflow:provider-supplemental-collection.yml",
-   "verdict": "STALE",
-   "why": "last success 4.4 h ago (expected within 3 h)"
-  },
-  {
-   "age_h": 4.4,
    "source": "workflow:provider-supplemental-promote.yml",
    "verdict": "STALE",
    "why": "last success 4.4 h ago (expected within 3 h)"
@@ -271,7 +260,7 @@
    "why": "dedicated fabric live (3 calls); generic sampler blocked; 85 endpoints denied by plan"
   },
   {
-   "age_h": 0.4,
+   "age_h": 0.5,
    "path": "automation_intelligence/provider_collection_v1/latest/tiingo.json",
    "rows": 1,
    "source": "provider:tiingo",
@@ -279,14 +268,19 @@
    "why": "1 rows; 4 endpoints denied by plan"
   },
   {
-   "age_h": 1.4,
+   "source": "workflow:interrepo-peer-intelligence.yml",
+   "verdict": "UNKNOWN",
+   "why": "no completed run on main"
+  },
+  {
+   "age_h": 1.5,
    "rows": 245,
    "source": "economic_events",
    "verdict": "OK",
    "why": "245 events, 109 high impact"
   },
   {
-   "age_h": 6.5,
+   "age_h": 6.6,
    "rows": 4171,
    "source": "feed:btcusd_cb_5m",
    "verdict": "OK",
@@ -384,7 +378,7 @@
    "why": "150830 rows to 2026-10-15T20:55"
   },
   {
-   "age_h": 15.0,
+   "age_h": 15.1,
    "rows": 143275,
    "source": "feed:databento_btc_5m",
    "verdict": "OK",
@@ -664,7 +658,7 @@
    "why": "16694 rows to 2026-10-14T00:00"
   },
   {
-   "age_h": 6.5,
+   "age_h": 6.6,
    "rows": 196886,
    "source": "fred_alfred",
    "verdict": "OK",
@@ -708,10 +702,10 @@
    "why": "last success 2.7 h ago"
   },
   {
-   "age_h": 6.3,
+   "age_h": 6.4,
    "source": "workflow:cl-lab.yml",
    "verdict": "OK",
-   "why": "last success 6.3 h ago"
+   "why": "last success 6.4 h ago"
   },
   {
    "age_h": 4.6,
@@ -744,10 +738,10 @@
    "why": "last success 0.9 h ago"
   },
   {
-   "age_h": 1.4,
+   "age_h": 1.5,
    "source": "workflow:official-economic-events.yml",
    "verdict": "OK",
-   "why": "last success 1.4 h ago"
+   "why": "last success 1.5 h ago"
   },
   {
    "age_h": 0.2,
@@ -756,16 +750,22 @@
    "why": "last success 0.2 h ago"
   },
   {
+   "age_h": 0.0,
+   "source": "workflow:provider-supplemental-collection.yml",
+   "verdict": "OK",
+   "why": "last success 0.0 h ago"
+  },
+  {
    "age_h": 0.5,
    "source": "workflow:sec-edgar-data.yml",
    "verdict": "OK",
    "why": "last success 0.5 h ago"
   },
   {
-   "age_h": 5.9,
+   "age_h": 6.0,
    "source": "workflow:tests.yml",
    "verdict": "OK",
-   "why": "last success 5.9 h ago"
+   "why": "last success 6.0 h ago"
   }
  ]
 }

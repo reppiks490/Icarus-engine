@@ -1,19 +1,57 @@
 # Instructions for every coding agent (Codex, ChatGPT, Claude, others)
 
 Read `ICARUS_STATE.md` first. It is the single source of truth for this repository: goals, verified
-results, dead ideas, data access, ownership and the rules no agent may break. Update it when a fact in
-it changes, and never contradict it without correcting it.
+results, dead ideas, data access, ownership boundaries and the rules no agent may break. Update it when
+a fact in it changes, and never contradict it without correcting it.
 
-## Working alongside Claude (required, every session)
+## Mandatory many-chat coordination
 
-Claude (Anthropic) works in this repository too, on `claude/*` branches. You coordinate through
-`coordination/`; the full protocol is `coordination/README.md`.
+ICARUS no longer gates tasks to a model family. Claude, ChatGPT, Codex, Grok, Atlas, local agents and
+future workers coordinate through the canonical many-chat bus in `reppiks490/icarus-owner-actions`.
+There is **no model-specific task ownership**; reservations exist to prevent accidental path collisions,
+not to permanently lock work to a model.
 
-1. Before any work, read `coordination/board/claude.md`, `coordination/board/chatgpt.md`, and every
-   message in `coordination/inbox/to-chatgpt/` that has no reply yet (`python -m tools.coordination`).
-2. Claim a task in `coordination/board/chatgpt.md` (status `in progress`) before you start it. Do not
-   work on any task listed in `coordination/board/claude.md` unless it is `done`; to propose a change,
-   write to `coordination/inbox/to-claude/`.
-3. Edit only your own board. Never edit or delete a message once it is on `main`.
-4. Before you stop: push your work to a `chatgpt/*` or `codex/*` branch, update your board, and answer
-   every message that needs a reply. Messages and board updates must reach `main` to be seen.
+Before substantial work, read:
+
+- `reppiks490/icarus-owner-actions:coordination/START_HERE.md`
+- `reppiks490/icarus-owner-actions:coordination/ACTIVE.md`
+- `reppiks490/icarus-owner-actions:coordination/collisions.json`
+- applicable `reppiks490/icarus-owner-actions:coordination/directives/*`
+- this repository's `coordination/README.md`
+
+Create or resume a unique coordination session. Publish a `PLAN` or `CLAIM` before modifying shared
+code, workflows, UI, data contracts, or other reserved paths. Publish `WAITING` while CI, review,
+provider responses, or dependencies are pending; publish `UPDATE` when scope changes; publish `HANDOFF`
+when another worker can use or take over a subproblem; publish `COMPLETE` only with fresh verification
+evidence. If another session reserves an overlapping path, choose another boundary or explicitly
+cooperate; never silently overwrite it.
+
+Claude is currently inactive by owner direction. Its unfinished work is reclaimable under the central
+Claude-reclamation directive after a takeover/cooperation note. Absence is not completion and no worker
+should wait for model-specific authorization.
+
+## Shared ICARUS data/evidence truth
+
+For work affected by market, provider, macro, depth, filing, specialist, public-market, or research
+evidence, also read:
+
+- `config/data_ingestion_manifest.json`
+- `config/federated_repo_evidence.json`
+- `docs/agent-handoffs/FEDERATED_DATA_COLLECTION.md`
+- `docs/agent-handoffs/DATA_GAP_LEDGER.md`
+- `automation_intelligence/sentinel/data_health.json`
+- `automation_intelligence/manifest.json`
+
+Credential presence, workflow existence, and downstream consumption are separate facts. Never copy
+plaintext credentials into chats, code, logs, artifacts, coordination notes, or another account.
+External provider/account/licensing blockers remain explicit; they are not relabeled as fixed.
+
+## Execution boundary
+
+**Live broker arming is disabled** by current owner direction. Research, replay, paper/shadow execution,
+adapters, validation, and UI may be built and tested, but do not arm live broker execution, bypass
+execution gates, or reinterpret paper connectivity as live authorization.
+
+A slow CI or provider dependency is not a reason to go silent. Record the `WAITING` state in the central
+bus and continue useful non-conflicting work where possible. Before stopping, make the latest state,
+paths, dependencies, blockers and verification evidence visible through the coordination bus.

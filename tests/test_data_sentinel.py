@@ -1,5 +1,6 @@
 import json
 from datetime import datetime, timezone
+from pathlib import Path
 
 from tools import data_sentinel as ds
 
@@ -11,6 +12,12 @@ def _receipt(root, name, **provider):
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_text(json.dumps({"completed_at_utc": "2026-10-11T11:00:00Z", "catalog": provider.pop("catalog", {}),
                              "providers": {name: provider}}))
+
+
+def _external_fabric(root, providers):
+    p = root / "automation_intelligence/cl_lab/external_data_fabric.json"
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(json.dumps({"generated_at": "2026-10-11T11:30:00Z", "providers": providers}))
 
 
 def test_verdicts_follow_the_receipts(tmp_path):
@@ -26,6 +33,42 @@ def test_verdicts_follow_the_receipts(tmp_path):
     assert got["provider:fmp"] == "DEGRADED"
     assert got["provider:tiingo"] == "DEGRADED"
     assert got["provider:bybit"] == "DEGRADED"
+
+
+def test_dedicated_live_fabric_prevents_false_blocked_provider(tmp_path):
+    _receipt(tmp_path, "fmp", credential_present=True, status="BLOCKED", collected_rows=0,
+             catalog={"denied_operations": 85})
+    _receipt(tmp_path, "eodhd", credential_present=True, status="BLOCKED", collected_rows=0,
+             catalog={"denied_operations": 7})
+    _external_fabric(tmp_path, {
+        "fmp": {"status": "ok", "calls": 3, "datasets": {"earnings_calendar": {"status": "ok", "rows": 51}}},
+        "eodhd": {"status": "ok", "calls": 11, "datasets": {"eod_1y": {"status": "ok", "symbols": {"AAPL": {"rows": 251}}}}},
+    })
+
+    got = {s["source"]: s for s in ds.build(tmp_path, now=NOW)["sources"]}
+    assert got["provider:fmp"]["verdict"] == "DEGRADED"
+    assert got["provider:eodhd"]["verdict"] == "DEGRADED"
+    assert "dedicated" in got["provider:fmp"]["why"].lower()
+    assert "85" in got["provider:fmp"]["why"]
+    assert "dedicated" in got["provider:eodhd"]["why"].lower()
+
+
+def test_stale_dedicated_evidence_does_not_override_missing_credential(tmp_path):
+    _receipt(tmp_path, "fmp", credential_present=False, status="BLOCKED_MISSING_CREDENTIAL", collected_rows=0)
+    _external_fabric(tmp_path, {"fmp": {"status": "ok", "calls": 3}})
+    got = {s["source"]: s for s in ds.build(tmp_path, now=NOW)["sources"]}
+    assert got["provider:fmp"]["verdict"] == "BLOCKED"
+    assert "no key" in got["provider:fmp"]["why"].lower()
+
+
+def test_provider_manifest_points_to_real_external_fabric_evidence():
+    root = Path(__file__).parents[1]
+    manifest = json.loads((root / "config/data_ingestion_manifest.json").read_text(encoding="utf-8"))
+    sources = {item["id"]: item for item in manifest["sources"]}
+    expected = "automation_intelligence/cl_lab/external_data_fabric.json"
+    for provider in ("fmp", "eodhd", "tiingo"):
+        assert expected in sources[provider]["evidence_paths"]
+        assert "automation_intelligence/external_data_fabric_v1/latest.json" not in sources[provider]["evidence_paths"]
 
 
 def test_problems_sort_first_and_markdown_is_one_line_per_source(tmp_path):

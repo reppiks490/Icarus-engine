@@ -336,7 +336,7 @@ def run_cycle(out_dir, cache_dir=".cl_cache", assets=None, now=None, external_di
     cands = grammar.enumerate_candidates()
     loaded = {n: load_asset(n, ASSETS[n], cache_dir) for n in names}
     corpus_state = corpus.inspect()
-    inputs = dict(data={n: v[1] for n, v in loaded.items()}, corpus=corpus_state,
+    inputs = dict(data={n: v[1] for n, v in loaded.items()}, corpus=corpus.identity(corpus_state),  # CL-84
                   grammar=grammar.GRAMMAR_VERSION,
                   registration_hash=grammar.registration_hash(cands), gates=validate.GATES_VERSION,
                   thresholds=validate.T, code=_code_identity(), lab=LAB_VERSION,

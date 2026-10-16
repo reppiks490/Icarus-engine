@@ -120,7 +120,9 @@ def test_corpus_guard_refuses_topups_past_the_account_credit(tmp_path, monkeypat
         return df, dict(request_performed=True, estimated_cost_usd=est)
 
     monkeypatch.setattr(registry.databento_feed, "fetch_continuous_5m", fake)
-    names = [f["name"] for f in registry.FEEDS if f["kind"] == "databento" and not f.get("account")][:4]
+    feeds = [f for f in registry.FEEDS if f["kind"] == "databento" and not f.get("account")][:4]
+    names = [f["name"] for f in feeds]
+    monkeypatch.setenv("CL_DATABENTO_ROOTS", ",".join(f["root"] for f in feeds))   # CL-84: explicit opt-in
     man = registry.refresh_all(cache, only=set(names), now="2026-10-05T12:00Z", ledger_dir=led)
     # reserve $2: two pulls of $0.75 fit, the third is capped at the $0.50 left, the fourth is refused
     assert calls == pytest.approx([2.0, 1.25, 0.5])

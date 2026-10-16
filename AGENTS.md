@@ -1,19 +1,47 @@
 # Instructions for every coding agent (Codex, ChatGPT, Claude, others)
 
-Read `ICARUS_STATE.md` first. It is the single source of truth for this repository: goals, verified
-results, dead ideas, data access, ownership and the rules no agent may break. Update it when a fact in
-it changes, and never contradict it without correcting it.
+Read `ICARUS_STATE.md` first. It is the local technical source of truth for this repository: goals,
+verified results, dead ideas, data access, safety boundaries, and research/execution authority. Update
+it when a fact changes and never contradict it without correcting it.
 
-## Working alongside Claude (required, every session)
+## Central ICARUS coordination is mandatory
 
-Claude (Anthropic) works in this repository too, on `claude/*` branches. You coordinate through
-`coordination/`; the full protocol is `coordination/README.md`.
+Work coordination is model-neutral. No task, package, file, provider, or research question is reserved
+because a particular model family historically handled it. Before substantial work, every chat/agent
+must use the canonical coordination bus in `reppiks490/icarus-owner-actions`:
 
-1. Before any work, read `coordination/board/claude.md`, `coordination/board/chatgpt.md`, and every
-   message in `coordination/inbox/to-chatgpt/` that has no reply yet (`python -m tools.coordination`).
-2. Claim a task in `coordination/board/chatgpt.md` (status `in progress`) before you start it. Do not
-   work on any task listed in `coordination/board/claude.md` unless it is `done`; to propose a change,
-   write to `coordination/inbox/to-claude/`.
-3. Edit only your own board. Never edit or delete a message once it is on `main`.
-4. Before you stop: push your work to a `chatgpt/*` or `codex/*` branch, update your board, and answer
-   every message that needs a reply. Messages and board updates must reach `main` to be seen.
+1. Read `coordination/START_HERE.md`, `coordination/ACTIVE.md`, `coordination/collisions.json`,
+   `coordination/owner_status.json`, and applicable `coordination/directives/**` there.
+2. Create/resume a unique central session and publish a `PLAN` or `CLAIM` event **before mutation**.
+   Reserve narrow repo-qualified targets (`repo` + `path`), then re-read the compiled collision state.
+3. Same-target work is allowed only after explicit mutual cooperation is recorded by the involved
+   sessions. A reservation is a coordination lease, not permanent ownership.
+4. Publish `UPDATE`, `WAITING`, `BLOCKED`, `HANDOFF`, `RELEASE`, and evidence-backed `COMPLETE` events
+   as the work state changes. Waiting on CI/review/provider work is not a reason to stop useful,
+   non-conflicting work.
+5. Before ending a workstream, push the work, publish exact evidence (PR/head/run/test/artifact or
+   external blocker), and create a durable central summary so old event chatter can be safely pruned.
+
+The legacy `coordination/board/**` and `coordination/inbox/**` records in this repository are preserved
+for provenance and historical handoffs. They are **not task locks** and do not prevent another model or
+chat from reclaiming unfinished work after checking current main, open PRs, and the central collision
+state. `coordination/README.md` documents the compatibility boundary.
+
+## Shared data/evidence plane
+
+Before claims about provider access, source coverage, freshness, market evidence, or blockers, read:
+
+- `config/data_ingestion_manifest.json`
+- `docs/agent-handoffs/FEDERATED_DATA_COLLECTION.md`
+- `docs/agent-handoffs/DATA_GAP_LEDGER.md`
+- `automation_intelligence/sentinel/data_health.json`
+- `automation_intelligence/manifest.json`
+
+Account-local connectors or secret visibility are never federation authority. Do not print, copy,
+commit, artifact, or move plaintext credentials. Do not relabel missing/denied data as success.
+
+## Safety / execution boundary
+
+Live broker arming is controlled by the owner status in the central bus and is currently disabled.
+Research, replay, simulation, shadow, and paper infrastructure may continue within verified scope, but
+no agent may enable live-order authority merely because broker/provider code exists.

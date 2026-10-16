@@ -2,103 +2,471 @@
   "active_sessions": [
     {
       "actor": "ChatGPT / Atlas",
-      "branch": "atlas/coordination-dashboard",
+      "branch": "atlas/coordination-compiler-freshness",
       "cooperates_with": [],
-      "coordination_mode": "independent",
+      "coordination_mode": "cooperate",
       "declared_paths": [
-        ".github/workflows/coordination-mirror.yml",
-        "icarus_engine/mcp_control.py",
-        "icarus_engine/mcp-ui.js",
-        "tests_engine/test_mcp_control.py",
-        "tests/test_multichat_coordination_entrypoint.py",
-        "automation_intelligence/mcp_interface/events/20261016T032700Z-multichat-coordination-ui.json"
+        ".github/workflows/coordination-maintenance.yml",
+        "tests/test_coordination_automation.py"
       ],
       "declared_targets": [
         {
-          "path": ".github/workflows/coordination-mirror.yml",
-          "repo": "reppiks490/Icarus-engine"
+          "path": ".github/workflows/coordination-maintenance.yml",
+          "repo": "reppiks490/icarus-owner-actions"
         },
         {
-          "path": "icarus_engine/mcp_control.py",
-          "repo": "reppiks490/Icarus-engine"
-        },
-        {
-          "path": "icarus_engine/mcp-ui.js",
-          "repo": "reppiks490/Icarus-engine"
-        },
-        {
-          "path": "tests_engine/test_mcp_control.py",
-          "repo": "reppiks490/Icarus-engine"
-        },
-        {
-          "path": "tests/test_multichat_coordination_entrypoint.py",
-          "repo": "reppiks490/Icarus-engine"
-        },
-        {
-          "path": "automation_intelligence/mcp_interface/events/20261016T032700Z-multichat-coordination-ui.json",
-          "repo": "reppiks490/Icarus-engine"
+          "path": "tests/test_coordination_automation.py",
+          "repo": "reppiks490/icarus-owner-actions"
         }
       ],
       "dependencies": [
-        "pr:reppiks490/Icarus-engine#182",
-        "github-run:38845896424"
+        "branch:atlas/coordination-compiler-freshness"
       ],
-      "goal": "Integrate the central many-chat coordination state into the Engine MCP / Automation UI through a read-only local mirror and verify it end-to-end without live broker arming.",
-      "home_repo": "reppiks490/Icarus-engine",
-      "last_event_at_utc": "2026-10-16T03:32:00Z",
-      "latest_summary": "Waiting on Engine PR #182 exact-head run 38845896424. MCP provenance, zero-dependency core, CLI, brain-federation, and Python 3.12 are green; Python 3.11 and 3.13 are still running. Static backend/JS audit found no runtime network writes, admin controls, unescaped coordination strings, or authority escalation.",
-      "latest_type": "WAITING",
+      "goal": "Repair central coordination compiler freshness and durability without weakening collision validation or live-broker safety.",
+      "home_repo": "reppiks490/icarus-owner-actions",
+      "last_event_at_utc": "2026-10-16T06:18:00Z",
+      "latest_summary": "No further tooling meta-notes will be emitted. Continue only with canonical branch implementation, CI, merge, and runtime verification.",
+      "latest_type": "NOTE",
       "model_family": "openai",
-      "phase": "verification",
-      "pr": "reppiks490/Icarus-engine#182",
+      "phase": "repair",
+      "pr": "pending",
       "reclaimable": false,
       "reserved_paths": [
-        ".github/workflows/coordination-mirror.yml",
-        "icarus_engine/mcp_control.py",
-        "icarus_engine/mcp-ui.js",
-        "tests_engine/test_mcp_control.py",
-        "tests/test_multichat_coordination_entrypoint.py",
-        "automation_intelligence/mcp_interface/events/20261016T032700Z-multichat-coordination-ui.json"
+        ".github/workflows/coordination-maintenance.yml",
+        "tests/test_coordination_automation.py"
       ],
       "reserved_targets": [
         {
-          "path": ".github/workflows/coordination-mirror.yml",
-          "repo": "reppiks490/Icarus-engine"
+          "path": ".github/workflows/coordination-maintenance.yml",
+          "repo": "reppiks490/icarus-owner-actions"
         },
         {
-          "path": "icarus_engine/mcp_control.py",
-          "repo": "reppiks490/Icarus-engine"
-        },
-        {
-          "path": "icarus_engine/mcp-ui.js",
-          "repo": "reppiks490/Icarus-engine"
-        },
-        {
-          "path": "tests_engine/test_mcp_control.py",
-          "repo": "reppiks490/Icarus-engine"
-        },
-        {
-          "path": "tests/test_multichat_coordination_entrypoint.py",
-          "repo": "reppiks490/Icarus-engine"
-        },
-        {
-          "path": "automation_intelligence/mcp_interface/events/20261016T032700Z-multichat-coordination-ui.json",
-          "repo": "reppiks490/Icarus-engine"
+          "path": "tests/test_coordination_automation.py",
+          "repo": "reppiks490/icarus-owner-actions"
         }
       ],
-      "session_id": "chatgpt-20261016-atlas-coordination-ui-182",
+      "session_id": "chatgpt-20261016-atlas-coordination-compiler-durability",
+      "stale": false,
+      "status": "active"
+    },
+    {
+      "actor": "ChatGPT / Codex",
+      "branch": "codex/a200-probe-provider-scope-20261016",
+      "cooperates_with": [],
+      "coordination_mode": "independent",
+      "declared_paths": [
+        "coordination/events/2026/10/16/codex-20261016-a200-provider-scope/20261016T072304Z-a200-provider-calls-update.json"
+      ],
+      "declared_targets": [
+        {
+          "path": "coordination/events/2026/10/16/codex-20261016-a200-provider-scope/20261016T072304Z-a200-provider-calls-update.json",
+          "repo": "reppiks490/icarus-owner-actions"
+        }
+      ],
+      "dependencies": [
+        "pr:reppiks490/Icarus#411"
+      ],
+      "goal": "Advance the 200-asset feed integration while ensuring provider probes can be explicitly scoped, evidenced, and kept separate from Pulse/runtime qualification.",
+      "home_repo": "reppiks490/Icarus",
+      "last_event_at_utc": "2026-10-16T07:23:04Z",
+      "latest_summary": "Extended provider isolation to the remaining A200 history call sites: the authenticated history API now constructs only the explicitly requested provider, and the legacy Yahoo sweep initializes Yahoo only. PR #411 is at 95db3db. The expanded focused market-universe suite still passes 41 tests; exact-head CI will restart on this head.",
+      "latest_type": "UPDATE",
+      "model_family": "openai",
+      "phase": "exact-head-verification",
+      "pr": null,
+      "reclaimable": false,
+      "reserved_paths": [
+        "coordination/events/2026/10/16/codex-20261016-a200-provider-scope/20261016T072304Z-a200-provider-calls-update.json"
+      ],
+      "reserved_targets": [
+        {
+          "path": "coordination/events/2026/10/16/codex-20261016-a200-provider-scope/20261016T072304Z-a200-provider-calls-update.json",
+          "repo": "reppiks490/icarus-owner-actions"
+        }
+      ],
+      "session_id": "codex-20261016-a200-provider-scope",
+      "stale": false,
+      "status": "active"
+    },
+    {
+      "actor": "ChatGPT / Codex",
+      "branch": "codex/rt01-shadow-dashboard-20261015",
+      "cooperates_with": [],
+      "coordination_mode": "independent",
+      "declared_paths": [
+        "icarus_engine/experience-ui.css",
+        "icarus_engine/experience-ui.js"
+      ],
+      "declared_targets": [
+        {
+          "path": "icarus_engine/experience-ui.css",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/experience-ui.js",
+          "repo": "reppiks490/Icarus"
+        }
+      ],
+      "dependencies": [
+        "pr:reppiks490/Icarus#377",
+        "github-run:38861946952",
+        "concurrent-commit:256570eba593c8abed96f401e4495c88828fd107"
+      ],
+      "goal": "Complete and verify the RT01 read-only dashboard UI integration after the browser contract exposed a cinema settings popover overflow; merge only exact green heads and keep broker arming disabled.",
+      "home_repo": "reppiks490/Icarus",
+      "last_event_at_utc": "2026-10-16T06:44:30Z",
+      "latest_summary": "Merged concurrent same-branch popover clamp commit 256570e with the local vertical clamp and reflow-safe placement. The open panel is viewport-fixed and anchored to the summary with left/top clamped; mobile keeps its bottom-sheet rules. Standalone browser_cinema passed after merge. Pushed exact dashboard head ca75790; hosted checks are the next gate.",
+      "latest_type": "UPDATE",
+      "model_family": "openai",
+      "phase": "verification",
+      "pr": null,
+      "reclaimable": false,
+      "reserved_paths": [
+        "icarus_engine/experience-ui.css",
+        "icarus_engine/experience-ui.js"
+      ],
+      "reserved_targets": [
+        {
+          "path": "icarus_engine/experience-ui.css",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/experience-ui.js",
+          "repo": "reppiks490/Icarus"
+        }
+      ],
+      "session_id": "codex-20261016-dashboard-cinema-followup",
+      "stale": false,
+      "status": "active"
+    },
+    {
+      "actor": "ChatGPT / Codex",
+      "branch": "codex/owner-contact-boundary-20261016",
+      "cooperates_with": [],
+      "coordination_mode": "independent",
+      "declared_paths": [
+        "coordination/START_HERE.md",
+        "coordination/directives/2026-10-16-mass-chat-operating-contract.md",
+        "coordination/directives/2026-10-16-owner-contact-boundary.md",
+        "coordination/events/2026/10/16/codex-20261016-owner-contact-boundary/20261016T071400Z-owner-contact-docs-update.json"
+      ],
+      "declared_targets": [
+        {
+          "path": "coordination/START_HERE.md",
+          "repo": "reppiks490/icarus-owner-actions"
+        },
+        {
+          "path": "coordination/directives/2026-10-16-mass-chat-operating-contract.md",
+          "repo": "reppiks490/icarus-owner-actions"
+        },
+        {
+          "path": "coordination/directives/2026-10-16-owner-contact-boundary.md",
+          "repo": "reppiks490/icarus-owner-actions"
+        },
+        {
+          "path": "coordination/events/2026/10/16/codex-20261016-owner-contact-boundary/20261016T071400Z-owner-contact-docs-update.json",
+          "repo": "reppiks490/icarus-owner-actions"
+        }
+      ],
+      "dependencies": [
+        "baseline coordination validator fix for pre-existing invalid event"
+      ],
+      "goal": "Persist the owner's explicit no-routine-contact preference for active ICARUS work so agents continue independently, coordinate through the bus, and do not ask the owner to perform manual steps while work remains.",
+      "home_repo": "reppiks490/icarus-owner-actions",
+      "last_event_at_utc": "2026-10-16T07:14:00Z",
+      "latest_summary": "Added the owner no-routine-contact directive and linked it from the coordination entrypoint and mass-chat operating contract. The new session and event validate individually. Full-tree validation currently stops on a pre-existing Atlas event whose coordination_mode is 'cooperative', which the validator rejects.",
+      "latest_type": "UPDATE",
+      "model_family": "openai",
+      "phase": "documentation",
+      "pr": null,
+      "reclaimable": false,
+      "reserved_paths": [
+        "coordination/START_HERE.md",
+        "coordination/directives/2026-10-16-mass-chat-operating-contract.md",
+        "coordination/directives/2026-10-16-owner-contact-boundary.md",
+        "coordination/events/2026/10/16/codex-20261016-owner-contact-boundary/20261016T071400Z-owner-contact-docs-update.json"
+      ],
+      "reserved_targets": [
+        {
+          "path": "coordination/START_HERE.md",
+          "repo": "reppiks490/icarus-owner-actions"
+        },
+        {
+          "path": "coordination/directives/2026-10-16-mass-chat-operating-contract.md",
+          "repo": "reppiks490/icarus-owner-actions"
+        },
+        {
+          "path": "coordination/directives/2026-10-16-owner-contact-boundary.md",
+          "repo": "reppiks490/icarus-owner-actions"
+        },
+        {
+          "path": "coordination/events/2026/10/16/codex-20261016-owner-contact-boundary/20261016T071400Z-owner-contact-docs-update.json",
+          "repo": "reppiks490/icarus-owner-actions"
+        }
+      ],
+      "session_id": "codex-20261016-owner-contact-boundary",
+      "stale": false,
+      "status": "active"
+    },
+    {
+      "actor": "ChatGPT / Codex",
+      "branch": "feat/mobile-worlds-command-center",
+      "cooperates_with": [],
+      "coordination_mode": "independent",
+      "declared_paths": [
+        "icarus_engine/command-centers-ui.js",
+        "icarus_engine/dashboard.html",
+        "icarus_engine/experience-ui.css",
+        "icarus_engine/experience-ui.js",
+        "icarus_engine/world-aura.js",
+        "icarus_engine/world-cinema.js",
+        "icarus_engine/world-immersion.js",
+        "icarus_engine/world-motion.js",
+        "assets/dashboard.html",
+        "assets/command-centers-ui.js",
+        "assets/experience-ui.css",
+        "assets/experience-ui.js",
+        "assets/world-aura.js",
+        "assets/world-cinema.js",
+        "assets/world-immersion.js",
+        "assets/world-motion.js",
+        "scripts/build-worker.mjs",
+        "worker/index.js",
+        "dist/server/index.js"
+      ],
+      "declared_targets": [
+        {
+          "path": "icarus_engine/command-centers-ui.js",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/dashboard.html",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/experience-ui.css",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/experience-ui.js",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/world-aura.js",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/world-cinema.js",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/world-immersion.js",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/world-motion.js",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "assets/dashboard.html",
+          "repo": "sites/icarus-command-center-mobile"
+        },
+        {
+          "path": "assets/command-centers-ui.js",
+          "repo": "sites/icarus-command-center-mobile"
+        },
+        {
+          "path": "assets/experience-ui.css",
+          "repo": "sites/icarus-command-center-mobile"
+        },
+        {
+          "path": "assets/experience-ui.js",
+          "repo": "sites/icarus-command-center-mobile"
+        },
+        {
+          "path": "assets/world-aura.js",
+          "repo": "sites/icarus-command-center-mobile"
+        },
+        {
+          "path": "assets/world-cinema.js",
+          "repo": "sites/icarus-command-center-mobile"
+        },
+        {
+          "path": "assets/world-immersion.js",
+          "repo": "sites/icarus-command-center-mobile"
+        },
+        {
+          "path": "assets/world-motion.js",
+          "repo": "sites/icarus-command-center-mobile"
+        },
+        {
+          "path": "scripts/build-worker.mjs",
+          "repo": "sites/icarus-command-center-mobile"
+        },
+        {
+          "path": "worker/index.js",
+          "repo": "sites/icarus-command-center-mobile"
+        },
+        {
+          "path": "dist/server/index.js",
+          "repo": "sites/icarus-command-center-mobile"
+        }
+      ],
+      "dependencies": [
+        "reppiks490/Icarus `origin/main` current at source checkout",
+        "backend contract review by command_center_backend",
+        "mobile UI review by mobile_audit"
+      ],
+      "goal": "Bring the current four-isolated-paper-portfolio Command Center, combined net P&L, and current atmosphere assets into the owner-private phone Site, then validate and publish the same source state.",
+      "home_repo": "sites/icarus-command-center-mobile",
+      "last_event_at_utc": "2026-10-16T06:10:00Z",
+      "latest_summary": "The desktop UI source is being completed by the delegated desktop worker on `feat/command-center-desktop`. This event adds its source paths to the coordinated workstream so the phone Site can consume the exact reviewed source. The desktop diff predates this central claim; no further mutations in these paths should occur until the refreshed collision view is checked. UI imports the legacy tail/reference renderer out; dormant backend routes/files remain a separate server concern.",
+      "latest_type": "UPDATE",
+      "model_family": "openai",
+      "phase": "desktop-ui-source-and-mobile-integration",
+      "pr": null,
+      "reclaimable": false,
+      "reserved_paths": [
+        "icarus_engine/command-centers-ui.js",
+        "icarus_engine/dashboard.html",
+        "icarus_engine/experience-ui.css",
+        "icarus_engine/experience-ui.js",
+        "icarus_engine/world-aura.js",
+        "icarus_engine/world-cinema.js",
+        "icarus_engine/world-immersion.js",
+        "icarus_engine/world-motion.js",
+        "assets/dashboard.html",
+        "assets/command-centers-ui.js",
+        "assets/experience-ui.css",
+        "assets/experience-ui.js",
+        "assets/world-aura.js",
+        "assets/world-cinema.js",
+        "assets/world-immersion.js",
+        "assets/world-motion.js",
+        "scripts/build-worker.mjs",
+        "worker/index.js",
+        "dist/server/index.js"
+      ],
+      "reserved_targets": [
+        {
+          "path": "icarus_engine/command-centers-ui.js",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/dashboard.html",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/experience-ui.css",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/experience-ui.js",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/world-aura.js",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/world-cinema.js",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/world-immersion.js",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/world-motion.js",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "assets/dashboard.html",
+          "repo": "sites/icarus-command-center-mobile"
+        },
+        {
+          "path": "assets/command-centers-ui.js",
+          "repo": "sites/icarus-command-center-mobile"
+        },
+        {
+          "path": "assets/experience-ui.css",
+          "repo": "sites/icarus-command-center-mobile"
+        },
+        {
+          "path": "assets/experience-ui.js",
+          "repo": "sites/icarus-command-center-mobile"
+        },
+        {
+          "path": "assets/world-aura.js",
+          "repo": "sites/icarus-command-center-mobile"
+        },
+        {
+          "path": "assets/world-cinema.js",
+          "repo": "sites/icarus-command-center-mobile"
+        },
+        {
+          "path": "assets/world-immersion.js",
+          "repo": "sites/icarus-command-center-mobile"
+        },
+        {
+          "path": "assets/world-motion.js",
+          "repo": "sites/icarus-command-center-mobile"
+        },
+        {
+          "path": "scripts/build-worker.mjs",
+          "repo": "sites/icarus-command-center-mobile"
+        },
+        {
+          "path": "worker/index.js",
+          "repo": "sites/icarus-command-center-mobile"
+        },
+        {
+          "path": "dist/server/index.js",
+          "repo": "sites/icarus-command-center-mobile"
+        }
+      ],
+      "session_id": "codex-20261016-phone-command-center-site",
       "stale": false,
       "status": "active"
     }
   ],
-  "collisions": [],
+  "collisions": [
+    {
+      "path_pairs": [
+        [
+          "icarus_engine/experience-ui.css",
+          "icarus_engine/experience-ui.css"
+        ],
+        [
+          "icarus_engine/experience-ui.js",
+          "icarus_engine/experience-ui.js"
+        ]
+      ],
+      "repo": "reppiks490/Icarus",
+      "sessions": [
+        "codex-20261016-dashboard-cinema-followup",
+        "codex-20261016-phone-command-center-site"
+      ],
+      "severity": "collision",
+      "target_pairs": [
+        [
+          "icarus_engine/experience-ui.css",
+          "icarus_engine/experience-ui.css"
+        ],
+        [
+          "icarus_engine/experience-ui.js",
+          "icarus_engine/experience-ui.js"
+        ]
+      ]
+    }
+  ],
   "counts": {
-    "active": 1,
-    "collisions": 0,
+    "active": 5,
+    "collisions": 1,
     "stale": 0,
-    "terminal": 2
+    "terminal": 5
   },
-  "generated_at_utc": "2026-10-16T04:51:27.767228Z",
+  "generated_at_utc": "2026-10-16T07:24:12.111344Z",
   "owner_status": {
     "claude": {
       "active": false,
@@ -138,6 +506,60 @@
     },
     {
       "actor": "ChatGPT / Atlas",
+      "branch": "atlas/coordination-dashboard",
+      "cooperates_with": [],
+      "coordination_mode": "independent",
+      "declared_paths": [],
+      "declared_targets": [],
+      "dependencies": [
+        "merged:reppiks490/Icarus-engine#182",
+        "merged:reppiks490/Icarus-engine#185",
+        "merge-sha:81b6642c676508fb52c057dea8db1b5aa03db867",
+        "mirror-run:38855084053"
+      ],
+      "goal": "Integrate the central many-chat coordination state into the Engine MCP / Automation UI through a read-only local mirror and verify it end-to-end without live broker arming.",
+      "home_repo": "reppiks490/Icarus-engine",
+      "last_event_at_utc": "2026-10-16T06:31:00Z",
+      "latest_summary": "Coordination observability is merged to Icarus-engine main. PR #182 merged as 7d8da5fcea4afbb4fcc65d62ef31c7a0621d9624. The Engine-side central coordination mirror has since recovered from its stale state and was runtime-verified against the canonical reppiks490/icarus-owner-actions index; the mirror workflow now has redundant schedule/workflow-run durability. All reservations from this workstream are released. The surface remains read-only and live broker execution remains disabled.",
+      "latest_type": "COMPLETE",
+      "model_family": "openai",
+      "phase": "coordination-observability",
+      "pr": "reppiks490/Icarus-engine#182",
+      "reclaimable": false,
+      "reserved_paths": [],
+      "reserved_targets": [],
+      "session_id": "chatgpt-20261016-atlas-coordination-ui-182",
+      "stale": false,
+      "status": "complete"
+    },
+    {
+      "actor": "Unknown (terminal event history)",
+      "branch": "unknown",
+      "cooperates_with": [],
+      "coordination_mode": "independent",
+      "declared_paths": [],
+      "declared_targets": [],
+      "dependencies": [
+        "evidence:automation_intelligence/cl_lab/external_data_fabric.json",
+        "evidence:provider_collection_v1/latest"
+      ],
+      "goal": "Repair Sentinel health accuracy after the ingestion closure audit. The generic provider sampler can report BLOCKED even when a dedicated GitHub-native collector is delivering FMP/EODHD/Tiingo data. Also repair stale evidence-path metadata. No vendor calls, no paid acquisition, no live broker arming.",
+      "home_repo": "reppiks490/Icarus-engine",
+      "last_event_at_utc": "2026-10-16T06:40:00Z",
+      "latest_summary": "Data-health accuracy repair is merged and runtime-proven. Icarus-engine PR #187 merged as cfa66db5af672f7ff869487a2f67cb78f7b77ca0. The post-merge Sentinel rebuilt at 2026-10-16T06:36:48Z and correctly reports live dedicated FMP/EODHD delivery as DEGRADED while preserving generic-sampler plan denials and keeping missing credentials BLOCKED. The transient Databento BTC/GC Unknown feed rows self-cleared in the fresh snapshot. Databento depth research-context remains fail-closed for a legitimate completeness reason: secondary/third corpus features are present, while the primary sweep manifest has held days but zero bought primary feature slices and the sweep cache was absent. No integrity gate was weakened and no Databento spend was added for cosmetic health. Reservations released.",
+      "latest_type": "COMPLETE",
+      "model_family": "unknown",
+      "phase": "data-health-accuracy",
+      "pr": null,
+      "reclaimable": false,
+      "reserved_paths": [],
+      "reserved_targets": [],
+      "session_id": "chatgpt-20261016-atlas-data-health-accuracy",
+      "stale": false,
+      "status": "complete"
+    },
+    {
+      "actor": "ChatGPT / Atlas",
       "branch": "atlas/vendor-panel-vault-20261016",
       "cooperates_with": [],
       "coordination_mode": "independent",
@@ -162,6 +584,32 @@
       "reserved_paths": [],
       "reserved_targets": [],
       "session_id": "chatgpt-20261016-atlas-vendor-panel-vault",
+      "stale": false,
+      "status": "complete"
+    },
+    {
+      "actor": "ChatGPT / Codex",
+      "branch": "codex/a200-ledger-validation-20261016",
+      "cooperates_with": [],
+      "coordination_mode": "independent",
+      "declared_paths": [],
+      "declared_targets": [],
+      "dependencies": [
+        "pr:reppiks490/Icarus#410",
+        "merge:3e7903efd16a26c771b610ef5fb815f5cb2445d2"
+      ],
+      "goal": "Harden the read-only A200 hybrid history receipt validator so malformed or out-of-window provider evidence cannot be labeled CURRENT; preserve 200 catalog status separation and all broker/Pulse execution gates.",
+      "home_repo": "reppiks490/Icarus",
+      "last_event_at_utc": "2026-10-16T07:15:00Z",
+      "latest_summary": "A200 hybrid receipt validation is merged and verified on current Icarus main. PR #410 merged as 3e7903efd16a26c771b610ef5fb815f5cb2445d2 from exact PR head 7a926dccd75478de896fd1002876112ca1c61e92. Linux and Windows exact-head checks both succeeded. Current main focused readback collected 30 tests from tests_engine/test_market_universe.py and all passed. Secret-name/value visibility remains HTTP 403 for this GitHub integration; no plaintext credentials were accessed. FMP remains NOT_CONFIGURED in the persisted probe evidence. A200 inventory freshness is not strategy qualification: Pulse, strategy, and execution authority remain false.",
+      "latest_type": "COMPLETE",
+      "model_family": "openai",
+      "phase": "verification",
+      "pr": null,
+      "reclaimable": false,
+      "reserved_paths": [],
+      "reserved_targets": [],
+      "session_id": "codex-20261016-a200-ledger-hardening",
       "stale": false,
       "status": "complete"
     }

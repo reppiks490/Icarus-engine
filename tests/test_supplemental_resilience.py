@@ -34,6 +34,7 @@ def test_workflow_accepts_secret_and_variable_aliases_and_restores_cache() -> No
 
 
 def test_finnhub_uses_header_auth_and_never_places_key_in_url(monkeypatch) -> None:
+    base.install_extensions()
     captured = {}
 
     class Response:

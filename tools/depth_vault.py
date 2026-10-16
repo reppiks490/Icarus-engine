@@ -6,9 +6,10 @@ compressed, encrypted with AES-256-GCM and stored under the SHA-256 of their
 plaintext. The plaintext digest is authenticated as associated data, so swapped
 or truncated objects fail closed.
 
-Key: ``ICARUS_DATA_ARCHIVE_KEY`` (base64, 32 bytes) when set -- the same secret the
-provider archive uses -- otherwise HKDF of ``DATABENTO_API_KEY``. The manifest
-records only the key *source name*, never secret material.
+New vaults use ``ICARUS_DATA_ARCHIVE_KEY`` (base64, 32 bytes) when set -- the
+same secret the provider archive uses -- otherwise HKDF of ``DATABENTO_API_KEY``.
+An existing vault always uses the key source recorded in its manifest, even
+when another credential is later added. The manifest never records secret material.
 
 Raw DBN (``_raw_tmp``, ``_retry_raw``) is never sealed: retaining raw licensed data
 is a separate licensing decision this tool does not make.
@@ -38,18 +39,26 @@ _DAY = re.compile(r"(\d{4}-\d{2}-\d{2})")
 _SHA256 = re.compile(r"^[0-9a-f]{64}$")
 
 
-def _key(env) -> tuple[bytes, str]:
+def _key(env, source: str | None = None) -> tuple[bytes, str]:
     from cryptography.hazmat.primitives import hashes
     from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 
-    encoded = env.get("ICARUS_DATA_ARCHIVE_KEY", "").strip()
-    if encoded:
+    archive_source = "ICARUS_DATA_ARCHIVE_KEY"
+    provider_source = "HKDF(DATABENTO_API_KEY)"
+    if source not in (None, archive_source, provider_source):
+        raise ValueError(f"unsupported vault key source: {source}")
+    encoded = env.get(archive_source, "").strip()
+    if source == archive_source or (source is None and encoded):
+        if not encoded:
+            raise ValueError(f"vault was sealed with {archive_source}, but that key is missing")
         key = base64.b64decode(encoded, validate=True)
         if len(key) != 32:
             raise ValueError("ICARUS_DATA_ARCHIVE_KEY must decode to 32 bytes")
-        return key, "ICARUS_DATA_ARCHIVE_KEY"
+        return key, archive_source
     source = env.get("DATABENTO_API_KEY", "").strip()
     if not source:
+        if encoded:
+            raise ValueError(f"vault was sealed with {provider_source}, but DATABENTO_API_KEY is missing")
         raise ValueError("depth vault needs ICARUS_DATA_ARCHIVE_KEY or DATABENTO_API_KEY")
     key = HKDF(
         algorithm=hashes.SHA256(),
@@ -57,7 +66,7 @@ def _key(env) -> tuple[bytes, str]:
         salt=b"icarus-depth-vault-v1",
         info=b"databento-depth",
     ).derive(source.encode())
-    return key, "HKDF(DATABENTO_API_KEY)"
+    return key, provider_source
 
 
 def _files(cache: Path, suffixes=SUFFIXES):
@@ -87,11 +96,9 @@ def seal(
     """Encrypt files in ``caches`` that match ``suffixes`` and are not already vaulted."""
     from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
-    key, key_source = _key(env)
-    aead = AESGCM(key)
     manifest = _load_manifest(vault)
-    if manifest.get("key_source") not in (None, key_source):
-        raise ValueError(f"vault was sealed with {manifest['key_source']}, not {key_source}")
+    key, key_source = _key(env, manifest.get("key_source"))
+    aead = AESGCM(key)
     manifest["key_source"] = key_source
     manifest.setdefault("schema", SCHEMA)
     manifest.setdefault("caches", {})
@@ -146,9 +153,7 @@ def restore(caches: dict[str, Path], vault: Path = VAULT_DIR, env=os.environ) ->
     manifest = _load_manifest(vault)
     if not manifest.get("caches"):
         return {"restored": 0, "present": 0}
-    key, key_source = _key(env)
-    if manifest.get("key_source") not in (None, key_source):
-        raise ValueError(f"vault was sealed with {manifest['key_source']}, not {key_source}")
+    key, key_source = _key(env, manifest.get("key_source"))
     aead = AESGCM(key)
     restored = present = 0
     for name, entries in manifest["caches"].items():
@@ -267,9 +272,7 @@ def verify(
     from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 
     manifest = _load_manifest(vault)
-    key, key_source = _key(env)
-    if manifest.get("key_source") not in (None, key_source):
-        raise ValueError(f"vault was sealed with {manifest['key_source']}, not {key_source}")
+    key, key_source = _key(env, manifest.get("key_source"))
     aead = AESGCM(key)
     try:
         origins = json.loads((vault / "origins.json").read_text(encoding="utf-8")).get("objects", {})

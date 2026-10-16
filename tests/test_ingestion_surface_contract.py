@@ -150,11 +150,19 @@ def test_manifest_forces_three_stage_truth_and_federated_access() -> None:
         assert source['consumption_state'] in {'LIVE', 'PARTIAL', 'BLOCKED', 'EVIDENCE_ONLY', 'DEDICATED_LANE'}
         assert source['evidence_paths']
 
-    for source_id in ('unusual_whales', 'alpha_vantage', 'finnhub'):
+    assert sources['unusual_whales']['credential_state'] == 'PRESENT'
+    assert sources['unusual_whales']['access_mode'] == 'github_actions+connector'
+    assert sources['unusual_whales']['workflow'] == '.github/workflows/provider-supplemental-collection.yml'
+
+    for source_id in ('alpha_vantage', 'finnhub'):
         source = sources[source_id]
         assert source['credential_state'] == 'PRESENT'
         assert source['access_mode'] == 'github_actions'
         assert source['workflow'] == '.github/workflows/provider-supplemental-collection.yml'
+
+    assert sources['finnhub']['ingestion_state'] == 'BLOCKED'
+    assert sources['finnhub']['consumption_state'] == 'BLOCKED'
+    assert sources['finnhub']['runtime_status'] == 'BLOCKED_AUTHENTICATION'
 
 
 def test_all_ai_units_receive_persistent_data_plane_directive() -> None:

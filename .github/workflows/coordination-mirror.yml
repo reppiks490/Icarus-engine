@@ -1,0 +1,84 @@
+name: coordination-mirror
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/coordination-mirror.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: coordination-mirror-main
+  cancel-in-progress: false
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Mirror bounded public coordination index from canonical bus
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3 4 5 6 7 8; do
+            git fetch origin main
+            git reset --hard origin/main
+            python - <<'PY'
+          from __future__ import annotations
+          import json
+          from pathlib import Path
+          from urllib.request import Request, urlopen
+
+          URL = 'https://raw.githubusercontent.com/reppiks490/icarus-owner-actions/main/coordination/index.json'
+          MAX_BYTES = 1_048_576
+          out = Path('automation_intelligence/coordination/index.json')
+          req = Request(URL, headers={'User-Agent': 'ICARUS-coordination-mirror/1.0', 'Accept': 'application/json'})
+          with urlopen(req, timeout=20) as response:
+              final = response.geturl()
+              if final != URL:
+                  raise RuntimeError('coordination mirror redirects are forbidden')
+              raw = response.read(MAX_BYTES + 1)
+          if len(raw) > MAX_BYTES:
+              raise RuntimeError('coordination index exceeds 1 MiB bound')
+          doc = json.loads(raw.decode('utf-8'))
+          if not isinstance(doc, dict) or doc.get('schema_version') != 'icarus-coordination-index-v2':
+              raise RuntimeError('unexpected coordination schema')
+          if not isinstance(doc.get('active_sessions'), list) or not isinstance(doc.get('collisions'), list):
+              raise RuntimeError('invalid coordination session/collision collections')
+          if not isinstance(doc.get('counts'), dict) or not isinstance(doc.get('owner_status'), dict):
+              raise RuntimeError('invalid coordination counts/owner status')
+          if len(doc['active_sessions']) > 512 or len(doc['collisions']) > 512:
+              raise RuntimeError('coordination index exceeds collection bounds')
+          out.parent.mkdir(parents=True, exist_ok=True)
+          tmp = out.with_suffix('.json.tmp')
+          tmp.write_text(json.dumps(doc, indent=2, sort_keys=True, allow_nan=False) + '\n', encoding='utf-8')
+          tmp.replace(out)
+          PY
+            git add automation_intelligence/coordination/index.json
+            if git diff --cached --quiet; then
+              echo 'Coordination mirror already current.'
+              exit 0
+            fi
+            git commit -m 'coordination: mirror central active state [skip ci]'
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            echo "Main moved during coordination mirror attempt $attempt; recomputing." >&2
+            sleep $((attempt * 2))
+          done
+          echo 'Unable to publish a fresh coordination mirror after retries.' >&2
+          exit 1

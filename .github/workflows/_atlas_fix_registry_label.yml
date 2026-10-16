@@ -1,0 +1,33 @@
+name: atlas-fix-registry-label
+
+on:
+  push:
+    branches: [atlas/futures-universe-expansion-20261016]
+    paths:
+      - 'tools/_atlas_fix_registry_label.py'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: atlas/futures-universe-expansion-20261016
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python tools/_atlas_fix_registry_label.py
+      - run: |
+          git diff --check
+          git diff -- icarus_engine/dashboard.html
+      - name: Clean patcher and commit
+        run: |
+          git config user.name 'icarus-atlas-bot'
+          git config user.email '162067269+reppiks490@users.noreply.github.com'
+          git rm .github/workflows/_atlas_fix_registry_label.yml tools/_atlas_fix_registry_label.py
+          git add icarus_engine/dashboard.html
+          git commit -m 'fix: retain registry label in upgraded asset UI'
+          git push origin HEAD:atlas/futures-universe-expansion-20261016

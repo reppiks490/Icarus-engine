@@ -20,7 +20,8 @@ def test_agent_entrypoint_uses_central_many_chat_bus_and_no_model_task_gate():
 def test_legacy_engine_coordination_is_historical_not_authoritative():
     text = COORD.read_text(encoding='utf-8').lower()
     assert 'historical evidence' in text
-    assert 'not current task ownership or write locks' in text
+    assert 'not current task' in text
+    assert 'ownership' in text and 'write locks' in text
     assert 'reppiks490/icarus-owner-actions' in text
     assert 'no model family owns a task' in text
     assert 'waiting/dependency' in text

@@ -51,6 +51,17 @@ jobs:
           key: cl-feeds-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: cl-feeds-
 
+      - name: Refill missing paid Databento bars from encrypted baseline
+        env:
+          ICARUS_DATA_ARCHIVE_KEY: ${{ secrets.ICARUS_DATA_ARCHIVE_KEY }}
+          DATABENTO_API_KEY: ${{ secrets.DATABENTO_API_KEY || secrets.DATABENTO_KEY }}
+        run: |
+          python -m pip install "cryptography>=44,<47"
+          python -m tools.depth_vault restore \
+            --cache bars_primary=.cl_cache \
+            --cache bars_secondary=.cl_cache \
+            --cache bars_third=.cl_cache
+
       - name: Refresh FRED + ALFRED point-in-time macro fabric
         env:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY || secrets.FRED_KEY }}

@@ -77,7 +77,8 @@ def _fabric_rows(provider: dict) -> int:
         count = dataset.get("rows")
         if isinstance(count, int) and not isinstance(count, bool):
             total += max(0, count)
-            continue
+            if count > 0:
+                continue
         symbols = dataset.get("symbols")
         if isinstance(symbols, dict):
             for item in symbols.values():

@@ -27,6 +27,23 @@ for provenance and historical handoffs. They are **not task locks** and do not p
 chat from reclaiming unfinished work after checking current main, open PRs, and the central collision
 state. `coordination/README.md` documents the compatibility boundary.
 
+## Shared credential/data access is GitHub-native
+
+Before declaring that an API key, credential, provider, or shared data path is unavailable, read:
+
+- `AGENT_CREDENTIALS.md`
+- `docs/agent-handoffs/GITHUB_NATIVE_CREDENTIALS.md`
+- `config/credential_contract.json`
+- `config/data_ingestion_manifest.json`
+- `reppiks490/icarus-owner-actions:coordination/directives/GITHUB_NATIVE_DATA_ACCESS.md`
+
+**Do not search `.env` files, DAV task comments, another AI account, or Plant/operator notes for shared
+private keys.** GitHub Actions Secrets are intentionally injected only into approved workflows; normal
+agents are not expected to read plaintext values back. The federation shares credentialed execution,
+collection status, and persisted evidence—not secret strings. If a chat cannot see plaintext, that is
+not by itself a blocker. Use GitHub Actions and the manifest's `evidence_paths`, and report a credential
+blocker only when the canonical health/manifest or provider response proves one.
+
 ## Shared data/evidence plane
 
 Before claims about provider access, source coverage, freshness, market evidence, or blockers, read:

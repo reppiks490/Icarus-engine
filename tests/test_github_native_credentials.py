@@ -26,11 +26,14 @@ SCHEDULED_WORKFLOW_CREDENTIALS = {
     Path(".github/workflows/cl-depth-sweep.yml"): (
         "ICARUS_DATA_ARCHIVE_KEY",
         "DATABENTO_API_KEY",
+        "DATABENTO_API_KEY_SECONDARY",
+        "DATABENTO_API_KEY_THIRD",
     ),
     Path(".github/workflows/databento-depth-corpus.yml"): (
         "ICARUS_DATA_ARCHIVE_KEY",
         "DATABENTO_API_KEY",
         "DATABENTO_API_KEY_SECONDARY",
+        "DATABENTO_API_KEY_THIRD",
     ),
     Path(".github/workflows/depth-vault.yml"): (
         "ICARUS_DATA_ARCHIVE_KEY",
@@ -40,6 +43,7 @@ SCHEDULED_WORKFLOW_CREDENTIALS = {
         "ICARUS_DATA_ARCHIVE_KEY",
         "DATABENTO_API_KEY",
     ),
+    Path(".github/workflows/sec-edgar-data.yml"): ("SEC_USER_AGENT",),
 }
 
 

@@ -1,6 +1,6 @@
-# Data health — 2026-10-16 02:55 UTC
+# Data health — 2026-10-16 02:59 UTC
 
-**FAILING** 1 · **BLOCKED** 5 · **DEGRADED** 6 · **UNKNOWN** 1 · **OK** 73
+**FAILING** 1 · **BLOCKED** 8 · **DEGRADED** 3 · **UNKNOWN** 1 · **OK** 73
 
 ## Needs attention
 
@@ -8,16 +8,16 @@
 |---|---|---|
 | workflow:databento-depth-research-context.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/38842680133 |
 | provider:alpaca | BLOCKED | no key reaches the runner |
+| provider:eodhd | BLOCKED | BLOCKED |
 | provider:finnhub | BLOCKED | BLOCKED_AUTHENTICATION |
+| provider:fmp | BLOCKED | BLOCKED |
 | provider:intrinio | BLOCKED | no key reaches the runner |
 | provider:quiver | BLOCKED | no key reaches the runner |
 | provider:tickstream | BLOCKED | no key reaches the runner |
+| provider:twelve | BLOCKED | BLOCKED |
 | provider:alphavantage | DEGRADED | 101 rows; 2 endpoints denied by plan |
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
-| provider:eodhd | DEGRADED | 553 rows; 29 endpoints denied by plan |
-| provider:fmp | DEGRADED | key present but 0 rows (COLLECTED_PARTIAL) |
-| provider:tiingo | DEGRADED | key present but 0 rows (QUOTA_OR_RATE_LIMIT_PAUSED) |
-| provider:twelve | DEGRADED | key present but 0 rows (COLLECTED_PARTIAL) |
+| provider:tiingo | DEGRADED | 3 rows; 4 endpoints denied by plan |
 | workflow:interrepo-peer-intelligence.yml | UNKNOWN | no completed run on main |
 
 ## Delivering

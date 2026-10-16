@@ -160,13 +160,24 @@ def test_manifest_forces_three_stage_truth_and_federated_access() -> None:
         assert source['required_for_all_ai_units'] is True
         assert source['access_mode']
         assert source['credential_state'] in {'PRESENT', 'MISSING', 'PUBLIC', 'NOT_APPLICABLE', 'EXTERNAL_CONNECTOR'}
-        assert source['ingestion_state'] in {'LIVE', 'PARTIAL', 'BLOCKED', 'INTERACTIVE_ONLY', 'DEDICATED_LANE'}
-        assert source['consumption_state'] in {'LIVE', 'PARTIAL', 'BLOCKED', 'EVIDENCE_ONLY', 'DEDICATED_LANE'}
+        assert source['ingestion_state'] in {
+            'LIVE', 'PARTIAL', 'BLOCKED', 'INTERACTIVE_ONLY', 'DEDICATED_LANE',
+            'STAGED', 'STAGED_CONTENT_UNVERIFIED',
+        }
+        assert source['consumption_state'] in {
+            'LIVE', 'PARTIAL', 'BLOCKED', 'EVIDENCE_ONLY', 'DEDICATED_LANE', 'UNVERIFIED',
+        }
         assert source['evidence_paths']
 
     assert sources['unusual_whales']['credential_state'] == 'PRESENT'
     assert sources['unusual_whales']['access_mode'] == 'github_actions+connector'
     assert sources['unusual_whales']['workflow'] == '.github/workflows/provider-supplemental-collection.yml'
+    assert sources['unusual_whales']['ingestion_state'] == 'BLOCKED'
+    assert sources['unusual_whales']['consumption_state'] == 'BLOCKED'
+    assert sources['unusual_whales']['runtime_status'] == 'BLOCKED_AUTHENTICATION'
+    assert sources['yahoo_cme_futures_seed']['ingestion_state'] == 'STAGED'
+    assert sources['yahoo_cme_futures_seed']['consumption_state'] == 'BLOCKED'
+    assert sources['yahoo_cme_futures_seed']['runtime_status'] == 'SHARING_UNVERIFIED'
 
     for source_id in ('alpha_vantage', 'finnhub'):
         source = sources[source_id]

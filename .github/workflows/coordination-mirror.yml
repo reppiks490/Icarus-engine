@@ -2,7 +2,7 @@ name: coordination-mirror
 
 on:
   schedule:
-    # Shift away from the top-of-hour/minute-boundary load where GitHub may delay/drop cron events.
+    # Legacy baseline was */5 * * * *; the shifted cadence avoids minute-boundary congestion.
     - cron: '3-58/5 * * * *'
   # Durable fallback: this trusted local workflow already runs every 10 minutes.
   # workflow_run executes from the default-branch workflow definition and does not consume artifacts/code

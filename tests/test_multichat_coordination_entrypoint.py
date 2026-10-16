@@ -2,6 +2,7 @@ from pathlib import Path
 
 
 AGENTS = Path('AGENTS.md')
+CRED_ENTRY = Path('AGENT_CREDENTIALS.md')
 COORD = Path('coordination/README.md')
 MIRROR = Path('.github/workflows/coordination-mirror.yml')
 
@@ -28,6 +29,18 @@ def test_agent_entrypoint_routes_provider_work_to_github_native_data_access():
     assert 'do not search' in text and '.env' in text
     assert 'github actions' in text
     assert 'plaintext' in text
+
+
+def test_credential_entrypoint_explains_access_without_secret_possession():
+    text = CRED_ENTRY.read_text(encoding='utf-8').lower()
+    assert 'github_native_data_access.md' in text
+    assert 'config/data_ingestion_manifest.json' in text
+    assert 'not expected to read or possess secret strings' in text
+    assert '$icarus_home/.env' in text
+    assert 'dav task comments' in text
+    assert 'github-native-credential-health' in text
+    assert 'evidence_paths' in text
+    assert 'fresh collection' in text and 'github actions' in text
 
 
 def test_legacy_engine_coordination_is_historical_not_authoritative():

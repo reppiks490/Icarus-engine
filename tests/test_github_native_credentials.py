@@ -93,8 +93,8 @@ def test_health_workflow_is_explicit_and_never_enumerates_secrets() -> None:
             assert f"secrets.{alias}" in text
 
 
-def test_provider_collector_resolves_legacy_names_through_contract() -> None:
-    from tools.provider_exhaustive_collection import provider_credential, provider_secondary_credential
+def test_provider_adapter_resolves_legacy_names_through_contract() -> None:
+    from tools.provider_credentials import provider_credential, provider_secondary_credential
 
     assert provider_credential("massive", {"MASSIVE_KEY": "m"}) == "m"
     assert provider_credential("twelve", {"TWELVE_DATA_API_KEY": "t"}) == "t"
@@ -104,6 +104,19 @@ def test_provider_collector_resolves_legacy_names_through_contract() -> None:
     assert provider_credential("tickstream", {"TICKSTREAM_TOKEN": "s"}) == "s"
     assert provider_credential("bybit", {}) == ""
     assert provider_secondary_credential("alpaca", {"APCA_API_SECRET_KEY": "a"}) == "a"
+
+
+def test_provider_adapter_exports_legacy_process_names_without_logging_values() -> None:
+    from tools.provider_credentials import normalized_provider_environment
+
+    env = normalized_provider_environment(
+        "alpaca",
+        {"ALPACA_KEY_ID": "public-id", "APCA_API_SECRET_KEY": "private-secret"},
+    )
+    assert env["ALPACA_API_KEY"] == "public-id"
+    assert env["ALPACA_SECRET_KEY"] == "private-secret"
+    assert env["ALPACA_API_SECRET"] == "private-secret"
+    assert "private-secret" not in repr({"provider": "alpaca", "credential_present": bool(env["ALPACA_API_KEY"])})
 
 
 def test_provider_workflow_exports_canonical_names_with_every_contract_alias() -> None:
@@ -143,6 +156,7 @@ def test_provider_workflow_exports_canonical_names_with_every_contract_alias() -
     env_block = text.split("      - name: Drain all-catalog provider queue without ChatGPT", 1)[1].split("        run:", 1)[0]
     for legacy in legacy_runtime_names:
         assert f"          {legacy}:" not in env_block
+    assert "python -m tools.provider_credentials" in text
 
 
 def test_handoff_tells_agents_to_use_github_native_contract_without_plaintext() -> None:

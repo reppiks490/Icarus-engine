@@ -1,78 +1,50 @@
-# Claude ↔ ChatGPT coordination
+# ICARUS Engine coordination compatibility layer
 
-Two AIs work in this repository:
+This directory preserves the original Claude ↔ ChatGPT boards, inboxes, lane notes, and handoffs that
+were created before the federation moved to a model-neutral many-chat coordination fabric. Keep these
+records for provenance. They are historical evidence and compatibility inputs, **not current task
+ownership or write locks**.
 
-- **Claude** (Anthropic), on `claude/*` branches;
-- **ChatGPT / Codex** (OpenAI), on `chatgpt/*` and `codex/*` branches.
+## Canonical coordination authority
 
-They cannot talk to each other directly, so this folder is how they talk. The owner set it up on
-2026-10-11 after the two collided twice on the same work (the SEC user agent and the Databento depth
-cache). The older lane notes in this folder (`CL_LANE_*.md`, `PR2_*.md`, `PEER_*.md`) stay as they are.
+All new work is coordinated through `reppiks490/icarus-owner-actions`:
 
-## Every session, both AIs
+- `coordination/START_HERE.md` — mandatory bootstrap for every chat/agent;
+- `coordination/ACTIVE.md` — generated live work view;
+- `coordination/collisions.json` — generated target-collision view;
+- `coordination/owner_status.json` — owner-level availability and safety constraints;
+- `coordination/directives/**` — standing operating directives and reclaim queues;
+- `coordination/sessions/**`, `events/**`, and `summaries/**` — machine-verifiable work records.
 
-1. Read `ICARUS_STATE.md`.
-2. Read `config/data_ingestion_manifest.json`, `docs/agent-handoffs/FEDERATED_DATA_COLLECTION.md`, and
-   `docs/agent-handoffs/DATA_GAP_LEDGER.md`. Every AI unit is required to know the complete ICARUS data
-   plane, distinguish credential/ingestion/consumption state, use every applicable live evidence source,
-   and keep explicit blockers visible. Account-local connector or secret access is never the authority.
-3. Read both task lists: `board/claude.md` and `board/chatgpt.md`.
-4. Read every message in your inbox that still needs a reply. `python -m tools.coordination` lists them.
-5. **Claim before you start.** Add the task to your own board as `in progress` before working on it.
-   Never start a task that is on the other AI's board unless its status is `done`. If you think a task
-   should change hands, send a message and wait for the answer.
-6. **Before you stop:** push your work, update your board, and answer every message that needs a reply.
-   Work that is not pushed is invisible to the other AI.
+Before mutating this repository, publish a central PLAN/CLAIM event with repo-qualified targets and
+check the compiled collision state. No model family owns a task merely because an older local board
+listed it. If old Claude/ChatGPT work is unfinished, compare it with current `main`, open PRs, and the
+central state; then reclaim, cooperate, supersede, or publish the exact blocker.
 
-The owner's standing data directive overrides historical assumptions that a provider belongs to only
-one AI lane: ownership still controls who edits a path, but **evidence access is federated**. If a unit
-discovers a source gap outside its write ownership, it must publish the blocker/evidence path to the
-owning unit rather than silently omitting that source.
+## What remains authoritative locally
 
-## Task lists
+1. Read `../ICARUS_STATE.md` for Engine technical facts, verified results, failed ideas, and authority
+   boundaries.
+2. Read `../config/data_ingestion_manifest.json`,
+   `../docs/agent-handoffs/FEDERATED_DATA_COLLECTION.md`, and
+   `../docs/agent-handoffs/DATA_GAP_LEDGER.md` before data/provider claims.
+3. Preserve evidence provenance, provider licensing boundaries, fail-closed behavior, and exact-head
+   verification. Account-local connector/secret access is not federation authority.
+4. Live broker arming follows central `owner_status.json` and is currently disabled.
 
-- `board/claude.md` is edited only by Claude; `board/chatgpt.md` only by ChatGPT. Never edit the other's.
-- Each has an **Owns** list (the paths that AI writes) and one task table:
+## Legacy boards and mailboxes
 
-  | Id | Task | Status | Branch / PR | Updated |
-  |---|---|---|---|---|
+- `board/claude.md` and `board/chatgpt.md` are historical snapshots. They may contain useful unfinished
+  requirements, branches, PRs, or evidence references, but they do not gate who may work them.
+- `inbox/to-claude/**`, `inbox/to-chatgpt/**`, and `inbox/to-atlas/**` remain immutable historical
+  messages once on main. New cross-chat communication belongs in the central event fabric.
+- `python -m tools.coordination` may still be used to inspect legacy records where helpful; it is not
+  the source of current work ownership.
+- Older lane notes (`CL_LANE_*.md`, `PR2_*.md`, `PEER_*.md`) remain historical evidence unless a
+  current central event explicitly adopts their requirements.
 
-  Status is one of `planned`, `in progress`, `blocked`, `waiting`, `done`. `Updated` is `YYYY-MM-DD`.
-  An `in progress` row not updated for 7 days is reported as stale.
-- Files outside both Owns lists, and the shared files (`ICARUS_STATE.md`, `AGENTS.md`, `CLAUDE.md`,
-  this README, `docs/RESEARCH_LOG.md`), may be edited by either AI in a PR that says why.
+## Operating rule
 
-## Messages
-
-- To send, create a new file in `inbox/to-<recipient>/` (`to-claude` or `to-chatgpt`) named
-  `YYYYMMDDTHHMMZ-<sender>-<short-slug>.md`, in UTC. Example: `20261011T0437Z-claude-hello.md`.
-- The file starts with these header lines, then a blank line, then the body:
-
-  ```
-  From: Claude
-  To: ChatGPT
-  Date: 2026-10-11T04:37Z
-  Subject: One line
-  Reply-needed: yes
-  Re: -
-  ```
-
-- To reply, create a new file in the sender's inbox whose `Re:` line names the file you are answering.
-  That closes it.
-- Never edit or delete a message once it is on `main`. To correct one, send another.
-- Keep messages short and concrete: what you need, the file paths, the PR links. Evidence, not claims
-  (rule 2 in `ICARUS_STATE.md`).
-
-## Getting it onto `main`
-
-The other AI reads `main`, so messages and board updates count only once they are there. They hold no
-code, so they may be committed straight to `main`, or merged in a PR without waiting for review. Code
-goes through PRs as usual. To ask for a review of a PR, send a message with its link.
-
-## Automation
-
-- **Claude coordinator** (Claude routine, 06:25 and 18:25 America/Chicago): reads Claude's inbox and
-  answers it, reviews ChatGPT PRs opened or updated since its last run, and updates Claude's board.
-- **Data-health sentinel** (`tools/data_sentinel.py`, every 3 h and on every push here): puts the
-  mailbox and board counts into `automation_intelligence/sentinel/DATA_HEALTH.md`.
-- **Daily briefing** (Claude routine, 06:55 America/Chicago): reports both to the owner's phone.
+Do not idle merely because one target is reserved or CI is running. Publish the waiting/dependency
+state, then continue with useful non-conflicting research, tests, review, documentation, or another
+claimed subproblem. Complete work only with exact evidence and a durable central summary.

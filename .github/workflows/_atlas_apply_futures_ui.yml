@@ -1,0 +1,36 @@
+name: atlas-apply-futures-ui
+
+on:
+  push:
+    branches: [atlas/futures-universe-expansion-20261016]
+    paths:
+      - 'tools/_atlas_apply_futures_ui.py'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: atlas/futures-universe-expansion-20261016
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Apply exact guarded patch
+        run: python tools/_atlas_apply_futures_ui.py
+      - name: Review patch scope
+        run: |
+          git diff --check
+          git status --short
+          git diff -- icarus_engine/server.py icarus_engine/dashboard.html
+      - name: Remove one-shot patcher and commit
+        run: |
+          git config user.name 'icarus-atlas-bot'
+          git config user.email '162067269+reppiks490@users.noreply.github.com'
+          git rm .github/workflows/_atlas_apply_futures_ui.yml tools/_atlas_apply_futures_ui.py
+          git add icarus_engine/server.py icarus_engine/dashboard.html
+          git commit -m 'feat: expose futures contract metadata in API and dashboard [skip ci]'
+          git push origin HEAD:atlas/futures-universe-expansion-20261016

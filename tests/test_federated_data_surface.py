@@ -91,6 +91,28 @@ def test_internal_peer_packet_is_mandatory_federated_evidence() -> None:
     assert 'automation_intelligence/interrepo/latest.json' in row['evidence_paths']
 
 
+def test_active_specialist_evidence_is_not_siloed_from_other_ai_units() -> None:
+    sources = _sources()
+    required = {
+        'robustness_guardian_evidence',
+        'advanced_csv_evidence',
+        'alpha_synthesis_evidence',
+        'flow_microstructure_evidence',
+        'apex_council_evidence',
+        'mcp_interface_evidence',
+        'coordination_fabric',
+    }
+    assert required <= set(sources)
+    for source_id in required:
+        row = sources[source_id]
+        assert row['required_for_all_ai_units'] is True
+        assert row['credential_state'] == 'NOT_APPLICABLE'
+        assert row['consumption_state'] == 'EVIDENCE_ONLY'
+        assert row['evidence_paths']
+
+    assert any(path.startswith('reppiks490/icarus-csv-evidence-lab:') for path in sources['advanced_csv_evidence']['evidence_paths'])
+
+
 def test_data_sentinel_monitors_every_federated_collection_and_promotion_lane() -> None:
     from tools.data_sentinel import WORKFLOWS
 

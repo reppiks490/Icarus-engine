@@ -1,0 +1,40 @@
+{
+  "schema": "icarus.vault_sources/1",
+  "note": "Hand-written provenance per vault cache. tools/depth_vault.py derives per-object origins.json from this file plus spend ledgers. Purchase times are never invented.",
+  "caches": {
+    "corpus": {
+      "origin": "new_acquisition",
+      "provider": "Databento",
+      "content": "Derived order-book features and corpus index files reduced from licensed depth downloads; raw DBN is not retained.",
+      "acquired_via": ".github/workflows/databento-depth-corpus.yml",
+      "is_restoration": false,
+      "rights": "Licensed vendor derivatives; stored encrypted because the repository is public."
+    },
+    "sweep": {
+      "origin": "new_acquisition",
+      "provider": "Databento",
+      "content": "Derived NQ MBP-10 sweep features and resilience events. Raw DBN is not retained.",
+      "acquired_via": ".github/workflows/cl-depth-sweep.yml",
+      "is_restoration": false,
+      "lost_before_vault": "The 18 NQ MBP-10 days acquired before 2026-10-10 were evicted from Actions cache before the vault existed and are not represented as recovered originals.",
+      "rights": "Licensed vendor derivatives; stored encrypted."
+    },
+    "panel": {
+      "origin": "preserved_original",
+      "provider": "Polygon.io REST aggregates (since renamed Massive); source identity is inferred from the /v2/aggs/ticker/{T}/prev label check described in commit 5c830854dda0140118b7cb9af2f697996e3aaa38 because the original request log no longer survives.",
+      "content": "13 files of 5-minute OHLCV bars: SPY, QQQ, IWM, NVDA, GLD, SLV, USO, XLE, TLT, IEF, UUP, VXX, EEM.",
+      "collected": "Before 2026-09-20T18:11:41Z; exact pull times were not recorded.",
+      "first_committed": {
+        "commit": "5c830854dda0140118b7cb9af2f697996e3aaa38",
+        "at": "2026-09-20T18:11:41Z",
+        "branch": "claude/research-restore"
+      },
+      "restored_to_main": {
+        "commit": "7d2c9c053d9bcdf0866a86427e9cea37d5ef06a3",
+        "at": "2026-10-10T22:08:04Z"
+      },
+      "is_restoration": false,
+      "rights": "Unverified. Removing plaintext from the current tree reduces ongoing exposure but does not erase prior public Git history."
+    }
+  }
+}

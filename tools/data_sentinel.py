@@ -70,16 +70,25 @@ def _load(path: Path):
 
 def providers(root: Path, now: datetime) -> list[dict]:
     out = []
+    fabric = _load(root / AI / "cl_lab" / "external_data_fabric.json") or {}
+    dedicated = fabric.get("providers") or {}
     for path in sorted((root / AI / "provider_collection_v1" / "latest").glob("*.json")):
         d = _load(path) or {}
         name = path.stem
         p = (d.get("providers") or {}).get(name, {})
         cat = d.get("catalog") or {}
         rows, denied = p.get("collected_rows") or 0, cat.get("denied_operations") or 0
+        dedicated_provider = dedicated.get(name) or {}
+        dedicated_live = dedicated_provider.get("status") in {"ok", "partial"} and (dedicated_provider.get("calls") or 0) > 0
         if not p.get("credential_present") and p.get("status") == "NO_READY_JOBS":
             verdict, why = "DEGRADED", "no key; keyless endpoints only, none ready"
         elif not p.get("credential_present"):
             verdict, why = "BLOCKED", "no key reaches the runner"
+        elif p.get("status", "").startswith("BLOCKED") and dedicated_live:
+            verdict = "DEGRADED"
+            why = f"dedicated fabric live ({dedicated_provider.get('calls')} calls); generic sampler blocked"
+            if denied:
+                why += f"; {denied} endpoints denied by plan"
         elif p.get("status", "").startswith("BLOCKED"):
             verdict, why = "BLOCKED", p.get("status")
         elif rows == 0:

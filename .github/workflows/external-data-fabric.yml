@@ -10,6 +10,7 @@ on:
     paths:
       - "cl_lab/feeds/external_data_fabric.py"
       - "tests_cl/test_external_data_fabric.py"
+      - "config/credential_contract.json"
       - ".github/workflows/external-data-fabric.yml"
 
 permissions:
@@ -50,9 +51,9 @@ jobs:
 
       - name: Collect strategic external data
         env:
-          EODHD_API_TOKEN: ${{ secrets.EODHD_API_TOKEN }}
-          FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
-          TIINGO_API_TOKEN: ${{ secrets.TIINGO_API_TOKEN }}
+          EODHD_API_TOKEN: ${{ secrets.EODHD_API_TOKEN || vars.EODHD_API_TOKEN || secrets.EODHD_API_KEY || vars.EODHD_API_KEY || secrets.EODHD_KEY || vars.EODHD_KEY || secrets.EOD_API_KEY || vars.EOD_API_KEY }}
+          FMP_API_KEY: ${{ secrets.FMP_API_KEY || vars.FMP_API_KEY || secrets.FMP_KEY || vars.FMP_KEY }}
+          TIINGO_API_TOKEN: ${{ secrets.TIINGO_API_TOKEN || vars.TIINGO_API_TOKEN || secrets.TIINGO_API_KEY || vars.TIINGO_API_KEY || secrets.TIINGO_KEY || vars.TIINGO_KEY || secrets.TIINGO_TOKEN || vars.TIINGO_TOKEN }}
         run: >-
           python -m cl_lab.feeds.external_data_fabric
           --cache .external_data_cache

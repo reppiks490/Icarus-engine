@@ -1,6 +1,6 @@
 {
   "event_id": "20261016T032700Z-futures-universe-integration",
-  "at_utc": "2026-10-16T03:29:30Z",
+  "at_utc": "2026-10-16T03:33:00Z",
   "category": "INTEGRATION",
   "status": "implementation_complete_pending_exact_head_ci",
   "severity": "medium",
@@ -21,8 +21,10 @@
     "github-artifact:12022408688:futures-universe-probe",
     "public-delayed-probe:23/23-connected",
     "api-readback:asset_registry_payload",
-    "dashboard-readback:exchange-asset_class-micro_of-mintick-multiplier-feed_mode"
+    "dashboard-readback:exchange-asset_class-micro_of-mintick-multiplier-feed_mode",
+    "dashboard-readback:registry-label-restored",
+    "github-run:38845789161:one-ui-label-regression-isolated-before-fix"
   ],
   "execution_authorized": false,
-  "notes": "Research/replay/paper integration only. Yahoo is a delayed public research feed. Broker-specific dated-contract mapping, entitlement and owner live arming remain separate gates. Exact final-head CI is required before merge."
+  "notes": "Research/replay/paper integration only. Yahoo is a delayed public research feed. Broker-specific dated-contract mapping, entitlement and owner live arming remain separate gates. Bot-authored cleanup commits can yield action_required with no jobs; this connector-authored head exists to force fresh exact-head CI before merge."
 }

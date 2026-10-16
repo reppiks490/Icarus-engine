@@ -22,83 +22,84 @@
     "best": [
      {
       "dsr": 0.0,
-      "family": "vwap",
-      "id": "xb3fb9678783",
-      "params": {
-       "check": 30,
-       "cond": "dow_mon",
-       "regime": "vol_hi",
-       "side": "long",
-       "start": "09:35"
-      },
-      "status": "REJECTED",
-      "tune_t": 0.877,
-      "tune_trades": 16
-     },
-     {
-      "dsr": 0.0,
-      "family": "noise",
-      "id": "xb42244a922b",
-      "params": {
-       "check": 60,
-       "cond": "dow_fri",
-       "lookback": 5,
-       "mult": 2.0,
-       "regime": "vol_lo",
-       "trail": "band"
-      },
-      "status": "REJECTED",
-      "tune_t": 0.871,
-      "tune_trades": 7
-     },
-     {
-      "dsr": 0.0,
-      "family": "sweep",
-      "id": "xa52806b698b",
-      "params": {
-       "cond": "on_narrow",
-       "depth_ticks": 4,
-       "exit": "eod",
-       "level": "on",
-       "mode": "reverse",
-       "regime": "vol_hi",
-       "window": "day"
-      },
-      "status": "REJECTED",
-      "tune_t": 0.69,
-      "tune_trades": 23
-     },
-     {
-      "dsr": 0.0,
       "family": "gap",
-      "id": "x96b896de7ec",
+      "id": "x0d410ce636d",
       "params": {
-       "cond": "vix_low",
+       "cond": "vix_inverted",
        "exit": "10:30",
        "mode": "fade",
-       "regime": "all",
+       "regime": "vol_lo",
        "thr": "q80"
       },
       "status": "REJECTED",
-      "tune_t": 0.17,
-      "tune_trades": 25
+      "tune_t": 1.243,
+      "tune_trades": 3
      },
      {
-      "dsr": 0.0,
-      "family": "sweep",
-      "id": "xd5a405014fc",
+      "dsr": 0.0034,
+      "family": "gap",
+      "id": "x3d044284eff",
       "params": {
-       "cond": "none",
+       "cond": "dow_mid",
+       "exit": "12:00",
+       "mode": "fade",
+       "regime": "vol_hi",
+       "thr": "q80"
+      },
+      "status": "REJECTED",
+      "tune_t": 0.636,
+      "tune_trades": 6
+     },
+     {
+      "dsr": 0.0002,
+      "family": "sweep",
+      "id": "x64644d3c78d",
+      "params": {
+       "cond": "vix_low",
        "depth_ticks": 4,
+       "exit": "eod",
+       "level": "pd",
+       "mode": "continue",
+       "regime": "vol_lo",
+       "window": "day"
+      },
+      "status": "REJECTED",
+      "tune_t": 0.163,
+      "tune_trades": 81
+     },
+     {
+      "dsr": 0.0002,
+      "family": "sweep",
+      "id": "xb1f77bd8e4b",
+      "params": {
+       "cond": "dow_mon",
+       "depth_ticks": 4,
+       "exit": "eod",
+       "level": "pd",
+       "mode": "continue",
+       "regime": "vol_hi",
+       "window": "am"
+      },
+      "status": "REJECTED",
+      "tune_t": 0.121,
+      "tune_trades": 9
+     },
+     {
+      "dsr": 0.0001,
+      "family": "sweep",
+      "id": "x5a0dbecab26",
+      "params": {
+       "cond": "vix_contango",
+       "depth_ticks": 16,
        "exit": "eod",
        "level": "pd",
        "mode": "reverse",
        "regime": "vol_lo",
-       "window": "am"
+       "window": "day"
       },
       "status": "REJECTED",
-      "tune_t": -0.201,
-      "tune_trades": 55
+      "tune_t": -0.284,
+      "tune_trades": 64
      }
     ],
     "diagnostics": {
@@ -106,16 +107,16 @@
      "candidates": 24,
      "forward_sessions": 9,
      "hold_sessions": 263,
-     "m_eff": 22.0,
+     "m_eff": 21.0,
      "metric": "returns",
-     "pbo": 0.2685,
-     "prior_trials": 1205,
+     "pbo": 0.6374,
+     "prior_trials": 1229,
      "reached_hold": 0,
-     "spa_p": 0.919,
+     "spa_p": 0.753,
      "tune_sessions": 282,
-     "var_sr": 0.00638076
+     "var_sr": 0.0041554
     },
-    "explored_before": 1080,
+    "explored_before": 1104,
     "promoted": [],
     "status_counts": {
      "REJECTED": 24
@@ -298,86 +299,84 @@
     "batch": 24,
     "best": [
      {
-      "dsr": 0.0002,
-      "family": "noise",
-      "id": "xe30e22c85ce",
-      "params": {
-       "check": 60,
-       "cond": "none",
-       "lookback": 20,
-       "mult": 0.75,
-       "regime": "vol_lo",
-       "trail": "band_vwap"
-      },
-      "status": "REJECTED",
-      "tune_t": 1.89,
-      "tune_trades": 63
-     },
-     {
-      "dsr": 0.0004,
-      "family": "noise",
-      "id": "xa2d2768ab1b",
-      "params": {
-       "check": 60,
-       "cond": "gap_up",
-       "lookback": 20,
-       "mult": 0.75,
-       "regime": "all",
-       "trail": "band_vwap"
-      },
-      "status": "REJECTED",
-      "tune_t": 1.533,
-      "tune_trades": 99
-     },
-     {
       "dsr": 0.0,
       "family": "noise",
-      "id": "x4ab837421f5",
+      "id": "xa60b83efebf",
       "params": {
        "check": 15,
-       "cond": "dow_mid",
-       "lookback": 10,
-       "mult": 1.0,
+       "cond": "vix_inverted",
+       "lookback": 14,
+       "mult": 2.0,
+       "regime": "all",
+       "trail": "band"
+      },
+      "status": "REJECTED",
+      "tune_t": 1.698,
+      "tune_trades": 20
+     },
+     {
+      "dsr": 0.0,
+      "family": "noise",
+      "id": "x7d3a19148a2",
+      "params": {
+       "check": 30,
+       "cond": "prev_down",
+       "lookback": 20,
+       "mult": 1.25,
+       "regime": "vol_lo",
+       "trail": "band"
+      },
+      "status": "REJECTED",
+      "tune_t": 1.155,
+      "tune_trades": 39
+     },
+     {
+      "dsr": 0.0,
+      "family": "noise",
+      "id": "x7b598361328",
+      "params": {
+       "check": 30,
+       "cond": "vix_low",
+       "lookback": 20,
+       "mult": 1.5,
        "regime": "vol_lo",
        "trail": "band_vwap"
       },
       "status": "REJECTED",
-      "tune_t": 1.423,
-      "tune_trades": 60
+      "tune_t": 0.771,
+      "tune_trades": 40
      },
      {
       "dsr": 0.0,
-      "family": "orb",
-      "id": "xc23dc403c6d",
+      "family": "noise",
+      "id": "x1688982c701",
       "params": {
-       "cond": "vix_high",
-       "entry_mode": "breakout_close",
-       "or_min": 5,
+       "check": 30,
+       "cond": "on_wide",
+       "lookback": 14,
+       "mult": 2.0,
        "regime": "vol_lo",
-       "side": "both",
-       "stop": "or_opposite",
-       "target": "eod"
+       "trail": "band_vwap"
       },
       "status": "REJECTED",
-      "tune_t": 1.379,
-      "tune_trades": 18
+      "tune_t": 0.335,
+      "tune_trades": 26
      },
      {
-      "dsr": 0.0001,
-      "family": "orb",
-      "id": "x8896ab5d616",
+      "dsr": 0.0,
+      "family": "imom",
+      "id": "xd9d40a414f3",
       "params": {
-       "cond": "gap_up",
-       "entry_mode": "breakout_close",
-       "or_min": 30,
-       "regime": "all",
-       "side": "long",
-       "stop": "or_opposite",
-       "target": "eod"
+       "base": "prevclose",
+       "cond": "prev_up",
+       "entry": "15:30",
+       "min_abs": "none",
+       "regime": "vol_lo",
+       "t1": "11:30"
       },
       "status": "REJECTED",
-      "tune_t": 1.079,
-      "tune_trades": 109
+      "tune_t": 0.107,
+      "tune_trades": 35
      }
     ],
     "diagnostics": {
@@ -385,16 +384,16 @@
      "candidates": 24,
      "forward_sessions": 9,
      "hold_sessions": 263,
-     "m_eff": 19.0,
+     "m_eff": 21.0,
      "metric": "returns",
-     "pbo": 0.1744,
-     "prior_trials": 1198,
+     "pbo": 0.2396,
+     "prior_trials": 1222,
      "reached_hold": 0,
-     "spa_p": 0.374,
+     "spa_p": 0.457,
      "tune_sessions": 282,
-     "var_sr": 0.0068713
+     "var_sr": 0.00606776
     },
-    "explored_before": 1080,
+    "explored_before": 1104,
     "promoted": [],
     "status_counts": {
      "REJECTED": 24
@@ -628,86 +627,85 @@
     "batch": 24,
     "best": [
      {
-      "dsr": 0.0,
+      "dsr": 0.0039,
+      "family": "orb",
+      "id": "x797d7e4fcad",
+      "params": {
+       "cond": "vix_high",
+       "entry_mode": "breakout_close",
+       "or_min": 60,
+       "regime": "all",
+       "side": "both",
+       "stop": "or_opposite",
+       "target": "eod"
+      },
+      "status": "REJECTED",
+      "tune_t": 0.839,
+      "tune_trades": 94
+     },
+     {
+      "dsr": 0.0014,
       "family": "noise",
-      "id": "x216f4edc6dc",
+      "id": "xdc047d9758e",
       "params": {
        "check": 30,
-       "cond": "vix_inverted",
+       "cond": "vix_high",
        "lookback": 5,
-       "mult": 2.0,
+       "mult": 1.5,
+       "regime": "vol_hi",
+       "trail": "band_vwap"
+      },
+      "status": "REJECTED",
+      "tune_t": 0.819,
+      "tune_trades": 36
+     },
+     {
+      "dsr": 0.0022,
+      "family": "noise",
+      "id": "x1d76704ffea",
+      "params": {
+       "check": 60,
+       "cond": "vix_contango",
+       "lookback": 14,
+       "mult": 1.0,
        "regime": "vol_hi",
        "trail": "band"
       },
       "status": "REJECTED",
-      "tune_t": 1.308,
-      "tune_trades": 19
+      "tune_t": 0.772,
+      "tune_trades": 18
      },
      {
-      "dsr": 0.0067,
-      "family": "gap",
-      "id": "x0f2df5c4a1f",
-      "params": {
-       "cond": "dow_mon",
-       "exit": "eod",
-       "mode": "fade",
-       "regime": "all",
-       "thr": "q80"
-      },
-      "status": "REJECTED",
-      "tune_t": 1.181,
-      "tune_trades": 16
-     },
-     {
-      "dsr": 0.0,
+      "dsr": 0.002,
       "family": "orb",
-      "id": "x48904ff80d2",
+      "id": "x8c4ae2dacb9",
       "params": {
-       "cond": "prev_down",
-       "entry_mode": "first_candle_dir",
-       "or_min": 5,
-       "regime": "all",
-       "side": "long",
-       "stop": "candle",
-       "target": "eod"
-      },
-      "status": "REJECTED",
-      "tune_t": 0.914,
-      "tune_trades": 47
-     },
-     {
-      "dsr": 0.0016,
-      "family": "orb",
-      "id": "x5f52d09e3f2",
-      "params": {
-       "cond": "dow_fri",
+       "cond": "gap_down",
        "entry_mode": "breakout_close",
-       "or_min": 30,
-       "regime": "all",
-       "side": "both",
+       "or_min": 5,
+       "regime": "vol_hi",
+       "side": "long",
        "stop": "atr10",
        "target": "eod"
       },
       "status": "REJECTED",
-      "tune_t": 0.911,
-      "tune_trades": 48
+      "tune_t": 0.724,
+      "tune_trades": 35
      },
      {
-      "dsr": 0.0014,
-      "family": "sweep",
-      "id": "x41397571db4",
+      "dsr": 0.0038,
+      "family": "gap",
+      "id": "x7a31bf61e62",
       "params": {
-       "cond": "dow_mon",
-       "depth_ticks": 16,
-       "exit": "eod",
-       "level": "pd",
-       "mode": "continue",
-       "regime": "vol_lo",
-       "window": "am"
+       "cond": "vix_high",
+       "exit": "12:00",
+       "mode": "fade",
+       "regime": "all",
+       "thr": "q50"
       },
       "status": "REJECTED",
-      "tune_t": 0.672,
-      "tune_trades": 12
+      "tune_t": 0.713,
+      "tune_trades": 57
      }
     ],
     "diagnostics": {
@@ -717,14 +715,14 @@
      "hold_sessions": 260,
      "m_eff": 21.0,
      "metric": "points",
-     "pbo": 0.6441,
-     "prior_trials": 1194,
+     "pbo": 0.7498,
+     "prior_trials": 1218,
      "reached_hold": 0,
-     "spa_p": 0.825,
+     "spa_p": 0.977,
      "tune_sessions": 264,
-     "var_sr": 0.00390389
+     "var_sr": 0.00362973
     },
-    "explored_before": 1080,
+    "explored_before": 1104,
     "promoted": [],
     "status_counts": {
      "REJECTED": 24
@@ -811,7 +809,7 @@
     "reason": null,
     "status": null,
     "strategy": "THE PULSE OF ICARUS v3.1 (repo port)",
-    "tape_last_bar_close": "2026-10-15T21:00:00+00:00",
+    "tape_last_bar_close": "2026-10-16T09:20:00+00:00",
     "totals": {
      "CANDLES|base": {
       "net_usd": 42957.56,
@@ -1406,7 +1404,7 @@
   "degraded_sources": [
    "BLS"
   ],
-  "generated_at": "2026-10-16T04:33:17.159601+00:00",
+  "generated_at": "2026-10-16T16:40:24.101267+00:00",
   "high_impact_current": 109,
   "high_impact_within_24h": 0,
   "next_high_impact": {
@@ -1451,25 +1449,11 @@
   "time_known_current": 237,
   "upcoming": [
    {
-    "category": "inflation",
-    "event_date": "2026-10-16",
-    "event_key": "193a05ff8bfd8bf270158025",
-    "impact": "medium",
-    "minutes_to_event": 360.2,
-    "reference_period": "September 2026",
-    "scheduled_at_et": "2026-10-16T08:30:00-04:00",
-    "scheduled_at_utc": "2026-10-16T12:30:00+00:00",
-    "source": "BLS",
-    "time_known": true,
-    "timing_basis": "source_schedule",
-    "title": "U.S. Import and Export Price Indexes for September 2026"
-   },
-   {
     "category": "labor",
     "event_date": "2026-10-20",
     "event_key": "58a658f3649c0f14360bdd3b",
     "impact": "low",
-    "minutes_to_event": 6210.2,
+    "minutes_to_event": 5516.6,
     "reference_period": "September 2026",
     "scheduled_at_et": "2026-10-20T10:00:00-04:00",
     "scheduled_at_utc": "2026-10-20T14:00:00+00:00",
@@ -1483,7 +1467,7 @@
     "event_date": "2026-10-21",
     "event_key": "d6c2f9b79b43b3ff3906135a",
     "impact": "low",
-    "minutes_to_event": 7650.2,
+    "minutes_to_event": 6956.6,
     "reference_period": "Third Quarter 2026",
     "scheduled_at_et": "2026-10-21T10:00:00-04:00",
     "scheduled_at_utc": "2026-10-21T14:00:00+00:00",
@@ -1511,7 +1495,7 @@
     "event_date": "2026-10-30",
     "event_key": "da62544b492c7d2b68c3d4ac",
     "impact": "high",
-    "minutes_to_event": 20520.2,
+    "minutes_to_event": 19826.6,
     "reference_period": "Third Quarter 2026",
     "scheduled_at_et": "2026-10-30T08:30:00-04:00",
     "scheduled_at_utc": "2026-10-30T12:30:00+00:00",
@@ -1525,7 +1509,7 @@
     "event_date": "2026-11-03",
     "event_key": "7a01bddf79a629fd85f4518b",
     "impact": "medium",
-    "minutes_to_event": 26430.2,
+    "minutes_to_event": 25736.6,
     "reference_period": "September 2026",
     "scheduled_at_et": "2026-11-03T10:00:00-05:00",
     "scheduled_at_utc": "2026-11-03T15:00:00+00:00",
@@ -1539,7 +1523,7 @@
     "event_date": "2026-11-05",
     "event_key": "f8c3f13836bf615dfc21433f",
     "impact": "medium",
-    "minutes_to_event": 29220.2,
+    "minutes_to_event": 28526.6,
     "reference_period": "Third Quarter 2026",
     "scheduled_at_et": "2026-11-05T08:30:00-05:00",
     "scheduled_at_utc": "2026-11-05T13:30:00+00:00",
@@ -1553,7 +1537,7 @@
     "event_date": "2026-11-06",
     "event_key": "39f03e74f7efc06323de37f7",
     "impact": "high",
-    "minutes_to_event": 30660.2,
+    "minutes_to_event": 29966.6,
     "reference_period": "October 2026",
     "scheduled_at_et": "2026-11-06T08:30:00-05:00",
     "scheduled_at_utc": "2026-11-06T13:30:00+00:00",
@@ -1567,7 +1551,7 @@
     "event_date": "2026-11-10",
     "event_key": "1678ef301584705d3b19b733",
     "impact": "high",
-    "minutes_to_event": 36420.2,
+    "minutes_to_event": 35726.6,
     "reference_period": "October 2026",
     "scheduled_at_et": "2026-11-10T08:30:00-05:00",
     "scheduled_at_utc": "2026-11-10T13:30:00+00:00",
@@ -1581,7 +1565,7 @@
     "event_date": "2026-11-10",
     "event_key": "89a9de1eba3e65ec280cffe6",
     "impact": "low",
-    "minutes_to_event": 36420.2,
+    "minutes_to_event": 35726.6,
     "reference_period": "October 2026",
     "scheduled_at_et": "2026-11-10T08:30:00-05:00",
     "scheduled_at_utc": "2026-11-10T13:30:00+00:00",
@@ -1595,7 +1579,7 @@
     "event_date": "2026-11-13",
     "event_key": "e716190720410f5426095c2c",
     "impact": "high",
-    "minutes_to_event": 40740.2,
+    "minutes_to_event": 40046.6,
     "reference_period": "October 2026",
     "scheduled_at_et": "2026-11-13T08:30:00-05:00",
     "scheduled_at_utc": "2026-11-13T13:30:00+00:00",
@@ -1609,7 +1593,7 @@
     "event_date": "2026-11-17",
     "event_key": "352c5025d41811e8a889d83d",
     "impact": "medium",
-    "minutes_to_event": 46500.2,
+    "minutes_to_event": 45806.6,
     "reference_period": "October 2026",
     "scheduled_at_et": "2026-11-17T08:30:00-05:00",
     "scheduled_at_utc": "2026-11-17T13:30:00+00:00",
@@ -1617,6 +1601,20 @@
     "time_known": true,
     "timing_basis": "source_schedule",
     "title": "U.S. Import and Export Price Indexes for October 2026"
+   },
+   {
+    "category": "labor",
+    "event_date": "2026-11-20",
+    "event_key": "9c3e1d7b1fd24e6ae11a5b5a",
+    "impact": "low",
+    "minutes_to_event": 50216.6,
+    "reference_period": "October 2026",
+    "scheduled_at_et": "2026-11-20T10:00:00-05:00",
+    "scheduled_at_utc": "2026-11-20T15:00:00+00:00",
+    "source": "BLS",
+    "time_known": true,
+    "timing_basis": "source_schedule",
+    "title": "State Employment and Unemployment (Monthly) for October 2026"
    }
   ]
  },
@@ -1646,7 +1644,7 @@
     "date": "2026-11-02",
     "epsActual": null,
     "epsEstimated": 1.99,
-    "lastUpdated": "2026-10-15",
+    "lastUpdated": "2026-10-16",
     "revenueActual": null,
     "revenueEstimated": 113380100000,
     "symbol": "AAPL"
@@ -1655,7 +1653,7 @@
     "date": "2026-10-29",
     "epsActual": null,
     "epsEstimated": 1.96,
-    "lastUpdated": "2026-10-15",
+    "lastUpdated": "2026-10-16",
     "revenueActual": null,
     "revenueEstimated": 202084800000,
     "symbol": "AMZN"
@@ -1664,7 +1662,7 @@
     "date": "2026-10-28",
     "epsActual": null,
     "epsEstimated": 3.02,
-    "lastUpdated": "2026-10-15",
+    "lastUpdated": "2026-10-16",
     "revenueActual": null,
     "revenueEstimated": 127667100000,
     "symbol": "GOOGL"
@@ -1673,7 +1671,7 @@
     "date": "2026-10-28",
     "epsActual": null,
     "epsEstimated": 4.72,
-    "lastUpdated": "2026-10-15",
+    "lastUpdated": "2026-10-16",
     "revenueActual": null,
     "revenueEstimated": 90621300000,
     "symbol": "MSFT"
@@ -1682,7 +1680,7 @@
     "date": "2026-10-21",
     "epsActual": null,
     "epsEstimated": 6.67,
-    "lastUpdated": "2026-10-15",
+    "lastUpdated": "2026-10-16",
     "revenueActual": null,
     "revenueEstimated": 63310370000,
     "symbol": "META"
@@ -1691,9 +1689,9 @@
     "date": "2026-10-21",
     "epsActual": null,
     "epsEstimated": 0.4481,
-    "lastUpdated": "2026-10-15",
+    "lastUpdated": "2026-10-16",
     "revenueActual": null,
-    "revenueEstimated": 27919930000,
+    "revenueEstimated": 27935200000,
     "symbol": "TSLA"
    }
   ]
@@ -1715,7 +1713,7 @@
   "databento_6j_5m": "ok",
   "databento_btc_5m": "ok",
   "databento_cl_5m": "ok",
-  "databento_dx_5m": "ok",
+  "databento_dx_5m": "error",
   "databento_es_5m": "ok",
   "databento_gc_5m": "ok",
   "databento_hg_5m": "ok",
@@ -1734,7 +1732,7 @@
   "databento_si_5m": "ok",
   "databento_sil_5m": "ok",
   "databento_sr3_5m": "ok",
-  "databento_vxm_5m": "ok",
+  "databento_vxm_5m": "error",
   "databento_ym_5m": "ok",
   "databento_zb_5m": "ok",
   "databento_zc_5m": "ok",
@@ -1754,7 +1752,7 @@
   "treasury_debt_to_penny": "ok",
   "treasury_operating_cash": "ok"
  },
- "generated_at": "2026-10-16T06:29:50.906248+00:00",
+ "generated_at": "2026-10-16T18:03:26.525113+00:00",
  "integrity": {
   "basis_check": {
    "jumps": [],
@@ -1966,7 +1964,7 @@
   ]
  },
  "production_decision_authorized": false,
- "run_id": "cl-lab-5001def67e904c1f",
+ "run_id": "cl-lab-bd301edd6e1e95bf",
  "schema": "cl_lab.ui_feed/1",
  "ui_state": "RESEARCH ONLY"
 }

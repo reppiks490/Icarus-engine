@@ -9,10 +9,24 @@ import pytest
 CONTRACT = Path("config/credential_contract.json")
 HANDOFF = Path("docs/agent-handoffs/GITHUB_NATIVE_CREDENTIALS.md")
 WORKFLOW = Path(".github/workflows/github-native-credential-health.yml")
+PROVIDER_WORKFLOW = Path(".github/workflows/provider-exhaustive-collection.yml")
+
+
+def _contract() -> dict:
+    return json.loads(CONTRACT.read_text())
+
+
+def _credential(canonical: str) -> dict:
+    return next(item for item in _contract()["credentials"] if item["canonical"] == canonical)
+
+
+def _env_expression(text: str, name: str) -> str:
+    prefix = f"          {name}: "
+    return next(line[len(prefix) :] for line in text.splitlines() if line.startswith(prefix))
 
 
 def test_contract_exists_and_uses_unique_canonical_names() -> None:
-    data = json.loads(CONTRACT.read_text())
+    data = _contract()
     credentials = data["credentials"]
     assert credentials
     canonical = [item["canonical"] for item in credentials]
@@ -70,13 +84,65 @@ def test_status_repr_and_dict_never_include_secret_value() -> None:
 
 
 def test_health_workflow_is_explicit_and_never_enumerates_secrets() -> None:
-    data = json.loads(CONTRACT.read_text())
+    data = _contract()
     text = WORKFLOW.read_text()
     assert "toJSON(secrets)" not in text
     assert "credential_health.py" in text
     for item in data["credentials"]:
         for alias in item["aliases"]:
             assert f"secrets.{alias}" in text
+
+
+def test_provider_collector_resolves_legacy_names_through_contract() -> None:
+    from tools.provider_exhaustive_collection import provider_credential, provider_secondary_credential
+
+    assert provider_credential("massive", {"MASSIVE_KEY": "m"}) == "m"
+    assert provider_credential("twelve", {"TWELVE_DATA_API_KEY": "t"}) == "t"
+    assert provider_credential("fmp", {"FMP_KEY": "f"}) == "f"
+    assert provider_credential("intrinio", {"INTRINIO_TOKEN": "i"}) == "i"
+    assert provider_credential("quiver", {"QUIVER_QUANT_API_KEY": "q"}) == "q"
+    assert provider_credential("tickstream", {"TICKSTREAM_TOKEN": "s"}) == "s"
+    assert provider_credential("bybit", {}) == ""
+    assert provider_secondary_credential("alpaca", {"APCA_API_SECRET_KEY": "a"}) == "a"
+
+
+def test_provider_workflow_exports_canonical_names_with_every_contract_alias() -> None:
+    text = PROVIDER_WORKFLOW.read_text()
+    canonical_names = [
+        "TICKSTREAM_API_KEY",
+        "MASSIVE_API_KEY",
+        "TWELVEDATA_API_KEY",
+        "FMP_API_KEY",
+        "EODHD_API_TOKEN",
+        "TIINGO_API_TOKEN",
+        "INTRINIO_API_KEY",
+        "QUIVER_API_KEY",
+        "FRED_API_KEY",
+        "ALPACA_API_KEY",
+        "ALPACA_API_SECRET",
+    ]
+    for canonical in canonical_names:
+        expression = _env_expression(text, canonical)
+        spec = _credential(canonical)
+        for alias in spec["aliases"]:
+            assert f"secrets.{alias}" in expression
+            assert f"vars.{alias}" in expression
+
+    legacy_runtime_names = [
+        "TICK_STREAM_API_KEY",
+        "POLYGON_API_KEY",
+        "TWELVE_DATA_API_KEY",
+        "TWELVE_API_KEY",
+        "EODHD_API_KEY",
+        "TIINGO_API_KEY",
+        "INTRINIO_API_TOKEN",
+        "QUIVER_API_TOKEN",
+        "QUIVER_QUANT_API_KEY",
+        "ALPACA_SECRET_KEY",
+    ]
+    env_block = text.split("      - name: Drain all-catalog provider queue without ChatGPT", 1)[1].split("        run:", 1)[0]
+    for legacy in legacy_runtime_names:
+        assert f"          {legacy}:" not in env_block
 
 
 def test_handoff_tells_agents_to_use_github_native_contract_without_plaintext() -> None:

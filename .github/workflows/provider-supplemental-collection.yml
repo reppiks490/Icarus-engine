@@ -62,9 +62,10 @@ jobs:
         with:
           name: supplemental-${{ matrix.provider }}-${{ github.run_id }}
           path: |
-            automation_intelligence/provider_collection_v1/cycles/
-            automation_intelligence/provider_collection_v1/latest/
-            automation_intelligence/mcp_interface/events/
-            .provider_collection_archives/
+            automation_intelligence/provider_collection_v1/cycles/supplemental-${{ github.run_id }}-${{ matrix.provider }}/
+            automation_intelligence/provider_collection_v1/latest/${{ matrix.provider }}.json
+            automation_intelligence/provider_collection_v1/checkpoints/${{ matrix.provider }}.enc
+            automation_intelligence/mcp_interface/events/provider-coverage-supplemental-${{ github.run_id }}-${{ matrix.provider }}.json
+            .provider_collection_archives/supplemental-${{ github.run_id }}-${{ matrix.provider }}/
           include-hidden-files: true
           retention-days: 7

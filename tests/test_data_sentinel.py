@@ -13,6 +13,12 @@ def _receipt(root, name, **provider):
                              "providers": {name: provider}}))
 
 
+def _external_fabric(root, providers):
+    p = root / "automation_intelligence/cl_lab/external_data_fabric.json"
+    p.parent.mkdir(parents=True, exist_ok=True)
+    p.write_text(json.dumps({"generated_at": "2026-10-11T11:30:00Z", "providers": providers}))
+
+
 def test_verdicts_follow_the_receipts(tmp_path):
     _receipt(tmp_path, "massive", credential_present=False, status="BLOCKED_MISSING_CREDENTIAL")
     _receipt(tmp_path, "fred", credential_present=True, status="COLLECTED", collected_rows=50)
@@ -26,6 +32,32 @@ def test_verdicts_follow_the_receipts(tmp_path):
     assert got["provider:fmp"] == "DEGRADED"
     assert got["provider:tiingo"] == "DEGRADED"
     assert got["provider:bybit"] == "DEGRADED"
+
+
+def test_dedicated_live_fabric_prevents_false_blocked_provider(tmp_path):
+    _receipt(tmp_path, "fmp", credential_present=True, status="BLOCKED", collected_rows=0,
+             catalog={"denied_operations": 85})
+    _receipt(tmp_path, "eodhd", credential_present=True, status="BLOCKED", collected_rows=0,
+             catalog={"denied_operations": 7})
+    _external_fabric(tmp_path, {
+        "fmp": {"status": "ok", "calls": 3, "datasets": {"earnings_calendar": {"status": "ok", "rows": 51}}},
+        "eodhd": {"status": "ok", "calls": 11, "datasets": {"eod_1y": {"status": "ok", "symbols": {"AAPL": {"rows": 251}}}}},
+    })
+
+    got = {s["source"]: s for s in ds.build(tmp_path, now=NOW)["sources"]}
+    assert got["provider:fmp"]["verdict"] == "DEGRADED"
+    assert got["provider:eodhd"]["verdict"] == "DEGRADED"
+    assert "dedicated" in got["provider:fmp"]["why"].lower()
+    assert "85" in got["provider:fmp"]["why"]
+    assert "dedicated" in got["provider:eodhd"]["why"].lower()
+
+
+def test_stale_dedicated_evidence_does_not_override_missing_credential(tmp_path):
+    _receipt(tmp_path, "fmp", credential_present=False, status="BLOCKED_MISSING_CREDENTIAL", collected_rows=0)
+    _external_fabric(tmp_path, {"fmp": {"status": "ok", "calls": 3}})
+    got = {s["source"]: s for s in ds.build(tmp_path, now=NOW)["sources"]}
+    assert got["provider:fmp"]["verdict"] == "BLOCKED"
+    assert "no key" in got["provider:fmp"]["why"].lower()
 
 
 def test_problems_sort_first_and_markdown_is_one_line_per_source(tmp_path):

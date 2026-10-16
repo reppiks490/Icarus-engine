@@ -134,7 +134,14 @@ def depth(root: Path) -> dict:
         cap, spent = float(d.get("cap_usd") or 0), float(d.get("spent_usd") or 0)
         budgets[path.stem] = dict(cap_usd=round(cap, 2), spent_usd=round(spent, 2), left_usd=round(cap - spent, 2))
     d1 = _load(root / AI / "cl_lab" / "depth_d1_latest.json") or {}
+    check = _load(root / OUT / "vault_verify.json") or {}
+    vault_verify = {
+        "verdict": check.get("verdict", "NOT_RUN"),
+        "verified_at": check.get("verified_at"),
+        "failures": check.get("failure_count", 0),
+    }
     return dict(vault_files=files, vault_key_source=vault.get("key_source"), budgets=budgets,
+                vault_verify=vault_verify,
                 d1={k: (d1.get(k) or {}).get("status") for k in ("D1-A", "D1-B")} | {"days": d1.get("event_days")})
 
 
@@ -206,7 +213,9 @@ def markdown(report: dict) -> str:
     lines += ["## Delivering", "", ", ".join(ok) or "none", ""]
     d, r = report["depth"], report["research"]
     lines += ["## Order-book data", "",
-              f"Vaulted files: {d['vault_files']} (key: {d['vault_key_source']}). D1 status: {d['d1']}.", "",
+              f"Vaulted files: {d['vault_files']} (key: {d['vault_key_source']}). "
+              f"Last vault decrypt/hash check: {d['vault_verify']['verdict']} at {d['vault_verify']['verified_at']} "
+              f"with {d['vault_verify']['failures']} failures. D1 status: {d['d1']}.", "",
               "| Budget | Cap | Spent | Left |", "|---|---|---|---|"]
     lines += [f"| {k} | ${v['cap_usd']} | ${v['spent_usd']} | ${v['left_usd']} |" for k, v in d["budgets"].items()]
     lines += ["", "## Research", "", f"Champions: {r['champions']}. Pulse variants: {r['pulse']}. "
@@ -219,6 +228,7 @@ def markdown(report: dict) -> str:
 def _fingerprint(report: dict) -> list:
     return [(s["source"], s["verdict"]) for s in report.get("sources", [])] + [
         report.get("depth", {}).get("vault_files"), report.get("research", {}).get("champions"),
+        (report.get("depth", {}).get("vault_verify") or {}).get("verdict"),
         (report.get("coordination") or {}).get("awaiting_reply"),
         {k: v.get("counts") for k, v in ((report.get("coordination") or {}).get("boards") or {}).items()}]
 

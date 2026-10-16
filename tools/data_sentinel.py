@@ -68,6 +68,28 @@ def _load(path: Path):
         return None
 
 
+def _fabric_rows(provider: dict) -> int:
+    """Count known rows in successful dedicated-fabric datasets without double counting."""
+    total = 0
+    for dataset in (provider.get("datasets") or {}).values():
+        if not isinstance(dataset, dict) or dataset.get("status") not in {"ok", "partial"}:
+            continue
+        count = dataset.get("rows")
+        if isinstance(count, int) and not isinstance(count, bool):
+            total += max(0, count)
+            if count > 0:
+                continue
+        symbols = dataset.get("symbols")
+        if isinstance(symbols, dict):
+            for item in symbols.values():
+                if not isinstance(item, dict):
+                    continue
+                rows = item.get("rows", item.get("bars", 0))
+                if isinstance(rows, int) and not isinstance(rows, bool):
+                    total += max(0, rows)
+    return total
+
+
 def providers(root: Path, now: datetime) -> list[dict]:
     out = []
     fabric = _load(root / AI / "cl_lab" / "external_data_fabric.json") or {}
@@ -80,13 +102,18 @@ def providers(root: Path, now: datetime) -> list[dict]:
         rows, denied = p.get("collected_rows") or 0, cat.get("denied_operations") or 0
         dedicated_provider = dedicated.get(name) or {}
         dedicated_live = dedicated_provider.get("status") in {"ok", "partial"} and (dedicated_provider.get("calls") or 0) > 0
+        dedicated_rows = _fabric_rows(dedicated_provider) if dedicated_live else 0
+        # Generic and dedicated collectors can overlap, so expose the larger known
+        # lane count rather than summing unlike/possibly duplicated observations.
+        if p.get("credential_present"):
+            rows = max(rows, dedicated_rows)
         if not p.get("credential_present") and p.get("status") == "NO_READY_JOBS":
             verdict, why = "DEGRADED", "no key; keyless endpoints only, none ready"
         elif not p.get("credential_present"):
             verdict, why = "BLOCKED", "no key reaches the runner"
         elif p.get("status", "").startswith("BLOCKED") and dedicated_live:
             verdict = "DEGRADED"
-            why = f"dedicated fabric live ({dedicated_provider.get('calls')} calls); generic sampler blocked"
+            why = f"dedicated fabric live ({dedicated_provider.get('calls')} calls, {dedicated_rows} known rows); generic sampler blocked"
             if denied:
                 why += f"; {denied} endpoints denied by plan"
         elif p.get("status", "").startswith("BLOCKED"):

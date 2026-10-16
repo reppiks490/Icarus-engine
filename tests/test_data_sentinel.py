@@ -1,5 +1,6 @@
 import json
 from datetime import datetime, timezone
+from pathlib import Path
 
 from tools import data_sentinel as ds
 
@@ -58,6 +59,16 @@ def test_stale_dedicated_evidence_does_not_override_missing_credential(tmp_path)
     got = {s["source"]: s for s in ds.build(tmp_path, now=NOW)["sources"]}
     assert got["provider:fmp"]["verdict"] == "BLOCKED"
     assert "no key" in got["provider:fmp"]["why"].lower()
+
+
+def test_provider_manifest_points_to_real_external_fabric_evidence():
+    root = Path(__file__).parents[1]
+    manifest = json.loads((root / "config/data_ingestion_manifest.json").read_text(encoding="utf-8"))
+    sources = {item["id"]: item for item in manifest["sources"]}
+    expected = "automation_intelligence/cl_lab/external_data_fabric.json"
+    for provider in ("fmp", "eodhd", "tiingo"):
+        assert expected in sources[provider]["evidence_paths"]
+        assert "automation_intelligence/external_data_fabric_v1/latest.json" not in sources[provider]["evidence_paths"]
 
 
 def test_problems_sort_first_and_markdown_is_one_line_per_source(tmp_path):

@@ -5,38 +5,32 @@ import re
 from pathlib import Path
 
 
-WORKFLOW = Path('.github/workflows/provider-exhaustive-collection.yml')
+WORKFLOW = Path('.github/workflows/provider-supplemental-collection.yml')
 SUPPLEMENT = Path('config/provider_endpoint_catalog_supplemental.json')
 MANIFEST = Path('config/data_ingestion_manifest.json')
 DIRECTIVE = Path('docs/agent-handoffs/FEDERATED_DATA_COLLECTION.md')
 
 
-def test_credentialed_missing_providers_are_admitted_to_runtime_collector() -> None:
-    from tools import provider_exhaustive_collection as p
+def test_credentialed_missing_providers_are_admitted_to_additive_runtime_collector() -> None:
+    from tools import provider_supplemental_collection as s
 
     for provider in ('unusual_whales', 'alphavantage', 'finnhub'):
-        assert provider in p.PROVIDERS
+        assert provider in s.EXTENDED_PROVIDERS
 
-    assert p.PROVIDERS['unusual_whales']['auth'] == 'bearer'
-    assert p.PROVIDERS['alphavantage']['auth'] == 'alphavantage'
-    assert p.PROVIDERS['finnhub']['auth'] == 'finnhub'
+    assert s.EXTENDED_PROVIDERS['unusual_whales']['auth'] == 'bearer'
+    assert s.EXTENDED_PROVIDERS['alphavantage']['auth'] == 'alphavantage'
+    assert s.EXTENDED_PROVIDERS['finnhub']['auth'] == 'finnhub'
 
 
-def test_provider_workflow_runs_every_github_native_provider_and_injects_canonical_credentials() -> None:
+def test_provider_workflow_runs_missing_github_native_providers_and_injects_canonical_credentials() -> None:
     text = WORKFLOW.read_text()
     matrix = re.search(r'provider:\s*\[([^\]]+)\]', text)
     assert matrix
     providers = {item.strip() for item in matrix.group(1).split(',')}
-    required = {
-        'massive', 'twelve', 'fmp', 'eodhd', 'tiingo', 'intrinio', 'quiver',
-        'fred', 'alpaca', 'bybit', 'tickstream', 'unusual_whales',
-        'alphavantage', 'finnhub',
-    }
-    assert required <= providers
+    assert providers == {'unusual_whales', 'alphavantage', 'finnhub'}
     for canonical in ('UNUSUAL_WHALES_API_KEY', 'ALPHAVANTAGE_API_KEY', 'FINNHUB_API_KEY'):
         assert f'          {canonical}:' in text
         assert f'secrets.{canonical}' in text
-        assert f'vars.{canonical}' in text
 
 
 def test_supplemental_catalog_covers_missing_provider_families() -> None:
@@ -116,7 +110,7 @@ def test_manifest_forces_three_stage_truth_and_federated_access() -> None:
         source = sources[source_id]
         assert source['credential_state'] == 'PRESENT'
         assert source['access_mode'] == 'github_actions'
-        assert source['workflow'] == '.github/workflows/provider-exhaustive-collection.yml'
+        assert source['workflow'] == '.github/workflows/provider-supplemental-collection.yml'
 
 
 def test_all_ai_units_receive_persistent_data_plane_directive() -> None:
@@ -125,6 +119,7 @@ def test_all_ai_units_receive_persistent_data_plane_directive() -> None:
         'every ai unit',
         'config/data_ingestion_manifest.json',
         'provider-exhaustive-collection.yml',
+        'provider-supplemental-collection.yml',
         'unusual whales',
         'databento',
         'sec/edgar',

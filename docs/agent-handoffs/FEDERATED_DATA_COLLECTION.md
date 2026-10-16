@@ -13,7 +13,8 @@ Every AI unit must account for all applicable parts of the ICARUS evidence plane
 - `ICARUS_STATE.md` — system truth and ownership boundaries.
 - `config/data_ingestion_manifest.json` — canonical source/access/collection/consumption ledger.
 - `config/credential_contract.json` — canonical GitHub-native credential names and aliases.
-- `.github/workflows/provider-exhaustive-collection.yml` — resumable provider acquisition.
+- `.github/workflows/provider-exhaustive-collection.yml` — existing resumable provider acquisition.
+- `.github/workflows/provider-supplemental-collection.yml` — additive acquisition for credentialed providers that were missing from the K1 matrix.
 - `automation_intelligence/provider_collection_v1/research_context.json` — safe aggregated provider context.
 - Databento depth/order-book evidence and the encrypted depth-vault lanes.
 - SEC/EDGAR filings and derived filing evidence.
@@ -42,9 +43,9 @@ A 401 is authentication failure. A 403/402 is entitlement/plan denial. A 429 is 
 
 ## GitHub-native provider data
 
-For GitHub-native API sources, use the canonical provider adapter and the exhaustive collector. Secret values remain inside GitHub Actions. Never ask another AI account to reveal an API key.
+For GitHub-native API sources, use the canonical provider adapter and the shared provider collection state. Secret values remain inside GitHub Actions. Never ask another AI account to reveal an API key.
 
-Current missing-surface closure adds Unusual Whales, Alpha Vantage and Finnhub to the same provider queue used by Massive, Twelve Data, FMP, EODHD, Tiingo, Intrinio, Quiver, FRED, Alpaca, Bybit and Tickstream. New provider additions must update the manifest, credential contract where applicable, endpoint catalog, tests and runtime health evidence together.
+The existing `provider-exhaustive-collection.yml` remains the owner-qualified K1 lane. The additive `provider-supplemental-collection.yml` closes the missing credentialed-provider surface for Unusual Whales, Alpha Vantage and Finnhub without overwriting K1. Both write the same provider receipt schema and are consumed by the same `provider_collection_v1/research_context.json` aggregator. New provider additions must update the manifest, credential contract where applicable, endpoint catalog, tests and runtime health evidence together.
 
 ## Unusual Whales
 

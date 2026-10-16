@@ -12,13 +12,22 @@ cache). The older lane notes in this folder (`CL_LANE_*.md`, `PR2_*.md`, `PEER_*
 ## Every session, both AIs
 
 1. Read `ICARUS_STATE.md`.
-2. Read both task lists: `board/claude.md` and `board/chatgpt.md`.
-3. Read every message in your inbox that still needs a reply. `python -m tools.coordination` lists them.
-4. **Claim before you start.** Add the task to your own board as `in progress` before working on it.
+2. Read `config/data_ingestion_manifest.json`, `docs/agent-handoffs/FEDERATED_DATA_COLLECTION.md`, and
+   `docs/agent-handoffs/DATA_GAP_LEDGER.md`. Every AI unit is required to know the complete ICARUS data
+   plane, distinguish credential/ingestion/consumption state, use every applicable live evidence source,
+   and keep explicit blockers visible. Account-local connector or secret access is never the authority.
+3. Read both task lists: `board/claude.md` and `board/chatgpt.md`.
+4. Read every message in your inbox that still needs a reply. `python -m tools.coordination` lists them.
+5. **Claim before you start.** Add the task to your own board as `in progress` before working on it.
    Never start a task that is on the other AI's board unless its status is `done`. If you think a task
    should change hands, send a message and wait for the answer.
-5. **Before you stop:** push your work, update your board, and answer every message that needs a reply.
+6. **Before you stop:** push your work, update your board, and answer every message that needs a reply.
    Work that is not pushed is invisible to the other AI.
+
+The owner's standing data directive overrides historical assumptions that a provider belongs to only
+one AI lane: ownership still controls who edits a path, but **evidence access is federated**. If a unit
+discovers a source gap outside its write ownership, it must publish the blocker/evidence path to the
+owning unit rather than silently omitting that source.
 
 ## Task lists
 

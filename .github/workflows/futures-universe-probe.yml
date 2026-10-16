@@ -1,0 +1,53 @@
+name: futures-universe-probe
+
+on:
+  pull_request:
+    paths:
+      - 'icarus_engine/assets.py'
+      - 'icarus_engine/feeds/yahoo.py'
+      - 'tools/futures_universe_probe.py'
+      - '.github/workflows/futures-universe-probe.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  public-delayed-source-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Probe public delayed futures source
+        run: python tools/futures_universe_probe.py > futures-universe-probe.json
+      - name: Validate evidence envelope
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path('futures-universe-probe.json')
+          d = json.loads(p.read_text())
+          assert d['schema_version'] == 'icarus-futures-universe-probe-v1'
+          assert d['authority'] == 'research_delayed_only'
+          assert d['live_execution_authorized'] is False
+          assert d['requested'] == len(d['rows'])
+          assert d['connected'] + d['not_connected'] == d['requested']
+          assert d['requested'] == 23
+          print(json.dumps({
+              'requested': d['requested'],
+              'connected': d['connected'],
+              'not_connected': d['not_connected'],
+              'statuses': {r['symbol']: r['status'] for r in d['rows']},
+          }, sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: futures-universe-probe
+          path: futures-universe-probe.json
+          if-no-files-found: error
+          retention-days: 14

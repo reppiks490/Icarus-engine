@@ -33,6 +33,7 @@ def test_agent_entrypoint_routes_provider_work_to_github_native_data_access():
 
 def test_credential_entrypoint_explains_access_without_secret_possession():
     text = CRED_ENTRY.read_text(encoding='utf-8').lower()
+    plain = text.replace('**', '')
     assert 'github_native_data_access.md' in text
     assert 'config/data_ingestion_manifest.json' in text
     assert 'not expected to read or possess secret strings' in text
@@ -41,6 +42,10 @@ def test_credential_entrypoint_explains_access_without_secret_possession():
     assert 'github-native-credential-health' in text
     assert 'evidence_paths' in text
     assert 'fresh collection' in text and 'github actions' in text
+    assert 'admin_token' in text and 'icarus_admin_token' in text
+    assert 'local plant / bridge runtime controls' in text
+    assert 'not the shared provider credential plane' in plain
+    assert 'live broker arming' in text and 'disabled' in text
 
 
 def test_legacy_engine_coordination_is_historical_not_authoritative():

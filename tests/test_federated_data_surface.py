@@ -44,8 +44,8 @@ def test_every_active_public_data_fabric_is_federated() -> None:
         row = sources[source_id]
         assert row['required_for_all_ai_units'] is True
         assert row['evidence_paths']
-        assert row['ingestion_state'] in {'LIVE', 'PARTIAL', 'DEDICATED_LANE', 'RUNTIME_CAPABILITY'}
-        assert row['consumption_state'] in {'LIVE', 'PARTIAL', 'DEDICATED_LANE', 'EVIDENCE_ONLY', 'RUNTIME_CAPABILITY'}
+        assert row['ingestion_state'] in {'LIVE', 'PARTIAL', 'DEDICATED_LANE'}
+        assert row['consumption_state'] in {'LIVE', 'PARTIAL', 'DEDICATED_LANE', 'EVIDENCE_ONLY'}
 
 
 def test_public_venue_and_agency_sources_match_live_collectors() -> None:
@@ -80,8 +80,9 @@ def test_runtime_public_collectors_are_explicit_but_not_misreported_as_always_on
 
     runtime = sources['runtime_market_sources']
     assert runtime['credential_state'] == 'PUBLIC'
-    assert runtime['ingestion_state'] == 'RUNTIME_CAPABILITY'
-    assert runtime['consumption_state'] == 'RUNTIME_CAPABILITY'
+    assert runtime['ingestion_state'] == 'DEDICATED_LANE'
+    assert runtime['consumption_state'] == 'EVIDENCE_ONLY'
+    assert runtime['runtime_status'] == 'OPT_IN_DISABLED_DEFAULT'
     assert runtime['default_enabled'] is False
     for needle in ('cftc', 'bls', 'federal-reserve', 'bea', 'sec', 'coinbase', 'yahoo-dxy'):
         assert needle in market.lower()
@@ -89,7 +90,9 @@ def test_runtime_public_collectors_are_explicit_but_not_misreported_as_always_on
 
     engine = sources['engine_market_feeds']
     assert engine['credential_state'] == 'PUBLIC'
-    assert engine['ingestion_state'] == 'RUNTIME_CAPABILITY'
+    assert engine['ingestion_state'] == 'DEDICATED_LANE'
+    assert engine['consumption_state'] == 'EVIDENCE_ONLY'
+    assert engine['runtime_status'] == 'RUNTIME_SELECTED_FEEDS'
     for needle in ('api.exchange.coinbase.com', 'api.kraken.com', 'query1.finance.yahoo.com'):
         assert needle in feeds
 

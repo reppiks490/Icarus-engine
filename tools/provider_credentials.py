@@ -53,6 +53,9 @@ _PROVIDER_BINDINGS: Final[dict[str, tuple[str | None, str | None, tuple[str, ...
         ("TICKSTREAM_API_KEY", "TICK_STREAM_API_KEY"),
         (),
     ),
+    "alphavantage": ("ALPHAVANTAGE_API_KEY", None, ("ALPHAVANTAGE_API_KEY",), ()),
+    "finnhub": ("FINNHUB_API_KEY", None, ("FINNHUB_API_KEY",), ()),
+    "unusual_whales": ("UNUSUAL_WHALES_API_KEY", None, ("UNUSUAL_WHALES_API_KEY",), ()),
     "bybit": (None, None, (), ()),
 }
 

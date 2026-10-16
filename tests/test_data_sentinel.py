@@ -28,6 +28,32 @@ def test_verdicts_follow_the_receipts(tmp_path):
     assert got["provider:bybit"] == "DEGRADED"
 
 
+def test_dedicated_external_fabric_prevents_false_blocked_provider(tmp_path):
+    _receipt(tmp_path, "fmp", credential_present=True, status="BLOCKED", collected_rows=0,
+             catalog={"denied_operations": 85})
+    _receipt(tmp_path, "eodhd", credential_present=True, status="BLOCKED", collected_rows=0,
+             catalog={"denied_operations": 29})
+    fabric = tmp_path / "automation_intelligence/cl_lab/external_data_fabric.json"
+    fabric.parent.mkdir(parents=True, exist_ok=True)
+    fabric.write_text(json.dumps({
+        "generated_at": "2026-10-11T11:30:00Z",
+        "providers": {
+            "fmp": {"status": "ok", "datasets": {"earnings_calendar": {"status": "ok", "rows": 51}}},
+            "eodhd": {"status": "ok", "datasets": {
+                "eod_1y": {"status": "ok", "symbols": {"AAPL": {"rows": 251}}},
+                "tick_windows": {"status": "plan_limited"},
+            }},
+        },
+    }))
+    got = {s["source"]: s for s in ds.build(tmp_path, now=NOW)["sources"]}
+    assert got["provider:fmp"]["verdict"] == "DEGRADED"
+    assert got["provider:eodhd"]["verdict"] == "DEGRADED"
+    assert got["provider:fmp"]["rows"] >= 51
+    assert got["provider:eodhd"]["rows"] >= 251
+    assert "dedicated" in got["provider:fmp"]["why"].lower()
+    assert "dedicated" in got["provider:eodhd"]["why"].lower()
+
+
 def test_problems_sort_first_and_markdown_is_one_line_per_source(tmp_path):
     _receipt(tmp_path, "fred", credential_present=True, status="COLLECTED", collected_rows=50)
     feeds = tmp_path / "automation_intelligence/cl_lab/feeds_manifest.json"

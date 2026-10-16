@@ -25,6 +25,13 @@ def _container(data):
 
 
 def _uw_next_page(data, current):
+    # Pinned official UW docs define list_tokens with limit only (max 1000),
+    # and no cursor/page parameter. In our catalog that call is uniquely bound
+    # as {limit: 1000}; it is therefore terminal even if response metadata
+    # contains a URL-like field that the generic K1 parser could misclassify.
+    if current == {"limit": 1000}:
+        return None
+
     container = _container(data)
     token = container.get("next_token") or container.get("nextToken")
     if token:
@@ -57,7 +64,7 @@ def _uw_next_page(data, current):
                 return {"params": {**current, "offset": int(current["offset"]) + 1}}
 
     # Important: do not fall through to K1 generic next_url logic. Some UW
-    # response metadata is not a collection cursor (for example list_tokens).
+    # response metadata is not a collection cursor.
     return None
 
 

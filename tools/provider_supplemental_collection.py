@@ -178,6 +178,12 @@ def _pagination_container(data):
     return data
 
 
+def _safe_pagination_param(name: str) -> bool:
+    # next_token is a provider-issued cursor, not an account credential. Keep
+    # the generic secret filter intact for every other token/secret-like name.
+    return name == "next_token" or not core.SECRET.search(name)
+
+
 def next_page(provider, data, current):
     container = _pagination_container(data)
     token = container.get("next_token") or container.get("nextToken")
@@ -192,7 +198,7 @@ def next_page(provider, data, current):
         parsed = urlsplit(next_url)
         return {
             "path": parsed.path,
-            "params": {k: v for k, v in parse_qsl(parsed.query) if not core.SECRET.search(k)},
+            "params": {k: v for k, v in parse_qsl(parsed.query) if _safe_pagination_param(k)},
         }
 
     continuation = _ORIGINAL["next_page"](provider, data, current)

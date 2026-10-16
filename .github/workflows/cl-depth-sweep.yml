@@ -135,6 +135,12 @@ jobs:
           path: .databento_sweep_cache
           key: databento-sweep-${{ github.run_id }}-${{ github.run_attempt }}
 
+      - name: Record durability by Databento account
+        if: always()
+        run: >-
+          python -m tools.databento_sweep_inventory
+          --out automation_intelligence/cl_lab/databento_sweep_inventory.json
+
       - name: Commit sweep manifests and ledgers
         if: always()
         run: |
@@ -142,6 +148,9 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add automation_intelligence/cl_lab/databento_depth_sweep_*.json 2>/dev/null || true
           if [ -d automation_intelligence/cl_lab/spend ]; then git add automation_intelligence/cl_lab/spend; fi
+          if [ -f automation_intelligence/cl_lab/databento_sweep_inventory.json ]; then
+            git add automation_intelligence/cl_lab/databento_sweep_inventory.json
+          fi
           if [ '${{ steps.vault.outcome }}' = 'success' ]; then
             git add data/depth_vault automation_intelligence/sentinel/vault_verify.json
           fi
@@ -152,3 +161,9 @@ jobs:
             sleep $((i * 7))
           done
           exit 1
+
+      - name: Enforce paid sweep durability
+        if: always()
+        run: >-
+          python -m tools.databento_sweep_inventory
+          --check automation_intelligence/cl_lab/databento_sweep_inventory.json

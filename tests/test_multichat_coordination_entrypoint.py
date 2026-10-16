@@ -3,6 +3,7 @@ from pathlib import Path
 
 AGENTS = Path('AGENTS.md')
 COORD = Path('coordination/README.md')
+MIRROR = Path('.github/workflows/coordination-mirror.yml')
 
 
 def test_agent_entrypoint_uses_central_many_chat_bus_and_no_model_task_gate():
@@ -29,3 +30,18 @@ def test_legacy_engine_coordination_is_historical_not_authoritative():
     assert 'config/data_ingestion_manifest.json' in text
     assert 'never start a task that is on the other ai' not in text
     assert 'send a message and wait for the answer' not in text
+
+
+def test_coordination_mirror_has_redundant_trusted_refresh_triggers():
+    text = MIRROR.read_text(encoding='utf-8').lower()
+    # Cron remains a fast refresh path, but is shifted away from the busiest minute boundary.
+    assert 'cron: "3-58/5 * * * *"' in text
+    assert 'cron: "*/5 * * * *"' not in text
+    # The already-running local shadow is a trusted 10-minute fallback if GitHub drops a cron event.
+    assert 'workflow_run:' in text
+    assert 'restored-five-local-shadow' in text
+    assert 'types: [completed]' in text
+    # Manual recovery must remain available and the mirror must stay a read-only fetch of the central bus.
+    assert 'workflow_dispatch:' in text
+    assert 'icarus-owner-actions/main/coordination/index.json' in text
+    assert 'permissions:' in text and 'contents: write' in text

@@ -1,0 +1,23 @@
+{
+  "schema_version": "icarus-mcp-event-v1",
+  "event_id": "20261016T032700Z-multichat-coordination-ui",
+  "at_utc": "2026-10-16T03:27:00Z",
+  "category": "INTEGRATION",
+  "status": "IMPLEMENTED_PENDING_VERIFICATION",
+  "severity": "IMPORTANT",
+  "summary": "Integrate the central many-chat coordination bus into the read-only MCP / Automation dashboard through a bounded five-minute GitHub mirror and local repository projection. No dashboard runtime network calls, repository mutations, or trading authority are introduced.",
+  "surface": ["MCP / Automation UI", "multi-chat coordination", "coordination mirror"],
+  "source": "ICARUS_COORDINATION_FABRIC",
+  "paths": [
+    ".github/workflows/coordination-mirror.yml",
+    "icarus_engine/mcp_control.py",
+    "icarus_engine/mcp-ui.js",
+    "tests_engine/test_mcp_control.py"
+  ],
+  "evidence": [
+    "PR #182",
+    "TDD RED run 38845135614: four expected missing-feature failures; pre-existing provenance/core/CLI gates green",
+    "canonical bus: reppiks490/icarus-owner-actions/coordination/index.json"
+  ],
+  "execution_authorized": false
+}

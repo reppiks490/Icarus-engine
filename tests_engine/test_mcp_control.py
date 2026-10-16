@@ -76,6 +76,42 @@ def seed(tmp_path: Path) -> None:
     })
 
 
+def seed_coordination(tmp_path: Path) -> None:
+    write_json(tmp_path, "automation_intelligence/coordination/index.json", {
+        "schema_version": "icarus-coordination-index-v2",
+        "generated_at_utc": "2026-10-16T03:10:15Z",
+        "owner_status": {
+            "claude": {"active": False, "return_date": None, "note": "inactive per owner"},
+            "live_broker_arming": False,
+        },
+        "counts": {"active": 2, "terminal": 4, "stale": 1, "collisions": 1},
+        "active_sessions": [
+            {
+                "session_id": "chat-a", "actor": "ChatGPT", "model_family": "openai",
+                "goal": "UI", "home_repo": "reppiks490/Icarus-engine", "branch": "chatgpt/ui", "pr": "#1",
+                "status": "active", "phase": "waiting", "latest_type": "WAITING",
+                "latest_summary": "waiting on CI", "last_event_at_utc": "2026-10-16T03:10:00Z",
+                "dependencies": ["github-run:123"],
+                "reserved_targets": [{"repo": "reppiks490/Icarus-engine", "path": "icarus_engine/mcp-ui.js"}],
+                "stale": False, "reclaimable": False,
+            },
+            {
+                "session_id": "chat-b", "actor": "ChatGPT", "model_family": "openai",
+                "goal": "repair", "home_repo": "reppiks490/Icarus", "branch": "chatgpt/repair", "pr": None,
+                "status": "active", "phase": "coding", "latest_type": "UPDATE",
+                "latest_summary": "repairing", "last_event_at_utc": "2026-10-16T02:00:00Z",
+                "dependencies": [], "reserved_targets": [], "stale": True, "reclaimable": True,
+            },
+        ],
+        "terminal_sessions": [],
+        "collisions": [{
+            "sessions": ["chat-a", "chat-c"], "repo": "reppiks490/Icarus-engine",
+            "target_pairs": [["icarus_engine/mcp-ui.js", "icarus_engine"]],
+            "severity": "collision",
+        }],
+    })
+
+
 def test_status_projects_v3_restored_and_mcp_events(tmp_path: Path) -> None:
     seed(tmp_path)
     status = MCPControlPlane(tmp_path).status()
@@ -139,6 +175,60 @@ def test_missing_repository_evidence_is_safe(tmp_path: Path) -> None:
     assert status["restored_five"]["present"] is False
     assert status["events"] == []
     assert status["execution_authorized"] is False
+    assert status["coordination"]["present"] is False
+    assert status["coordination"]["execution_authorized"] is False
+
+
+def test_coordination_snapshot_is_read_only_bounded_projection(tmp_path: Path) -> None:
+    seed(tmp_path)
+    seed_coordination(tmp_path)
+    status = MCPControlPlane(tmp_path).status()
+    coord = status["coordination"]
+
+    assert coord["present"] is True
+    assert coord["schema_version"] == "icarus-coordination-index-v2"
+    assert coord["generated_at_utc"] == "2026-10-16T03:10:15Z"
+    assert coord["counts"] == {"active": 2, "terminal": 4, "stale": 1, "collisions": 1}
+    assert coord["owner_status"]["claude"]["active"] is False
+    assert coord["owner_status"]["live_broker_arming"] is False
+    assert coord["active_sessions"][0]["phase"] == "waiting"
+    assert coord["active_sessions"][0]["reserved_targets"][0]["path"] == "icarus_engine/mcp-ui.js"
+    assert coord["collisions"][0]["repo"] == "reppiks490/Icarus-engine"
+    assert coord["execution_authorized"] is False
+    assert coord["trading_execution_authorized"] is False
+    assert coord["source_path"] == "automation_intelligence/coordination/index.json"
+
+
+def test_malformed_coordination_snapshot_fails_closed(tmp_path: Path) -> None:
+    seed(tmp_path)
+    write_json(tmp_path, "automation_intelligence/coordination/index.json", {
+        "schema_version": "wrong", "active_sessions": "not-a-list", "collisions": []
+    })
+    coord = MCPControlPlane(tmp_path).status()["coordination"]
+    assert coord["present"] is False
+    assert coord["error"] == "INVALID_COORDINATION_SNAPSHOT"
+    assert coord["execution_authorized"] is False
+
+
+def test_coordination_mirror_and_ui_are_read_only_and_local(tmp_path: Path) -> None:
+    root = Path(__file__).resolve().parents[1]
+    workflow = (root / ".github/workflows/coordination-mirror.yml").read_text(encoding="utf-8")
+    ui = (root / "icarus_engine/mcp-ui.js").read_text(encoding="utf-8")
+
+    assert "*/5 * * * *" in workflow
+    assert "reppiks490/icarus-owner-actions" in workflow
+    assert "coordination/index.json" in workflow
+    assert "icarus-coordination-index-v2" in workflow
+    assert "automation_intelligence/coordination/index.json" in workflow
+    assert "git reset --hard origin/main" in workflow
+    assert "[skip ci]" in workflow
+    assert "Multi-chat coordination" in ui
+    assert "mcpCoordination" in ui
+    assert "reserved_targets" in ui
+    assert "reclaimable" in ui
+    assert "collisions" in ui
+    assert "/admin/" not in ui
+    assert "https://" not in ui
 
 
 def test_dashboard_and_server_wire_read_only_mcp_panel() -> None:

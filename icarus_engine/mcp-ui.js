@@ -4,8 +4,8 @@ let mcpLoading = false, mcpLast = null;
 function mcpBadge(value) {
   const s = String(value ?? 'UNKNOWN');
   const u = s.toUpperCase();
-  const cls = ['VERIFIED','SUCCESS','RUN_PERSISTED','VALID','AUTHORITATIVE'].includes(u) ? 'b' :
-    ['FAILED','ERROR','BLOCKING','MISSING'].includes(u) ? 'r' : 'w';
+  const cls = ['VERIFIED','SUCCESS','RUN_PERSISTED','VALID','AUTHORITATIVE','ACTIVE'].includes(u) ? 'b' :
+    ['FAILED','ERROR','BLOCKING','MISSING','COLLISION'].includes(u) ? 'r' : 'w';
   return `<span class="chip ${cls}">${esc(s)}</span>`;
 }
 
@@ -18,9 +18,18 @@ function mcpWhen(value) {
 function mcpHtml() {
   return `<section class="card c12">
     <h2>MCP / Automation Control Plane <span class="sub">Repository-native provenance bridge</span></h2>
-    <p class="small muted">Read-only inside ICARUS. This panel projects durable repair, audit, evolution, run, watchdog and control-plane evidence from the local repository checkout. It does not authorize trading, merge code, or make external calls.</p>
+    <p class="small muted">Read-only inside ICARUS. This panel projects durable repair, audit, evolution, run, watchdog, control-plane and mirrored multi-chat coordination evidence from the local repository checkout. It does not authorize trading, merge code, or make external calls.</p>
     <div class="toolbar"><button id="mcpRefresh">Refresh evidence</button><span id="mcpStatus" class="small muted">Loading…</span></div>
     <div class="tiles" id="mcpSummary"></div>
+  </section>
+  <section class="card c12" id="mcpCoordination">
+    <h2>Multi-chat coordination <span class="sub">Central owner-actions bus · mirrored read-only</span></h2>
+    <div id="mcpCoordinationMeta" class="small muted" style="margin-bottom:8px"></div>
+    <div class="scroll"><table>
+      <thead><tr><th>Session</th><th>Phase</th><th>Repo / branch</th><th>Latest note</th><th>Dependencies</th><th>Reserved targets</th><th>State</th></tr></thead>
+      <tbody id="mcpCoordinationRows"></tbody>
+    </table></div>
+    <div id="mcpCoordinationCollisions" style="margin-top:10px"></div>
   </section>
   <section class="card c12">
     <h2>Authoritative five-lane liveness <span class="sub">OMEGA · Macro · Flow · AION · DAEDALUS</span></h2>
@@ -93,6 +102,40 @@ function mcpRestoredRow(l) {
   </tr>`;
 }
 
+function mcpCoordinationRow(s) {
+  const deps = (s.dependencies || []).map(x => `<div class="small"><code>${esc(x)}</code></div>`).join('') || '<span class="muted">—</span>';
+  const targets = (s.reserved_targets || []).map(t => `<div class="small"><code>${esc(t.repo)}:${esc(t.path)}</code></div>`).join('') || '<span class="muted">—</span>';
+  const state = s.stale ? `${mcpBadge('STALE')}${s.reclaimable ? ' ' + mcpBadge('RECLAIMABLE') : ''}` : mcpBadge(s.latest_type || s.status || 'ACTIVE');
+  const pr = s.pr == null ? '' : ` · PR ${esc(s.pr)}`;
+  return `<tr>
+    <td><b>${esc(s.actor || s.session_id)}</b><div class="small muted"><code>${esc(s.session_id)}</code></div></td>
+    <td>${mcpBadge(s.phase || '—')}<div class="small muted">${mcpWhen(s.last_event_at_utc)}</div></td>
+    <td><div><code>${esc(s.home_repo || '—')}</code></div><div class="small muted"><code>${esc(s.branch || '—')}</code>${pr}</div></td>
+    <td><div>${esc(s.latest_summary || '—')}</div><div class="small muted">Goal: ${esc(s.goal || '—')}</div></td>
+    <td>${deps}</td><td>${targets}</td><td>${state}</td>
+  </tr>`;
+}
+
+function mcpRenderCoordination(c) {
+  if (!c || !c.present) {
+    $('#mcpCoordinationMeta').innerHTML = `${mcpBadge(c?.error || 'MISSING')} Coordination mirror is not available in this checkout yet. The panel remains read-only and fail-closed.`;
+    $('#mcpCoordinationRows').innerHTML = '<tr><td colspan="7" class="empty">No mirrored multi-chat coordination snapshot is available.</td></tr>';
+    $('#mcpCoordinationCollisions').innerHTML = '';
+    return;
+  }
+  const counts = c.counts || {}, owner = c.owner_status || {}, claude = owner.claude || {};
+  $('#mcpCoordinationMeta').innerHTML =
+    `Central snapshot ${mcpWhen(c.generated_at_utc)} · mirrored ${mcpWhen(c.mirrored_at_utc)} · ` +
+    `active <b>${esc(counts.active ?? 0)}</b> · stale/reclaimable <b>${esc(counts.stale ?? 0)}</b> · collisions <b>${esc(counts.collisions ?? 0)}</b> · ` +
+    `Claude ${mcpBadge(claude.active ? 'ACTIVE' : 'INACTIVE')} · live broker arming ${owner.live_broker_arming ? mcpBadge('ENABLED') : mcpBadge('DISABLED')} · ` +
+    `source <code>${esc(c.source_repository || '—')}:${esc(c.source_path || '—')}</code>`;
+  $('#mcpCoordinationRows').innerHTML = (c.active_sessions || []).map(mcpCoordinationRow).join('') || '<tr><td colspan="7" class="empty">No active chat sessions are registered.</td></tr>';
+  const collisions = c.collisions || [];
+  $('#mcpCoordinationCollisions').innerHTML = collisions.length ?
+    `<div class="callout"><div>⚠️</div><div><b>Active coordination collisions</b>${collisions.map(x => `<div class="small"><b>${esc((x.sessions||[]).join(' ↔ '))}</b> in <code>${esc(x.repo || '—')}</code>: ${(x.target_pairs||[]).map(p => `<code>${esc(p[0])}</code> ↔ <code>${esc(p[1])}</code>`).join(', ')}</div>`).join('')}</div></div>` :
+    '<div class="small pos">✓ No undeclared active repo/path collisions in the mirrored coordination snapshot.</div>';
+}
+
 async function loadMcp() {
   if (mcpLoading || view !== 'mcp') return;
   mcpLoading = true;
@@ -102,14 +145,17 @@ async function loadMcp() {
     if (!r.ok) throw new Error(data.detail || data.error || `HTTP ${r.status}`);
     if (view !== 'mcp') return;
     mcpLast = data;
-    const s = data.summary || {}, v3 = data.v3 || {}, restored = data.restored_five || {};
+    const s = data.summary || {}, v3 = data.v3 || {}, restored = data.restored_five || {}, coordination = data.coordination || {};
     $('#mcpStatus').textContent = `Snapshot ${mcpWhen(data.generated_at_utc)} · ${data.source_note || data.source || ''}`;
     $('#mcpSummary').innerHTML =
       `<div class="tile"><div class="k">V3 lanes verified</div><div class="v">${esc(s.v3_verified ?? 0)} / ${esc(s.v3_lanes ?? 0)}</div></div>` +
+      `<div class="tile"><div class="k">Active chats</div><div class="v">${esc(s.coordination_active ?? 0)}</div><div class="small muted">waiting ${esc(s.coordination_waiting ?? 0)}</div></div>` +
+      `<div class="tile"><div class="k">Coordination alerts</div><div class="v ${(s.coordination_collisions||0)>0?'neg':'pos'}">${esc(s.coordination_collisions ?? 0)}</div><div class="small muted">stale ${esc(s.coordination_stale ?? 0)}</div></div>` +
       `<div class="tile"><div class="k">Control plane</div><div class="v" style="font-size:13px;overflow-wrap:anywhere">${esc(v3.mode || '—')}</div></div>` +
       `<div class="tile"><div class="k">Inference scope</div><div class="v" style="font-size:13px">${v3.substantive_ai_inference ? 'substantive AI' : 'liveness only'}</div></div>` +
       `<div class="tile"><div class="k">Trading execution</div><div class="v ${data.trading_execution_authorized?'neg':'pos'}">${data.trading_execution_authorized ? 'AUTHORIZED' : 'DISABLED'}</div></div>` +
       `<div class="tile"><div class="k">Material MCP events</div><div class="v">${esc(s.material_events_returned ?? 0)}</div></div>`;
+    mcpRenderCoordination(coordination);
     $('#mcpV3Meta').innerHTML = `Control plane <code>${esc(v3.control_plane_id || 'missing')}</code> · ${mcpBadge(v3.phase || v3.mode || 'unknown')} · scope <code>${esc(v3.authoritative_scope || '—')}</code> · backend <code>${esc(v3.inference_backend || '—')}</code> · zero cost ${esc(v3.zero_cost)}`;
     $('#mcpV3Rows').innerHTML = (v3.lanes || []).map(mcpLaneRow).join('') || '<tr><td colspan="8" class="empty">No v3 lane receipts found in this checkout.</td></tr>';
     $('#mcpHardening').textContent = JSON.stringify({

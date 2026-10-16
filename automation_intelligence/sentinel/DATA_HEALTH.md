@@ -1,6 +1,6 @@
-# Data health — 2026-10-16 06:19 UTC
+# Data health — 2026-10-16 06:24 UTC
 
-**FAILING** 1 · **BLOCKED** 8 · **STALE** 5 · **DEGRADED** 3 · **OK** 69
+**FAILING** 1 · **BLOCKED** 6 · **STALE** 5 · **DEGRADED** 5 · **OK** 69
 
 ## Needs attention
 
@@ -8,20 +8,20 @@
 |---|---|---|
 | workflow:databento-depth-research-context.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/38844369831 |
 | provider:alpaca | BLOCKED | no key reaches the runner |
-| provider:eodhd | BLOCKED | BLOCKED |
 | provider:finnhub | BLOCKED | BLOCKED_AUTHENTICATION |
-| provider:fmp | BLOCKED | BLOCKED |
 | provider:intrinio | BLOCKED | no key reaches the runner |
 | provider:quiver | BLOCKED | no key reaches the runner |
 | provider:tickstream | BLOCKED | no key reaches the runner |
 | provider:twelve | BLOCKED | BLOCKED |
-| workflow:native-five-research.yml | STALE | last success 4.7 h ago (expected within 3 h) |
-| workflow:provider-exhaustive-collection.yml | STALE | last success 3.3 h ago (expected within 3 h) |
-| workflow:provider-supplemental-collection.yml | STALE | last success 3.4 h ago (expected within 3 h) |
-| workflow:provider-supplemental-promote.yml | STALE | last success 3.4 h ago (expected within 3 h) |
-| workflow:sec-edgar-data.yml | STALE | last success 4.9 h ago (expected within 3 h) |
+| workflow:native-five-research.yml | STALE | last success 4.8 h ago (expected within 3 h) |
+| workflow:provider-exhaustive-collection.yml | STALE | last success 3.4 h ago (expected within 3 h) |
+| workflow:provider-supplemental-collection.yml | STALE | last success 3.5 h ago (expected within 3 h) |
+| workflow:provider-supplemental-promote.yml | STALE | last success 3.5 h ago (expected within 3 h) |
+| workflow:sec-edgar-data.yml | STALE | last success 5.0 h ago (expected within 3 h) |
 | provider:alphavantage | DEGRADED | 101 rows; 2 endpoints denied by plan |
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
+| provider:eodhd | DEGRADED | dedicated fabric live (11 calls); generic sampler blocked; 29 endpoints denied by plan |
+| provider:fmp | DEGRADED | dedicated fabric live (3 calls); generic sampler blocked; 85 endpoints denied by plan |
 | provider:tiingo | DEGRADED | 3 rows; 4 endpoints denied by plan |
 
 ## Delivering

@@ -189,7 +189,7 @@ def test_all_ai_units_receive_persistent_data_plane_directive() -> None:
         'unusual whales',
         'databento',
         'sec/edgar',
-        'official economic',
+        'official bls/bea/census/fomc economic-event',
         'provider_collection_v1/research_context.json',
         'do not claim',
         'runtime evidence',

@@ -1,8 +1,8 @@
 {
   "event_id": "20261016T032700Z-futures-universe-integration",
-  "at_utc": "2026-10-16T03:33:00Z",
+  "at_utc": "2026-10-16T03:36:00Z",
   "category": "INTEGRATION",
-  "status": "implementation_complete_pending_exact_head_ci",
+  "status": "verified_ready_to_merge",
   "severity": "medium",
   "summary": "Promote a macro-diverse futures set and true micro contract identities into the ICARUS runtime registry, API and dashboard. Repairs MNQ/MES/MYM/MGC/SIL identity/P&L semantics; adds RTY/M2K, CL/MCL, NG/MNG, HG/MHG, 6E/M6E, 6J/MJY, 6B/M6B, 6A/M6A, ZN and ZB; exposes contract metadata through /api/assets and the registry-driven add-asset UI; preserves live execution as disabled.",
   "surface": "icarus_engine.asset_registry_api_dashboard_and_public_probe",
@@ -17,14 +17,15 @@
   "evidence": [
     "tests_engine/test_futures_universe_expansion.py",
     "github-run:38844849546:red-contract-confirmed-on-python-3.11-3.12-3.13",
-    "github-run:38845410144:success",
-    "github-artifact:12022408688:futures-universe-probe",
+    "github-run:38846166359:success-python-3.11-3.12-3.13-core-cli-mcp",
+    "github-run:38846166349:success-public-delayed-source-evidence",
+    "github-artifact:12022124996:futures-universe-probe",
     "public-delayed-probe:23/23-connected",
+    "github-run:38846160427:success-brain-federation-contract",
     "api-readback:asset_registry_payload",
     "dashboard-readback:exchange-asset_class-micro_of-mintick-multiplier-feed_mode",
-    "dashboard-readback:registry-label-restored",
-    "github-run:38845789161:one-ui-label-regression-isolated-before-fix"
+    "dashboard-readback:registry-label-restored"
   ],
   "execution_authorized": false,
-  "notes": "Research/replay/paper integration only. Yahoo is a delayed public research feed. Broker-specific dated-contract mapping, entitlement and owner live arming remain separate gates. Bot-authored cleanup commits can yield action_required with no jobs; this connector-authored head exists to force fresh exact-head CI before merge."
+  "notes": "Research/replay/paper integration only. Yahoo is a delayed public research feed. Broker-specific dated-contract mapping, entitlement and owner live arming remain separate gates. Exact merge-ref tests passed against current main daa6d80f7cafc7fff6c9ec8611c07c8cdd1533dc before merge."
 }

@@ -1,0 +1,108 @@
+{
+  "automation_id": "github-native-research-v1",
+  "blockers": [
+    "Release titles establish publication, not macro surprise or causal impact.",
+    "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+    "No consensus estimates acquired; economic surprise remains unknown."
+  ],
+  "chatgpt_tokens_used": 0,
+  "code_revision": "1c41c6d0fbd041d2a4dd4a975395b5a519fa7ecd",
+  "completed_at_utc": "2026-10-16T20:06:32.585958Z",
+  "event_paths": [
+    "automation_intelligence/mcp_interface/events/native-38959376703-1_native_macro.json"
+  ],
+  "evidence": [
+    "automation_intelligence/native_research_v1/cycles/native-38959376703-1/evidence.json"
+  ],
+  "execution_authorized": false,
+  "input_sha256": "4274dbf5fa7ec5a6c4acc950b844ee80c6589dad33735a993ba0eb44c2866f45",
+  "lane": "macro",
+  "local_interpretation": {
+    "authority": "UNVERIFIED_MODEL_INFERENCE",
+    "model": "Qwen/Qwen3-1.7B-GGUF@90862c4:Q8_0",
+    "payload": {
+      "conflicts": [],
+      "data_gaps": [],
+      "execution_authorized": false,
+      "lane": "macro",
+      "net_new_delta": "LOCAL_NEXT_TEST_SELECTION",
+      "summary": "Does the next official release change the daily macro context?"
+    },
+    "response_id": "local-3dc1754c694e11cb5673d914",
+    "status": "GENERATED"
+  },
+  "measurements": {
+    "gaps": [
+      "Release titles establish publication, not macro surprise or causal impact.",
+      "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+      "No consensus estimates acquired; economic surprise remains unknown."
+    ],
+    "limits": "Publication and daily change are facts; surprise, causality and intraday propagation remain unverified.",
+    "releases": [
+      {
+        "published_epoch": 1792162800.0,
+        "retrieval_finished": 1792181163.7027795,
+        "retrieval_started": 1792181163.6169338,
+        "source": "FED",
+        "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20261016a.htm",
+        "title": "Federal Reserve Board announces termination of enforcement actions with Gardner Bancshares, Inc. and Small Business Bank"
+      },
+      {
+        "published_epoch": 1791936000.0,
+        "retrieval_finished": 1792181164.4675658,
+        "retrieval_started": 1792181163.7034242,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261014~e4ca33588e.en.html",
+        "title": "Frank Elderson: Ensuring resilience in the face of uncertainty"
+      },
+      {
+        "published_epoch": 1792153875.0,
+        "retrieval_finished": 1792181164.5122652,
+        "retrieval_started": 1792181164.4680526,
+        "source": "BLS",
+        "source_url": "https://www.bls.gov/bls/",
+        "title": "Major Economic Indicators Latest Numbers"
+      }
+    ],
+    "series": [
+      {
+        "change": -0.019999999999999574,
+        "date": "2026-10-14",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-10-13",
+        "series": "DGS10",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10",
+        "value": 5.19
+      },
+      {
+        "change": 0.03000000000000025,
+        "date": "2026-10-14",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-10-13",
+        "series": "DGS2",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2",
+        "value": 4.82
+      },
+      {
+        "change": 0.1554000000000002,
+        "date": "2026-10-09",
+        "freshness": "STALE",
+        "prior_date": "2026-10-08",
+        "series": "DTWEXBGS",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DTWEXBGS",
+        "value": 121.6023
+      }
+    ],
+    "status": "VERIFIED",
+    "summary": "3 dated official release headlines; 3 daily macro series measured."
+  },
+  "outcome": "MATERIAL_DELTA",
+  "paid_model_calls": 0,
+  "prior_receipt_path": "automation_intelligence/native_research_v1/cycles/native-38935590901-1/macro.json",
+  "run_id": "native-38959376703-1-macro",
+  "schema_version": "icarus-research-run-v1",
+  "started_at_utc": "2026-10-16T20:06:04.756090Z",
+  "substantive_work_performed": true,
+  "summary": "3 dated official release headlines; 3 daily macro series measured.",
+  "worker": "GITHUB_ACTIONS"
+}

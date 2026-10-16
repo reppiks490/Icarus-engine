@@ -10,6 +10,7 @@ on:
       - "cl_lab/feeds/sec_edgar.py"
       - "tests_cl/test_sec_edgar.py"
       - "tests_cl/test_sec_edgar_context.py"
+      - "config/credential_contract.json"
       - ".github/workflows/sec-edgar-data.yml"
 
 permissions:
@@ -50,7 +51,7 @@ jobs:
 
       - name: Refresh SEC EDGAR filings and XBRL
         env:
-          SEC_USER_AGENT: ${{ vars.SEC_USER_AGENT || secrets.SEC_USER_AGENT || 'ICARUS Research tripleogdavid.102@gmail.com' }}  # owner-declared SEC fair-access contact
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT || vars.SEC_USER_AGENT || 'ICARUS Research tripleogdavid.102@gmail.com' }}  # owner-declared SEC fair-access contact
           ICARUS_SEC_CACHE: .sec_edgar_cache
           ICARUS_SEC_MANIFEST: automation_intelligence/cl_lab/sec_edgar_manifest.json
           ICARUS_SEC_CONTEXT: automation_intelligence/cl_lab/sec_edgar_research_context.json

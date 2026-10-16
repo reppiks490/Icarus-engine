@@ -53,7 +53,9 @@ python -m tools.credential_health --json-lines
 
 A presence-only audit on 2026-10-16 verified that every currently live provider credential used by this data plane is backed by a GitHub Actions Secret: Alpha Vantage, Databento primary/secondary/third/fourth, EODHD, Finnhub, FMP, FRED, Massive/Polygon, Tiingo, Twelve Data, and Unusual Whales. None of those live credential families depended on a GitHub Variable.
 
-The same audit found no Secret or Variable for Intrinio, Quiver, Alpaca key/secret, Tickstream, or `ICARUS_DATA_ARCHIVE_KEY`. Those remain explicit missing-credential blockers until the owner stores the credential as an Actions Secret.
+**Repository scope matters.** The audit found no Secret or Variable for Intrinio in this `reppiks490/Icarus-engine` repository. The shared data-gap ledger cites a provider collection run in the preferred `reppiks490/Icarus` repository (run `38865138563`): its workflow and Intrinio job completed successfully, while the ledger reports that the collector found the credential present, then received HTTP 401 and collected zero rows. The cited receipt classified the result as `BLOCKED_AUTHENTICATION`. Therefore the available evidence says Intrinio is **present but rejected in Icarus** and **absent from Engine's local secret set**. Do not conflate those repository-scoped facts or report Intrinio as missing from the federation. The data path remains blocked until the credential/account authorization is repaired. This does not make the secret readable or transferable between repositories or agents.
+
+Quiver, Alpaca key/secret, Tickstream, and `ICARUS_DATA_ARCHIVE_KEY` remain explicit missing-credential blockers unless current repository-scoped health evidence changes.
 
 The audit reported booleans only and never emitted credential values.
 

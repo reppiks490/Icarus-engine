@@ -17,16 +17,16 @@ Verified during the federation-wide ingestion audit on 2026-10-16. This ledger s
 | Source | Credential | Ingestion / consumption | Audit result | Evidence / blocker |
 |---|---|---|---|---|
 | Massive/Polygon | present | live / live | CLOSED_INTERNAL | Existing exhaustive collector and shared provider research context. |
-| Twelve Data | present | partial / live | LIVE_PARTIAL_RESUMABLE | Exhaustive catalog has pending work; resumable cursor state is intentional. |
+| Twelve Data | present | partial / live | LIVE_PARTIAL_RESUMABLE | Exhaustive catalog has pending work; resumable cursor state is intentional. The latest sampled slice can still fail closed when every attempted operation is denied/not found. |
 | FMP | present | live / live | CLOSED_INTERNAL | Exhaustive collector plus external-data fabric. |
 | EODHD | present | live / live | CLOSED_INTERNAL | Exhaustive collector plus external-data fabric; plan-limited capabilities remain explicit. |
 | Tiingo | present | partial / live | LIVE_PARTIAL_RESUMABLE | Real data collected; remaining catalog work continues across runs. |
 | FRED | present | live / live | CLOSED_INTERNAL | Exhaustive collector, FRED/ALFRED lane, native public macro lane and shared provider context. |
-| Bybit | public | live / live | CLOSED_INTERNAL | Public read-only provider lane plus native research spot/linear context. |
+| Bybit | public | live / live | CLOSED_INTERNAL | Public read-only provider lane plus native research spot/linear context. Secondary-repository jobs may correctly emit `STANDBY_PREFERRED_OWNER` rather than duplicate collection. |
 | Unusual Whales | present | partial / partial | LIVE_PARTIAL_RESUMABLE / INTERNAL GAP CLOSED | Added official endpoint catalog, GitHub-native scheduled collector, hardened UW-specific pagination, encrypted/raw handling, safe promoter, shared research-context path and independent native canary. Canary run `38838224842` completed 5 requests / 5 pages, discovered 500 assets, and left catalog operations pending without the prior transport `ValueError`. The main `reppiks490/Icarus` runtime also has metadata-only connector observation intake. |
 | Alpha Vantage | present | partial / partial | LIVE_PARTIAL_RESUMABLE + EXTERNAL_BLOCKER | Added scheduled collector and independent native canary. Accessible endpoints returned real data; two exercised endpoint families returned HTTP 403 under the current plan. ICARUS records those as entitlement gaps rather than success. |
-| Finnhub | present but rejected | blocked / blocked | EXTERNAL_BLOCKER | Stored credential repeatedly returned HTTP 401 using both the prior query-token canary and documented `X-Finnhub-Token` header auth. Both supplemental and native canary transports now use fail-closed classification; replace/repair the GitHub Finnhub secret. |
-| Intrinio | missing | blocked / blocked | EXTERNAL_BLOCKER | `BLOCKED_MISSING_CREDENTIAL`. Exhaustive endpoint/catalog machinery is present; add the credential to GitHub to activate it. |
+| Finnhub | present but rejected | blocked / blocked | EXTERNAL_BLOCKER | Stored credential repeatedly returned HTTP 401 using both the prior query-token canary and documented `X-Finnhub-Token` header auth. Both supplemental and native canary transports use fail-closed classification; replace/repair the GitHub Finnhub secret. |
+| Intrinio | present in preferred `reppiks490/Icarus`, rejected | blocked / blocked | EXTERNAL_BLOCKER | Latest preferred-repository run `38865138563` (receipt `provider-intrinio-38865138563-1`, completed 2026-10-16 07:07:33Z) reached the real Intrinio collector with the credential present, issued a bounded request to `/companies`, and received HTTP 401 with zero collected rows (`BLOCKED_AUTHENTICATION`). The earlier run `38861416940` is superseded. The GitHub-native cross-repo plumbing is working; repair the preferred repository's credential or account authorization rather than adding another collector. |
 | Quiver | missing | blocked / blocked | EXTERNAL_BLOCKER | `BLOCKED_MISSING_CREDENTIAL`. |
 | Alpaca | missing | blocked / blocked | EXTERNAL_BLOCKER | `BLOCKED_MISSING_CREDENTIAL`; verified fail-closed. |
 | Tickstream | missing | blocked / blocked | EXTERNAL_BLOCKER | `BLOCKED_MISSING_CREDENTIAL`. |
@@ -35,11 +35,11 @@ Verified during the federation-wide ingestion audit on 2026-10-16. This ledger s
 
 | Lane / source | State | Audit result | Evidence / blocker |
 |---|---|---|---|
-| Databento depth / order book | dedicated | DEDICATED_LANE + EXTERNAL_BLOCKER | Databento credentials are present and dedicated corpus/depth workflows exist. The research-context integrity gate correctly refuses incomplete primary-depth context. `ICARUS_DATA_ARCHIVE_KEY` is absent, so encrypted archive recovery cannot refill that gap. Do not weaken the gate. |
-| SEC/EDGAR | live | DEDICATED_LANE | Current audit observed `automation_intelligence/cl_lab/sec_edgar_manifest.json` with 15,931 fact rows and 2,375 filing rows across the configured large-cap universe. |
+| Databento depth / order book | dedicated | DEDICATED_LANE + INTEGRITY_BLOCKER | Databento credentials and dedicated corpus/depth workflows are present. The primary sweep receipt reports `status: OK` and one bought partial-day slice for 2026-10-15 (165 feature rows, generated 2026-10-16 06:38:48Z), alongside 21 held days. A later research-context publication attempt failed its integrity gate because complete primary-depth coverage is still absent; valid secondary/third account features and cached files do not replace that missing primary coverage. Do not weaken the gate or buy data merely to turn health green. |
+| SEC/EDGAR | live pipeline | DEDICATED_LANE | Current audit observed `automation_intelligence/cl_lab/sec_edgar_manifest.json` with 15,931 fact rows and 2,375 filing rows across the configured large-cap universe. Cadence repair PR #190 is merged. Post-merge SEC run `38864917807` succeeded on 2026-10-16; continued long-term freshness still requires more scheduled observations. |
 | Official economic events | live with fallback | DEDICATED_LANE + EXTERNAL_BLOCKER | BLS/BEA/Census/FOMC pipeline exists. BLS live ICS/HTML returns HTTP 403 from GitHub-hosted runners; the pipeline explicitly preserves an official BLS snapshot fallback rather than claiming live freshness. |
-| External data fabric | live with plan limits | DEDICATED_LANE | EODHD, FMP and Tiingo outputs are present; provider-plan denials remain explicit. |
-| Native five research | live hourly | CLOSED_INTERNAL | `native-five-research.yml` acquires Coinbase BTC spot, Kraken BTC spot, Bybit spot/linear, Federal Reserve/ECB/BLS release feeds and public FRED rates/DXY-proxy series. `automation_intelligence/native_research_v1/latest.json` currently reports all five research lanes verified/substantive. |
+| External data fabric | live with plan limits | DEDICATED_LANE | EODHD, FMP and Tiingo outputs are present; provider-plan denials remain explicit. Sentinel PR #187 is merged and runtime-proven to aggregate this dedicated delivery without hiding generic-sampler denials. |
+| Native five research | live pipeline | CLOSED_INTERNAL data path | `native-five-research.yml` acquires Coinbase BTC spot, Kraken BTC spot, Bybit spot/linear, Federal Reserve/ECB/BLS release feeds and public FRED rates/DXY-proxy series. Cadence repair PR #190 is merged; post-merge Native Five run `38863768170` succeeded on 2026-10-16. Continued long-term freshness still requires more scheduled observations. |
 | CL lab public fabric | live | CLOSED_INTERNAL | `cl-lab.yml` / `cl_lab/feeds/registry.py` cover Binance public bulk, Coinbase, FRED/ALFRED, Cboe VIX-family indices, CFTC TFF/disaggregated positioning, U.S. Treasury FiscalData, and a broad Databento futures/context universe. |
 | Coinbase public | live in multiple lanes | CLOSED_INTERNAL | Engine public feed, CL lab and native research surfaces are represented in the shared manifest. |
 | Kraken public | live | CLOSED_INTERNAL | Engine fallback feed and native research surface represented in the shared manifest. |
@@ -85,9 +85,7 @@ The canonical manifest keeps these sources visible to every AI even when a given
 
 ## Health-monitoring closure
 
-The audit found that the Data Sentinel did not initially monitor four newly relevant workflow lanes: supplemental provider collection, supplemental promotion, native-provider canary, and inter-repo peer intelligence. PR #178 adds these lanes to `tools/data_sentinel.py::WORKFLOWS`, adds event triggers in `data-sentinel.yml`, and makes the federation test fail if that coverage disappears. Freshness targets are 3 h for supplemental collection/promotion, 8 h for the 6-hour native canary, and 1 h for the 10-minute peer packet lane.
-
-This Sentinel repair is not considered CLOSED_INTERNAL until the exact PR head and post-merge `main` verification are green.
+The audit originally found Sentinel blind spots and later a provider-classification error. PR #178 expanded monitored workflow coverage, and PR #187 (`cfa66db5af672f7ff869487a2f67cb78f7b77ca0`) fixed false provider `BLOCKED` classifications when the dedicated external-data fabric is delivering. The post-merge Sentinel rebuilt at `2026-10-16T06:36:48Z`, correctly reporting FMP/EODHD as `DEGRADED` with dedicated call counts and plan denials preserved. Missing credentials remain `BLOCKED`.
 
 ## Federation rule
 

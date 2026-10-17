@@ -69,8 +69,7 @@
   "BLOCKED": 6,
   "DEGRADED": 6,
   "FAILING": 5,
-  "OK": 68,
-  "STALE": 1
+  "OK": 69
  },
  "depth": {
   "budgets": {
@@ -141,7 +140,7 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-10-17T17:31:37+00:00",
+ "generated_at": "2026-10-17T17:32:18+00:00",
  "research": {
   "champions": 0,
   "cl_last_run": "2026-10-17T06:21:26.707185+00:00",
@@ -212,7 +211,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 3.1,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/finnhub.json",
    "rows": 0,
    "source": "provider:finnhub",
@@ -244,7 +243,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 3.1,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/unusual_whales.json",
    "rows": 0,
    "source": "provider:unusual_whales",
@@ -252,18 +251,12 @@
    "why": "BLOCKED_AUTHENTICATION"
   },
   {
-   "age_h": 3.1,
-   "source": "workflow:provider-supplemental-promote.yml",
-   "verdict": "STALE",
-   "why": "last success 3.1 h ago (expected within 3 h)"
-  },
-  {
-   "age_h": 3.1,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/alphavantage.json",
-   "rows": 43485,
+   "rows": 22698,
    "source": "provider:alphavantage",
    "verdict": "DEGRADED",
-   "why": "43485 rows; 3 endpoints denied by plan"
+   "why": "22698 rows; 3 endpoints denied by plan"
   },
   {
    "age_h": 0.4,
@@ -282,7 +275,7 @@
    "why": "5795 rows; 29 endpoints denied by plan"
   },
   {
-   "age_h": 0.3,
+   "age_h": 0.4,
    "path": "automation_intelligence/provider_collection_v1/latest/fmp.json",
    "rows": 53,
    "source": "provider:fmp",
@@ -290,7 +283,7 @@
    "why": "dedicated fabric live (3 calls, 53 known rows); generic sampler blocked; 85 endpoints denied by plan"
   },
   {
-   "age_h": 0.3,
+   "age_h": 0.4,
    "path": "automation_intelligence/provider_collection_v1/latest/tiingo.json",
    "rows": 47487,
    "source": "provider:tiingo",
@@ -730,10 +723,10 @@
    "why": "last success 0.3 h ago"
   },
   {
-   "age_h": 1.1,
+   "age_h": 0.0,
    "source": "workflow:native-five-research.yml",
    "verdict": "OK",
-   "why": "last success 1.1 h ago"
+   "why": "last success 0.0 h ago"
   },
   {
    "age_h": 1.5,
@@ -756,6 +749,12 @@
   {
    "age_h": 0.0,
    "source": "workflow:provider-supplemental-collection.yml",
+   "verdict": "OK",
+   "why": "last success 0.0 h ago"
+  },
+  {
+   "age_h": 0.0,
+   "source": "workflow:provider-supplemental-promote.yml",
    "verdict": "OK",
    "why": "last success 0.0 h ago"
   },

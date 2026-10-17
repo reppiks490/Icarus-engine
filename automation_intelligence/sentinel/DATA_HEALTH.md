@@ -1,4 +1,4 @@
-# Data health — 2026-10-17 00:08 UTC
+# Data health — 2026-10-17 00:13 UTC
 
 **FAILING** 2 · **BLOCKED** 6 · **DEGRADED** 6 · **OK** 72
 
@@ -7,7 +7,7 @@
 | Source | Verdict | Why |
 |---|---|---|
 | workflow:cl-depth-sweep.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/38963969764 |
-| workflow:databento-depth-research-context.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/38963969663 |
+| workflow:databento-depth-research-context.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/38985241468 |
 | provider:alpaca | BLOCKED | no key reaches the runner |
 | provider:finnhub | BLOCKED | BLOCKED_AUTHENTICATION |
 | provider:intrinio | BLOCKED | no key reaches the runner |
@@ -27,7 +27,7 @@ economic_events, feed:btcusd_cb_5m, feed:btcusdt_5m, feed:cboe_skew, feed:cboe_v
 
 ## Order-book data
 
-Vaulted files: {'bars_primary': 33, 'bars_third': 1, 'corpus': 135, 'panel': 13} (key: HKDF(DATABENTO_API_KEY)). Last vault decrypt/hash check: OK at 2026-10-16T20:18:49+00:00 with 0 failures. D1 status: {'D1-A': 'INSUFFICIENT_DATA', 'D1-B': 'INSUFFICIENT_DATA', 'days': 0}.
+Vaulted files: {'bars_primary': 33, 'bars_secondary': 2, 'bars_third': 1, 'corpus': 135, 'panel': 13} (key: HKDF(DATABENTO_API_KEY)). Last vault decrypt/hash check: OK at 2026-10-17T00:08:52+00:00 with 0 failures. D1 status: {'D1-A': 'INSUFFICIENT_DATA', 'D1-B': 'INSUFFICIENT_DATA', 'days': 0}.
 
 | Budget | Cap | Spent | Left |
 |---|---|---|---|

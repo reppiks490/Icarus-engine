@@ -1,4 +1,4 @@
-# Data health — 2026-10-17 06:07 UTC
+# Data health — 2026-10-17 06:48 UTC
 
 **FAILING** 2 · **BLOCKED** 6 · **DEGRADED** 6 · **OK** 72
 
@@ -6,8 +6,8 @@
 
 | Source | Verdict | Why |
 |---|---|---|
-| workflow:cl-depth-sweep.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/38985241518 |
-| workflow:databento-depth-research-context.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/38985241468 |
+| workflow:cl-depth-sweep.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/39009717415 |
+| workflow:databento-depth-research-context.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/39009717449 |
 | provider:alpaca | BLOCKED | no key reaches the runner |
 | provider:finnhub | BLOCKED | BLOCKED_AUTHENTICATION |
 | provider:intrinio | BLOCKED | no key reaches the runner |
@@ -27,23 +27,23 @@ economic_events, feed:btcusd_cb_5m, feed:btcusdt_5m, feed:cboe_skew, feed:cboe_v
 
 ## Order-book data
 
-Vaulted files: {'bars_primary': 33, 'bars_secondary': 2, 'bars_third': 1, 'corpus': 135, 'panel': 13} (key: HKDF(DATABENTO_API_KEY)). Last vault decrypt/hash check: OK at 2026-10-17T00:08:52+00:00 with 0 failures. D1 status: {'D1-A': 'INSUFFICIENT_DATA', 'D1-B': 'INSUFFICIENT_DATA', 'days': 0}.
+Vaulted files: {'bars_primary': 33, 'bars_secondary': 2, 'bars_third': 1, 'corpus': 135, 'panel': 13, 'sweep': 3} (key: HKDF(DATABENTO_API_KEY)). Last vault decrypt/hash check: OK at 2026-10-17T06:27:25+00:00 with 0 failures. D1 status: {'D1-A': 'INSUFFICIENT_DATA', 'D1-B': 'INSUFFICIENT_DATA', 'days': 0}.
 
 | Budget | Cap | Spent | Left |
 |---|---|---|---|
-| corpus__primary | $3.54 | $1.64 | $1.91 |
-| corpus__secondary | $3.56 | $0.6 | $2.96 |
+| corpus__primary | $3.54 | $1.67 | $1.87 |
+| corpus__secondary | $3.56 | $0.64 | $2.92 |
 | depth__diversifier | $95.0 | $94.99 | $0.01 |
 | depth__index | $93.0 | $92.99 | $0.01 |
 | depth__sweep__primary | $34.34 | $34.32 | $0.03 |
-| depth__sweep__secondary | $4.0 | $1.94 | $2.06 |
+| depth__sweep__secondary | $3.36 | $3.31 | $0.05 |
 | depth__sweep__third | $12.0 | $5.96 | $6.04 |
 | history__ES | $25.0 | $18.14 | $6.86 |
 | history__NQ | $25.0 | $17.5 | $7.5 |
 
 ## Research
 
-Champions: 0. Pulse variants: {'CANDLES': 'REJECTED', 'HA_HA_FILLS': 'ARTIFACT_REFERENCE', 'HA_REAL_FILLS': 'REJECTED'}. CL lab last run: 2026-10-17T00:08:20.656990+00:00.
+Champions: 0. Pulse variants: {'CANDLES': 'REJECTED', 'HA_HA_FILLS': 'ARTIFACT_REFERENCE', 'HA_REAL_FILLS': 'REJECTED'}. CL lab last run: 2026-10-17T06:21:26.707185+00:00.
 
 ## Coordination (Claude, ChatGPT, Atlas)
 

@@ -69,8 +69,7 @@
   "BLOCKED": 6,
   "DEGRADED": 6,
   "FAILING": 2,
-  "OK": 71,
-  "STALE": 1
+  "OK": 72
  },
  "depth": {
   "budgets": {
@@ -140,7 +139,7 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-10-17T00:45:05+00:00",
+ "generated_at": "2026-10-17T00:45:38+00:00",
  "research": {
   "champions": 0,
   "cl_last_run": "2026-10-17T00:08:20.656990+00:00",
@@ -190,7 +189,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 3.1,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/finnhub.json",
    "rows": 0,
    "source": "provider:finnhub",
@@ -222,7 +221,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 3.1,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/unusual_whales.json",
    "rows": 0,
    "source": "provider:unusual_whales",
@@ -230,13 +229,7 @@
    "why": "BLOCKED_AUTHENTICATION"
   },
   {
-   "age_h": 3.1,
-   "source": "workflow:provider-supplemental-promote.yml",
-   "verdict": "STALE",
-   "why": "last success 3.1 h ago (expected within 3 h)"
-  },
-  {
-   "age_h": 3.1,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/alphavantage.json",
    "rows": 0,
    "source": "provider:alphavantage",
@@ -755,6 +748,12 @@
   {
    "age_h": 0.0,
    "source": "workflow:provider-supplemental-collection.yml",
+   "verdict": "OK",
+   "why": "last success 0.0 h ago"
+  },
+  {
+   "age_h": 0.0,
+   "source": "workflow:provider-supplemental-promote.yml",
    "verdict": "OK",
    "why": "last success 0.0 h ago"
   },

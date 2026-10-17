@@ -1,3 +1,4 @@
+from copy import deepcopy
 import json
 from datetime import datetime, timezone
 from pathlib import Path
@@ -97,6 +98,20 @@ def test_rewrites_only_on_change_or_daily(tmp_path):
     assert ds.changed(first, ds.build(tmp_path, now=NOW.replace(day=12, hour=13)))
     _receipt(tmp_path, "fred", credential_present=False, status="BLOCKED_MISSING_CREDENTIAL")
     assert ds.changed(first, ds.build(tmp_path, now=NOW.replace(hour=13)))
+
+
+def test_provider_row_count_change_triggers_refresh_with_same_verdict(tmp_path):
+    _receipt(tmp_path, "fred", credential_present=True, status="COLLECTED", collected_rows=50)
+    first = ds.build(tmp_path, now=NOW)
+    refreshed = deepcopy(first)
+    provider = next(source for source in refreshed["sources"] if source["source"] == "provider:fred")
+    provider["rows"] += 1
+
+    assert provider["verdict"] == next(
+        source["verdict"] for source in first["sources"] if source["source"] == "provider:fred"
+    )
+    assert refreshed["generated_at"] == first["generated_at"]
+    assert ds.changed(first, refreshed)
 
 
 def test_report_carries_the_claude_chatgpt_mailbox(tmp_path):

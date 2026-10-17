@@ -263,6 +263,8 @@ def markdown(report: dict) -> str:
 
 def _fingerprint(report: dict) -> list:
     return [(s["source"], s["verdict"]) for s in report.get("sources", [])] + [
+        {s["source"]: s.get("rows", 0) for s in report.get("sources", [])
+         if s.get("source", "").startswith("provider:")},
         report.get("depth", {}).get("vault_files"), report.get("research", {}).get("champions"),
         (report.get("depth", {}).get("vault_verify") or {}).get("verdict"),
         (report.get("coordination") or {}).get("awaiting_reply"),
@@ -270,7 +272,7 @@ def _fingerprint(report: dict) -> list:
 
 
 def changed(previous: dict | None, report: dict, refresh_h: float = 24.0) -> bool:
-    """Rewrite only when a verdict, the vault or the champions changed, or once a day regardless."""
+    """Rewrite on verdict/provider-row, vault or champion changes, or once daily."""
     if not previous:
         return True
     if _fingerprint(previous) != _fingerprint(report):

@@ -39,9 +39,9 @@
         "qualification": "INCOMPLETE_UNTIL_EVERY_OPERATION_ASSET_PAGE_TIME_RANGE_AND_TRANSPORT_IS_VERIFIED",
         "unresolved_operations": 0
       },
-      "collected_pages": 0,
-      "collected_rows": 0,
-      "completed_at_utc": "2026-10-17T00:44:43.510452+00:00",
+      "collected_pages": 3,
+      "collected_rows": 101,
+      "completed_at_utc": "2026-10-17T06:06:11.691430+00:00",
       "credential_present": true,
       "last_successful_receipt": {
         "catalog": {
@@ -56,34 +56,61 @@
           "unresolved_operations": 0
         },
         "collected_pages": 3,
-        "collected_rows": 1365,
-        "completed_at_utc": "2026-10-16T13:30:36.949720+00:00",
+        "collected_rows": 101,
+        "completed_at_utc": "2026-10-17T06:06:11.691430+00:00",
         "credential_present": true,
         "historical_only": true,
         "requests": 3,
         "research_features": [
           {
             "features": {
-              "value": {
-                "maximum": 336.94,
-                "mean": 92.75882111436948,
-                "minimum": 9.7,
-                "samples": 1364,
-                "standard_deviation": 91.4634135155751
+              "close": {
+                "maximum": 779.09,
+                "mean": 757.6173999999997,
+                "minimum": 725.43,
+                "samples": 100,
+                "standard_deviation": 13.630827679931988
+              },
+              "volume": {
+                "maximum": 93989416.0,
+                "mean": 47708225.5,
+                "minimum": 18685018.0,
+                "samples": 100,
+                "standard_deviation": 14316280.192674622
               }
             },
-            "operation": "alphavantage:get:CPI"
+            "operation": "alphavantage:get:TIME_SERIES_DAILY"
           }
         ],
-        "run_id": "supplemental-38908264685-alphavantage",
+        "run_id": "supplemental-39008613589-alphavantage",
         "status": "COLLECTED_PARTIAL",
         "substantive_work_performed": true
       },
-      "requests": 0,
-      "research_features": [],
-      "run_id": "supplemental-38987755710-alphavantage",
-      "status": "NO_READY_JOBS",
-      "substantive_work_performed": false
+      "requests": 3,
+      "research_features": [
+        {
+          "features": {
+            "close": {
+              "maximum": 779.09,
+              "mean": 757.6173999999997,
+              "minimum": 725.43,
+              "samples": 100,
+              "standard_deviation": 13.630827679931988
+            },
+            "volume": {
+              "maximum": 93989416.0,
+              "mean": 47708225.5,
+              "minimum": 18685018.0,
+              "samples": 100,
+              "standard_deviation": 14316280.192674622
+            }
+          },
+          "operation": "alphavantage:get:TIME_SERIES_DAILY"
+        }
+      ],
+      "run_id": "supplemental-39008613589-alphavantage",
+      "status": "COLLECTED_PARTIAL",
+      "substantive_work_performed": true
     },
     "bybit": {
       "catalog": {
@@ -167,12 +194,12 @@
       },
       "collected_pages": 0,
       "collected_rows": 0,
-      "completed_at_utc": "2026-10-17T00:44:42.820719+00:00",
+      "completed_at_utc": "2026-10-17T06:05:37.018680+00:00",
       "credential_present": true,
       "last_successful_receipt": null,
       "requests": 1,
       "research_features": [],
-      "run_id": "supplemental-38987755710-finnhub",
+      "run_id": "supplemental-39008613589-finnhub",
       "status": "BLOCKED_AUTHENTICATION",
       "substantive_work_performed": false
     },
@@ -501,16 +528,16 @@
         "asset_datasets_collected": 5,
         "asset_templates": 11,
         "assets": 500,
-        "collected_operations": 11,
+        "collected_operations": 7,
         "denied_operations": 0,
         "operations": 21,
-        "pending_pages": 1,
+        "pending_pages": 6,
         "qualification": "INCOMPLETE_UNTIL_EVERY_OPERATION_ASSET_PAGE_TIME_RANGE_AND_TRANSPORT_IS_VERIFIED",
         "unresolved_operations": 0
       },
       "collected_pages": 0,
       "collected_rows": 0,
-      "completed_at_utc": "2026-10-17T00:44:46.421403+00:00",
+      "completed_at_utc": "2026-10-17T06:05:33.385545+00:00",
       "credential_present": true,
       "last_successful_receipt": {
         "catalog": {
@@ -569,21 +596,21 @@
       },
       "requests": 1,
       "research_features": [],
-      "run_id": "supplemental-38987755710-unusual_whales",
+      "run_id": "supplemental-39008613589-unusual_whales",
       "status": "BLOCKED_AUTHENTICATION",
       "substantive_work_performed": false
     }
   },
   "raw_payloads_included": false,
   "schema_version": "icarus-provider-research-context-v1",
-  "snapshot_at_utc": "2026-10-17T04:24:45.210019+00:00",
+  "snapshot_at_utc": "2026-10-17T06:06:11.691430+00:00",
   "source_root": "automation_intelligence/provider_collection_v1/latest+automation_intelligence/provider_collection_v1/cycles",
   "summary": {
-    "collected_pages": 57,
-    "collected_rows": 20139,
+    "collected_pages": 60,
+    "collected_rows": 20240,
     "providers_blocked": 7,
-    "providers_substantive": 3,
+    "providers_substantive": 4,
     "providers_total": 14,
-    "requests": 122
+    "requests": 125
   }
 }

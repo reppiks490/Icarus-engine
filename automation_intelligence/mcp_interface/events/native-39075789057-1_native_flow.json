@@ -1,0 +1,84 @@
+{
+  "argus": {
+    "finding": "coinbase_spot: JOINT_EXPANSION; kraken_spot: JOINT_EXPANSION",
+    "status": "VERIFIED"
+  },
+  "at_utc": "2026-10-17T22:37:52.765190Z",
+  "category": "AUDIT",
+  "event_id": "native-39075789057-1-native-flow",
+  "evidence": [
+    {
+      "classification": "FACT",
+      "code_revision": "66930dab3cc107e35a7a62820c63cf837d852ba5",
+      "evidence_sha256": "07a66aac2c2c95d9446048d1ce296ecfb2677632a4fd94a458b6b4877ed770cf",
+      "measurement": {
+        "conflicts": [],
+        "current": [
+          {
+            "baseline_count": 28,
+            "baseline_end": 1792270800,
+            "baseline_start": 1792170000,
+            "end": 1792274400,
+            "lane_key": "coinbase_spot",
+            "provider": "coinbase",
+            "range": 894.2299999999959,
+            "range_z": 6.378873807890082,
+            "representation": "BTC-USD spot",
+            "start": 1792270800,
+            "state": "JOINT_EXPANSION",
+            "volume": 259.62929025,
+            "volume_z": 4.734540588054158
+          },
+          {
+            "baseline_count": 28,
+            "baseline_end": 1792270800,
+            "baseline_start": 1792170000,
+            "end": 1792274400,
+            "lane_key": "kraken_spot",
+            "provider": "kraken",
+            "range": 932.5,
+            "range_z": 7.148084209080519,
+            "representation": "BTC-USD spot",
+            "start": 1792270800,
+            "state": "JOINT_EXPANSION",
+            "volume": 78.05892489,
+            "volume_z": 3.8538373858265556
+          }
+        ],
+        "gaps": [
+          "bybit_spot: acquisition failed (HTTPError)",
+          "bybit_linear: acquisition failed (HTTPError)",
+          "Direct NQ/MNQ, GC/MGC, SI, DXY and volatility indices not acquired by this public worker.",
+          "Twelve Data and Massive connector credentials not exported; no entitlement inferred.",
+          "No historical trade signs, depth sequence, liquidations, OI, funding or basis collected."
+        ],
+        "limits": [
+          "Candle volume is representation-specific reported activity, not directional order flow.",
+          "No depth-history, liquidation, absorption or cross-asset causal claim."
+        ],
+        "provider_family_count": 2,
+        "status": "VERIFIED",
+        "summary": "coinbase_spot: JOINT_EXPANSION; kraken_spot: JOINT_EXPANSION"
+      }
+    }
+  ],
+  "execution_authorized": false,
+  "interpretation_authority": "UNVERIFIED_MODEL_INFERENCE",
+  "nexus": {
+    "finding": "coinbase_spot: JOINT_EXPANSION; kraken_spot: JOINT_EXPANSION",
+    "status": "VERIFIED"
+  },
+  "paths": [
+    "automation_intelligence/native_research_v1/cycles/native-39075789057-1/evidence.json",
+    "automation_intelligence/native_research_v1/cycles/native-39075789057-1/flow.json"
+  ],
+  "schema_version": "icarus-mcp-event-v1",
+  "severity": "MEDIUM",
+  "source": "FLOW_AUTOMATION",
+  "status": "VERIFIED",
+  "summary": "coinbase_spot: JOINT_EXPANSION; kraken_spot: JOINT_EXPANSION",
+  "surface": [
+    "flow native research"
+  ],
+  "worker": "GITHUB_NATIVE_RESEARCH_V1"
+}

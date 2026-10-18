@@ -69,6 +69,12 @@ Full entries in `docs/RESEARCH_LOG.md`.
 
 ## 5. Data access (verified 2026-10-16)
 
+Health interpretation guard (2026-10-18): a dedicated external-fabric receipt can support current
+provider delivery only with an explicit timezone and a timestamp within its 80-hour weekday cadence,
+never in the future. When Sentinel relies on that lane, its reported age and path refer to the dedicated
+receipt itself. Older, undated, malformed or future dedicated receipts cannot mask a blocked generic
+provider receipt or inflate its currently delivered row count.
+
 The redacted GitHub-native health run `38902710676` confirmed Actions-secret presence for Databento primary/secondary/third/fourth, EODHD, Tiingo, Unusual Whales, Alpha Vantage, FMP, FRED, Massive, Finnhub, and Twelve Data. Secret presence is not proof of a successful provider response. The latest all-provider context was rebuilt at `2026-10-16T19:51:40Z` by exhaustive run `38957297394`: 20,268 rows across 53 pages, 122 requests, five providers with substantive collection, and seven blocked. EODHD collected 67 rows, Tiingo 1, FRED 60, Massive 20,000, and Twelve Data 140; all are partial catalog slices, not complete coverage. FMP's latest generic pass was blocked with zero rows after 20 requests. Its separate external-data fabric still has prior successful derived outputs (three calls in the 12:51 snapshot), which Sentinel reports as degraded delivery while retaining the generic sampler's plan denials. The generated context is `automation_intelligence/provider_collection_v1/research_context.json`.
 
 - **EODHD:** the dedicated external-data fabric produced 2,510 daily rows across 10 symbols through 2026-10-15; tick windows are plan-limited (`38902923997`).

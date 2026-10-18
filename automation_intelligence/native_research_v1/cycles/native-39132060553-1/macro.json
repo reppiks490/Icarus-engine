@@ -1,0 +1,97 @@
+{
+  "automation_id": "github-native-research-v1",
+  "blockers": [
+    "Release titles establish publication, not macro surprise or causal impact.",
+    "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+    "No consensus estimates acquired; economic surprise remains unknown."
+  ],
+  "chatgpt_tokens_used": 0,
+  "code_revision": "76dea1aa041a2c342c6749c8a90e850dc877a7de",
+  "completed_at_utc": "2026-10-18T13:34:28.231919Z",
+  "event_paths": [],
+  "evidence": [
+    "automation_intelligence/native_research_v1/cycles/native-39132060553-1/evidence.json"
+  ],
+  "execution_authorized": false,
+  "input_sha256": "f5b75f4390b7e88c314888fb75e4bb09ec3b250904c580992d06f0d9aa66c3ef",
+  "lane": "macro",
+  "local_interpretation": {
+    "authority": "UNVERIFIED_MODEL_INFERENCE",
+    "reason": "No semantic change",
+    "status": "NOT_RUN"
+  },
+  "measurements": {
+    "gaps": [
+      "Release titles establish publication, not macro surprise or causal impact.",
+      "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+      "No consensus estimates acquired; economic surprise remains unknown."
+    ],
+    "limits": "Publication and daily change are facts; surprise, causality and intraday propagation remain unverified.",
+    "releases": [
+      {
+        "published_epoch": 1792162800.0,
+        "retrieval_finished": 1792330466.584734,
+        "retrieval_started": 1792330466.4862392,
+        "source": "FED",
+        "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20261016a.htm",
+        "title": "Federal Reserve Board announces termination of enforcement actions with Gardner Bancshares, Inc. and Small Business Bank"
+      },
+      {
+        "published_epoch": 1792213200.0,
+        "retrieval_finished": 1792330467.3562431,
+        "retrieval_started": 1792330466.585327,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261017~7015ea3099.en.html",
+        "title": "Christine Lagarde: IMFC Statement"
+      },
+      {
+        "published_epoch": 1792153875.0,
+        "retrieval_finished": 1792330467.5215,
+        "retrieval_started": 1792330467.3566594,
+        "source": "BLS",
+        "source_url": "https://www.bls.gov/bls/",
+        "title": "Major Economic Indicators Latest Numbers"
+      }
+    ],
+    "series": [
+      {
+        "change": -0.09000000000000075,
+        "date": "2026-10-15",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-10-14",
+        "series": "DGS10",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10",
+        "value": 5.1
+      },
+      {
+        "change": -0.05000000000000071,
+        "date": "2026-10-15",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-10-14",
+        "series": "DGS2",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2",
+        "value": 4.77
+      },
+      {
+        "change": 0.1554000000000002,
+        "date": "2026-10-09",
+        "freshness": "STALE",
+        "prior_date": "2026-10-08",
+        "series": "DTWEXBGS",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DTWEXBGS",
+        "value": 121.6023
+      }
+    ],
+    "status": "VERIFIED",
+    "summary": "3 dated official release headlines; 3 daily macro series measured."
+  },
+  "outcome": "NO_MATERIAL_DELTA",
+  "paid_model_calls": 0,
+  "prior_receipt_path": "automation_intelligence/native_research_v1/cycles/native-39116961474-1/macro.json",
+  "run_id": "native-39132060553-1-macro",
+  "schema_version": "icarus-research-run-v1",
+  "started_at_utc": "2026-10-18T13:34:28.183215Z",
+  "substantive_work_performed": true,
+  "summary": "3 dated official release headlines; 3 daily macro series measured.",
+  "worker": "GITHUB_ACTIONS"
+}

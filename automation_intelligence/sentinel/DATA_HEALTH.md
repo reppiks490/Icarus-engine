@@ -1,4 +1,4 @@
-# Data health — 2026-10-18 17:32 UTC
+# Data health — 2026-10-18 18:10 UTC
 
 **FAILING** 5 · **BLOCKED** 6 · **DEGRADED** 6 · **OK** 69
 
@@ -22,7 +22,7 @@
 | provider:eodhd | DEGRADED | 2510 rows; 29 endpoints denied by plan |
 | provider:fmp | DEGRADED | dedicated fabric live (3 calls, 53 known rows); generic sampler blocked; 85 endpoints denied by plan |
 | provider:tiingo | DEGRADED | 47487 rows; 4 endpoints denied by plan |
-| provider:twelve | DEGRADED | 140 rows; 1 endpoints denied by plan |
+| provider:twelve | DEGRADED | 2 rows; 1 endpoints denied by plan |
 
 ## Delivering
 

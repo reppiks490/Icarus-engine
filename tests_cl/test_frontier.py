@@ -308,17 +308,20 @@ def test_null_p_is_b_plus_one_over_n_plus_one_with_ties_against():
 def _fake_sources(root, n_rules=492, n_explore=2160):
     cl = root / trial_ledger.CL
     (cl / "history").mkdir(parents=True)
-    (cl / "candidates_latest.jsonl").write_text("".join(json.dumps(dict(asset="MNQ", id=f"r{i}", t=0.1)) + "\n"
+    (cl / "candidates_latest.jsonl").write_text("".join(json.dumps(dict(asset="MNQ", id=f"r{i}", t=0.1, run_id="cl-lab-1")) + "\n"
                                                         for i in range(n_rules)))
-    (cl / "latest.json").write_text(json.dumps(dict(candidates=n_rules)))
-    (cl / "history" / "cl-lab-1.json").write_text(json.dumps(dict(candidates=n_rules)))
+    summary = dict(run_id="cl-lab-1", candidates=n_rules,
+                   assets={"MNQ": dict(status="EVALUATED", diagnostics=dict(candidates=n_rules))})
+    (cl / "latest.json").write_text(json.dumps(summary))
+    (cl / "history" / "cl-lab-1.json").write_text(json.dumps(summary))
     (cl / "explore_ledger.jsonl").write_text("".join(json.dumps(dict(asset="MNQ", id=f"x{i}")) + "\n"
                                                      for i in range(n_explore)))
     (cl / "boos_records.jsonl").write_text(json.dumps(dict(family="cl-g1", id="b1")) + "\n")
-    (cl / "boos_latest.json").write_text(json.dumps(dict(records=1)))
-    (cl / "pulse_latest.json").write_text(json.dumps(dict(variants=dict(A={}, B={}))))
+    (cl / "boos_latest.json").write_text(json.dumps(dict(records=1, fingerprint="synthetic-boos")))
+    (cl / "pulse_latest.json").write_text(json.dumps(dict(fingerprint="synthetic-pulse", variants=dict(A={}, B={}))))
     (cl / "depth_d1_latest.json").write_text(json.dumps({"D1-A": dict(status="INSUFFICIENT_DATA"),
-                                                          "D1-B": dict(status="EVALUATED", p=0.4)}))
+                                                          "D1-B": dict(status="EVALUATED", p=0.4),
+                                                          "fingerprint": "synthetic-depth"}))
     return cl
 
 
@@ -383,3 +386,116 @@ def test_same_inputs_same_null_draws_and_results():
 def test_selection_ties_prefer_smaller_stop_then_target_then_time():
     order = [(g["sl"], g["tp"], g["T"]) for g in fr.geometries()]
     assert order == sorted(order) and len(order) == 60
+
+
+@pytest.mark.parametrize('change', ['instrument_id', 'overnight', 'index_close', 'prior_window'])
+def test_data_version_binds_causal_inputs(change):
+    a = make_adf(start='2025-08-01', n_days=65, seed=3, rolls=[(25, 150.)])
+    ix = pd.Series(np.arange(65, dtype=float), index=pd.bdate_range('2025-08-01', periods=65))
+    before = fr.build_tape(a, ix)
+    b, other_ix = a.copy(), ix.copy()
+    if change == 'instrument_id':
+        b['instrument_id'] = 1
+    elif change == 'overnight':
+        b.loc[b.index[0], 'open'] += 1
+    elif change == 'index_close':
+        other_ix.iloc[20] += 10
+    else:
+        # HOLD geometry depends on TUNE's trailing history even if HOLD OHLC is unchanged.
+        stamp = b[(b.session_date < fr.HOLD_START) & b.rth].index[-1]
+        b.loc[stamp, 'high'] += 10
+    win = 'HOLD' if change == 'prior_window' else 'TUNE'
+    assert fr.data_version(before, win) != fr.data_version(fr.build_tape(b, other_ix), win)
+
+
+def test_future_extension_preserves_tune_and_hold_versions():
+    a = make_adf(start='2025-09-01', n_days=310, seed=8)
+    full = fr.build_tape(a)
+    short = fr.build_tape(a[a.session_date < fr.FORWARD_START])
+    for win in ('TUNE', 'HOLD'):
+        assert len(fr.window_days(short, win)) > 0
+        assert fr.data_version(full, win) == fr.data_version(short, win)
+
+
+def _mixed_contract_adf():
+    a = make_adf(n_days=30, seed=3)
+    a.loc[:, ['open', 'close']] = 100.
+    a['high'], a['low'] = 125., 75.
+    day = sorted(set(a[a.rth].session_date))[25]
+    a.loc[a.session_date == day, ['open', 'high', 'low', 'close']] = 100.
+    switch = a[(a.session_date == day) & a.rth].index[40]
+    a.loc[a.index >= switch, ['open', 'high', 'low', 'close']] += 150.
+    a.loc[a.index >= switch, 'instrument_id'] = 2
+    return a
+
+
+def test_mixed_contract_dataset_is_rejected_before_evaluation():
+    with pytest.raises(ValueError, match='mixed.contract'):
+        fr.evaluate(fr.build_tape(_mixed_contract_adf()), dict(total=0), n_sets=2)
+
+
+def test_run_rejects_mixed_contracts_before_any_ledger_write(tmp_path, monkeypatch):
+    _fake_sources(tmp_path)
+    a = _mixed_contract_adf()
+    monkeypatch.setattr(fr, 'load_raw_mnq', lambda *args: (a, None, {}))
+    ledger = tmp_path / 'ledger.jsonl'
+    snap = tmp_path / 'snapshot.json'
+    out = fr.run('unused', str(tmp_path / 'out.json'), str(ledger), root=str(tmp_path), snapshot_path=str(snap))
+    assert out['status'] == 'BLOCKED'
+    assert 'mixed-contract' in ' '.join(out['blockers'])
+    assert not ledger.exists() and not snap.exists()
+
+
+def test_missing_hold_p_does_not_shrink_reached_family(monkeypatch):
+    tape, sig = _injected(170, 21, planted=True)
+    original = fr.trade_stats
+    def controlled_stats(tape, real, mask, days):
+        result = original(tape, real, mask, days)
+        if len(days) and fr.window_of(tape.dates[days[0]]) == 'HOLD':
+            result['nw_p'] = .03 if result['trades'] else math.nan
+        return result
+    monkeypatch.setattr(fr, 'trade_stats', controlled_stats)
+    tune_only = sig.copy()
+    tune_only[np.array([fr.window_of(d) != 'TUNE' for d in tape.dates])] = 0
+    sources = {'A': dict(id='a', lookback=10, signals=sig),
+               'B': dict(id='b', lookback=10, signals=tune_only)}
+    out = fr.evaluate(tape, dict(total=0), n_sets=20, sources=sources)
+    assert out['sources']['A']['hold']['holm_p'] == pytest.approx(.06)
+    assert out['sources']['A']['status'] == 'REJECTED'
+    assert out['sources']['B']['status'] == 'REJECTED'
+
+
+def test_changed_historical_snapshot_blocks_before_ledger_mutation(tmp_path, monkeypatch):
+    cl = _fake_sources(tmp_path)
+    a = make_adf(n_days=5)
+    calls = []
+    monkeypatch.setattr(fr, 'load_raw_mnq', lambda *args: (a, None, {}))
+    def evaluate(*args, **kwargs):
+        calls.append(True)
+        return dict(trials=[], sources={})
+    monkeypatch.setattr(fr, 'evaluate', evaluate)
+    ledger, snap = tmp_path/'ledger.jsonl', tmp_path/'snapshot.json'
+    args = ('unused', str(tmp_path/'out.json'), str(ledger))
+    opts = dict(root=str(tmp_path), snapshot_path=str(snap))
+    assert fr.run(*args, **opts)['status'] == 'EVALUATED'
+    before = ledger.read_bytes()
+    path = cl/'depth_d1_latest.json'
+    source = json.loads(path.read_text()); source['fingerprint'] = 'changed-input'
+    path.write_text(json.dumps(source))
+    result = fr.run(*args, **opts)
+    assert result['status'] == 'BLOCKED'
+    assert 'frozen snapshot' in ' '.join(result['blockers'])
+    assert calls == [True] and ledger.read_bytes() == before
+
+
+def test_fr1_records_do_not_invalidate_frozen_historical_snapshot(tmp_path, monkeypatch):
+    _fake_sources(tmp_path)
+    a = make_adf(n_days=5)
+    monkeypatch.setattr(fr, 'load_raw_mnq', lambda *args: (a, None, {}))
+    monkeypatch.setattr(fr, 'evaluate', lambda *args, **kwargs: dict(trials=[], sources={}))
+    ledger, snap = tmp_path/'ledger.jsonl', tmp_path/'snapshot.json'
+    args = ('unused', str(tmp_path/'out.json'), str(ledger))
+    opts = dict(root=str(tmp_path), snapshot_path=str(snap))
+    assert fr.run(*args, **opts)['status'] == 'EVALUATED'
+    trial_ledger.append(ledger, [dict(trial_id='fr-1:synthetic', source='fr-1', source_path='synthetic', row_sha256='x')])
+    assert fr.run(*args, **opts)['status'] == 'EVALUATED'

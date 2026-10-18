@@ -119,73 +119,11 @@
       "model_family": "openai",
       "phase": "system-convergence",
       "pr": null,
-      "reclaimable": false,
-      "reserved_paths": [
-        "docs/superpowers/specs/2026-10-16-icarus-system-convergence-design.md",
-        "docs/superpowers/plans/2026-10-16-icarus-system-convergence.md",
-        "icarus_engine/system_index.py",
-        "icarus_engine/futures_catalog.py",
-        "icarus_engine/assets.py",
-        "icarus_futures/contracts.py",
-        "icarus_engine/asset_command_center.py",
-        "icarus_engine/brain_evidence.py",
-        "tests_engine/test_system_index.py",
-        "tests_engine/test_futures_catalog.py",
-        "tests_engine/test_asset_command_center.py",
-        "tests_engine/test_brain_evidence.py"
-      ],
-      "reserved_targets": [
-        {
-          "path": "docs/superpowers/specs/2026-10-16-icarus-system-convergence-design.md",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "docs/superpowers/plans/2026-10-16-icarus-system-convergence.md",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "icarus_engine/system_index.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "icarus_engine/futures_catalog.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "icarus_engine/assets.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "icarus_futures/contracts.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "icarus_engine/asset_command_center.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "icarus_engine/brain_evidence.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "tests_engine/test_system_index.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "tests_engine/test_futures_catalog.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "tests_engine/test_asset_command_center.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "tests_engine/test_brain_evidence.py",
-          "repo": "reppiks490/Icarus"
-        }
-      ],
+      "reclaimable": true,
+      "reserved_paths": [],
+      "reserved_targets": [],
       "session_id": "chatgpt-20261016-atlas-system-convergence",
-      "stale": false,
+      "stale": true,
       "status": "active"
     },
     {
@@ -255,28 +193,11 @@
       "model_family": "openai",
       "phase": "handoff",
       "pr": 418,
-      "reclaimable": false,
-      "reserved_paths": [
-        "icarus_engine/calendar.py",
-        "icarus_engine/market_universe_adapter.py",
-        "tests_engine/test_market_universe.py"
-      ],
-      "reserved_targets": [
-        {
-          "path": "icarus_engine/calendar.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "icarus_engine/market_universe_adapter.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "tests_engine/test_market_universe.py",
-          "repo": "reppiks490/Icarus"
-        }
-      ],
+      "reclaimable": true,
+      "reserved_paths": [],
+      "reserved_targets": [],
       "session_id": "codex-20261016-a200-timezone-provenance",
-      "stale": false,
+      "stale": true,
       "status": "active"
     },
     {
@@ -319,6 +240,52 @@
       "status": "active"
     },
     {
+      "actor": "Codex",
+      "branch": "codex/databento-vault-key-compat-20261016",
+      "cooperates_with": [],
+      "coordination_mode": "independent",
+      "declared_paths": [
+        ".github/workflows/cl-depth-sweep.yml",
+        "tools/databento_sweep_inventory.py",
+        "tests/test_databento_sweep_inventory.py"
+      ],
+      "declared_targets": [
+        {
+          "path": ".github/workflows/cl-depth-sweep.yml",
+          "repo": "reppiks490/Icarus-engine"
+        },
+        {
+          "path": "tools/databento_sweep_inventory.py",
+          "repo": "reppiks490/Icarus-engine"
+        },
+        {
+          "path": "tests/test_databento_sweep_inventory.py",
+          "repo": "reppiks490/Icarus-engine"
+        }
+      ],
+      "dependencies": [
+        "merged:reppiks490/Icarus-engine#202",
+        "merged:reppiks490/Icarus-engine#203",
+        "merged:reppiks490/Icarus-engine#204",
+        "merged:reppiks490/Icarus-engine#205",
+        "run:38961103574:bars-baseline-in-progress"
+      ],
+      "goal": "Audit all three Databento corpus paths and protect the paid encrypted depth vault when a standalone archive key is introduced; investigate missing primary sweep data without new spend.",
+      "home_repo": "reppiks490/Icarus-engine",
+      "last_event_at_utc": "2026-10-16T20:18:55Z",
+      "latest_summary": "Merged existing-vault key-source compatibility (#202), same-run three-account sweep sealing (#203), account-scoped paid-bar baseline/restore (#204), and ledger-versus-vault sweep integrity receipt (#205). Main depth-vault post-merge run succeeded; sweep sealing ran but existing cache was empty; bar baseline first run is in progress. Redacted health confirms Databento primary/secondary/third/fourth present and standalone archive key absent.",
+      "latest_type": "UPDATE",
+      "model_family": "openai",
+      "phase": "runtime-verification",
+      "pr": "pending",
+      "reclaimable": true,
+      "reserved_paths": [],
+      "reserved_targets": [],
+      "session_id": "codex-20261016-databento-three-corpus-recovery",
+      "stale": true,
+      "status": "active"
+    },
+    {
       "actor": "ChatGPT / Codex",
       "branch": "read-only-review",
       "cooperates_with": [],
@@ -339,11 +306,11 @@
       "model_family": "openai",
       "phase": "exact-head-review",
       "pr": null,
-      "reclaimable": false,
+      "reclaimable": true,
       "reserved_paths": [],
       "reserved_targets": [],
       "session_id": "codex-20261016-futures-pr-review",
-      "stale": false,
+      "stale": true,
       "status": "active"
     },
     {
@@ -464,63 +431,11 @@
       "model_family": "openai",
       "phase": "ci-and-backend-integration",
       "pr": null,
-      "reclaimable": false,
-      "reserved_paths": [
-        "icarus_engine/command-centers-ui.js",
-        "icarus_engine/dashboard.html",
-        "icarus_engine/experience-ui.css",
-        "icarus_engine/experience-ui.js",
-        "icarus_engine/world-aura.js",
-        "icarus_engine/world-cinema.js",
-        "icarus_engine/world-immersion.js",
-        "icarus_engine/world-motion.js",
-        "assets/dashboard.html",
-        "assets/command-centers-ui.js"
-      ],
-      "reserved_targets": [
-        {
-          "path": "icarus_engine/command-centers-ui.js",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "icarus_engine/dashboard.html",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "icarus_engine/experience-ui.css",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "icarus_engine/experience-ui.js",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "icarus_engine/world-aura.js",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "icarus_engine/world-cinema.js",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "icarus_engine/world-immersion.js",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "icarus_engine/world-motion.js",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "assets/dashboard.html",
-          "repo": "sites/icarus-command-center-mobile"
-        },
-        {
-          "path": "assets/command-centers-ui.js",
-          "repo": "sites/icarus-command-center-mobile"
-        }
-      ],
+      "reclaimable": true,
+      "reserved_paths": [],
+      "reserved_targets": [],
       "session_id": "codex-20261016-phone-command-center-site",
-      "stale": false,
+      "stale": true,
       "status": "active"
     },
     {
@@ -529,74 +444,573 @@
       "cooperates_with": [],
       "coordination_mode": "independent",
       "declared_paths": [
+        "tools/provider_research_context.py",
+        "tests/test_provider_research_context.py",
+        "config/data_ingestion_manifest.json",
+        "docs/agent-handoffs/DATA_GAP_LEDGER.md",
         "ICARUS_STATE.md"
       ],
       "declared_targets": [
+        {
+          "path": "tools/provider_research_context.py",
+          "repo": "reppiks490/Icarus-engine"
+        },
+        {
+          "path": "tests/test_provider_research_context.py",
+          "repo": "reppiks490/Icarus-engine"
+        },
+        {
+          "path": "config/data_ingestion_manifest.json",
+          "repo": "reppiks490/Icarus-engine"
+        },
+        {
+          "path": "docs/agent-handoffs/DATA_GAP_LEDGER.md",
+          "repo": "reppiks490/Icarus-engine"
+        },
         {
           "path": "ICARUS_STATE.md",
           "repo": "reppiks490/Icarus-engine"
         }
       ],
       "dependencies": [
-        "PR #198 exact-head verification is running"
+        "PR #198 exact-head checks are running"
       ],
       "goal": "Correct shared provider evidence truth and repair the provider manifest contract that currently fails Engine verification.",
       "home_repo": "reppiks490/Icarus-engine",
-      "last_event_at_utc": "2026-10-16T13:13:47Z",
-      "latest_summary": "Add ICARUS_STATE.md to the repair scope because its data access section is dated 2026-10-11 and now contradicts the current 2026-10-16 health/provider/depth receipts. The repo's own instructions require updating that source of truth when facts change.",
+      "last_event_at_utc": "2026-10-16T13:16:00Z",
+      "latest_summary": "Add shared last-successful safe receipt projection from cycles/ into research_context.json. The latest Unusual Whales receipt is blocked, but successful 111-row derived features remain committed in cycle history; the standard context currently hides them because it reads only latest/. Keep current blocked status authoritative and mark prior features historical only.",
       "latest_type": "UPDATE",
       "model_family": "openai",
-      "phase": "verification",
+      "phase": "implementation",
       "pr": null,
-      "reclaimable": false,
-      "reserved_paths": [
-        "ICARUS_STATE.md"
-      ],
-      "reserved_targets": [
-        {
-          "path": "ICARUS_STATE.md",
-          "repo": "reppiks490/Icarus-engine"
-        }
-      ],
+      "reclaimable": true,
+      "reserved_paths": [],
+      "reserved_targets": [],
       "session_id": "codex-20261016-provider-data-hardening",
-      "stale": false,
+      "stale": true,
       "status": "active"
     },
     {
       "actor": "ChatGPT / Codex",
       "branch": "codex/command-center-stack-421",
-      "cooperates_with": [],
-      "coordination_mode": "independent",
-      "declared_paths": [],
-      "declared_targets": [],
+      "cooperates_with": [
+        "codex-20261016-phone-command-center-site"
+      ],
+      "coordination_mode": "cooperate",
+      "declared_paths": [
+        "tests_engine/browser_depth.cjs",
+        "coordination/summaries/codex-20261016-ui-pointer-contract-fix.json"
+      ],
+      "declared_targets": [
+        {
+          "path": "tests_engine/browser_depth.cjs",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "coordination/summaries/codex-20261016-ui-pointer-contract-fix.json",
+          "repo": "reppiks490/icarus-owner-actions"
+        }
+      ],
       "dependencies": [
-        "reppiks490/Icarus#424 current stack and #421 backend parent",
-        "GitHub Actions ui-visual-contract exact-head run"
+        "reppiks490/Icarus#424 UI visual contract rerun"
       ],
       "goal": "Repair browser-depth topology pointer reconciliation contract at the current command-center UI stack after repeat CI failures, then verify exact-head UI checks.",
       "home_repo": "reppiks490/Icarus",
-      "last_event_at_utc": "2026-10-16T13:13:13Z",
-      "latest_summary": "Repair browser-depth topology pointer reconciliation contract at the current command-center UI stack after repeat CI failures, then verify exact-head UI checks.",
-      "latest_type": "REGISTERED",
+      "last_event_at_utc": "2026-10-16T20:03:00Z",
+      "latest_summary": "Durable summary and corrected schema-v2 events are present. Session is terminal and its UI path is released after successful exact-head verification.",
+      "latest_type": "HEARTBEAT",
       "model_family": "openai",
-      "phase": "registered",
+      "phase": "legacy",
       "pr": null,
-      "reclaimable": false,
+      "reclaimable": true,
       "reserved_paths": [],
       "reserved_targets": [],
       "session_id": "codex-20261016-ui-pointer-contract-fix",
+      "stale": true,
+      "status": "active"
+    },
+    {
+      "actor": "Codex",
+      "branch": "codex/coordination-cron-guard-20261017",
+      "cooperates_with": [],
+      "coordination_mode": "independent",
+      "declared_paths": [
+        "tests/test_coordination_automation.py"
+      ],
+      "declared_targets": [
+        {
+          "path": "tests/test_coordination_automation.py",
+          "repo": "reppiks490/icarus-owner-actions"
+        }
+      ],
+      "dependencies": [
+        "coordination maintenance cron 2-57/5 is already in current main"
+      ],
+      "goal": "Preserve the offset five-minute coordination maintenance schedule with a regression contract.",
+      "home_repo": "reppiks490/icarus-owner-actions",
+      "last_event_at_utc": "2026-10-17T23:23:27Z",
+      "latest_summary": "Port the useful cron regression assertion from stale coordination compiler PR #19 onto current main; the maintenance schedule already uses an offset five-minute expression.",
+      "latest_type": "CLAIM",
+      "model_family": "openai",
+      "phase": "implementation",
+      "pr": null,
+      "reclaimable": false,
+      "reserved_paths": [
+        "tests/test_coordination_automation.py"
+      ],
+      "reserved_targets": [
+        {
+          "path": "tests/test_coordination_automation.py",
+          "repo": "reppiks490/icarus-owner-actions"
+        }
+      ],
+      "session_id": "codex-20261017-coordination-cron-guard",
+      "stale": false,
+      "status": "active"
+    },
+    {
+      "actor": "Codex",
+      "branch": "chatgpt/hub-windows-job-containment",
+      "cooperates_with": [
+        "codex-20261017-task-inventory-start"
+      ],
+      "coordination_mode": "independent",
+      "declared_paths": [
+        "README.md",
+        "docs/ARCHITECTURE.md",
+        "src/divine_providence/cli.py",
+        "src/divine_providence/drivers/nexus_to_oracle.py",
+        "src/divine_providence/mcp_server.py",
+        "src/divine_providence/runner.py",
+        "src/divine_providence/tour.py",
+        "src/divine_providence/validate.py",
+        "tests/test_hub.py",
+        "tests/test_runner_lifecycle.py",
+        ".github/workflows/runner-lifecycle.yml",
+        ".github/workflows/deep-learning-contract.yml",
+        "ICARUS_CHAT_HANDOFF_DEEP_LEARNING_20261015.md",
+        "icarus_engine/trainers/__main__.py",
+        "icarus_engine/trainers/dataset.py",
+        "icarus_engine/trainers/deep_challenger.py",
+        "icarus_engine/trainers/integrity.py",
+        "icarus_engine/trainers/metrics.py",
+        "icarus_engine/trainers/run.py",
+        "icarus_engine/trainers/sequence.py",
+        "pyproject.toml",
+        "tests_engine/test_deep_learning_challenger.py",
+        "tests_engine/test_review_fixes.py"
+      ],
+      "declared_targets": [
+        {
+          "path": "README.md",
+          "repo": "reppiks490/divine-providence"
+        },
+        {
+          "path": "docs/ARCHITECTURE.md",
+          "repo": "reppiks490/divine-providence"
+        },
+        {
+          "path": "src/divine_providence/cli.py",
+          "repo": "reppiks490/divine-providence"
+        },
+        {
+          "path": "src/divine_providence/drivers/nexus_to_oracle.py",
+          "repo": "reppiks490/divine-providence"
+        },
+        {
+          "path": "src/divine_providence/mcp_server.py",
+          "repo": "reppiks490/divine-providence"
+        },
+        {
+          "path": "src/divine_providence/runner.py",
+          "repo": "reppiks490/divine-providence"
+        },
+        {
+          "path": "src/divine_providence/tour.py",
+          "repo": "reppiks490/divine-providence"
+        },
+        {
+          "path": "src/divine_providence/validate.py",
+          "repo": "reppiks490/divine-providence"
+        },
+        {
+          "path": "tests/test_hub.py",
+          "repo": "reppiks490/divine-providence"
+        },
+        {
+          "path": "tests/test_runner_lifecycle.py",
+          "repo": "reppiks490/divine-providence"
+        },
+        {
+          "path": ".github/workflows/runner-lifecycle.yml",
+          "repo": "reppiks490/divine-providence"
+        },
+        {
+          "path": ".github/workflows/deep-learning-contract.yml",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "ICARUS_CHAT_HANDOFF_DEEP_LEARNING_20261015.md",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/trainers/__main__.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/trainers/dataset.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/trainers/deep_challenger.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/trainers/integrity.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/trainers/metrics.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/trainers/run.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/trainers/sequence.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "pyproject.toml",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "tests_engine/test_deep_learning_challenger.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "tests_engine/test_review_fixes.py",
+          "repo": "reppiks490/Icarus"
+        }
+      ],
+      "dependencies": [
+        "pr:reppiks490/divine-providence#59",
+        "pr:reppiks490/Icarus#353",
+        "pr:reppiks490/Icarus#387",
+        "session:codex-20261017-task-inventory-start"
+      ],
+      "goal": "Co-lead integration and release readiness; close Divine Providence runner lifecycle defects, preserve other worktrees, and verify repository/CI evidence.",
+      "home_repo": "reppiks490/divine-providence",
+      "last_event_at_utc": "2026-10-17T23:25:26Z",
+      "latest_summary": "Compiler repair #47 is now merged and compiled collisions are fresh/empty. Hub PR59 Linux+Windows lifecycle and full twelve-system validation passed; collectors still run. Read-only GRU audit found the interrupted audit145c86e6 tree incomplete: PR387 already contains caller-level preclaim/source-binding repairs plus CSV repair399. Claim narrowly scoped integration of complete published d3ff4cd1 onto current main in a new branch, preserving original PR353/387 branches. No canonical holdout experiment, strategy promotion, or live authority is added. Peer retains coordination/inventory/A200 fixture scope.",
+      "latest_type": "UPDATE",
+      "model_family": "openai",
+      "phase": "integration",
+      "pr": null,
+      "reclaimable": false,
+      "reserved_paths": [
+        "README.md",
+        "docs/ARCHITECTURE.md",
+        "src/divine_providence/cli.py",
+        "src/divine_providence/drivers/nexus_to_oracle.py",
+        "src/divine_providence/mcp_server.py",
+        "src/divine_providence/runner.py",
+        "src/divine_providence/tour.py",
+        "src/divine_providence/validate.py",
+        "tests/test_hub.py",
+        "tests/test_runner_lifecycle.py",
+        ".github/workflows/runner-lifecycle.yml",
+        ".github/workflows/deep-learning-contract.yml",
+        "ICARUS_CHAT_HANDOFF_DEEP_LEARNING_20261015.md",
+        "icarus_engine/trainers/__main__.py",
+        "icarus_engine/trainers/dataset.py",
+        "icarus_engine/trainers/deep_challenger.py",
+        "icarus_engine/trainers/integrity.py",
+        "icarus_engine/trainers/metrics.py",
+        "icarus_engine/trainers/run.py",
+        "icarus_engine/trainers/sequence.py",
+        "pyproject.toml",
+        "tests_engine/test_deep_learning_challenger.py",
+        "tests_engine/test_review_fixes.py"
+      ],
+      "reserved_targets": [
+        {
+          "path": "README.md",
+          "repo": "reppiks490/divine-providence"
+        },
+        {
+          "path": "docs/ARCHITECTURE.md",
+          "repo": "reppiks490/divine-providence"
+        },
+        {
+          "path": "src/divine_providence/cli.py",
+          "repo": "reppiks490/divine-providence"
+        },
+        {
+          "path": "src/divine_providence/drivers/nexus_to_oracle.py",
+          "repo": "reppiks490/divine-providence"
+        },
+        {
+          "path": "src/divine_providence/mcp_server.py",
+          "repo": "reppiks490/divine-providence"
+        },
+        {
+          "path": "src/divine_providence/runner.py",
+          "repo": "reppiks490/divine-providence"
+        },
+        {
+          "path": "src/divine_providence/tour.py",
+          "repo": "reppiks490/divine-providence"
+        },
+        {
+          "path": "src/divine_providence/validate.py",
+          "repo": "reppiks490/divine-providence"
+        },
+        {
+          "path": "tests/test_hub.py",
+          "repo": "reppiks490/divine-providence"
+        },
+        {
+          "path": "tests/test_runner_lifecycle.py",
+          "repo": "reppiks490/divine-providence"
+        },
+        {
+          "path": ".github/workflows/runner-lifecycle.yml",
+          "repo": "reppiks490/divine-providence"
+        },
+        {
+          "path": ".github/workflows/deep-learning-contract.yml",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "ICARUS_CHAT_HANDOFF_DEEP_LEARNING_20261015.md",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/trainers/__main__.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/trainers/dataset.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/trainers/deep_challenger.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/trainers/integrity.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/trainers/metrics.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/trainers/run.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/trainers/sequence.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "pyproject.toml",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "tests_engine/test_deep_learning_challenger.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "tests_engine/test_review_fixes.py",
+          "repo": "reppiks490/Icarus"
+        }
+      ],
+      "session_id": "codex-20261017-hub-integration-lead",
+      "stale": false,
+      "status": "active"
+    },
+    {
+      "actor": "Codex",
+      "branch": "codex/task-inventory-20261017",
+      "cooperates_with": [],
+      "coordination_mode": "independent",
+      "declared_paths": [
+        "icarus_futures/contracts.py",
+        "tests_engine/test_futures_contract_families.py",
+        "coordination/FUTURES_INTEGRATION_VERIFICATION_20261017.md",
+        "icarus_engine/a200_runtime_bridge.py",
+        "tests_engine/test_a200_runtime_bridge.py",
+        "docs/A200_RUNTIME_BRIDGE_REVIEW_20261018.md",
+        "cl_lab/frontier.py",
+        "cl_lab/trial_ledger.py",
+        "tests_cl/test_frontier.py",
+        "tests_cl/test_trial_ledger.py",
+        "docs/FRONTIER_REVIEW_REPAIR_20261017.md",
+        "mission/current-pr-audit-20261017.json",
+        "mission/task-audit-20261017.json",
+        "mission/continuations/2026-10-17-task-audit.md"
+      ],
+      "declared_targets": [
+        {
+          "path": "icarus_futures/contracts.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "tests_engine/test_futures_contract_families.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "coordination/FUTURES_INTEGRATION_VERIFICATION_20261017.md",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/a200_runtime_bridge.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "tests_engine/test_a200_runtime_bridge.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "docs/A200_RUNTIME_BRIDGE_REVIEW_20261018.md",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "cl_lab/frontier.py",
+          "repo": "reppiks490/Icarus-engine"
+        },
+        {
+          "path": "cl_lab/trial_ledger.py",
+          "repo": "reppiks490/Icarus-engine"
+        },
+        {
+          "path": "tests_cl/test_frontier.py",
+          "repo": "reppiks490/Icarus-engine"
+        },
+        {
+          "path": "tests_cl/test_trial_ledger.py",
+          "repo": "reppiks490/Icarus-engine"
+        },
+        {
+          "path": "docs/FRONTIER_REVIEW_REPAIR_20261017.md",
+          "repo": "reppiks490/Icarus-engine"
+        },
+        {
+          "path": "mission/current-pr-audit-20261017.json",
+          "repo": "reppiks490/icarus-owner-actions"
+        },
+        {
+          "path": "mission/task-audit-20261017.json",
+          "repo": "reppiks490/icarus-owner-actions"
+        },
+        {
+          "path": "mission/continuations/2026-10-17-task-audit.md",
+          "repo": "reppiks490/icarus-owner-actions"
+        }
+      ],
+      "dependencies": [
+        "ci:Icarus450@63e238f4",
+        "review:Engine142-repairs"
+      ],
+      "goal": "Inventory all registered Icarus tasks and begin evidence-backed completion without duplicating active work",
+      "home_repo": "reppiks490/icarus-owner-actions",
+      "last_event_at_utc": "2026-10-18T00:00:32Z",
+      "latest_summary": "Continue parallel tasks after risk repair. Parent independently reviewed A200443 exact0e772ec4:58focused tests pass but synthetic same-receipt fractional timestamp substitution is accepted (1799999700->1799999700.5) because bridge int-casts before hashing, violating validator's exact integer timestamp rule. Assign idle parent-owned reviewer bounded failing-first repair in isolated worktree; preserve original443. Research worker continues synthetic-only historical accounting and provenance repairs. Root handles independent review, exact-head CI and evidence publication.",
+      "latest_type": "CLAIM",
+      "model_family": "openai",
+      "phase": "parallel-receipt-and-research-repair",
+      "pr": null,
+      "reclaimable": false,
+      "reserved_paths": [
+        "icarus_futures/contracts.py",
+        "tests_engine/test_futures_contract_families.py",
+        "coordination/FUTURES_INTEGRATION_VERIFICATION_20261017.md",
+        "icarus_engine/a200_runtime_bridge.py",
+        "tests_engine/test_a200_runtime_bridge.py",
+        "docs/A200_RUNTIME_BRIDGE_REVIEW_20261018.md",
+        "cl_lab/frontier.py",
+        "cl_lab/trial_ledger.py",
+        "tests_cl/test_frontier.py",
+        "tests_cl/test_trial_ledger.py",
+        "docs/FRONTIER_REVIEW_REPAIR_20261017.md",
+        "mission/current-pr-audit-20261017.json",
+        "mission/task-audit-20261017.json",
+        "mission/continuations/2026-10-17-task-audit.md"
+      ],
+      "reserved_targets": [
+        {
+          "path": "icarus_futures/contracts.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "tests_engine/test_futures_contract_families.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "coordination/FUTURES_INTEGRATION_VERIFICATION_20261017.md",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/a200_runtime_bridge.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "tests_engine/test_a200_runtime_bridge.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "docs/A200_RUNTIME_BRIDGE_REVIEW_20261018.md",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "cl_lab/frontier.py",
+          "repo": "reppiks490/Icarus-engine"
+        },
+        {
+          "path": "cl_lab/trial_ledger.py",
+          "repo": "reppiks490/Icarus-engine"
+        },
+        {
+          "path": "tests_cl/test_frontier.py",
+          "repo": "reppiks490/Icarus-engine"
+        },
+        {
+          "path": "tests_cl/test_trial_ledger.py",
+          "repo": "reppiks490/Icarus-engine"
+        },
+        {
+          "path": "docs/FRONTIER_REVIEW_REPAIR_20261017.md",
+          "repo": "reppiks490/Icarus-engine"
+        },
+        {
+          "path": "mission/current-pr-audit-20261017.json",
+          "repo": "reppiks490/icarus-owner-actions"
+        },
+        {
+          "path": "mission/task-audit-20261017.json",
+          "repo": "reppiks490/icarus-owner-actions"
+        },
+        {
+          "path": "mission/continuations/2026-10-17-task-audit.md",
+          "repo": "reppiks490/icarus-owner-actions"
+        }
+      ],
+      "session_id": "codex-20261017-task-inventory-start",
       "stale": false,
       "status": "active"
     }
   ],
   "collisions": [],
   "counts": {
-    "active": 10,
+    "active": 14,
     "collisions": 0,
-    "stale": 4,
-    "terminal": 15
+    "stale": 11,
+    "terminal": 22
   },
-  "generated_at_utc": "2026-10-16T13:14:24.669039Z",
+  "generated_at_utc": "2026-10-18T00:00:44.707412Z",
   "owner_status": {
     "claude": {
       "active": false,
@@ -739,6 +1153,135 @@
       "reserved_paths": [],
       "reserved_targets": [],
       "session_id": "chatgpt-20261016-atlas141-review",
+      "stale": false,
+      "status": "complete"
+    },
+    {
+      "actor": "ChatGPT",
+      "branch": "verification/current-main-read-only",
+      "cooperates_with": [],
+      "coordination_mode": "independent",
+      "declared_paths": [],
+      "declared_targets": [],
+      "dependencies": [
+        "Latest main refs for Icarus, Icarus-engine, and Divine Providence"
+      ],
+      "goal": "Revalidate current-main package builds and requested software suites across Icarus, Icarus-engine, and Divine Providence; report exact evidence and any local limitations.",
+      "home_repo": "reppiks490/Icarus-engine",
+      "last_event_at_utc": "2026-10-16T18:39:30Z",
+      "latest_summary": "Fresh package builds and scoped software suites passed on current main for Icarus, Icarus-engine, and Divine Providence. Exact SHAs, counts, skips/warnings, and local-only limits are in the session summary.",
+      "latest_type": "COMPLETE",
+      "model_family": "openai",
+      "phase": "complete",
+      "pr": null,
+      "reclaimable": false,
+      "reserved_paths": [],
+      "reserved_targets": [],
+      "session_id": "chatgpt-20261016-current-head-builds",
+      "stale": false,
+      "status": "complete"
+    },
+    {
+      "actor": "ChatGPT",
+      "branch": "coordination/stop-point-20261017",
+      "cooperates_with": [],
+      "coordination_mode": "independent",
+      "declared_paths": [],
+      "declared_targets": [],
+      "dependencies": [
+        "session:codex-20261017-task-inventory-start",
+        "pr:reppiks490/icarus-owner-actions#19"
+      ],
+      "goal": "Document a bounded stopping point and reusable handoff for subsequent ICARUS agents.",
+      "home_repo": "reppiks490/icarus-owner-actions",
+      "last_event_at_utc": "2026-10-17T23:19:00Z",
+      "latest_summary": "Published the stopping-point handoff and durable session summary for the next agents. This closes only the bounded review/build-verification work; ICARUS remains active and not globally complete.",
+      "latest_type": "COMPLETE",
+      "model_family": "openai",
+      "phase": "complete",
+      "pr": null,
+      "reclaimable": false,
+      "reserved_paths": [],
+      "reserved_targets": [],
+      "session_id": "chatgpt-20261017-stop-point",
+      "stale": false,
+      "status": "complete"
+    },
+    {
+      "actor": "ChatGPT",
+      "branch": "coordination/stop-point-20261017",
+      "cooperates_with": [],
+      "coordination_mode": "independent",
+      "declared_paths": [],
+      "declared_targets": [],
+      "dependencies": [
+        "session:codex-20261017-legacy-event-normalization"
+      ],
+      "goal": "Add the newly claimed coordination migration branch to the stopping-point handoff so the next agent does not duplicate it.",
+      "home_repo": "reppiks490/icarus-owner-actions",
+      "last_event_at_utc": "2026-10-17T23:20:17Z",
+      "latest_summary": "The stop-point handoff has been updated to route next agents to the active legacy-record migration branch without duplicating its claimed code paths.",
+      "latest_type": "COMPLETE",
+      "model_family": "openai",
+      "phase": "complete",
+      "pr": null,
+      "reclaimable": false,
+      "reserved_paths": [],
+      "reserved_targets": [],
+      "session_id": "chatgpt-20261017-stop-point-branch-refresh",
+      "stale": false,
+      "status": "complete"
+    },
+    {
+      "actor": "ChatGPT",
+      "branch": "coordination/stop-point-20261017",
+      "cooperates_with": [],
+      "coordination_mode": "independent",
+      "declared_paths": [],
+      "declared_targets": [],
+      "dependencies": [
+        "pr:reppiks490/Icarus#447",
+        "pr:reppiks490/icarus-owner-actions#45",
+        "session:codex-20261017-hub-integration-lead"
+      ],
+      "goal": "Finalize the stopping-point handoff after the task-inventory session publishes its completion and next-work handoff.",
+      "home_repo": "reppiks490/icarus-owner-actions",
+      "last_event_at_utc": "2026-10-17T23:19:32Z",
+      "latest_summary": "Updated the handoff with the inventory session's terminal first-tranche results, open PRs, still-running exact-head CI, and the next claimable compiler migration. Timestamp caveat is documented. This is a bounded documentation checkpoint, not global completion.",
+      "latest_type": "COMPLETE",
+      "model_family": "openai",
+      "phase": "complete",
+      "pr": null,
+      "reclaimable": false,
+      "reserved_paths": [],
+      "reserved_targets": [],
+      "session_id": "chatgpt-20261017-stop-point-final-refresh",
+      "stale": false,
+      "status": "complete"
+    },
+    {
+      "actor": "ChatGPT",
+      "branch": "coordination/stop-point-20261017",
+      "cooperates_with": [],
+      "coordination_mode": "independent",
+      "declared_paths": [],
+      "declared_targets": [],
+      "dependencies": [
+        "session:codex-20261017-task-inventory-start",
+        "session:codex-20261017-hub-integration-lead"
+      ],
+      "goal": "Update the next-agent stop-point note with the latest coordination handoffs discovered after its first publication.",
+      "home_repo": "reppiks490/icarus-owner-actions",
+      "last_event_at_utc": "2026-10-17T23:18:40Z",
+      "latest_summary": "The handoff now includes current active task claims and the newly surfaced integration-lead work. The initial estimated-future completion timestamp is explicitly corrected in the document and an UPDATE event. No application code was changed.",
+      "latest_type": "COMPLETE",
+      "model_family": "openai",
+      "phase": "complete",
+      "pr": null,
+      "reclaimable": false,
+      "reserved_paths": [],
+      "reserved_targets": [],
+      "session_id": "chatgpt-20261017-stop-point-refresh",
       "stale": false,
       "status": "complete"
     },
@@ -999,6 +1542,57 @@
       "reserved_paths": [],
       "reserved_targets": [],
       "session_id": "codex-20261016-uw-pulse-consumption-audit",
+      "stale": false,
+      "status": "complete"
+    },
+    {
+      "actor": "Codex",
+      "branch": "codex/legacy-event-normalization-20261017",
+      "cooperates_with": [],
+      "coordination_mode": "independent",
+      "declared_paths": [],
+      "declared_targets": [],
+      "dependencies": [
+        "review:reppiks490/icarus-owner-actions#47 exact-head code review"
+      ],
+      "goal": "Restore coordination bus validation for immutable legacy event and summary dialects without rewriting historical records.",
+      "home_repo": "reppiks490/icarus-owner-actions",
+      "last_event_at_utc": "2026-10-17T23:24:24Z",
+      "latest_summary": "Legacy event and summary compatibility merged in owner-actions PR #47; all current immutable records validate and exact-head CI passed on Python 3.11, 3.12, and 3.13.",
+      "latest_type": "COMPLETE",
+      "model_family": "openai",
+      "phase": "complete",
+      "pr": null,
+      "reclaimable": false,
+      "reserved_paths": [],
+      "reserved_targets": [],
+      "session_id": "codex-20261017-legacy-event-normalization",
+      "stale": false,
+      "status": "complete"
+    },
+    {
+      "actor": "Codex",
+      "branch": "codex/sentinel-row-refresh-fingerprint",
+      "cooperates_with": [],
+      "coordination_mode": "independent",
+      "declared_paths": [],
+      "declared_targets": [],
+      "dependencies": [
+        "merged:reppiks490/Icarus-engine#201",
+        "merged:reppiks490/icarus-owner-actions#47"
+      ],
+      "goal": "Add a regression test proving provider row-count changes trigger a Sentinel health report refresh even when provider verdicts remain unchanged.",
+      "home_repo": "reppiks490/Icarus-engine",
+      "last_event_at_utc": "2026-10-17T23:23:29Z",
+      "latest_summary": "Completed the Sentinel provider-row refresh regression test on Icarus-engine PR #201. The test failed against the pre-fix base and passed with the fix. PR #201 merged at 8e9f8f42e1c4d9f6a8c21569d948c5df90b20ca6 after all six exact-head jobs passed.",
+      "latest_type": "COMPLETE",
+      "model_family": "openai",
+      "phase": "complete",
+      "pr": 201,
+      "reclaimable": false,
+      "reserved_paths": [],
+      "reserved_targets": [],
+      "session_id": "codex-20261017-sentinel-row-refresh-test",
       "stale": false,
       "status": "complete"
     }

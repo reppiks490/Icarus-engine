@@ -651,17 +651,18 @@ def forward_evaluation(tape: Tape, real: dict, m_fwd: np.ndarray, fd: np.ndarray
 # --------------------------------------------------------------------------- the real run
 
 def mixed_contract_sessions(tape: Tape) -> list[str]:
-    """Reject the whole dataset when a detected switch lies inside an RTH session.
+    """Reject the whole dataset when a detected switch lies in an RTH session.
 
     Reporting after evaluation would allow an old-contract entry to fill against a new-contract
-    print. No retrospective session mask or repaired fill is introduced here.
+    print. A switch on the first RTH bar also leaves the pre-session context in the old
+    contract basis, so that boundary is blocked too. No retrospective session mask or
+    repaired fill/context is introduced here.
     """
     if tape.adf.empty:
         return []
-    starts = set(int(x) for x in tape.rth_start)
     return sorted({str(r["session"]) for r in integrity.detect_rolls(tape.adf, tape.index_close)
                    if r.get("status") == "DETECTED" and r.get("pos") is not None
-                   and bool(tape.adf["rth"].iloc[int(r["pos"])]) and int(r["pos"]) not in starts})
+                   and bool(tape.adf["rth"].iloc[int(r["pos"])])})
 
 
 def load_raw_mnq(cache_dir: str, csv_path: str = "data/mnq_5m_full.csv") -> tuple[pd.DataFrame, pd.Series | None, dict]:

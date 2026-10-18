@@ -417,27 +417,32 @@ def test_future_extension_preserves_tune_and_hold_versions():
         assert fr.data_version(full, win) == fr.data_version(short, win)
 
 
-def _mixed_contract_adf():
+def _mixed_contract_adf(switch_slot=40):
     a = make_adf(n_days=30, seed=3)
     a.loc[:, ['open', 'close']] = 100.
     a['high'], a['low'] = 125., 75.
     day = sorted(set(a[a.rth].session_date))[25]
     a.loc[a.session_date == day, ['open', 'high', 'low', 'close']] = 100.
-    switch = a[(a.session_date == day) & a.rth].index[40]
+    switch = a[(a.session_date == day) & a.rth].index[switch_slot]
     a.loc[a.index >= switch, ['open', 'high', 'low', 'close']] += 150.
     a.loc[a.index >= switch, 'instrument_id'] = 2
     return a
 
 
-def test_mixed_contract_dataset_is_rejected_before_evaluation():
+@pytest.mark.parametrize('switch_slot', [0, 40])
+def test_mixed_contract_dataset_is_rejected_before_evaluation(switch_slot):
     with pytest.raises(ValueError, match='mixed.contract'):
-        fr.evaluate(fr.build_tape(_mixed_contract_adf()), dict(total=0), n_sets=2)
+        fr.evaluate(fr.build_tape(_mixed_contract_adf(switch_slot)), dict(total=0), n_sets=2)
 
 
-def test_run_rejects_mixed_contracts_before_any_ledger_write(tmp_path, monkeypatch):
+@pytest.mark.parametrize('switch_slot', [0, 40])
+def test_run_rejects_mixed_contracts_before_any_ledger_write(tmp_path, monkeypatch, switch_slot):
     _fake_sources(tmp_path)
-    a = _mixed_contract_adf()
+    a = _mixed_contract_adf(switch_slot)
     monkeypatch.setattr(fr, 'load_raw_mnq', lambda *args: (a, None, {}))
+    def forbid_evaluation(*args, **kwargs):
+        raise AssertionError('unsafe contract context must be rejected before evaluation')
+    monkeypatch.setattr(fr, 'evaluate', forbid_evaluation)
     ledger = tmp_path / 'ledger.jsonl'
     snap = tmp_path / 'snapshot.json'
     out = fr.run('unused', str(tmp_path / 'out.json'), str(ledger), root=str(tmp_path), snapshot_path=str(snap))

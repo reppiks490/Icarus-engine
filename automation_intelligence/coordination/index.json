@@ -531,45 +531,6 @@
     },
     {
       "actor": "Codex",
-      "branch": "codex/coordination-cron-guard-20261017",
-      "cooperates_with": [],
-      "coordination_mode": "independent",
-      "declared_paths": [
-        "tests/test_coordination_automation.py"
-      ],
-      "declared_targets": [
-        {
-          "path": "tests/test_coordination_automation.py",
-          "repo": "reppiks490/icarus-owner-actions"
-        }
-      ],
-      "dependencies": [
-        "coordination maintenance cron 2-57/5 is already in current main"
-      ],
-      "goal": "Preserve the offset five-minute coordination maintenance schedule with a regression contract.",
-      "home_repo": "reppiks490/icarus-owner-actions",
-      "last_event_at_utc": "2026-10-17T23:23:27Z",
-      "latest_summary": "Port the useful cron regression assertion from stale coordination compiler PR #19 onto current main; the maintenance schedule already uses an offset five-minute expression.",
-      "latest_type": "CLAIM",
-      "model_family": "openai",
-      "phase": "implementation",
-      "pr": null,
-      "reclaimable": false,
-      "reserved_paths": [
-        "tests/test_coordination_automation.py"
-      ],
-      "reserved_targets": [
-        {
-          "path": "tests/test_coordination_automation.py",
-          "repo": "reppiks490/icarus-owner-actions"
-        }
-      ],
-      "session_id": "codex-20261017-coordination-cron-guard",
-      "stale": false,
-      "status": "active"
-    },
-    {
-      "actor": "Codex",
       "branch": "chatgpt/hub-windows-job-containment",
       "cooperates_with": [
         "codex-20261017-task-inventory-start"
@@ -702,11 +663,11 @@
       ],
       "goal": "Co-lead integration and release readiness; close Divine Providence runner lifecycle defects, preserve other worktrees, and verify repository/CI evidence.",
       "home_repo": "reppiks490/divine-providence",
-      "last_event_at_utc": "2026-10-17T23:25:26Z",
-      "latest_summary": "Compiler repair #47 is now merged and compiled collisions are fresh/empty. Hub PR59 Linux+Windows lifecycle and full twelve-system validation passed; collectors still run. Read-only GRU audit found the interrupted audit145c86e6 tree incomplete: PR387 already contains caller-level preclaim/source-binding repairs plus CSV repair399. Claim narrowly scoped integration of complete published d3ff4cd1 onto current main in a new branch, preserving original PR353/387 branches. No canonical holdout experiment, strategy promotion, or live authority is added. Peer retains coordination/inventory/A200 fixture scope.",
+      "last_event_at_utc": "2026-10-18T04:13:13Z",
+      "latest_summary": "Resume co-lead integration after interruption. PR59 full twelve-system and subsystem jobs passed; lifecycle Python3.11 passed on Windows/Linux, but full Windows bootstrap selected Python3.13 and failed the successful-descendant marker assertion. Investigate whether marker was written before runner returned due output-handle lifetime or after return due containment failure; add version-specific diagnostics before a behavioral fix. Keep existing runner/tour and GRU integration reservations; peer task-inventory retains A200/futures/research accounting paths.",
       "latest_type": "UPDATE",
       "model_family": "openai",
-      "phase": "integration",
+      "phase": "debugging",
       "pr": null,
       "reclaimable": false,
       "reserved_paths": [
@@ -838,65 +799,67 @@
       "cooperates_with": [],
       "coordination_mode": "independent",
       "declared_paths": [
-        "icarus_futures/contracts.py",
-        "tests_engine/test_futures_contract_families.py",
-        "coordination/FUTURES_INTEGRATION_VERIFICATION_20261017.md",
-        "icarus_engine/a200_runtime_bridge.py",
-        "tests_engine/test_a200_runtime_bridge.py",
-        "docs/A200_RUNTIME_BRIDGE_REVIEW_20261018.md",
-        "cl_lab/frontier.py",
-        "cl_lab/trial_ledger.py",
-        "tests_cl/test_frontier.py",
-        "tests_cl/test_trial_ledger.py",
-        "docs/FRONTIER_REVIEW_REPAIR_20261017.md",
+        "tools/provider_exhaustive_collection.py",
+        "tests/test_provider_exhaustive_collection.py",
+        "docs/agent-handoffs/CORPUS_OPERATION_RECEIPTS_20261018.md",
+        "tools/provider_archive.py",
+        "tests/test_provider_archive.py",
+        "docs/superpowers/specs/2026-10-18-corpus-consumer-plane-design.md",
+        "docs/superpowers/plans/2026-10-18-corpus-consumer-plane.md",
+        "icarus_engine/corpus_intake.py",
+        "tools/provider_corpus_intake.py",
+        "tests_engine/test_corpus_intake.py",
+        "tests/test_provider_corpus_intake.py",
         "mission/current-pr-audit-20261017.json",
         "mission/task-audit-20261017.json",
-        "mission/continuations/2026-10-17-task-audit.md"
+        "mission/continuations/2026-10-17-task-audit.md",
+        "tools/provider_exhaustive_collection.py",
+        "tests/test_provider_exhaustive_collection.py"
       ],
       "declared_targets": [
         {
-          "path": "icarus_futures/contracts.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "tests_engine/test_futures_contract_families.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "coordination/FUTURES_INTEGRATION_VERIFICATION_20261017.md",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "icarus_engine/a200_runtime_bridge.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "tests_engine/test_a200_runtime_bridge.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "docs/A200_RUNTIME_BRIDGE_REVIEW_20261018.md",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "cl_lab/frontier.py",
+          "path": "tools/provider_exhaustive_collection.py",
           "repo": "reppiks490/Icarus-engine"
         },
         {
-          "path": "cl_lab/trial_ledger.py",
+          "path": "tests/test_provider_exhaustive_collection.py",
           "repo": "reppiks490/Icarus-engine"
         },
         {
-          "path": "tests_cl/test_frontier.py",
+          "path": "docs/agent-handoffs/CORPUS_OPERATION_RECEIPTS_20261018.md",
           "repo": "reppiks490/Icarus-engine"
         },
         {
-          "path": "tests_cl/test_trial_ledger.py",
-          "repo": "reppiks490/Icarus-engine"
+          "path": "tools/provider_archive.py",
+          "repo": "reppiks490/Icarus"
         },
         {
-          "path": "docs/FRONTIER_REVIEW_REPAIR_20261017.md",
-          "repo": "reppiks490/Icarus-engine"
+          "path": "tests/test_provider_archive.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "docs/superpowers/specs/2026-10-18-corpus-consumer-plane-design.md",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "docs/superpowers/plans/2026-10-18-corpus-consumer-plane.md",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/corpus_intake.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "tools/provider_corpus_intake.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "tests_engine/test_corpus_intake.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "tests/test_provider_corpus_intake.py",
+          "repo": "reppiks490/Icarus"
         },
         {
           "path": "mission/current-pr-audit-20261017.json",
@@ -909,81 +872,91 @@
         {
           "path": "mission/continuations/2026-10-17-task-audit.md",
           "repo": "reppiks490/icarus-owner-actions"
+        },
+        {
+          "path": "tools/provider_exhaustive_collection.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "tests/test_provider_exhaustive_collection.py",
+          "repo": "reppiks490/Icarus"
         }
       ],
       "dependencies": [
-        "ci:Icarus450@63e238f4",
-        "review:Engine142-repairs"
+        "review:Engine84e4f2c",
+        "review:Icarusarchive-private-write"
       ],
       "goal": "Inventory all registered Icarus tasks and begin evidence-backed completion without duplicating active work",
       "home_repo": "reppiks490/icarus-owner-actions",
-      "last_event_at_utc": "2026-10-18T00:00:32Z",
-      "latest_summary": "Continue parallel tasks after risk repair. Parent independently reviewed A200443 exact0e772ec4:58focused tests pass but synthetic same-receipt fractional timestamp substitution is accepted (1799999700->1799999700.5) because bridge int-casts before hashing, violating validator's exact integer timestamp rule. Assign idle parent-owned reviewer bounded failing-first repair in isolated worktree; preserve original443. Research worker continues synthetic-only historical accounting and provenance repairs. Root handles independent review, exact-head CI and evidence publication.",
-      "latest_type": "CLAIM",
+      "last_event_at_utc": "2026-10-18T04:29:35Z",
+      "latest_summary": "Freshcredentialhealth39096842728 confirms13/52canonicalfamiliespresent, fourDatabentoslots andFREDpresent, optionalarchivekey/GH_PAT/peertokenabsent. NativeGitHubartifactconnector+signeddownload successfully reads redactedhealth afterdirectAzuregh403; no keyvaluesread. Vaultmanifestcontainsaccount-scopedpaidbarbaselines readablebyexistingHKDFkey inActions. Engineoperationreceipt84e4f2c69synthetictests green; strongerchecks reveal Icarus01671568 lists empty operation asverified ifanotheroperation suppliedrows. Addsame narrowreceiptcorrectioninIcarusmirror; no consumption/qualificationescalation. Privatearchiveworkercontinuing. Parentcanonicalbarintakewillbindvaultmanifesthash, exactsourcecommit, realfilebytes, UTCbaropen andactualconsumerreceipts; unknownproviderpayloadsremaincontextonly.",
+      "latest_type": "UPDATE",
       "model_family": "openai",
-      "phase": "parallel-receipt-and-research-repair",
+      "phase": "secure-corpus-consumer-plane",
       "pr": null,
       "reclaimable": false,
       "reserved_paths": [
-        "icarus_futures/contracts.py",
-        "tests_engine/test_futures_contract_families.py",
-        "coordination/FUTURES_INTEGRATION_VERIFICATION_20261017.md",
-        "icarus_engine/a200_runtime_bridge.py",
-        "tests_engine/test_a200_runtime_bridge.py",
-        "docs/A200_RUNTIME_BRIDGE_REVIEW_20261018.md",
-        "cl_lab/frontier.py",
-        "cl_lab/trial_ledger.py",
-        "tests_cl/test_frontier.py",
-        "tests_cl/test_trial_ledger.py",
-        "docs/FRONTIER_REVIEW_REPAIR_20261017.md",
+        "tools/provider_exhaustive_collection.py",
+        "tests/test_provider_exhaustive_collection.py",
+        "docs/agent-handoffs/CORPUS_OPERATION_RECEIPTS_20261018.md",
+        "tools/provider_archive.py",
+        "tests/test_provider_archive.py",
+        "docs/superpowers/specs/2026-10-18-corpus-consumer-plane-design.md",
+        "docs/superpowers/plans/2026-10-18-corpus-consumer-plane.md",
+        "icarus_engine/corpus_intake.py",
+        "tools/provider_corpus_intake.py",
+        "tests_engine/test_corpus_intake.py",
+        "tests/test_provider_corpus_intake.py",
         "mission/current-pr-audit-20261017.json",
         "mission/task-audit-20261017.json",
-        "mission/continuations/2026-10-17-task-audit.md"
+        "mission/continuations/2026-10-17-task-audit.md",
+        "tools/provider_exhaustive_collection.py",
+        "tests/test_provider_exhaustive_collection.py"
       ],
       "reserved_targets": [
         {
-          "path": "icarus_futures/contracts.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "tests_engine/test_futures_contract_families.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "coordination/FUTURES_INTEGRATION_VERIFICATION_20261017.md",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "icarus_engine/a200_runtime_bridge.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "tests_engine/test_a200_runtime_bridge.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "docs/A200_RUNTIME_BRIDGE_REVIEW_20261018.md",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "cl_lab/frontier.py",
+          "path": "tools/provider_exhaustive_collection.py",
           "repo": "reppiks490/Icarus-engine"
         },
         {
-          "path": "cl_lab/trial_ledger.py",
+          "path": "tests/test_provider_exhaustive_collection.py",
           "repo": "reppiks490/Icarus-engine"
         },
         {
-          "path": "tests_cl/test_frontier.py",
+          "path": "docs/agent-handoffs/CORPUS_OPERATION_RECEIPTS_20261018.md",
           "repo": "reppiks490/Icarus-engine"
         },
         {
-          "path": "tests_cl/test_trial_ledger.py",
-          "repo": "reppiks490/Icarus-engine"
+          "path": "tools/provider_archive.py",
+          "repo": "reppiks490/Icarus"
         },
         {
-          "path": "docs/FRONTIER_REVIEW_REPAIR_20261017.md",
-          "repo": "reppiks490/Icarus-engine"
+          "path": "tests/test_provider_archive.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "docs/superpowers/specs/2026-10-18-corpus-consumer-plane-design.md",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "docs/superpowers/plans/2026-10-18-corpus-consumer-plane.md",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/corpus_intake.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "tools/provider_corpus_intake.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "tests_engine/test_corpus_intake.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "tests/test_provider_corpus_intake.py",
+          "repo": "reppiks490/Icarus"
         },
         {
           "path": "mission/current-pr-audit-20261017.json",
@@ -996,9 +969,66 @@
         {
           "path": "mission/continuations/2026-10-17-task-audit.md",
           "repo": "reppiks490/icarus-owner-actions"
+        },
+        {
+          "path": "tools/provider_exhaustive_collection.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "tests/test_provider_exhaustive_collection.py",
+          "repo": "reppiks490/Icarus"
         }
       ],
       "session_id": "codex-20261017-task-inventory-start",
+      "stale": false,
+      "status": "active"
+    },
+    {
+      "actor": "Codex provider-account guard subagent",
+      "branch": "codex/databento-corpus-account-guard-20261018",
+      "cooperates_with": [],
+      "coordination_mode": "independent",
+      "declared_paths": [
+        "cl_lab/feeds/registry.py",
+        "tests_cl/test_feeds.py"
+      ],
+      "declared_targets": [
+        {
+          "path": "cl_lab/feeds/registry.py",
+          "repo": "reppiks490/Icarus-engine"
+        },
+        {
+          "path": "tests_cl/test_feeds.py",
+          "repo": "reppiks490/Icarus-engine"
+        }
+      ],
+      "dependencies": [
+        "session:codex-20261017-hub-integration-lead"
+      ],
+      "goal": "Fail closed on OHLCV accounts without approved corpus spend lanes and align account resolution.",
+      "home_repo": "reppiks490/Icarus-engine",
+      "last_event_at_utc": "2026-10-18T04:16:08Z",
+      "latest_summary": "Repair only effective OHLCV account resolution and refusal without an approved corpus ledger lane. No allocations, provider calls, purchases, live authority or merges. Knowledge delta: regression names and PR description document the account invariant; no additional repository docs within this two-file delegated scope.",
+      "latest_type": "CLAIM",
+      "model_family": "openai",
+      "phase": "offline-regression",
+      "pr": null,
+      "reclaimable": false,
+      "reserved_paths": [
+        "cl_lab/feeds/registry.py",
+        "tests_cl/test_feeds.py"
+      ],
+      "reserved_targets": [
+        {
+          "path": "cl_lab/feeds/registry.py",
+          "repo": "reppiks490/Icarus-engine"
+        },
+        {
+          "path": "tests_cl/test_feeds.py",
+          "repo": "reppiks490/Icarus-engine"
+        }
+      ],
+      "session_id": "codex-20261018-provider-account-guard",
       "stale": false,
       "status": "active"
     }
@@ -1008,9 +1038,9 @@
     "active": 14,
     "collisions": 0,
     "stale": 11,
-    "terminal": 22
+    "terminal": 23
   },
-  "generated_at_utc": "2026-10-18T00:00:44.707412Z",
+  "generated_at_utc": "2026-10-18T04:29:49.040481Z",
   "owner_status": {
     "claude": {
       "active": false,
@@ -1542,6 +1572,31 @@
       "reserved_paths": [],
       "reserved_targets": [],
       "session_id": "codex-20261016-uw-pulse-consumption-audit",
+      "stale": false,
+      "status": "complete"
+    },
+    {
+      "actor": "Codex",
+      "branch": "codex/coordination-cron-guard-20261017",
+      "cooperates_with": [],
+      "coordination_mode": "independent",
+      "declared_paths": [],
+      "declared_targets": [],
+      "dependencies": [
+        "coordination maintenance cron 2-57/5 is already in current main"
+      ],
+      "goal": "Preserve the offset five-minute coordination maintenance schedule with a regression contract.",
+      "home_repo": "reppiks490/icarus-owner-actions",
+      "last_event_at_utc": "2026-10-17T23:25:44Z",
+      "latest_summary": "The offset five-minute coordination cron guard was ported to current main and merged in PR #49 after exact-head CI passed.",
+      "latest_type": "COMPLETE",
+      "model_family": "openai",
+      "phase": "complete",
+      "pr": null,
+      "reclaimable": false,
+      "reserved_paths": [],
+      "reserved_targets": [],
+      "session_id": "codex-20261017-coordination-cron-guard",
       "stale": false,
       "status": "complete"
     },

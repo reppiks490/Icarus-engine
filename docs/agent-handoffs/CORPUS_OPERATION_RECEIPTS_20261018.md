@@ -12,6 +12,9 @@ checks succeed and the collector recognizes rows containing a populated value. E
 empty/null-only placeholders, blank strings and nonfinite numeric-only rows do not establish
 operation access. Numeric zero remains valid content. Response-supplied operation claims are
 ignored; identity comes from the attempted catalog job and must match the provider namespace.
+Nested objects and lists must contain a populated JSON scalar leaf within 32 levels. Empty,
+null-only, blank and nonfinite-only nested structures remain unverified; zero and boolean leaves
+remain meaningful. A leaf beyond that traversal limit cannot establish access.
 
 If any page or asset attempt for an operation fails in that cycle, that operation is excluded from
 the list even if an earlier page succeeded. The existing blocker remains visible. Unattempted
@@ -46,13 +49,15 @@ operation evidence to old receipts; only a future authorized collector cycle can
 ## Verification
 
 The initial 11 new synthetic regression cases were observed failing on the missing field before
-implementation. Positive fixtures verify exact/current IDs, unique sorted pagination evidence,
+implementation. Five subsequent nested-empty/depth-bound regressions were also observed failing
+before the recursive check; three nested-zero/boolean positive controls remain passing.
+Positive fixtures verify exact/current IDs, unique sorted pagination evidence,
 numeric-zero rows and persisted latest receipts. Negative fixtures cover empty/placeholder pages,
 blank/nonfinite values, denied pages after earlier success, unattempted IDs, stale successes,
 missing credentials, non-read jobs and public raw/error exclusion.
 
 Using `/workspace/Icarus/.venv/bin/python` with `PYTHONDONTWRITEBYTECODE=1`, the final pure suite passed
-**69 tests**, with no skips or warnings:
+**77 tests**, with no skips or warnings:
 
 ```bash
 python -m pytest -ra -p no:cacheprovider \

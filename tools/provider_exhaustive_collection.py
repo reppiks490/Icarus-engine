@@ -254,14 +254,16 @@ def research_features(records):
     return features
 
 def substantive_rows(records):
-    """An access receipt needs row content, not an HTTP success or empty placeholder."""
-    for record in records:
-        for value in record.values():
-            if value in (None,'',[],{}):continue
-            if isinstance(value,str) and not value.strip():continue
-            if isinstance(value,float) and not math.isfinite(value):continue
-            return True
-    return False
+    """Require a populated JSON leaf within 32 levels, not merely a nonempty container."""
+    def populated(value,depth):
+        if depth>32:return False
+        if isinstance(value,dict):return any(populated(item,depth+1) for item in value.values())
+        if isinstance(value,list):return any(populated(item,depth+1) for item in value)
+        if isinstance(value,str):return bool(value.strip())
+        if isinstance(value,(bool,int)):return True
+        if isinstance(value,float):return math.isfinite(value)
+        return False
+    return any(populated(record,0) for record in records)
 
 def coverage(db):
     count=lambda sql:db.execute(sql).fetchone()[0]

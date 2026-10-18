@@ -533,7 +533,8 @@
       "actor": "Codex",
       "branch": "chatgpt/hub-windows-job-containment",
       "cooperates_with": [
-        "codex-20261017-task-inventory-start"
+        "codex-20261017-task-inventory-start",
+        "codex-20261018-dashboard-integration-audit"
       ],
       "coordination_mode": "independent",
       "declared_paths": [
@@ -559,7 +560,8 @@
         "icarus_engine/trainers/sequence.py",
         "pyproject.toml",
         "tests_engine/test_deep_learning_challenger.py",
-        "tests_engine/test_review_fixes.py"
+        "tests_engine/test_review_fixes.py",
+        "coordination/handoffs/2026-10-18-hub-integration-audit.md"
       ],
       "declared_targets": [
         {
@@ -653,6 +655,10 @@
         {
           "path": "tests_engine/test_review_fixes.py",
           "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "coordination/handoffs/2026-10-18-hub-integration-audit.md",
+          "repo": "reppiks490/icarus-owner-actions"
         }
       ],
       "dependencies": [
@@ -663,17 +669,139 @@
       ],
       "goal": "Co-lead integration and release readiness; close Divine Providence runner lifecycle defects, preserve other worktrees, and verify repository/CI evidence.",
       "home_repo": "reppiks490/divine-providence",
-      "last_event_at_utc": "2026-10-18T04:13:13Z",
-      "latest_summary": "Resume co-lead integration after interruption. PR59 full twelve-system and subsystem jobs passed; lifecycle Python3.11 passed on Windows/Linux, but full Windows bootstrap selected Python3.13 and failed the successful-descendant marker assertion. Investigate whether marker was written before runner returned due output-handle lifetime or after return due containment failure; add version-specific diagnostics before a behavioral fix. Keep existing runner/tour and GRU integration reservations; peer task-inventory retains A200/futures/research accounting paths.",
+      "last_event_at_utc": "2026-10-18T14:51:02Z",
+      "latest_summary": "Merged existing peer PR447 at e4daa751 after green published CI and independent26-test current-main verification; all7 prior engine failures were reproduced on clean main first. Release the two A200 fixture-test reservations. GRU integration now based on e4daa751 at local3d8b9f70 includes reviewed disk-read/digest/preprocessing replay verification and empty-history compatibility;56 focused synthetic realTorch/temporal/trainer/spec tests passed. Full engine suite and package build are running after rebase. Hub final fixture f63347c9 has green Linux/Windows3.11+3.13 lifecycle and subsystem validation; Windows full bootstrap still runs. Shared P&L/futures/prop findings are posted to PR452 comment6251218869; root has not modified peer-owned dashboard/account files.",
       "latest_type": "UPDATE",
       "model_family": "openai",
-      "phase": "debugging",
+      "phase": "validation",
       "pr": null,
-      "reclaimable": true,
-      "reserved_paths": [],
-      "reserved_targets": [],
+      "reclaimable": false,
+      "reserved_paths": [
+        "README.md",
+        "docs/ARCHITECTURE.md",
+        "src/divine_providence/cli.py",
+        "src/divine_providence/drivers/nexus_to_oracle.py",
+        "src/divine_providence/mcp_server.py",
+        "src/divine_providence/runner.py",
+        "src/divine_providence/tour.py",
+        "src/divine_providence/validate.py",
+        "tests/test_hub.py",
+        "tests/test_runner_lifecycle.py",
+        ".github/workflows/runner-lifecycle.yml",
+        ".github/workflows/deep-learning-contract.yml",
+        "ICARUS_CHAT_HANDOFF_DEEP_LEARNING_20261015.md",
+        "icarus_engine/trainers/__main__.py",
+        "icarus_engine/trainers/dataset.py",
+        "icarus_engine/trainers/deep_challenger.py",
+        "icarus_engine/trainers/integrity.py",
+        "icarus_engine/trainers/metrics.py",
+        "icarus_engine/trainers/run.py",
+        "icarus_engine/trainers/sequence.py",
+        "pyproject.toml",
+        "tests_engine/test_deep_learning_challenger.py",
+        "tests_engine/test_review_fixes.py",
+        "coordination/handoffs/2026-10-18-hub-integration-audit.md"
+      ],
+      "reserved_targets": [
+        {
+          "path": "README.md",
+          "repo": "reppiks490/divine-providence"
+        },
+        {
+          "path": "docs/ARCHITECTURE.md",
+          "repo": "reppiks490/divine-providence"
+        },
+        {
+          "path": "src/divine_providence/cli.py",
+          "repo": "reppiks490/divine-providence"
+        },
+        {
+          "path": "src/divine_providence/drivers/nexus_to_oracle.py",
+          "repo": "reppiks490/divine-providence"
+        },
+        {
+          "path": "src/divine_providence/mcp_server.py",
+          "repo": "reppiks490/divine-providence"
+        },
+        {
+          "path": "src/divine_providence/runner.py",
+          "repo": "reppiks490/divine-providence"
+        },
+        {
+          "path": "src/divine_providence/tour.py",
+          "repo": "reppiks490/divine-providence"
+        },
+        {
+          "path": "src/divine_providence/validate.py",
+          "repo": "reppiks490/divine-providence"
+        },
+        {
+          "path": "tests/test_hub.py",
+          "repo": "reppiks490/divine-providence"
+        },
+        {
+          "path": "tests/test_runner_lifecycle.py",
+          "repo": "reppiks490/divine-providence"
+        },
+        {
+          "path": ".github/workflows/runner-lifecycle.yml",
+          "repo": "reppiks490/divine-providence"
+        },
+        {
+          "path": ".github/workflows/deep-learning-contract.yml",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "ICARUS_CHAT_HANDOFF_DEEP_LEARNING_20261015.md",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/trainers/__main__.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/trainers/dataset.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/trainers/deep_challenger.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/trainers/integrity.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/trainers/metrics.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/trainers/run.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/trainers/sequence.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "pyproject.toml",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "tests_engine/test_deep_learning_challenger.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "tests_engine/test_review_fixes.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "coordination/handoffs/2026-10-18-hub-integration-audit.md",
+          "repo": "reppiks490/icarus-owner-actions"
+        }
+      ],
       "session_id": "codex-20261017-hub-integration-lead",
-      "stale": true,
+      "stale": false,
       "status": "active"
     },
     {
@@ -717,7 +845,11 @@
         "icarus_engine/propfirm-rules.json",
         "tests_engine/test_account_connections.py",
         "icarus_engine/runtime.py",
-        "tests_engine/test_corpus_runtime_poll.py"
+        "tests_engine/test_corpus_runtime_poll.py",
+        "icarus_engine/paper_pnl.py",
+        "tests_engine/test_paper_pnl.py",
+        "docs/agent-handoffs/PROPFIRM_RESEARCH_20261018.md",
+        "tests_engine/test_paper_pnl_browser.py"
       ],
       "declared_targets": [
         {
@@ -863,6 +995,22 @@
         {
           "path": "tests_engine/test_corpus_runtime_poll.py",
           "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/paper_pnl.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "tests_engine/test_paper_pnl.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "docs/agent-handoffs/PROPFIRM_RESEARCH_20261018.md",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "tests_engine/test_paper_pnl_browser.py",
+          "repo": "reppiks490/Icarus"
         }
       ],
       "dependencies": [
@@ -871,8 +1019,8 @@
       ],
       "goal": "Inventory all registered Icarus tasks and begin evidence-backed completion without duplicating active work",
       "home_repo": "reppiks490/icarus-owner-actions",
-      "last_event_at_utc": "2026-10-18T09:36:20Z",
-      "latest_summary": "Independent native evidence review verified exact three artifact bytes and found oversized numeric input exception; root captured failing case then bounded before finite conversion,31tests pass at8c8a37b4. Dedicated routes, controlled workspace selection and connection/rule modules progressing in disjoint lanes. Claim runtime native interval compatibility and retired-runner safety: existing poll hardcodes60s while corpus is300s; in-flight poll after flat removal can mutate orphan runner because on_sub_bar lacks retirement guard. Preserve default60s behavior, reject unsupported finer charts and prevent post-removal mutation without holding locks across provider I/O.",
+      "last_event_at_utc": "2026-10-18T15:13:11.330Z",
+      "latest_summary": "Acknowledge peer dashboard audit split: root retains implemented broker/account UI, four-workspace dashboards, A200 and combined P&L; peer keeps Engine spend/Sentinel guards and Icarus discovery provenance, with read-only product review welcome. Claim strict paper_pnl contract and regression paths. New direct owner instruction: deeply research eight prop firms available for no-charge integration, all documented account types, TopstepX deferred configuration. Distinguish free software integration from firm account/API fees; no enrollment/purchase/orders. Continue parallel corpus expansion review and pure ledger validation.",
       "latest_type": "UPDATE",
       "model_family": "openai",
       "phase": "four-workspace-runtime-integration",
@@ -914,7 +1062,11 @@
         "icarus_engine/propfirm-rules.json",
         "tests_engine/test_account_connections.py",
         "icarus_engine/runtime.py",
-        "tests_engine/test_corpus_runtime_poll.py"
+        "tests_engine/test_corpus_runtime_poll.py",
+        "icarus_engine/paper_pnl.py",
+        "tests_engine/test_paper_pnl.py",
+        "docs/agent-handoffs/PROPFIRM_RESEARCH_20261018.md",
+        "tests_engine/test_paper_pnl_browser.py"
       ],
       "reserved_targets": [
         {
@@ -1059,6 +1211,22 @@
         },
         {
           "path": "tests_engine/test_corpus_runtime_poll.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/paper_pnl.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "tests_engine/test_paper_pnl.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "docs/agent-handoffs/PROPFIRM_RESEARCH_20261018.md",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "tests_engine/test_paper_pnl_browser.py",
           "repo": "reppiks490/Icarus"
         }
       ],
@@ -1122,48 +1290,11 @@
       "model_family": "openai",
       "phase": "guard-and-provenance-repairs",
       "pr": null,
-      "reclaimable": false,
-      "reserved_paths": [
-        "cl_lab/feeds/registry.py",
-        "tests_cl/test_feeds.py",
-        "tools/data_sentinel.py",
-        "tests/test_data_sentinel.py",
-        "ICARUS_STATE.md",
-        "icarus_engine/discovery_registry/federation.py",
-        "tests_engine/test_discovery_registry_federation.py"
-      ],
-      "reserved_targets": [
-        {
-          "path": "cl_lab/feeds/registry.py",
-          "repo": "reppiks490/Icarus-engine"
-        },
-        {
-          "path": "tests_cl/test_feeds.py",
-          "repo": "reppiks490/Icarus-engine"
-        },
-        {
-          "path": "tools/data_sentinel.py",
-          "repo": "reppiks490/Icarus-engine"
-        },
-        {
-          "path": "tests/test_data_sentinel.py",
-          "repo": "reppiks490/Icarus-engine"
-        },
-        {
-          "path": "ICARUS_STATE.md",
-          "repo": "reppiks490/Icarus-engine"
-        },
-        {
-          "path": "icarus_engine/discovery_registry/federation.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "tests_engine/test_discovery_registry_federation.py",
-          "repo": "reppiks490/Icarus"
-        }
-      ],
+      "reclaimable": true,
+      "reserved_paths": [],
+      "reserved_targets": [],
       "session_id": "codex-20261018-dashboard-integration-audit",
-      "stale": false,
+      "stale": true,
       "status": "active"
     },
     {
@@ -1211,7 +1342,7 @@
     "stale": 13,
     "terminal": 23
   },
-  "generated_at_utc": "2026-10-18T09:50:34.241849Z",
+  "generated_at_utc": "2026-10-18T15:13:24.551344Z",
   "owner_status": {
     "claude": {
       "active": false,

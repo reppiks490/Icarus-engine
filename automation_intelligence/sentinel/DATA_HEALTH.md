@@ -1,6 +1,6 @@
-# Data health — 2026-10-18 19:38 UTC
+# Data health — 2026-10-18 20:43 UTC
 
-**FAILING** 5 · **BLOCKED** 6 · **DEGRADED** 6 · **OK** 69
+**FAILING** 5 · **BLOCKED** 7 · **DEGRADED** 5 · **OK** 69
 
 ## Needs attention
 
@@ -9,20 +9,20 @@
 | feed:databento_dx_5m | FAILING | FeedError: Databento historical request failed for DX.v.0: BentoClientError: 422 dataset_unavailable_range Part or all of your request for dataset 'IFUS.IMPACT' |
 | feed:databento_mym_5m | FAILING | FeedError: Databento historical request failed for MYM.v.0: BentoServerError: 504 The remote gateway timed out. |
 | feed:databento_vxm_5m | FAILING | FeedError: Databento historical request failed for VXM.v.0: BentoClientError: 403 license_not_found_unauthorized A live data license is required to access XCBF. |
-| workflow:cl-depth-sweep.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/39153171315 |
+| workflow:cl-depth-sweep.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/39159988321 |
 | workflow:databento-depth-research-context.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/39153171339 |
 | provider:alpaca | BLOCKED | no key reaches the runner |
 | provider:finnhub | BLOCKED | BLOCKED_AUTHENTICATION |
 | provider:intrinio | BLOCKED | no key reaches the runner |
 | provider:quiver | BLOCKED | no key reaches the runner |
 | provider:tickstream | BLOCKED | no key reaches the runner |
+| provider:twelve | BLOCKED | BLOCKED |
 | provider:unusual_whales | BLOCKED | BLOCKED_AUTHENTICATION |
 | provider:alphavantage | DEGRADED | 22698 rows; 3 endpoints denied by plan |
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
 | provider:eodhd | DEGRADED | 2510 rows; 29 endpoints denied by plan |
 | provider:fmp | DEGRADED | dedicated fabric live (3 calls, 53 known rows); generic sampler blocked; 85 endpoints denied by plan |
 | provider:tiingo | DEGRADED | 47487 rows; 4 endpoints denied by plan |
-| provider:twelve | DEGRADED | 2 rows; 1 endpoints denied by plan |
 
 ## Delivering
 

@@ -12,7 +12,7 @@ No empirical tape, HOLD results, canonical trial ledger, credentials or broker w
   overnight prices and prior index closes. HOLD and FORWARD identities include earlier context.
   Adding later forward sessions leaves TUNE and HOLD identities unchanged; a forward evaluation
   hashes only through its first qualifying session close.
-- A detected switch inside an RTH session rejects the entire dataset before evaluation or ledger
+- A detected switch anywhere in an RTH session, including its first bar, rejects the entire dataset before evaluation or ledger
   initialization. An old-contract entry cannot fill against a new-contract print. No hindsight
   session mask is introduced.
 - Missing HOLD p-values count as non-rejections with p = 1 within the full reached-source Holm
@@ -93,3 +93,9 @@ Keep the code unmerged and do not run empirical FR-1 until preregistration revie
 independent exact-head code review, the complete-day decision and historical evidence recovery are
 resolved. Forward evidence alone can qualify a setup under the registration; this repair makes no
 strategy-performance claim.
+
+## Exact-source follow-up
+
+Independent review at `5921bbcab19473a699cf3ff8894e7b345690c898` found one inherited boundary issue: a switch on the first RTH bar escaped the rejection guard while the pre-session context still used the old contract basis. Two added synthetic cases failed before repair. Source `54edacb05760a085062c7be4bfba1f3be4701691` blocks that boundary before evaluation or ledger/snapshot mutation, without changing signal context or registered rules. Independent re-review is CLEAR, including valid overnight switches remaining accepted. The focused selection now contains 47 passing cases. The final full CL run succeeds with 212 passed and the same two tape-dependent skips; the same three NumPy warnings remain. Its log is local verification evidence, not empirical FR-1 results.
+
+The new `FR-1 synthetic contract` workflow tests exactly the two synthetic frontier/ledger modules. Its checkout omits `data/` and `automation_intelligence/`, asserts their absence, and receives no provider secrets. It adds no scheduler or experiment entrypoint. Changes to CL dependencies and test configuration retrigger the contract. Hosted exact-head outcomes remain pending at publication and must be recorded separately. The ordinary application workflow omits `tests_cl`; its success alone cannot establish this contract.

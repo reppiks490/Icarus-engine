@@ -149,6 +149,7 @@ def test_consumer_blocks_socket_io_and_supplies_pinned_provenance(tmp_path, monk
     assert args[args.index("--cache-name") + 1] == "bars_primary"
     assert args[args.index("--max-bars") + 1] == "6000"
     assert "--asof-ns" in args and "--available-at-ns" in args
+    assert args.count("--include-requested-futures") == 1
 
 
 def _receipt():

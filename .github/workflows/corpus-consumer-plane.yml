@@ -24,7 +24,7 @@ permissions:
 
 env:
   # Independently reviewed default consumer; manual dispatch also requires an immutable pin.
-  DEFAULT_CONSUMER_REF: "7b42eaa528d3137e87f8ae10ea0896944eb4b62b"
+  DEFAULT_CONSUMER_REF: "19093b23a8b4853a6ee3e697029085986d871146"
 
 concurrency:
   group: corpus-consumer-plane-${{ github.ref }}
@@ -159,7 +159,8 @@ jobs:
               "--available-at-ns", os.environ["AVAILABLE_AT_NS"],
               "--asof-ns", str(time.time_ns()),
               "--private-dir", str(root / "runtime"),
-              "--receipt", str(root / "receipt.json"), "--max-bars", "6000"]
+              "--receipt", str(root / "receipt.json"), "--max-bars", "6000",
+              "--include-requested-futures"]
           runpy.run_module("tools.provider_corpus_intake", run_name="__main__")
           PY
           consumer_exit=$?

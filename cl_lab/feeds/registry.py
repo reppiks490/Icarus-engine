@@ -190,7 +190,7 @@ def _corpus_lane(lanes, feed, ledger_dir, cache_dir):
     acct = (feed.get("account") or os.environ.get("CL_DATABENTO_OHLCV_ACCOUNT") or "primary").strip().lower()
     lane_id = f"corpus:{acct}"
     if lane_id not in databento_budget.CORPUS_LANES:
-        return None
+        raise FeedError(f"no approved corpus budget lane for Databento account {acct!r}; request refused")
     if lane_id not in lanes:
         lanes[lane_id] = databento_budget.Lane(lane_id, ledger_dir, mirror=cache_dir)
         lanes[lane_id].run_spent = 0.0
@@ -238,6 +238,12 @@ def refresh_all(cache_dir, only=None, now=None, ledger_dir=None) -> dict:
     for feed in FEEDS:
         if only and feed["name"] not in only:
             continue
+        if feed["kind"] == "databento":
+            # Bind credential presence, the spend ledger and the provider client
+            # to one effective account, without changing the global feed catalog.
+            feed = {**feed, "account": (
+                feed.get("account") or os.environ.get("CL_DATABENTO_OHLCV_ACCOUNT") or "primary"
+            ).strip().lower()}
         path = os.path.join(cache_dir, f"{feed['name']}.csv.gz")
         intraday = feed["intraday"]
         # Databento is optional/paid. Absence of a key is a dormant capability,

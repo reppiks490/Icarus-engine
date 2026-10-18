@@ -23,8 +23,8 @@ permissions:
   contents: read
 
 env:
-  # Root replaces this pin with the independently reviewed consumer before pushing.
-  DEFAULT_CONSUMER_REF: "0000000000000000000000000000000000000000"
+  # Independently reviewed default consumer; manual dispatch also requires an immutable pin.
+  DEFAULT_CONSUMER_REF: "7b42eaa528d3137e87f8ae10ea0896944eb4b62b"
 
 concurrency:
   group: corpus-consumer-plane-${{ github.ref }}

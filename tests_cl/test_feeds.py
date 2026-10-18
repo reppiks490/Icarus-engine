@@ -423,6 +423,25 @@ def test_environment_selected_corpus_account_uses_its_credential_and_ledger(tmp_
     assert ledger["spent_usd"] > 0
 
 
+def test_invalid_corpus_account_is_isolated_from_other_feed_refreshes(tmp_path, monkeypatch):
+    monkeypatch.setenv("CL_DATABENTO_OHLCV_ACCOUNT", "typo")
+    monkeypatch.setenv("DATABENTO_API_KEY", "offline-primary")
+    monkeypatch.setattr(registry, "FEEDS", [
+        {"name": "invalid_paid", "kind": "databento", "root": "NQ", "intraday": True},
+        {"name": "public_fred", "kind": "fred", "series": "DGS10", "intraday": False},
+    ])
+    def forbidden_client(**kwargs):
+        pytest.fail("invalid account reached the provider client")
+    monkeypatch.setattr(databento_feed, "historical_client", forbidden_client)
+    frame = pd.DataFrame({"DGS10": [4.1]}, index=pd.date_range("2026-10-01", periods=1))
+    monkeypatch.setattr(sources, "fetch_fred", lambda series: frame)
+    result = registry.refresh_all(str(tmp_path / "cache"), now="2026-10-05T00:00Z",
+                                  ledger_dir=str(tmp_path / "spend"))
+    assert result["feeds"]["invalid_paid"]["status"] == "error"
+    assert "account" in result["feeds"]["invalid_paid"]["error"].lower()
+    assert result["feeds"]["public_fred"]["status"] == "ok"
+
+
 def test_cftc_full_report_paginates_and_preserves_numeric_fields(monkeypatch):
     pages = {
         0: [

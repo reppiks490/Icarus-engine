@@ -1,0 +1,155 @@
+{
+  "catalog": {
+    "asset_datasets_collected": 19,
+    "asset_templates": 28,
+    "assets": 96411,
+    "collected_operations": 5,
+    "denied_operations": 29,
+    "operations": 88,
+    "pending_pages": 184,
+    "qualification": "INCOMPLETE_UNTIL_EVERY_OPERATION_ASSET_PAGE_TIME_RANGE_AND_TRANSPORT_IS_VERIFIED",
+    "unresolved_operations": 19
+  },
+  "chatgpt_tokens_used": 0,
+  "checkpoint_status": "ENCRYPTED_AES256_GCM",
+  "completed_at_utc": "2026-10-18T20:42:02.323046+00:00",
+  "databento_excluded": true,
+  "execution_authorized": false,
+  "paid_model_calls": 0,
+  "providers": {
+    "eodhd": {
+      "archive_status": [
+        "ENCRYPTED_AES256_GCM"
+      ],
+      "blocked": [
+        {
+          "asset_specific": true,
+          "failure_code": "403",
+          "operation": "eodhd:get:/calendar/earnings"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "403",
+          "operation": "eodhd:get:/calendar/trends"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "403",
+          "operation": "eodhd:get:/calendar/earnings"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "403",
+          "operation": "eodhd:get:/exchange-details/{EXCHANGE_CODE}"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "403",
+          "operation": "eodhd:get:/calendar/trends"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "403",
+          "operation": "eodhd:get:/historical-market-cap/{ticker}"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "423",
+          "operation": "eodhd:get:/eod-bulk-last-day/{exchange}"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "423",
+          "operation": "eodhd:get:/eod-bulk-last-day/{exchange}"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "404",
+          "operation": "eodhd:get:/div/{ticker}"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "403",
+          "operation": "eodhd:get:/exchange-details/{EXCHANGE_CODE}"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "422",
+          "operation": "eodhd:get:/intraday/{ticker}"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "423",
+          "operation": "eodhd:get:/eod-bulk-last-day/{exchange}"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "403",
+          "operation": "eodhd:get:/historical-market-cap/{ticker}"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "422",
+          "operation": "eodhd:get:/intraday/{ticker}"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "422",
+          "operation": "eodhd:get:/intraday/{ticker}"
+        }
+      ],
+      "collected_pages": 5,
+      "collected_rows": 381,
+      "credential_present": true,
+      "endpoint_count": 88,
+      "requests": 20,
+      "research_features": [
+        {
+          "features": {
+            "close": {
+              "maximum": 565.79,
+              "mean": 508.42720430107516,
+              "minimum": 454.57,
+              "samples": 93,
+              "standard_deviation": 27.52783581889865
+            },
+            "volume": {
+              "maximum": 0.0,
+              "mean": 0.0,
+              "minimum": 0.0,
+              "samples": 93,
+              "standard_deviation": 0.0
+            }
+          },
+          "operation": "eodhd:get:/eod/{ticker}"
+        },
+        {
+          "features": {
+            "close": {
+              "maximum": 2054.1399,
+              "mean": 1700.3816064257046,
+              "minimum": 1404.51,
+              "samples": 249,
+              "standard_deviation": 180.24603798627672
+            },
+            "volume": {
+              "maximum": 0.0,
+              "mean": 0.0,
+              "minimum": 0.0,
+              "samples": 249,
+              "standard_deviation": 0.0
+            }
+          },
+          "operation": "eodhd:get:/eod/{ticker}"
+        }
+      ],
+      "status": "COLLECTED_PARTIAL",
+      "substantive_work_performed": true
+    }
+  },
+  "raw_payloads_public": false,
+  "requests": 20,
+  "run_id": "providers-39164075249-1-eodhd",
+  "schema_version": "icarus-provider-collection-cycle-v1",
+  "started_at_utc": "2026-10-18T20:36:58.439504+00:00"
+}

@@ -146,3 +146,31 @@ def test_native_format_rejects_other_provider():
 def test_source_identity_pin(tmp_path):
     kw=args(tmp_path);kw['source_ref']='main'
     with pytest.raises(ValueError,match='immutable'):intake.consume_archive(**kw)
+
+def test_fifo_cannot_block_before_type_check(tmp_path):
+    import subprocess
+    import sys
+    fifo=tmp_path/'input.fifo';os.mkfifo(fifo)
+    code='from pathlib import Path; from tools.provider_archive_intake import read_regular; import sys\ntry: read_regular(Path(sys.argv[1]))\nexcept ValueError: sys.exit(0)\nsys.exit(1)'
+    result=subprocess.run([sys.executable,'-c',code,str(fifo)],cwd=Path(__file__).resolve().parents[1],timeout=3,capture_output=True)
+    assert result.returncode==0,result.stderr.decode()
+
+def test_missing_no_follow_fails_closed(tmp_path,monkeypatch):
+    path=tmp_path/'input';path.write_bytes(b'{}')
+    monkeypatch.delattr(os,'O_NOFOLLOW')
+    with pytest.raises(ValueError,match='secure POSIX'):intake.read_regular(path)
+
+def test_empty_exhaustive_wrapper_is_not_consumption(tmp_path):
+    payload={'data':[], 'metadata':{'count':0, 'status':'OK'}}
+    archive=tmp_path/'payload.enc';check=tmp_path/'checkpoint.enc'
+    db=sqlite3.connect(':memory:')
+    db.executescript('CREATE TABLE operations(id,provider,descriptor,status); CREATE TABLE jobs(id,operation,asset); CREATE TABLE assets(id,provider,descriptor); CREATE TABLE receipts(job,at,sha,rows);')
+    sha=hashlib.sha256(json.dumps(payload,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+    db.execute('INSERT INTO operations VALUES(?,?,?,?)',('op','tiingo','{}','OK'))
+    db.execute('INSERT INTO jobs VALUES(?,?,?)',(1,'op',0))
+    db.execute('INSERT INTO receipts VALUES(?,?,?,?)',(1,1700000000,sha,0))
+    raw=db.serialize();db.close()
+    encrypted=envelope({'sqlite':base64.b64encode(raw).decode()},run='checkpoint',job='tiingo')
+    result=intake.consume_archive(archive=archive,archive_sha256=save(archive,envelope(payload)),checkpoint=check,checkpoint_sha256=save(check,encrypted),provider='tiingo',run_id='run-1',job='1-0',format='exhaustive',source_repo='x/y',source_ref='a'*40,env=ENV)
+    assert not result['corpus_used']
+    assert all(count==0 for count in result['diagnostics'].values())

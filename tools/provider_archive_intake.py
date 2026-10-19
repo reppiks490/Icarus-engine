@@ -23,6 +23,8 @@ HEX = re.compile(r'[0-9a-f]{64}\Z')
 
 
 def read_regular(path: Path, maximum=MAX_BYTES) -> bytes:
+    if os.name != 'posix' or not hasattr(os, 'O_NOFOLLOW') or not hasattr(os, 'O_NONBLOCK') or os.open not in os.supports_dir_fd:
+        raise ValueError('secure POSIX file access unavailable')
     path = Path(path)
     # Walk directory descriptors so a symlink in any parent is also rejected.
     if '..' in path.parts:
@@ -36,7 +38,7 @@ def read_regular(path: Path, maximum=MAX_BYTES) -> bytes:
             next_fd = os.open(part, os.O_RDONLY | getattr(os, 'O_DIRECTORY', 0) | getattr(os, 'O_NOFOLLOW', 0), dir_fd=parent_fd)
             os.close(parent_fd)
             parent_fd = next_fd
-        fd = os.open(parts[-1], os.O_RDONLY | getattr(os, 'O_NOFOLLOW', 0), dir_fd=parent_fd)
+        fd = os.open(parts[-1], os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=parent_fd)
     finally:
         os.close(parent_fd)
     try:
@@ -257,7 +259,10 @@ def consume_archive(*, archive, archive_sha256, provider, run_id, job, format,
     elif checkpoint is not None or checkpoint_sha256 is not None:
         raise ValueError('native checkpoint unsupported')
     records = _records(payload)
-    diagnostics = _diagnostics(records or ([payload] if isinstance(payload, dict) and payload else []), asset)
+    # Native fixed snapshots can be scalar objects (for example Finnhub quotes).
+    # Exhaustive zero-record wrappers must never become a fabricated record.
+    native_scalar = format == 'native' and provider == 'finnhub' and isinstance(payload, dict) and bool(payload)
+    diagnostics = _diagnostics(records or ([payload] if native_scalar else []), asset)
     if receipts and not all(count == len(records) for _, count in receipts):
         raise ValueError('record count binding rejected')
     return dict(schema_version='icarus-private-provider-consumption-v1', provider=provider,

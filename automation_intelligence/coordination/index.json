@@ -127,6 +127,85 @@
       "status": "active"
     },
     {
+      "actor": "ChatGPT",
+      "branch": "chatgpt/guest-sandbox-access-20261019",
+      "cooperates_with": [],
+      "coordination_mode": "independent",
+      "declared_paths": [
+        "icarus_engine/guest_server.py",
+        "icarus_engine/guest_dashboard.html",
+        "icarus_engine/cli.py",
+        "tests_engine/test_guest_sandbox.py",
+        "docs/GUEST_SANDBOX.md"
+      ],
+      "declared_targets": [
+        {
+          "path": "icarus_engine/guest_server.py",
+          "repo": "reppiks490/Icarus-engine"
+        },
+        {
+          "path": "icarus_engine/guest_dashboard.html",
+          "repo": "reppiks490/Icarus-engine"
+        },
+        {
+          "path": "icarus_engine/cli.py",
+          "repo": "reppiks490/Icarus-engine"
+        },
+        {
+          "path": "tests_engine/test_guest_sandbox.py",
+          "repo": "reppiks490/Icarus-engine"
+        },
+        {
+          "path": "docs/GUEST_SANDBOX.md",
+          "repo": "reppiks490/Icarus-engine"
+        }
+      ],
+      "dependencies": [
+        "policy:live-execution-disabled"
+      ],
+      "goal": "Build a viewer-plus-isolated-experiment access surface for Icarus so a guest can inspect live state and run personal input/backtest/rewarm experiments without mutating the owner's live runtime.",
+      "home_repo": "reppiks490/Icarus-engine",
+      "last_event_at_utc": "2026-10-19T00:55:00Z",
+      "latest_summary": "Add a hard server-side guest permission boundary: live state is view-only; guest inputs, presets, backtests, replay rewarm/reset and export operate only on isolated in-memory replay state. Explicitly deny all live-runtime mutation, execution, broker, asset-management, credential and research-activation controls. Add a separate guest UI/port and tunnel launcher path.",
+      "latest_type": "PLAN",
+      "model_family": "openai",
+      "phase": "implementation",
+      "pr": null,
+      "reclaimable": false,
+      "reserved_paths": [
+        "icarus_engine/guest_server.py",
+        "icarus_engine/guest_dashboard.html",
+        "icarus_engine/cli.py",
+        "tests_engine/test_guest_sandbox.py",
+        "docs/GUEST_SANDBOX.md"
+      ],
+      "reserved_targets": [
+        {
+          "path": "icarus_engine/guest_server.py",
+          "repo": "reppiks490/Icarus-engine"
+        },
+        {
+          "path": "icarus_engine/guest_dashboard.html",
+          "repo": "reppiks490/Icarus-engine"
+        },
+        {
+          "path": "icarus_engine/cli.py",
+          "repo": "reppiks490/Icarus-engine"
+        },
+        {
+          "path": "tests_engine/test_guest_sandbox.py",
+          "repo": "reppiks490/Icarus-engine"
+        },
+        {
+          "path": "docs/GUEST_SANDBOX.md",
+          "repo": "reppiks490/Icarus-engine"
+        }
+      ],
+      "session_id": "chatgpt-20261019-guest-sandbox-access",
+      "stale": false,
+      "status": "active"
+    },
+    {
       "actor": "ChatGPT / Codex",
       "branch": "codex/a200-probe-provider-scope-20261016",
       "cooperates_with": [],
@@ -733,7 +812,14 @@
         "tests_engine/test_dashboard_js.py",
         "icarus_engine/corpus_expansion.py",
         "icarus_engine/corpus-expansion.json",
-        "tests_engine/test_corpus_expansion.py"
+        "tests_engine/test_corpus_expansion.py",
+        ".github/workflows/test.yml",
+        "icarus_engine/provider_corpus.py",
+        "tests_engine/test_provider_corpus.py",
+        "icarus_engine/brain_sync.py",
+        "tests_engine/test_brain_sync.py",
+        "icarus_engine/provider-corpus.json",
+        "docs/superpowers/specs/2026-10-19-provider-corpus-consumption.md"
       ],
       "declared_targets": [
         {
@@ -919,6 +1005,34 @@
         {
           "path": "tests_engine/test_corpus_expansion.py",
           "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": ".github/workflows/test.yml",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/provider_corpus.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "tests_engine/test_provider_corpus.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/brain_sync.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "tests_engine/test_brain_sync.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/provider-corpus.json",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "docs/superpowers/specs/2026-10-19-provider-corpus-consumption.md",
+          "repo": "reppiks490/Icarus"
         }
       ],
       "dependencies": [
@@ -928,11 +1042,11 @@
       ],
       "goal": "Inventory all registered Icarus tasks and begin evidence-backed completion without duplicating active work",
       "home_repo": "reppiks490/icarus-owner-actions",
-      "last_event_at_utc": "2026-10-18T20:22:37.917Z",
-      "latest_summary": "Native39162615234 all3success. Primary exact receipt SHA67c948545419792f86200af4139963943f3184a9f726150892921e71b458b8c2 proves all10fullfamilies plusMCL/MBT consumed/warm onall4 (24totalwarmassets each,228readreceipts),sixrequestedmicros absent no synthesis. Claim separate bounded expansion evidence reader/bundle/tests; preserve original3-corpus receipts unchanged. IndependentP&LreviewCLEAR192tests; sourceauditscorrectedstage/choicefacts and addedGoatLive to46documentedfamilies, allfirmrulesstillUNVERIFIED/noexecution. Full19093 localengine/tools suite3440collected exits0 with3skips; exact-countverification recordedwithoutclaimingdeployment.",
+      "last_event_at_utc": "2026-10-19T01:19:57.951Z",
+      "latest_summary": "Resume root session; final dashboards456@79909475 verified3496passed3skips111subtests and independent118focused CLEAR, hostedchecks green/complete inspectexacthead next. Native10family proof39162615234 all3success preserved. New verified gap: actual provider research context (44,709upstreamrows) becomes hash/coverage-only inIcarus brain_sync, not actualtyped featureconsumption. Claim boundedprovider_corpus reader/bundle/tests, brain_sync hook and Windowscoverage workflow; preserve rawexclusion/temporal/source/operationlineage and all research/trading gates. No acquisition, budgets, schedules, orders, mainmerge or deployment. Peer213/214/455/hubGRU scopes stay untouched.",
       "latest_type": "UPDATE",
       "model_family": "openai",
-      "phase": "four-workspace-exact-head-review",
+      "phase": "provider-corpus-consumption",
       "pr": null,
       "reclaimable": false,
       "reserved_paths": [
@@ -981,7 +1095,14 @@
         "tests_engine/test_dashboard_js.py",
         "icarus_engine/corpus_expansion.py",
         "icarus_engine/corpus-expansion.json",
-        "tests_engine/test_corpus_expansion.py"
+        "tests_engine/test_corpus_expansion.py",
+        ".github/workflows/test.yml",
+        "icarus_engine/provider_corpus.py",
+        "tests_engine/test_provider_corpus.py",
+        "icarus_engine/brain_sync.py",
+        "tests_engine/test_brain_sync.py",
+        "icarus_engine/provider-corpus.json",
+        "docs/superpowers/specs/2026-10-19-provider-corpus-consumption.md"
       ],
       "reserved_targets": [
         {
@@ -1166,6 +1287,34 @@
         },
         {
           "path": "tests_engine/test_corpus_expansion.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": ".github/workflows/test.yml",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/provider_corpus.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "tests_engine/test_provider_corpus.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/brain_sync.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "tests_engine/test_brain_sync.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/provider-corpus.json",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "docs/superpowers/specs/2026-10-19-provider-corpus-consumption.md",
           "repo": "reppiks490/Icarus"
         }
       ],
@@ -1219,38 +1368,11 @@
       "model_family": "openai",
       "phase": "guard-repair-and-review",
       "pr": null,
-      "reclaimable": false,
-      "reserved_paths": [
-        "cl_lab/feeds/registry.py",
-        "tests_cl/test_feeds.py",
-        "tools/data_sentinel.py",
-        "tests/test_data_sentinel.py",
-        "ICARUS_STATE.md"
-      ],
-      "reserved_targets": [
-        {
-          "path": "cl_lab/feeds/registry.py",
-          "repo": "reppiks490/Icarus-engine"
-        },
-        {
-          "path": "tests_cl/test_feeds.py",
-          "repo": "reppiks490/Icarus-engine"
-        },
-        {
-          "path": "tools/data_sentinel.py",
-          "repo": "reppiks490/Icarus-engine"
-        },
-        {
-          "path": "tests/test_data_sentinel.py",
-          "repo": "reppiks490/Icarus-engine"
-        },
-        {
-          "path": "ICARUS_STATE.md",
-          "repo": "reppiks490/Icarus-engine"
-        }
-      ],
+      "reclaimable": true,
+      "reserved_paths": [],
+      "reserved_targets": [],
       "session_id": "codex-20261018-dashboard-integration-audit",
-      "stale": false,
+      "stale": true,
       "status": "active"
     },
     {
@@ -1303,38 +1425,11 @@
       "model_family": "openai",
       "phase": "exact-head-review-and-verification",
       "pr": null,
-      "reclaimable": false,
-      "reserved_paths": [
-        "icarus_engine/discovery_registry/federation.py",
-        "tests_engine/test_discovery_registry_federation.py",
-        "tests/test_catalog_registry_ingest.py",
-        "docs/icarus/CAPABILITY_DATA_DISCOVERY_REGISTRY.md",
-        "docs/icarus/DISCOVERY_PROVENANCE_REVIEW_20261018.md"
-      ],
-      "reserved_targets": [
-        {
-          "path": "icarus_engine/discovery_registry/federation.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "tests_engine/test_discovery_registry_federation.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "tests/test_catalog_registry_ingest.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "docs/icarus/CAPABILITY_DATA_DISCOVERY_REGISTRY.md",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "docs/icarus/DISCOVERY_PROVENANCE_REVIEW_20261018.md",
-          "repo": "reppiks490/Icarus"
-        }
-      ],
+      "reclaimable": true,
+      "reserved_paths": [],
+      "reserved_targets": [],
       "session_id": "codex-20261018-discovery-provenance-fix",
-      "stale": false,
+      "stale": true,
       "status": "active"
     },
     {
@@ -1377,12 +1472,12 @@
   ],
   "collisions": [],
   "counts": {
-    "active": 16,
+    "active": 17,
     "collisions": 0,
-    "stale": 13,
+    "stale": 15,
     "terminal": 23
   },
-  "generated_at_utc": "2026-10-18T21:38:51.415121Z",
+  "generated_at_utc": "2026-10-19T01:20:12.692497Z",
   "owner_status": {
     "claude": {
       "active": false,

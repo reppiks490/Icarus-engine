@@ -151,9 +151,30 @@ jobs:
           socket.socket.connect = socket.socket.connect_ex = socket.create_connection = socket.getaddrinfo = offline
           root = Path(os.environ['PROOF_ROOT'])
           pin = json.loads((root / 'pin.json').read_text())
+          codes = {'compressed payload rejected':'DECOMPRESSED_PAYLOAD_BOUND_OR_FORMAT',
+              'input size or type rejected':'INPUT_SIZE_OR_TYPE', 'input changed or exceeded bound':'INPUT_CHANGED_OR_BOUND',
+              'envelope size rejected':'ENVELOPE_BOUND', 'JSON structure bound':'JSON_STRUCTURE_BOUND',
+              'checkpoint payload receipt rejected':'CHECKPOINT_PAYLOAD_RECEIPT', 'record count binding rejected':'RECORD_COUNT_BINDING',
+              'checkpoint database rejected':'CHECKPOINT_DATABASE', 'checkpoint schema rejected':'CHECKPOINT_SCHEMA',
+              'checkpoint job binding rejected':'CHECKPOINT_JOB_BINDING', 'asset binding rejected':'ASSET_BINDING',
+              'archive authentication failed':'ARCHIVE_AUTHENTICATION', 'archive credential unavailable':'ARCHIVE_CREDENTIAL_UNAVAILABLE',
+              'input pin mismatch':'INPUT_PIN_MISMATCH', 'checkpoint virtual schema rejected':'CHECKPOINT_VIRTUAL_SCHEMA',
+              'checkpoint tables rejected':'CHECKPOINT_TABLES', 'JSON rejected':'JSON_FORMAT', 'duplicate JSON key':'JSON_DUPLICATE_KEY'}
+          stage = 'SETUP'
+          def safe_failure(kind, error, traceback):
+              code = codes.get(error.args[0], 'UNCLASSIFIED') if type(error) is ValueError and len(error.args) == 1 and type(error.args[0]) is str else 'UNCLASSIFIED'
+              category = type(error).__name__ if type(error) in (ValueError, OSError, ImportError, RuntimeError, SystemExit) else 'Other'
+              (root / 'failure.json').write_text(json.dumps({'stage':stage, 'code':code, 'exception_class':category}))
+          sys.excepthook = safe_failure
           canonical = {'massive':'MASSIVE_API_KEY','twelve':'TWELVEDATA_API_KEY','fmp':'FMP_API_KEY','eodhd':'EODHD_API_TOKEN','tiingo':'TIINGO_API_TOKEN','fred':'FRED_API_KEY','alphavantage':'ALPHAVANTAGE_API_KEY'}
           os.environ[canonical[pin['provider']]] = os.environ.pop('PROVIDER_ARCHIVE_CREDENTIAL', '')
           native = pin['format'] == 'native'
+          if not native:
+              stage = 'CHECKPOINT_DIAGNOSTIC'
+              from tools.provider_archive_intake import checkpoint_bounds
+              bounds = checkpoint_bounds(checkpoint=root / 'checkpoint.enc', checkpoint_sha256=pin['checkpoint_sha256'], provider=pin['provider'], env=dict(os.environ))
+              (root / 'checkpoint-bounds.json').write_text(json.dumps(bounds, sort_keys=True, allow_nan=False))
+          stage = 'ARCHIVE_INTAKE'
           prefix = '.native_provider_archives' if native else '.provider_collection_archives'
           directory = root / 'extracted' / prefix / pin['run_id']
           archives = list(directory.glob(pin['provider'] + '.enc')) if native else list((directory / pin['provider']).glob('*.enc'))
@@ -181,6 +202,33 @@ jobs:
             echo '::error::PROVIDER_ARCHIVE_OFFLINE_INTAKE_FAILED'
           fi
           exit "$intake_exit"
+      - name: Report safe intake diagnostics
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          root = Path(os.environ['PROOF_ROOT'])
+          failure = root / 'failure.json'
+          if failure.exists():
+              doc = json.loads(failure.read_bytes())
+              codes = {'DECOMPRESSED_PAYLOAD_BOUND_OR_FORMAT','INPUT_SIZE_OR_TYPE','INPUT_CHANGED_OR_BOUND','ENVELOPE_BOUND','JSON_STRUCTURE_BOUND','CHECKPOINT_PAYLOAD_RECEIPT','RECORD_COUNT_BINDING','CHECKPOINT_DATABASE','CHECKPOINT_SCHEMA','CHECKPOINT_JOB_BINDING','ASSET_BINDING','ARCHIVE_AUTHENTICATION','ARCHIVE_CREDENTIAL_UNAVAILABLE','INPUT_PIN_MISMATCH','CHECKPOINT_VIRTUAL_SCHEMA','CHECKPOINT_TABLES','JSON_FORMAT','JSON_DUPLICATE_KEY','UNCLASSIFIED'}
+              if (set(doc) != {'stage','code','exception_class'} or doc['stage'] not in {'SETUP','CHECKPOINT_DIAGNOSTIC','ARCHIVE_INTAKE'}
+                  or doc['code'] not in codes or doc['exception_class'] not in {'ValueError','OSError','ImportError','RuntimeError','SystemExit','Other'}):
+                  raise ValueError('Unsafe failure metadata')
+              print(json.dumps(doc, sort_keys=True))
+          bounds = root / 'checkpoint-bounds.json'
+          if bounds.exists():
+              doc = json.loads(bounds.read_bytes())
+              numbers = {'encrypted_bytes','compressed_bytes','decompressed_bytes','baseline_intake_limit_bytes'}
+              booleans = {'decompressed_size_exact','diagnostic_limit_reached','baseline_intake_limit_exceeded'}
+              if (set(doc) != numbers | booleans or any(type(doc[key]) is not int or not 0 <= doc[key] <= 512_000_001 for key in numbers)
+                  or any(type(doc[key]) is not bool for key in booleans)):
+                  raise ValueError('Unsafe size metadata')
+              print(json.dumps(doc, sort_keys=True))
+          PY
       - name: Validate metadata only receipts
         shell: bash
         run: |

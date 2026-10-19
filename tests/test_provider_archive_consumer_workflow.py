@@ -127,7 +127,7 @@ def test_missing_receipts_fail(tmp_path,monkeypatch):
     with pytest.raises(ValueError): execute('Validate metadata only receipts')
 
 def test_all_embedded_programs_parse():
-    for name in ('Validate immutable profile','Download immutable encrypted artifact','Extract encrypted members safely','Consume private archive offline','Validate metadata only receipts'):
+    for name in ('Validate immutable profile','Download immutable encrypted artifact','Extract encrypted members safely','Consume private archive offline','Report safe intake diagnostics','Validate metadata only receipts'):
         ast.parse(python(name))
         result=subprocess.run(['bash','-n'],input=script(name),text=True,capture_output=True)
         assert result.returncode==0,result.stderr
@@ -144,6 +144,11 @@ def test_actual_intake_invocation_maps_only_selected_credential_and_blocks_netwo
     (directory/'3-0.enc').write_bytes(b'ciphertext-only')
     monkeypatch.setenv('PROVIDER_ARCHIVE_CREDENTIAL','synthetic-test-value')
     monkeypatch.setattr(sys,'argv',[])
+    monkeypatch.setattr(sys,'excepthook',sys.excepthook)
+    from types import ModuleType
+    intake_module=ModuleType('tools.provider_archive_intake')
+    intake_module.checkpoint_bounds=lambda **kwargs: {}
+    monkeypatch.setitem(sys.modules,'tools.provider_archive_intake',intake_module)
     for name in ('connect','connect_ex'):
         monkeypatch.setattr(socket.socket,name,getattr(socket.socket,name))
     for name in ('create_connection','getaddrinfo'):
@@ -228,3 +233,37 @@ def test_downloader_uses_guarded_opener_and_intake_has_only_fixed_failure_code()
     assert "echo '::error::PROVIDER_ARCHIVE_OFFLINE_INTAKE_FAILED'" in intake
     assert 'cat ' not in intake and 'tail ' not in intake
     assert 'exit "$intake_exit"' in intake
+
+
+@pytest.mark.parametrize('error,expected',[(ValueError('compressed payload rejected'),'DECOMPRESSED_PAYLOAD_BOUND_OR_FORMAT'),(ValueError('checkpoint payload receipt rejected'),'CHECKPOINT_PAYLOAD_RECEIPT'),(ValueError('record count binding rejected'),'RECORD_COUNT_BINDING'),(ValueError('input size or type rejected'),'INPUT_SIZE_OR_TYPE'),(ValueError('private-key-or-licensed-value'),'UNCLASSIFIED'),(RuntimeError('private-path-or-token'),'UNCLASSIFIED')])
+def test_failure_hook_only_exports_allowlisted_constant_codes(tmp_path,monkeypatch,capsys,error,expected):
+    import sys
+    root,pin=setup(tmp_path,monkeypatch)
+    tree=ast.parse(python('Consume private archive offline'))
+    nodes=[node for node in tree.body if isinstance(node,(ast.Assign,ast.FunctionDef)) and (isinstance(node,ast.FunctionDef) and node.name=='safe_failure' or isinstance(node,ast.Assign) and any(isinstance(target,ast.Name) and target.id in {'codes','stage'} for target in node.targets))]
+    namespace={'root':root,'json':json}
+    exec(compile(ast.Module(body=nodes,type_ignores=[]),'safe-errors','exec'),namespace)
+    namespace['safe_failure'](type(error),error,None)
+    failure=json.loads((root/'failure.json').read_text())
+    assert failure['code']==expected
+    execute('Report safe intake diagnostics')
+    printed=capsys.readouterr().out
+    assert expected in printed
+    assert 'private-key' not in printed and 'private-path' not in printed
+
+
+@pytest.mark.parametrize('extra',[{'token':'do-not-print'},{'decompressed_bytes':'licensed-value'},{'decompressed_bytes':True},{'decompressed_bytes':512_000_002}])
+def test_size_diagnostic_reporter_refuses_untyped_or_extra_payload_fields(tmp_path,monkeypatch,capsys,extra):
+    root,pin=setup(tmp_path,monkeypatch)
+    doc=dict(encrypted_bytes=100,compressed_bytes=72,decompressed_bytes=1000,baseline_intake_limit_bytes=32_000_000,decompressed_size_exact=True,diagnostic_limit_reached=False,baseline_intake_limit_exceeded=False)
+    (root/'checkpoint-bounds.json').write_text(json.dumps({**doc,**extra}))
+    with pytest.raises(ValueError): execute('Report safe intake diagnostics')
+    assert capsys.readouterr().out==''
+
+
+def test_valid_authenticated_checkpoint_size_diagnostic_is_counts_only(tmp_path,monkeypatch,capsys):
+    root,pin=setup(tmp_path,monkeypatch)
+    doc=dict(encrypted_bytes=100,compressed_bytes=72,decompressed_bytes=40_000_000,baseline_intake_limit_bytes=32_000_000,decompressed_size_exact=True,diagnostic_limit_reached=False,baseline_intake_limit_exceeded=True)
+    (root/'checkpoint-bounds.json').write_text(json.dumps(doc))
+    execute('Report safe intake diagnostics')
+    assert json.loads(capsys.readouterr().out)==doc

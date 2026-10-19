@@ -33,6 +33,8 @@ _MAX_BODY_BYTES = 128 * 1024
 _MIN_TOKEN_LEN = 24
 _DENIED_DETAIL = "guest access is isolated from live Icarus"
 _CLOUDFLARE_RE = re.compile(r"https://[a-z0-9-]+\.trycloudflare\.com", re.I)
+_ACTIVE_JOB_STATES = {"queued", "starting", "running"}
+_SCHEDULING = "__guest_scheduling__"
 
 
 @dataclass
@@ -115,16 +117,14 @@ def activate(port, http_port: int = 8792, *, guest_token: str, tunnel: str = "cl
 
 
 class GuestWorkspace:
-    """Ephemeral guest-only experiment state.
-
-    Nothing here writes inputs files, mutates AssetRunner inputs/configuration,
-    or calls Portfolio mutators. A process restart intentionally clears it.
-    """
+    """Ephemeral guest-only experiment state and replay ownership."""
 
     def __init__(self) -> None:
         self._lock = threading.RLock()
         self._inputs: Dict[str, Dict[str, Any]] = {}
         self._presets: Dict[str, Optional[str]] = {}
+        self._jobs: set[str] = set()
+        self._active_job: Optional[str] = None
 
     def state(self, asset: str) -> Dict[str, Any]:
         sym = asset.upper()
@@ -158,6 +158,33 @@ class GuestWorkspace:
             self._inputs.pop(sym, None)
             self._presets.pop(sym, None)
         return self.state(sym)
+
+    def owns_job(self, job_id: str) -> bool:
+        with self._lock:
+            return job_id in self._jobs
+
+    def claim_job_slot(self) -> bool:
+        """Reserve the one guest replay slot, releasing completed jobs lazily."""
+        with self._lock:
+            if self._active_job and self._active_job != _SCHEDULING:
+                job = JOBS.get(self._active_job)
+                if job and str(job.get("status", "")).lower() in _ACTIVE_JOB_STATES:
+                    return False
+                self._active_job = None
+            if self._active_job == _SCHEDULING:
+                return False
+            self._active_job = _SCHEDULING
+            return True
+
+    def register_job(self, job_id: str) -> None:
+        with self._lock:
+            self._jobs.add(job_id)
+            self._active_job = job_id
+
+    def release_job_slot(self) -> None:
+        with self._lock:
+            if self._active_job == _SCHEDULING:
+                self._active_job = None
 
 
 def _guest_asset_summary(summary: Dict[str, Any]) -> Dict[str, Any]:
@@ -231,11 +258,7 @@ def _read_body(handler: BaseHTTPRequestHandler) -> Dict[str, Any]:
 
 
 def serve(port, http_port: int = 8792, *, guest_token: str, start: bool = True):
-    """Serve the isolated guest surface on loopback.
-
-    This takes a Portfolio only as a read source and as the source passed to the
-    already-isolated backtest scheduler. It never invokes live admin mutators.
-    """
+    """Serve the isolated guest surface on loopback."""
     if not isinstance(guest_token, str) or len(guest_token) < _MIN_TOKEN_LEN or "/" in guest_token:
         raise ValueError(f"guest token must be at least {_MIN_TOKEN_LEN} characters and contain no slash")
 
@@ -304,10 +327,8 @@ def serve(port, http_port: int = 8792, *, guest_token: str, start: bool = True):
 
             if path == "/":
                 return self._send(200, html_path.read_bytes(), "text/html")
-
             if path == "/api/live/status":
                 return self._json(200, _public_status(port))
-
             if path.startswith("/api/live/chart/"):
                 sym = path.rsplit("/", 1)[1].upper()
                 runner = _asset(port, sym)
@@ -318,7 +339,6 @@ def serve(port, http_port: int = 8792, *, guest_token: str, start: bool = True):
                 except (TypeError, ValueError):
                     n = 240
                 return self._json(200, runner.chart(n))
-
             if path.startswith("/api/live/trades/"):
                 sym = path.rsplit("/", 1)[1].upper()
                 runner = _asset(port, sym)
@@ -329,10 +349,8 @@ def serve(port, http_port: int = 8792, *, guest_token: str, start: bool = True):
                 except (TypeError, ValueError):
                     limit = 100
                 return self._json(200, {"asset": sym, "trades": runner.trades(limit)})
-
             if path == "/api/experiment/input-meta":
                 return self._json(200, load_meta())
-
             if path.startswith("/api/experiment/state/"):
                 sym = path.rsplit("/", 1)[1].upper()
                 runner = _asset(port, sym)
@@ -344,21 +362,20 @@ def serve(port, http_port: int = 8792, *, guest_token: str, start: bool = True):
                 effective.update(state["inputs"])
                 state.update({"base": base, "effective": effective})
                 return self._json(200, state)
-
             if path == "/api/experiment/presets":
                 root = os.path.join(port.base_dir, "presets")
                 names = []
                 if os.path.isdir(root):
                     names = sorted(f[:-5] for f in os.listdir(root) if f.endswith(".json"))
                 return self._json(200, {"presets": names})
-
             if path.startswith("/api/experiment/jobs/"):
                 job_id = path.rsplit("/", 1)[1]
+                if not workspace.owns_job(job_id):
+                    return self._json(404, {"detail": "unknown job"})
                 job = JOBS.get(job_id)
                 if not job:
                     return self._json(404, {"detail": "unknown job"})
                 return self._json(200, job)
-
             return self._json(404, {"detail": "not found"})
 
         def do_POST(self) -> None:  # noqa: N802
@@ -366,9 +383,6 @@ def serve(port, http_port: int = 8792, *, guest_token: str, start: bool = True):
             if routed is None:
                 return self._json(404, {"detail": "not found"})
             _, path = routed
-
-            # Belt-and-suspenders deny: no live/admin mutation namespace is
-            # routable through this server, regardless of future UI changes.
             if path.startswith("/admin/") or not path.startswith("/api/experiment/"):
                 return self._denied()
 
@@ -381,39 +395,42 @@ def serve(port, http_port: int = 8792, *, guest_token: str, start: bool = True):
                     if not isinstance(values, dict):
                         raise ValueError("values must be an object")
                     return self._json(200, workspace.patch_inputs(sym, values))
-
                 if path == "/api/experiment/reset":
                     return self._json(200, workspace.reset(sym))
-
                 if path == "/api/experiment/preset":
                     preset = _validate_preset(port, body.get("preset"))
                     return self._json(200, workspace.set_preset(sym, preset))
-
                 if path in ("/api/experiment/backtest", "/api/experiment/rewarm"):
-                    state = workspace.state(sym)
-                    params = {k: v for k, v in body.items() if k != "asset"}
-                    request_inputs = params.pop("inputs", None)
-                    if request_inputs is not None and not isinstance(request_inputs, dict):
-                        raise ValueError("inputs must be an object")
-                    merged_inputs = dict(state["inputs"])
-                    if request_inputs:
-                        merged_inputs.update(request_inputs)
-                    if merged_inputs:
-                        params["inputs"] = merged_inputs
-                    if state.get("preset") and "preset" not in params:
-                        params["preset"] = state["preset"]
-                    if params.get("preset") not in (None, ""):
-                        _validate_preset(port, params.get("preset"))
-                    params = validate_backtest_params(params)
-                    scheduled = {"asset": sym, **params}
-                    job_id = start_job(port, scheduled)
+                    if not workspace.claim_job_slot():
+                        return self._json(429, {"detail": "guest experiment already running"})
+                    try:
+                        state = workspace.state(sym)
+                        params = {k: v for k, v in body.items() if k != "asset"}
+                        request_inputs = params.pop("inputs", None)
+                        if request_inputs is not None and not isinstance(request_inputs, dict):
+                            raise ValueError("inputs must be an object")
+                        merged_inputs = dict(state["inputs"])
+                        if request_inputs:
+                            merged_inputs.update(request_inputs)
+                        if merged_inputs:
+                            params["inputs"] = merged_inputs
+                        if state.get("preset") and "preset" not in params:
+                            params["preset"] = state["preset"]
+                        if params.get("preset") not in (None, ""):
+                            _validate_preset(port, params.get("preset"))
+                        params = validate_backtest_params(params)
+                        scheduled = {"asset": sym, **params}
+                        job_id = start_job(port, scheduled)
+                        workspace.register_job(job_id)
+                    except Exception:
+                        workspace.release_job_slot()
+                        raise
                     payload = {"ok": True, "job": job_id, "asset": sym, "isolated": True}
                     if path.endswith("/rewarm"):
                         payload["note"] = "isolated replay rewarm started; live Icarus is unchanged"
                     else:
                         payload["note"] = "isolated backtest started; live Icarus is unchanged"
                     return self._json(200, payload)
-
                 return self._denied()
 
             except FileNotFoundError as ex:

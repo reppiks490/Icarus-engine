@@ -53,10 +53,14 @@ def endpoint(port, monkeypatch):
         try:
             with urllib.request.urlopen(req, timeout=5) as reply:
                 raw = reply.read()
-                return reply.status, json.loads(raw) if raw else None, reply.headers
+                ctype = reply.headers.get("Content-Type", "")
+                parsed = (json.loads(raw) if raw and "application/json" in ctype else raw.decode("utf-8")) if raw else None
+                return reply.status, parsed, reply.headers
         except urllib.error.HTTPError as ex:
             raw = ex.read()
-            return ex.code, json.loads(raw) if raw else None, ex.headers
+            ctype = ex.headers.get("Content-Type", "")
+            parsed = (json.loads(raw) if raw and "application/json" in ctype else raw.decode("utf-8")) if raw else None
+            return ex.code, parsed, ex.headers
 
     yield call, scheduled
     srv.shutdown()
@@ -179,5 +183,25 @@ def test_guest_root_is_explicit_about_isolation(endpoint):
     code, _, headers = call("GET", guest("/api/live/status"))
     assert code == 200
     assert headers["X-Content-Type-Options"] == "nosniff"
-    req = urllib.request.Request("http://127.0.0.1:1/")  # construction only: avoid accidental network call
+    req = urllib.request.Request("http://127.0.0.1:1/")
     assert req.full_url
+
+
+def test_guest_root_serves_ipad_experiment_terminal_with_no_admin_routes(endpoint):
+    call, _ = endpoint
+    code, html, headers = call("GET", guest("/"))
+    assert code == 200
+    assert "text/html" in headers.get("Content-Type", "")
+    assert "ICARUS" in html and "EXPERIMENT" in html.upper()
+    assert "/api/experiment/backtest" in html
+    assert "/api/experiment/rewarm" in html
+    assert "/api/experiment/inputs" in html
+    assert "/admin/" not in html
+
+
+def test_guest_exposes_input_metadata_for_dynamic_safe_controls(endpoint):
+    call, _ = endpoint
+    code, meta, _ = call("GET", guest("/api/experiment/input-meta"))
+    assert code == 200
+    assert isinstance(meta, list) and meta
+    assert all("name" in row for row in meta)

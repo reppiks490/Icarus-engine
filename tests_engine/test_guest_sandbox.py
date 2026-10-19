@@ -63,6 +63,9 @@ def endpoint(port, monkeypatch):
             return ex.code, parsed, ex.headers
 
     yield call, scheduled
+    for idx in range(1, len(scheduled) + 1):
+        guest_server.JOBS.pop(f"guest-job-{idx}", None)
+    guest_server.JOBS.pop("owner-private-job", None)
     srv.shutdown()
     srv.server_close()
     thread.join(5)
@@ -169,11 +172,16 @@ def test_guest_preset_is_sandbox_only_and_validated(port, endpoint, tmp_path):
     assert call("POST", guest("/api/experiment/preset"), {"asset": "TEST", "preset": "missing"})[0] == 404
 
 
-def test_guest_job_results_are_readable_but_unknown_or_admin_paths_are_not(endpoint, monkeypatch):
+def test_guest_reads_only_its_own_jobs_and_admin_paths_stay_denied(endpoint, monkeypatch):
     call, _ = endpoint
-    monkeypatch.setitem(guest_server.JOBS, "abc", {"status": "done", "result": {"metrics": {"net_profit": 12}}})
-    code, body, _ = call("GET", guest("/api/experiment/jobs/abc"))
+    code, started, _ = call("POST", guest("/api/experiment/backtest"), {"asset": "TEST"})
+    assert code == 200
+    owned = started["job"]
+    monkeypatch.setitem(guest_server.JOBS, owned, {"status": "done", "result": {"metrics": {"net_profit": 12}}})
+    monkeypatch.setitem(guest_server.JOBS, "owner-private-job", {"status": "done", "result": {"secret": 99}})
+    code, body, _ = call("GET", guest(f"/api/experiment/jobs/{owned}"))
     assert code == 200 and body["status"] == "done"
+    assert call("GET", guest("/api/experiment/jobs/owner-private-job"))[0] == 404
     assert call("GET", guest("/api/experiment/jobs/nope"))[0] == 404
     assert call("POST", guest("/not-an-experiment"), {})[0] == 403
 

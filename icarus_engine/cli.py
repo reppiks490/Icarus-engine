@@ -17,6 +17,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import secrets
 import sys
 import time
 from typing import Optional
@@ -86,12 +87,38 @@ def cmd_backtest(args: argparse.Namespace) -> int:
     return 0
 
 
+def _start_guest_if_enabled(port: Portfolio, args: argparse.Namespace):
+    """Start the capability-limited guest surface only when explicitly requested."""
+    if not getattr(args, "guest", False):
+        return None
+    from . import guest_server
+    token = getattr(args, "guest_token", None)
+    if not token or token == getattr(args, "token", None):
+        token = secrets.token_urlsafe(32)
+    return guest_server.activate(
+        port,
+        http_port=getattr(args, "guest_port", 8792),
+        guest_token=token,
+        tunnel=getattr(args, "guest_tunnel", "cloudflared"),
+    )
+
+
 def cmd_run(args: argparse.Namespace) -> int:
     from .server import serve
     journal = Journal(args.db)
     port = _portfolio(args, journal)
     journal.log("INFO", f"ICARUS Engine starting: {port.order} tf={args.tf}m preset={args.preset} profile={args.profile} fills={args.fill_on or 'preset/real'}")
     port.start()
+    guest_handle = None
+    if getattr(args, "guest", False):
+        try:
+            guest_handle = _start_guest_if_enabled(port, args)
+            journal.log("INFO", "ICARUS isolated guest surface enabled")
+        except Exception as ex:
+            # Guest sharing is optional. A tunnel/guest-port problem must never
+            # stop the owner's engine or change its trading state.
+            journal.log("WARN", f"guest surface unavailable: {type(ex).__name__}: {ex}")
+            print(f"\n  guest surface unavailable: {type(ex).__name__}: {ex}\n")
     print(f"\nICARUS ENGINE  assets={port.order}  tf={args.tf}m  preset={args.preset}")
     print(f"  dashboard : http://127.0.0.1:{args.port}/     admin token: {args.token}")
     print("  warming up each asset from history, then LIVE (futures wait for the CME open); Ctrl+C to stop\n")
@@ -103,6 +130,8 @@ def cmd_run(args: argparse.Namespace) -> int:
     except KeyboardInterrupt:
         pass
     finally:
+        if guest_handle is not None:
+            guest_handle.close()
         port.stop()
     return 0
 
@@ -221,6 +250,10 @@ def main(argv: Optional[list] = None) -> int:
     s.add_argument("--token", default="icarus")
     s.add_argument("--poll", type=float, default=5.0)
     s.add_argument("--open", action="store_true")
+    s.add_argument("--guest", action="store_true", help="enable the isolated guest viewer/experiment surface")
+    s.add_argument("--guest-port", type=int, default=8792, help="loopback port for the isolated guest surface")
+    s.add_argument("--guest-token", default=os.environ.get("ICARUS_GUEST_TOKEN"), help="guest capability token; random if omitted")
+    s.add_argument("--guest-tunnel", default="cloudflared", choices=["cloudflared", "none"], help="public tunnel for guest surface")
     s.set_defaults(fn=cmd_run)
 
     b = sub.add_parser("backtest", help="replay history only and print the strategy's results")

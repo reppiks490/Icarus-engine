@@ -1,0 +1,29 @@
+{
+  "schema_version": "icarus-mcp-event-v1",
+  "event_id": "icarus-guest-sandbox-access-20261019T010400Z",
+  "at_utc": "2026-10-19T01:04:00Z",
+  "category": "INTEGRATION",
+  "status": "IMPLEMENTED",
+  "severity": "IMPORTANT",
+  "summary": "Added a capability-limited guest gateway and iPad-oriented experiment terminal that project live ICARUS state read-only while keeping guest inputs, presets, backtests and replay rewarms isolated from the live runtime. Guest sharing is opt-in, uses a distinct capability token and guest port, and tunnels only the guest surface. All live admin, execution and research-mutation routes are denied. Guest replay compute is hard-limited to one active experiment at a time, and the guest can read only replay jobs created by its own workspace.",
+  "surface": "ICARUS guest viewer / isolated experiment sandbox",
+  "source": "MCP",
+  "branch": "chatgpt/guest-sandbox-access-20261019",
+  "commit": null,
+  "paths": [
+    "icarus_engine/guest_server.py",
+    "icarus_engine/guest_dashboard.html",
+    "icarus_engine/cli.py",
+    "tests_engine/test_guest_sandbox.py",
+    "tests_engine/test_guest_activation.py",
+    "tests_engine/test_guest_resource_lock.py",
+    "automation_intelligence/mcp_interface/events/20261019T010400Z-guest-sandbox-access.json"
+  ],
+  "evidence": [
+    "PR #215",
+    "GitHub Actions guest isolation, UI-contract, activation and replay-resource test runs",
+    "pytest matrix: Python 3.11, 3.12, 3.13"
+  ],
+  "execution_authorized": false,
+  "trading_execution_authorized": false
+}

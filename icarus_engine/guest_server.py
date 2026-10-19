@@ -15,10 +15,14 @@ from __future__ import annotations
 import hmac
 import json
 import os
+import re
+import shutil
+import subprocess
 import threading
+from dataclasses import dataclass
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Callable, Dict, Optional, Tuple
 from urllib.parse import parse_qs, urlparse
 
 from .backtest import JOBS, start_job, validate_backtest_params
@@ -28,6 +32,86 @@ from .strategy.meta import load_meta
 _MAX_BODY_BYTES = 128 * 1024
 _MIN_TOKEN_LEN = 24
 _DENIED_DETAIL = "guest access is isolated from live Icarus"
+_CLOUDFLARE_RE = re.compile(r"https://[a-z0-9-]+\.trycloudflare\.com", re.I)
+
+
+@dataclass
+class GuestAccessHandle:
+    """Resources owned by the optional guest surface."""
+
+    server: Any
+    thread: Any
+    tunnel: Optional[Any]
+    guest_token: str
+    public_url: Optional[str]
+
+    def close(self) -> None:
+        self.server.shutdown()
+        self.server.server_close()
+        self.thread.join(5)
+        if self.tunnel is not None and self.tunnel.poll() is None:
+            self.tunnel.terminate()
+
+
+def share_url(public_base: str, guest_token: str) -> str:
+    """Return the only URL intended to be handed to the guest."""
+    return f"{public_base.rstrip('/')}/g/{guest_token}/"
+
+
+def _start_cloudflared(port: int, on_public_url: Callable[[str], None]) -> Optional[subprocess.Popen]:
+    exe = shutil.which("cloudflared")
+    if not exe:
+        return None
+    proc = subprocess.Popen(
+        [exe, "tunnel", "--url", f"http://127.0.0.1:{port}", "--no-autoupdate"],
+        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1,
+    )
+
+    def watch() -> None:
+        if proc.stdout is None:
+            return
+        for line in proc.stdout:
+            match = _CLOUDFLARE_RE.search(line)
+            if match:
+                on_public_url(match.group(0))
+                return
+
+    threading.Thread(target=watch, name="icarus-guest-tunnel", daemon=True).start()
+    return proc
+
+
+def activate(port, http_port: int = 8792, *, guest_token: str, tunnel: str = "cloudflared") -> GuestAccessHandle:
+    """Start the guest server and, optionally, a public Cloudflare Quick Tunnel.
+
+    The guest HTTP server remains loopback-bound. Only cloudflared connects the
+    public edge to this dedicated guest port; the live ICARUS admin server is
+    never tunneled by this function.
+    """
+    srv = serve(port, http_port, guest_token=guest_token, start=False)
+    thread = threading.Thread(target=srv.serve_forever, name="icarus-guest-http", daemon=True)
+    thread.start()
+    handle = GuestAccessHandle(srv, thread, None, guest_token, None)
+
+    def publish(base: str) -> None:
+        handle.public_url = share_url(base, guest_token)
+        print(f"\n  guest URL : {handle.public_url}")
+        print("  guest mode: LIVE VIEW + ISOLATED EXPERIMENTS (no live admin authority)\n")
+
+    kind = (tunnel or "none").lower()
+    if kind == "none":
+        handle.public_url = share_url(f"http://127.0.0.1:{srv.server_address[1]}", guest_token)
+        print(f"\n  guest local: {handle.public_url}\n")
+        return handle
+    if kind != "cloudflared":
+        handle.close()
+        raise ValueError("guest tunnel must be cloudflared or none")
+
+    proc = _start_cloudflared(srv.server_address[1], publish)
+    if proc is None:
+        print("\n  guest tunnel: cloudflared is not installed; guest surface remains local-only")
+        print(f"  guest local : {share_url(f'http://127.0.0.1:{srv.server_address[1]}', guest_token)}\n")
+    handle.tunnel = proc
+    return handle
 
 
 class GuestWorkspace:

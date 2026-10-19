@@ -1,0 +1,291 @@
+name: provider-archive-consumer
+
+# Existing encrypted artifacts only. No collection, research trial, or schedule.
+on:
+  push:
+    branches: ["codex/provider-private-workflow-20261019"]
+    paths: [".github/workflows/provider-archive-consumer.yml"]
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: Immutable retained provider artifact profile
+        type: choice
+        required: true
+        default: all
+        options: [all, massive, twelve, fmp, eodhd, tiingo, fred, alphavantage, native_alphavantage]
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: provider-archive-consumer-${{ github.ref }}
+  cancel-in-progress: false
+env:
+  SOURCE_REF: "84dd20e5186cc26fe4c95a371ea5fbbfed2ecdfe"
+jobs:
+  consume:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: ${{ fromJSON((inputs.profile == 'all' || inputs.profile == '') && '["massive","twelve","fmp","eodhd","tiingo","fred","alphavantage","native_alphavantage"]' || format('["{0}"]', inputs.profile)) }}
+    steps:
+      - name: Validate immutable profile
+        env:
+          PROFILE: ${{ matrix.profile }}
+          ENGINE_REF: ${{ github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          python - <<'PY'
+          import json, os, re, tempfile
+          from pathlib import Path
+          profiles = {'massive': {'provider': 'massive', 'format': 'exhaustive', 'artifact_id': 12157383656, 'artifact_name': 'provider-massive-39184327986-1', 'digest': 'sha256:e420aa247d3466f947ad115ddda67fafc2998a9d077331def3ffdcac8f30deeb', 'workflow_run': 39184327986, 'workflow_head': 'c83f01abb7590463de9f3c4bef5890bf72770e9e', 'run_id': 'providers-39184327986-1-massive', 'checkpoint_blob': 'f9c1baf1a186bd82a6a32c88527fe36403452a86'}, 'twelve': {'provider': 'twelve', 'format': 'exhaustive', 'artifact_id': 12157577586, 'artifact_name': 'provider-twelve-39184327986-1', 'digest': 'sha256:7dd2f7e873bec36a18dfd65f2d638af2a96c92fbf1c6ff833870d5f26db505c1', 'workflow_run': 39184327986, 'workflow_head': 'c83f01abb7590463de9f3c4bef5890bf72770e9e', 'run_id': 'providers-39184327986-1-twelve', 'checkpoint_blob': '26050e159d7dab3b237543eddf8511a0bf2669d6'}, 'fmp': {'provider': 'fmp', 'format': 'exhaustive', 'artifact_id': 12157607225, 'artifact_name': 'provider-fmp-39184327986-1', 'digest': 'sha256:4d4a555233e5368ca8d4edbc27c826e0c90e25683f64ee0ecd319ee19c9cd45b', 'workflow_run': 39184327986, 'workflow_head': 'c83f01abb7590463de9f3c4bef5890bf72770e9e', 'run_id': 'providers-39184327986-1-fmp', 'checkpoint_blob': '064821714c4633ffc7c5b453b910706a08dd45d4'}, 'eodhd': {'provider': 'eodhd', 'format': 'exhaustive', 'artifact_id': 12157801312, 'artifact_name': 'provider-eodhd-39184327986-1', 'digest': 'sha256:52cb5b7039f843763fad446422736f78bf517d9c5ab1d70c291b4e184f78d172', 'workflow_run': 39184327986, 'workflow_head': 'c83f01abb7590463de9f3c4bef5890bf72770e9e', 'run_id': 'providers-39184327986-1-eodhd', 'checkpoint_blob': '91eee32686db96b9a8ebb1fa6f61ee393acac8aa'}, 'tiingo': {'provider': 'tiingo', 'format': 'exhaustive', 'artifact_id': 12157781433, 'artifact_name': 'provider-tiingo-39184327986-1', 'digest': 'sha256:1fd54b20130dcea28f734cc7daa7a02e7d3798b56f84b8d92476ef80f5301d76', 'workflow_run': 39184327986, 'workflow_head': 'c83f01abb7590463de9f3c4bef5890bf72770e9e', 'run_id': 'providers-39184327986-1-tiingo', 'checkpoint_blob': '90c6c5b17e474a04e812308a0660ed477adaec00'}, 'fred': {'provider': 'fred', 'format': 'exhaustive', 'artifact_id': 12157403530, 'artifact_name': 'provider-fred-39184327986-1', 'digest': 'sha256:f921b2ee8bea15343db1317fefd95f4f4ad2c955d4b48f95a50dfb0e8b33a516', 'workflow_run': 39184327986, 'workflow_head': 'c83f01abb7590463de9f3c4bef5890bf72770e9e', 'run_id': 'providers-39184327986-1-fred', 'checkpoint_blob': '713b87345c3861add3b7a6f406ac4020e93cbf63'}, 'alphavantage': {'provider': 'alphavantage', 'format': 'supplemental', 'artifact_id': 12156341153, 'artifact_name': 'supplemental-alphavantage-39180762048', 'digest': 'sha256:1ab0bb402c1fede03ca2bfdae3bd67a0be666b7eb429194a55ad7a4f4b7345a4', 'workflow_run': 39180762048, 'workflow_head': '9c2f03ebda1495db81fbec86be8506c375621546', 'run_id': 'supplemental-39180762048-alphavantage', 'checkpoint_blob': '908adcc1355578abb8646c2198d9330fe734185e'}, 'native_alphavantage': {'provider': 'alphavantage', 'format': 'native', 'artifact_id': 12150049222, 'artifact_name': 'native-provider-alphavantage-39166371336-1', 'digest': 'sha256:a1ae28ec259b3588143508d2055028f66939ca274cf21dca3bc9c4a8bbb26160', 'workflow_run': 39166371336, 'workflow_head': '018340e7283397bcdfda32d8870c39d82b980f7b', 'run_id': 'native-39166371336-1', 'checkpoint_blob': '908adcc1355578abb8646c2198d9330fe734185e'}}
+          profile = os.environ['PROFILE']
+          if profile not in profiles or any(not re.fullmatch(r'[0-9a-f]{40}', os.environ[key]) for key in ('ENGINE_REF', 'SOURCE_REF')):
+              raise SystemExit('Invalid immutable profile')
+          root = Path(tempfile.mkdtemp(prefix='icarus-provider-proof-', dir=os.environ['RUNNER_TEMP']))
+          root.chmod(0o700)
+          (root / 'pin.json').write_text(json.dumps(profiles[profile], sort_keys=True))
+          with open(os.environ['GITHUB_ENV'], 'a') as stream:
+              stream.write(f'PROOF_ROOT={root}\nPROFILE={profile}\nENGINE_REF={os.environ["ENGINE_REF"]}\n')
+          PY
+      - name: Checkout immutable consumer
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: engine
+          persist-credentials: false
+      - name: Checkout immutable checkpoint source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.SOURCE_REF }}
+          path: checkpoint-source
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install authenticated archive decoder
+        run: python -m pip install "cryptography>=44,<47"
+      - name: Download immutable encrypted artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        working-directory: engine
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          python - <<'PY' > "$PROOF_ROOT/download.log" 2>&1
+          import hashlib, json, os, subprocess, urllib.request, urllib.parse
+          from pathlib import Path
+          root = Path(os.environ['PROOF_ROOT'])
+          pin = json.loads((root / 'pin.json').read_text())
+          api = f'https://api.github.com/repos/reppiks490/Icarus-engine/actions/artifacts/{pin["artifact_id"]}'
+          class ScopedRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self, req, fp, code, msg, headers, newurl):
+                  target = urllib.parse.urlsplit(newurl)
+                  if target.scheme != 'https' or target.username or target.password:
+                      raise ValueError('Unsafe artifact redirect')
+                  redirected = super().redirect_request(req, fp, code, msg, headers, newurl)
+                  if redirected is not None and urllib.parse.urlsplit(req.full_url).hostname != target.hostname:
+                      redirected.remove_header('Authorization')
+                  return redirected
+          opener = urllib.request.build_opener(ScopedRedirect())
+          def request(url):
+              return urllib.request.Request(url, headers={'Authorization': 'Bearer ' + os.environ['GH_TOKEN'], 'Accept': 'application/vnd.github+json'})
+          with opener.open(request(api), timeout=60) as response:
+              meta = json.load(response)
+          if (meta.get('id') != pin['artifact_id'] or meta.get('name') != pin['artifact_name'] or meta.get('expired') is not False
+              or meta.get('digest') != pin['digest'] or meta.get('workflow_run', {}).get('id') != pin['workflow_run']
+              or meta['workflow_run'].get('head_sha') != pin['workflow_head']
+              or meta['workflow_run'].get('repository_id') != 1377828482):
+              raise ValueError('Artifact identity mismatch')
+          with opener.open(request(api + '/zip'), timeout=60) as response:
+              data = response.read(128 * 1024 * 1024 + 1)
+          if len(data) > 128 * 1024 * 1024 or 'sha256:' + hashlib.sha256(data).hexdigest() != pin['digest']:
+              raise ValueError('Artifact digest mismatch')
+          (root / 'artifact.zip').write_bytes(data)
+          source = Path(os.environ['GITHUB_WORKSPACE']) / 'checkpoint-source'
+          if subprocess.check_output(['git', '-C', str(source), 'rev-parse', 'HEAD'], text=True).strip() != os.environ['SOURCE_REF']:
+              raise ValueError('Checkpoint source mismatch')
+          checkpoint = source / 'automation_intelligence/provider_collection_v1/checkpoints' / (pin['provider'] + '.enc')
+          data = checkpoint.read_bytes()
+          if hashlib.sha1(b'blob ' + str(len(data)).encode() + b'\0' + data).hexdigest() != pin['checkpoint_blob']:
+              raise ValueError('Checkpoint blob mismatch')
+          (root / 'checkpoint.enc').write_bytes(data)
+          pin['checkpoint_sha256'] = hashlib.sha256(data).hexdigest()
+          (root / 'pin.json').write_text(json.dumps(pin, sort_keys=True))
+          PY
+      - name: Extract encrypted members safely
+        working-directory: engine
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          python - <<'PY' > "$PROOF_ROOT/extract.log" 2>&1
+          import os, socket
+          from pathlib import Path
+          from tools.provider_archive_intake import safe_extract_zip
+          def offline(*args, **kwargs):
+              raise PermissionError('Offline archive consumption')
+          socket.socket.connect = socket.socket.connect_ex = socket.create_connection = socket.getaddrinfo = offline
+          root = Path(os.environ['PROOF_ROOT'])
+          safe_extract_zip(root / 'artifact.zip', root / 'extracted')
+          PY
+      - name: Consume private archive offline
+        working-directory: engine
+        env:
+          PROVIDER_ARCHIVE_CREDENTIAL: ${{ matrix.profile == 'massive' && (secrets.MASSIVE_API_KEY || secrets.POLYGON_API_KEY) || matrix.profile == 'twelve' && (secrets.TWELVEDATA_API_KEY || secrets.TWELVE_DATA_API_KEY) || matrix.profile == 'fmp' && (secrets.FMP_API_KEY || secrets.FMP_KEY) || matrix.profile == 'eodhd' && (secrets.EODHD_API_TOKEN || secrets.EODHD_API_KEY) || matrix.profile == 'tiingo' && (secrets.TIINGO_API_TOKEN || secrets.TIINGO_API_KEY) || matrix.profile == 'fred' && (secrets.FRED_API_KEY || secrets.FRED_KEY) || (matrix.profile == 'alphavantage' || matrix.profile == 'native_alphavantage') && (secrets.ALPHAVANTAGE_API_KEY || secrets.ALPHA_VANTAGE_API_KEY) || '' }}
+          ICARUS_DATA_ARCHIVE_KEY: ${{ secrets.ICARUS_DATA_ARCHIVE_KEY }}
+        shell: bash
+        run: |
+          set -uo pipefail
+          umask 077
+          python - <<'PY' > "$PROOF_ROOT/intake.log" 2>&1
+          import hashlib, json, os, re, runpy, socket, sys
+          from pathlib import Path
+          def offline(*args, **kwargs):
+              raise PermissionError('Offline archive consumption')
+          socket.socket.connect = socket.socket.connect_ex = socket.create_connection = socket.getaddrinfo = offline
+          root = Path(os.environ['PROOF_ROOT'])
+          pin = json.loads((root / 'pin.json').read_text())
+          codes = {'compressed payload rejected':'DECOMPRESSED_PAYLOAD_BOUND_OR_FORMAT',
+              'input size or type rejected':'INPUT_SIZE_OR_TYPE', 'input changed or exceeded bound':'INPUT_CHANGED_OR_BOUND',
+              'envelope size rejected':'ENVELOPE_BOUND', 'JSON structure bound':'JSON_STRUCTURE_BOUND',
+              'checkpoint payload receipt rejected':'CHECKPOINT_PAYLOAD_RECEIPT', 'record count binding rejected':'RECORD_COUNT_BINDING',
+              'checkpoint database rejected':'CHECKPOINT_DATABASE', 'checkpoint schema rejected':'CHECKPOINT_SCHEMA',
+              'checkpoint job binding rejected':'CHECKPOINT_JOB_BINDING', 'asset binding rejected':'ASSET_BINDING',
+              'archive authentication failed':'ARCHIVE_AUTHENTICATION', 'archive credential unavailable':'ARCHIVE_CREDENTIAL_UNAVAILABLE',
+              'input pin mismatch':'INPUT_PIN_MISMATCH', 'checkpoint virtual schema rejected':'CHECKPOINT_VIRTUAL_SCHEMA',
+              'checkpoint tables rejected':'CHECKPOINT_TABLES', 'JSON rejected':'JSON_FORMAT', 'duplicate JSON key':'JSON_DUPLICATE_KEY'}
+          stage = 'SETUP'
+          def safe_failure(kind, error, traceback):
+              code = codes.get(error.args[0], 'UNCLASSIFIED') if type(error) is ValueError and len(error.args) == 1 and type(error.args[0]) is str else 'UNCLASSIFIED'
+              category = type(error).__name__ if type(error) in (ValueError, OSError, ImportError, RuntimeError, SystemExit) else 'Other'
+              (root / 'failure.json').write_text(json.dumps({'stage':stage, 'code':code, 'exception_class':category}))
+          sys.excepthook = safe_failure
+          canonical = {'massive':'MASSIVE_API_KEY','twelve':'TWELVEDATA_API_KEY','fmp':'FMP_API_KEY','eodhd':'EODHD_API_TOKEN','tiingo':'TIINGO_API_TOKEN','fred':'FRED_API_KEY','alphavantage':'ALPHAVANTAGE_API_KEY'}
+          os.environ[canonical[pin['provider']]] = os.environ.pop('PROVIDER_ARCHIVE_CREDENTIAL', '')
+          native = pin['format'] == 'native'
+          if not native:
+              stage = 'CHECKPOINT_DIAGNOSTIC'
+              from tools.provider_archive_intake import checkpoint_bounds
+              bounds = checkpoint_bounds(checkpoint=root / 'checkpoint.enc', checkpoint_sha256=pin['checkpoint_sha256'], provider=pin['provider'], env=dict(os.environ))
+              (root / 'checkpoint-bounds.json').write_text(json.dumps(bounds, sort_keys=True, allow_nan=False))
+          stage = 'ARCHIVE_INTAKE'
+          prefix = '.native_provider_archives' if native else '.provider_collection_archives'
+          directory = root / 'extracted' / prefix / pin['run_id']
+          archives = list(directory.glob(pin['provider'] + '.enc')) if native else list((directory / pin['provider']).glob('*.enc'))
+          if not archives or len(archives) > 200:
+              raise ValueError('Missing or unbounded encrypted archive set')
+          outputs = root / 'receipts'
+          outputs.mkdir(mode=0o700)
+          for index, archive in enumerate(sorted(archives)):
+              job = None if native else archive.stem
+              if job is not None and not re.fullmatch(r'[0-9]+-[0-9]+', job):
+                  raise ValueError('Invalid archive job')
+              sys.argv = ['tools.provider_archive_intake', '--format', pin['format'], '--provider', pin['provider'],
+                  '--run-id', pin['run_id'], '--archive', str(archive), '--archive-sha256', hashlib.sha256(archive.read_bytes()).hexdigest(),
+                  '--source-repo', 'reppiks490/Icarus-engine', '--source-ref', os.environ['SOURCE_REF'], '--output', str(outputs / f'{index}.json')]
+              if not native:
+                  sys.argv += ['--job', job, '--checkpoint', str(root / 'checkpoint.enc'), '--checkpoint-sha256', pin['checkpoint_sha256']]
+              try:
+                  runpy.run_module('tools.provider_archive_intake', run_name='__main__')
+              except SystemExit as exc:
+                  if exc.code not in (None, 0):
+                      raise
+          PY
+          intake_exit=$?
+          if [ "$intake_exit" -ne 0 ]; then
+            echo '::error::PROVIDER_ARCHIVE_OFFLINE_INTAKE_FAILED'
+          fi
+          exit "$intake_exit"
+      - name: Report safe intake diagnostics
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          root = Path(os.environ['PROOF_ROOT'])
+          failure = root / 'failure.json'
+          if failure.exists():
+              doc = json.loads(failure.read_bytes())
+              codes = {'DECOMPRESSED_PAYLOAD_BOUND_OR_FORMAT','INPUT_SIZE_OR_TYPE','INPUT_CHANGED_OR_BOUND','ENVELOPE_BOUND','JSON_STRUCTURE_BOUND','CHECKPOINT_PAYLOAD_RECEIPT','RECORD_COUNT_BINDING','CHECKPOINT_DATABASE','CHECKPOINT_SCHEMA','CHECKPOINT_JOB_BINDING','ASSET_BINDING','ARCHIVE_AUTHENTICATION','ARCHIVE_CREDENTIAL_UNAVAILABLE','INPUT_PIN_MISMATCH','CHECKPOINT_VIRTUAL_SCHEMA','CHECKPOINT_TABLES','JSON_FORMAT','JSON_DUPLICATE_KEY','UNCLASSIFIED'}
+              if (set(doc) != {'stage','code','exception_class'} or doc['stage'] not in {'SETUP','CHECKPOINT_DIAGNOSTIC','ARCHIVE_INTAKE'}
+                  or doc['code'] not in codes or doc['exception_class'] not in {'ValueError','OSError','ImportError','RuntimeError','SystemExit','Other'}):
+                  raise ValueError('Unsafe failure metadata')
+              print(json.dumps(doc, sort_keys=True))
+          bounds = root / 'checkpoint-bounds.json'
+          if bounds.exists():
+              doc = json.loads(bounds.read_bytes())
+              numbers = {'encrypted_bytes','compressed_bytes','decompressed_bytes','baseline_intake_limit_bytes'}
+              booleans = {'decompressed_size_exact','diagnostic_limit_reached','baseline_intake_limit_exceeded'}
+              if (set(doc) != numbers | booleans or any(type(doc[key]) is not int or not 0 <= doc[key] <= 512_000_001 for key in numbers)
+                  or any(type(doc[key]) is not bool for key in booleans)):
+                  raise ValueError('Unsafe size metadata')
+              print(json.dumps(doc, sort_keys=True))
+          PY
+      - name: Validate metadata only receipts
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          root = Path(os.environ['PROOF_ROOT'])
+          receipts = sorted((root / 'receipts').glob('*.json'))
+          if not receipts:
+              raise ValueError('No actual consumption receipts')
+          pin = json.loads((root / 'pin.json').read_text())
+          allowed = {'schema_version','provider','run_id','format','source_repository','source_ref','archive_sha256','checkpoint_sha256','payload_sha256','operation_sha256','checkpoint_binding_verified','asset_binding_present','diagnostics','corpus_used','raw_values_exported','provider_requests','execution_authorized','historical_coverage_verified','fresh_feed_access_verified'}
+          counts = {'records_read','populated_records','scalar_fields_read','finite_numeric_fields','identity_fields_read','asset_identity_matches','timestamp_fields_read','corporate_action_fields_read'}
+          import re
+          for path in receipts:
+              if path.is_symlink() or path.stat().st_size > 1024 * 1024:
+                  raise ValueError('Invalid receipt file')
+              doc = json.loads(path.read_bytes())
+              if (set(doc) != allowed or doc.get('schema_version') != 'icarus-private-provider-consumption-v1'
+                  or doc.get('provider') != pin['provider'] or doc.get('run_id') != pin['run_id'] or doc.get('format') != pin['format']
+                  or doc.get('source_repository') != 'reppiks490/Icarus-engine' or doc.get('source_ref') != os.environ['SOURCE_REF']
+                  or any(doc.get(key) is not False for key in ('raw_values_exported','execution_authorized','historical_coverage_verified','fresh_feed_access_verified'))
+                  or type(doc.get('provider_requests')) is not int or doc['provider_requests'] != 0
+                  or set(doc.get('diagnostics', {})) != counts
+                  or any(type(value) is not int or not 0 <= value <= 100_000_000 for value in doc['diagnostics'].values())
+                  or doc.get('corpus_used') is not (doc['diagnostics']['populated_records'] > 0)
+                  or type(doc.get('asset_binding_present')) is not bool
+                  or doc.get('checkpoint_binding_verified') is not (pin['format'] != 'native')
+                  or any(not isinstance(doc.get(key), str) or not re.fullmatch(r'[0-9a-f]{64}', doc[key]) for key in ('archive_sha256','payload_sha256'))
+                  or (pin['format'] != 'native' and (doc.get('checkpoint_sha256') != pin['checkpoint_sha256'] or not isinstance(doc.get('operation_sha256'), str) or not re.fullmatch(r'[0-9a-f]{64}', doc['operation_sha256'])))
+                  or (pin['format'] == 'native' and (doc.get('checkpoint_sha256') is not None or doc.get('operation_sha256') is not None))):
+                  raise ValueError('Unsafe receipt authority')
+          import hashlib
+          proof = {'schema_version':'icarus-private-provider-workflow-proof-v1',
+              'artifact_id':pin['artifact_id'], 'artifact_name':pin['artifact_name'], 'artifact_sha256':pin['digest'],
+              'archive_workflow_run':pin['workflow_run'], 'archive_workflow_head':pin['workflow_head'],
+              'source_ref':os.environ['SOURCE_REF'], 'consumer_ref':os.environ['ENGINE_REF'],
+              'checkpoint_blob':pin['checkpoint_blob'], 'checkpoint_sha256':pin['checkpoint_sha256'],
+              'archive_receipts': [{'name':path.name,'sha256':hashlib.sha256(path.read_bytes()).hexdigest()} for path in receipts],
+              'network_disabled':True, 'provider_requests':0, 'raw_values_exported':False, 'execution_authorized':False}
+          (root / 'receipts/workflow-proof.json').write_text(json.dumps(proof, sort_keys=True, allow_nan=False))
+          PY
+      - name: Upload metadata receipts only
+        uses: actions/upload-artifact@v4
+        with:
+          name: provider-consumption-${{ matrix.profile }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.PROOF_ROOT }}/receipts/*.json
+          if-no-files-found: error
+          retention-days: 7
+      - name: Remove all private payloads and logs
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          case "${PROOF_ROOT:-}" in
+            "$RUNNER_TEMP"/icarus-provider-proof-*) rm -rf -- "$PROOF_ROOT" ;;
+            *) exit 0 ;;
+          esac

@@ -1,0 +1,97 @@
+{
+  "automation_id": "github-native-research-v1",
+  "blockers": [
+    "Release titles establish publication, not macro surprise or causal impact.",
+    "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+    "No consensus estimates acquired; economic surprise remains unknown."
+  ],
+  "chatgpt_tokens_used": 0,
+  "code_revision": "c1523f4a688262cf6d65bc11750b4c0fd323eb45",
+  "completed_at_utc": "2026-10-19T19:34:47.555882Z",
+  "event_paths": [],
+  "evidence": [
+    "automation_intelligence/native_research_v1/cycles/native-39311976899-1/evidence.json"
+  ],
+  "execution_authorized": false,
+  "input_sha256": "9a92194800365b3da8c6f261223daefa5da588b87778b3d38e0c9cd19f37719c",
+  "lane": "macro",
+  "local_interpretation": {
+    "authority": "UNVERIFIED_MODEL_INFERENCE",
+    "reason": "No semantic change",
+    "status": "NOT_RUN"
+  },
+  "measurements": {
+    "gaps": [
+      "Release titles establish publication, not macro surprise or causal impact.",
+      "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+      "No consensus estimates acquired; economic surprise remains unknown."
+    ],
+    "limits": "Publication and daily change are facts; surprise, causality and intraday propagation remain unverified.",
+    "releases": [
+      {
+        "published_epoch": 1792389600.0,
+        "retrieval_finished": 1792438486.8601468,
+        "retrieval_started": 1792438486.3080215,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261019~f0a3e053de.en.html",
+        "title": "Frank Elderson: From climate and nature risks to economic resilience and competitiveness"
+      },
+      {
+        "published_epoch": 1792213200.0,
+        "retrieval_finished": 1792438486.8601468,
+        "retrieval_started": 1792438486.3080215,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261017~7015ea3099.en.html",
+        "title": "Christine Lagarde: IMFC Statement"
+      },
+      {
+        "published_epoch": 1792419430.0,
+        "retrieval_finished": 1792438487.0234337,
+        "retrieval_started": 1792438486.860459,
+        "source": "BLS",
+        "source_url": "https://www.bls.gov/bls/",
+        "title": "Major Economic Indicators Latest Numbers"
+      }
+    ],
+    "series": [
+      {
+        "change": -0.09000000000000075,
+        "date": "2026-10-15",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-10-14",
+        "series": "DGS10",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10",
+        "value": 5.1
+      },
+      {
+        "change": -0.05000000000000071,
+        "date": "2026-10-15",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-10-14",
+        "series": "DGS2",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2",
+        "value": 4.77
+      },
+      {
+        "change": 0.1554000000000002,
+        "date": "2026-10-09",
+        "freshness": "STALE",
+        "prior_date": "2026-10-08",
+        "series": "DTWEXBGS",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DTWEXBGS",
+        "value": 121.6023
+      }
+    ],
+    "status": "VERIFIED",
+    "summary": "3 dated official release headlines; 3 daily macro series measured."
+  },
+  "outcome": "NO_MATERIAL_DELTA",
+  "paid_model_calls": 0,
+  "prior_receipt_path": "automation_intelligence/native_research_v1/cycles/native-39296653305-1/macro.json",
+  "run_id": "native-39311976899-1-macro",
+  "schema_version": "icarus-research-run-v1",
+  "started_at_utc": "2026-10-19T19:34:47.528094Z",
+  "substantive_work_performed": true,
+  "summary": "3 dated official release headlines; 3 daily macro series measured.",
+  "worker": "GITHUB_ACTIONS"
+}

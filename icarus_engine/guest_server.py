@@ -17,11 +17,13 @@ import json
 import os
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
 from typing import Any, Dict, Optional, Tuple
 from urllib.parse import parse_qs, urlparse
 
 from .backtest import JOBS, start_job, validate_backtest_params
 from .runtime import preset_path, validate_values
+from .strategy.meta import load_meta
 
 _MAX_BODY_BYTES = 128 * 1024
 _MIN_TOKEN_LEN = 24
@@ -154,6 +156,7 @@ def serve(port, http_port: int = 8792, *, guest_token: str, start: bool = True):
         raise ValueError(f"guest token must be at least {_MIN_TOKEN_LEN} characters and contain no slash")
 
     workspace = GuestWorkspace()
+    html_path = Path(__file__).with_name("guest_dashboard.html")
 
     class H(BaseHTTPRequestHandler):
         server_version = "icarus-guest"
@@ -215,7 +218,10 @@ def serve(port, http_port: int = 8792, *, guest_token: str, start: bool = True):
             _, path = routed
             q = parse_qs(urlparse(self.path).query)
 
-            if path in ("/", "/api/live/status"):
+            if path == "/":
+                return self._send(200, html_path.read_bytes(), "text/html")
+
+            if path == "/api/live/status":
                 return self._json(200, _public_status(port))
 
             if path.startswith("/api/live/chart/"):
@@ -239,6 +245,9 @@ def serve(port, http_port: int = 8792, *, guest_token: str, start: bool = True):
                 except (TypeError, ValueError):
                     limit = 100
                 return self._json(200, {"asset": sym, "trades": runner.trades(limit)})
+
+            if path == "/api/experiment/input-meta":
+                return self._json(200, load_meta())
 
             if path.startswith("/api/experiment/state/"):
                 sym = path.rsplit("/", 1)[1].upper()

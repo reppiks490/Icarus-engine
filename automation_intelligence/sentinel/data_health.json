@@ -76,8 +76,8 @@
   "BLOCKED": 6,
   "DEGRADED": 6,
   "FAILING": 4,
-  "OK": 67,
-  "STALE": 3
+  "OK": 68,
+  "STALE": 2
  },
  "depth": {
   "budgets": {
@@ -148,7 +148,7 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-10-19T11:12:53+00:00",
+ "generated_at": "2026-10-19T11:14:15+00:00",
  "research": {
   "champions": 0,
   "cl_last_run": "2026-10-19T07:00:03.009302+00:00",
@@ -212,7 +212,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 0.0,
+   "age_h": 0.1,
    "path": "automation_intelligence/provider_collection_v1/latest/finnhub.json",
    "rows": 0,
    "source": "provider:finnhub",
@@ -244,18 +244,12 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 0.0,
+   "age_h": 0.1,
    "path": "automation_intelligence/provider_collection_v1/latest/unusual_whales.json",
    "rows": 0,
    "source": "provider:unusual_whales",
    "verdict": "BLOCKED",
    "why": "BLOCKED_AUTHENTICATION"
-  },
-  {
-   "age_h": 4.7,
-   "source": "workflow:native-five-research.yml",
-   "verdict": "STALE",
-   "why": "last success 4.7 h ago (expected within 3 h)"
   },
   {
    "age_h": 3.4,
@@ -689,7 +683,7 @@
    "why": "16698 rows to 2026-10-15T00:00"
   },
   {
-   "age_h": 4.4,
+   "age_h": 4.5,
    "rows": 196903,
    "source": "fred_alfred",
    "verdict": "OK",
@@ -737,16 +731,22 @@
    "why": "last success 2.1 h ago"
   },
   {
-   "age_h": 58.4,
+   "age_h": 58.5,
    "source": "workflow:external-data-fabric.yml",
    "verdict": "OK",
-   "why": "last success 58.4 h ago"
+   "why": "last success 58.5 h ago"
   },
   {
    "age_h": 0.9,
    "source": "workflow:interrepo-peer-intelligence.yml",
    "verdict": "OK",
    "why": "last success 0.9 h ago"
+  },
+  {
+   "age_h": 0.0,
+   "source": "workflow:native-five-research.yml",
+   "verdict": "OK",
+   "why": "last success 0.0 h ago"
   },
   {
    "age_h": 5.8,

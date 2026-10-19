@@ -5,19 +5,20 @@
   "category": "INTEGRATION",
   "status": "IMPLEMENTED",
   "severity": "IMPORTANT",
-  "summary": "Added a capability-limited guest gateway that projects live ICARUS state read-only while keeping guest inputs, presets, backtests and replay rewarms isolated from the live runtime. All live admin, execution and research-mutation routes are denied on the guest surface.",
+  "summary": "Added a capability-limited guest gateway and iPad-oriented experiment terminal that project live ICARUS state read-only while keeping guest inputs, presets, backtests and replay rewarms isolated from the live runtime. All live admin, execution and research-mutation routes are denied on the guest surface.",
   "surface": "ICARUS guest viewer / isolated experiment sandbox",
   "source": "MCP",
   "branch": "chatgpt/guest-sandbox-access-20261019",
   "commit": null,
   "paths": [
     "icarus_engine/guest_server.py",
+    "icarus_engine/guest_dashboard.html",
     "tests_engine/test_guest_sandbox.py",
     "automation_intelligence/mcp_interface/events/20261019T010400Z-guest-sandbox-access.json"
   ],
   "evidence": [
     "PR #215",
-    "GitHub Actions run 39183457925",
+    "GitHub Actions guest isolation and UI-contract test runs",
     "pytest matrix: Python 3.11, 3.12, 3.13"
   ],
   "execution_authorized": false,

@@ -174,3 +174,32 @@ def test_empty_exhaustive_wrapper_is_not_consumption(tmp_path):
     result=intake.consume_archive(archive=archive,archive_sha256=save(archive,envelope(payload)),checkpoint=check,checkpoint_sha256=save(check,encrypted),provider='tiingo',run_id='run-1',job='1-0',format='exhaustive',source_repo='x/y',source_ref='a'*40,env=ENV)
     assert not result['corpus_used']
     assert all(count==0 for count in result['diagnostics'].values())
+
+def test_checkpoint_bound_diagnostic_counts_only(tmp_path):
+    raw=b'{"private":"'+b'SECRET_LICENSED_VALUE'*10000+b'"}'
+    data=envelope(None,run='checkpoint',job='tiingo',raw=raw)
+    path=tmp_path/'checkpoint';digest=save(path,data)
+    result=intake.checkpoint_bounds(checkpoint=path,checkpoint_sha256=digest,provider='tiingo',env=ENV)
+    assert result['decompressed_bytes']==len(raw)
+    assert result['decompressed_size_exact'] and not result['diagnostic_limit_reached']
+    assert set(result)=={'encrypted_bytes','compressed_bytes','decompressed_bytes','decompressed_size_exact','diagnostic_limit_reached','baseline_intake_limit_bytes','baseline_intake_limit_exceeded'}
+    assert 'SECRET' not in json.dumps(result)
+
+def test_checkpoint_bound_diagnostic_abort_is_lower_bound(tmp_path):
+    data=envelope(None,run='checkpoint',job='tiingo',raw=b' '*1000000)
+    path=tmp_path/'checkpoint';digest=save(path,data)
+    result=intake.checkpoint_bounds(checkpoint=path,checkpoint_sha256=digest,provider='tiingo',env=ENV,maximum_output=100000)
+    assert result['decompressed_bytes']==100001
+    assert not result['decompressed_size_exact'] and result['diagnostic_limit_reached']
+
+def test_checkpoint_diagnostic_auth_before_decompression(tmp_path):
+    path=tmp_path/'checkpoint';digest=save(path,envelope(None,run='checkpoint',job='tiingo',raw=b' '*10000))
+    with pytest.raises(ValueError,match='authentication'):
+        intake.checkpoint_bounds(checkpoint=path,checkpoint_sha256=digest,provider='fred',env=ENV)
+
+def test_checkpoint_diagnostic_trailing_stream_rejected(tmp_path):
+    nonce=b'x'*12
+    encrypted=nonce+AESGCM(KEY).encrypt(nonce,zlib.compress(b'{}')+b'trailing',b'checkpoint:tiingo:tiingo')
+    path=tmp_path/'checkpoint';digest=save(path,encrypted)
+    with pytest.raises(ValueError,match='compressed'):
+        intake.checkpoint_bounds(checkpoint=path,checkpoint_sha256=digest,provider='tiingo',env=ENV)

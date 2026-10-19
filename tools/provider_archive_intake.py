@@ -91,7 +91,7 @@ def _json(raw: bytes):
     return result
 
 
-def decrypt(envelope: bytes, *, provider: str, run_id: str, job: str, format: str, env: dict):
+def _authenticated_compressed(envelope: bytes, *, provider: str, run_id: str, job: str, format: str, env: dict):
     from cryptography.hazmat.primitives.ciphers.aead import AESGCM
     from cryptography.hazmat.primitives import hashes
     from cryptography.hazmat.primitives.kdf.hkdf import HKDF
@@ -120,6 +120,11 @@ def decrypt(envelope: bytes, *, provider: str, run_id: str, job: str, format: st
         compressed = AESGCM(key).decrypt(envelope[:12], envelope[12:], f'{run_id}:{provider}:{job}'.encode())
     except Exception:
         raise ValueError('archive authentication failed') from None
+    return compressed
+
+
+def decrypt(envelope: bytes, *, provider: str, run_id: str, job: str, format: str, env: dict):
+    compressed = _authenticated_compressed(envelope, provider=provider, run_id=run_id, job=job, format=format, env=env)
     try:
         decoder = zlib.decompressobj()
         raw = decoder.decompress(compressed, MAX_BYTES + 1)
@@ -137,6 +142,47 @@ def _pinned(path, digest):
     if hashlib.sha256(data).hexdigest() != digest:
         raise ValueError('input pin mismatch')
     return data
+
+
+
+def checkpoint_bounds(*, checkpoint, checkpoint_sha256, provider, env,
+                      maximum_output=512_000_000):
+    """Count authenticated checkpoint bytes without parsing or exporting payloads.
+
+    Each decompression allocation is at most 64 KiB. A diagnostic ceiling is
+    independent of, and does not relax, normal intake limits. Truncated output
+    reports a lower bound rather than an invented exact size.
+    """
+    if type(maximum_output) is not int or not 1 <= maximum_output <= 512_000_000:
+        raise ValueError('diagnostic output bound rejected')
+    envelope = _pinned(checkpoint, checkpoint_sha256)
+    compressed = _authenticated_compressed(envelope, provider=provider,
+        run_id='checkpoint', job=provider, format='exhaustive', env=env)
+    decoder = zlib.decompressobj()
+    total = 0
+    limited = False
+    try:
+        for start in range(0, len(compressed), 65_536):
+            pending = compressed[start:start + 65_536]
+            while pending:
+                block = decoder.decompress(pending, min(65_536, maximum_output - total + 1))
+                total += len(block)
+                if total > maximum_output:
+                    limited = True
+                    break
+                pending = decoder.unconsumed_tail
+                if decoder.unused_data:
+                    raise ValueError('compressed payload rejected')
+            if limited:
+                break
+        if not limited and (not decoder.eof or decoder.unused_data or decoder.unconsumed_tail):
+            raise ValueError('compressed payload rejected')
+    except zlib.error:
+        raise ValueError('compressed payload rejected') from None
+    return dict(encrypted_bytes=len(envelope), compressed_bytes=len(compressed),
+                decompressed_bytes=total, decompressed_size_exact=not limited,
+                diagnostic_limit_reached=limited, baseline_intake_limit_bytes=MAX_BYTES,
+                baseline_intake_limit_exceeded=total > MAX_BYTES)
 
 
 def _bind(checkpoint, provider, job, payload_sha):

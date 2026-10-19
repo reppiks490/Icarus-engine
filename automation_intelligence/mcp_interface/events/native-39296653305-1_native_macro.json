@@ -1,0 +1,100 @@
+{
+  "at_utc": "2026-10-19T17:45:33.402501Z",
+  "category": "AUDIT",
+  "event_id": "native-39296653305-1-native-macro",
+  "evidence": [
+    {
+      "classification": "FACT",
+      "code_revision": "d88fb33e5569a41b5df5ebfd1fa95990facfaa0e",
+      "evidence_sha256": "e1bd2afa95e82904e1bc9eb1263b0bc27621b0aaabec35f51d82a10eb5823647",
+      "measurement": {
+        "gaps": [
+          "Release titles establish publication, not macro surprise or causal impact.",
+          "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+          "No consensus estimates acquired; economic surprise remains unknown."
+        ],
+        "limits": "Publication and daily change are facts; surprise, causality and intraday propagation remain unverified.",
+        "releases": [
+          {
+            "published_epoch": 1792389600.0,
+            "retrieval_finished": 1792431932.924369,
+            "retrieval_started": 1792431932.1608233,
+            "source": "ECB",
+            "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261019~f0a3e053de.en.html",
+            "title": "Frank Elderson: From climate and nature risks to economic resilience and competitiveness"
+          },
+          {
+            "published_epoch": 1792213200.0,
+            "retrieval_finished": 1792431932.924369,
+            "retrieval_started": 1792431932.1608233,
+            "source": "ECB",
+            "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261017~7015ea3099.en.html",
+            "title": "Christine Lagarde: IMFC Statement"
+          },
+          {
+            "published_epoch": 1792419430.0,
+            "retrieval_finished": 1792431933.0489006,
+            "retrieval_started": 1792431932.9249375,
+            "source": "BLS",
+            "source_url": "https://www.bls.gov/bls/",
+            "title": "Major Economic Indicators Latest Numbers"
+          }
+        ],
+        "series": [
+          {
+            "change": -0.09000000000000075,
+            "date": "2026-10-15",
+            "freshness": "DAILY_OBSERVATION",
+            "prior_date": "2026-10-14",
+            "series": "DGS10",
+            "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10",
+            "value": 5.1
+          },
+          {
+            "change": -0.05000000000000071,
+            "date": "2026-10-15",
+            "freshness": "DAILY_OBSERVATION",
+            "prior_date": "2026-10-14",
+            "series": "DGS2",
+            "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2",
+            "value": 4.77
+          },
+          {
+            "change": 0.1554000000000002,
+            "date": "2026-10-09",
+            "freshness": "STALE",
+            "prior_date": "2026-10-08",
+            "series": "DTWEXBGS",
+            "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DTWEXBGS",
+            "value": 121.6023
+          }
+        ],
+        "status": "VERIFIED",
+        "summary": "3 dated official release headlines; 3 daily macro series measured."
+      }
+    }
+  ],
+  "execution_authorized": false,
+  "interpretation_authority": "UNVERIFIED_MODEL_INFERENCE",
+  "oracle": {
+    "finding": "3 dated official release headlines; 3 daily macro series measured.",
+    "status": "VERIFIED"
+  },
+  "paths": [
+    "automation_intelligence/native_research_v1/cycles/native-39296653305-1/evidence.json",
+    "automation_intelligence/native_research_v1/cycles/native-39296653305-1/macro.json"
+  ],
+  "schema_version": "icarus-mcp-event-v1",
+  "severity": "MEDIUM",
+  "source": "MACRO_AUTOMATION",
+  "status": "VERIFIED",
+  "summary": "3 dated official release headlines; 3 daily macro series measured.",
+  "supermesh_x": {
+    "finding": "3 dated official release headlines; 3 daily macro series measured.",
+    "status": "VERIFIED"
+  },
+  "surface": [
+    "macro native research"
+  ],
+  "worker": "GITHUB_NATIVE_RESEARCH_V1"
+}

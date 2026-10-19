@@ -1,0 +1,108 @@
+{
+  "automation_id": "github-native-research-v1",
+  "blockers": [
+    "Release titles establish publication, not macro surprise or causal impact.",
+    "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+    "No consensus estimates acquired; economic surprise remains unknown."
+  ],
+  "chatgpt_tokens_used": 0,
+  "code_revision": "d88fb33e5569a41b5df5ebfd1fa95990facfaa0e",
+  "completed_at_utc": "2026-10-19T17:45:49.516621Z",
+  "event_paths": [
+    "automation_intelligence/mcp_interface/events/native-39296653305-1_native_macro.json"
+  ],
+  "evidence": [
+    "automation_intelligence/native_research_v1/cycles/native-39296653305-1/evidence.json"
+  ],
+  "execution_authorized": false,
+  "input_sha256": "e1bd2afa95e82904e1bc9eb1263b0bc27621b0aaabec35f51d82a10eb5823647",
+  "lane": "macro",
+  "local_interpretation": {
+    "authority": "UNVERIFIED_MODEL_INFERENCE",
+    "model": "Qwen/Qwen3-1.7B-GGUF@90862c4:Q8_0",
+    "payload": {
+      "conflicts": [],
+      "data_gaps": [],
+      "execution_authorized": false,
+      "lane": "macro",
+      "net_new_delta": "LOCAL_NEXT_TEST_SELECTION",
+      "summary": "Does the next official release change the daily macro context?"
+    },
+    "response_id": "local-3dc1754c694e11cb5673d914",
+    "status": "GENERATED"
+  },
+  "measurements": {
+    "gaps": [
+      "Release titles establish publication, not macro surprise or causal impact.",
+      "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+      "No consensus estimates acquired; economic surprise remains unknown."
+    ],
+    "limits": "Publication and daily change are facts; surprise, causality and intraday propagation remain unverified.",
+    "releases": [
+      {
+        "published_epoch": 1792389600.0,
+        "retrieval_finished": 1792431932.924369,
+        "retrieval_started": 1792431932.1608233,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261019~f0a3e053de.en.html",
+        "title": "Frank Elderson: From climate and nature risks to economic resilience and competitiveness"
+      },
+      {
+        "published_epoch": 1792213200.0,
+        "retrieval_finished": 1792431932.924369,
+        "retrieval_started": 1792431932.1608233,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261017~7015ea3099.en.html",
+        "title": "Christine Lagarde: IMFC Statement"
+      },
+      {
+        "published_epoch": 1792419430.0,
+        "retrieval_finished": 1792431933.0489006,
+        "retrieval_started": 1792431932.9249375,
+        "source": "BLS",
+        "source_url": "https://www.bls.gov/bls/",
+        "title": "Major Economic Indicators Latest Numbers"
+      }
+    ],
+    "series": [
+      {
+        "change": -0.09000000000000075,
+        "date": "2026-10-15",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-10-14",
+        "series": "DGS10",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10",
+        "value": 5.1
+      },
+      {
+        "change": -0.05000000000000071,
+        "date": "2026-10-15",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-10-14",
+        "series": "DGS2",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2",
+        "value": 4.77
+      },
+      {
+        "change": 0.1554000000000002,
+        "date": "2026-10-09",
+        "freshness": "STALE",
+        "prior_date": "2026-10-08",
+        "series": "DTWEXBGS",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DTWEXBGS",
+        "value": 121.6023
+      }
+    ],
+    "status": "VERIFIED",
+    "summary": "3 dated official release headlines; 3 daily macro series measured."
+  },
+  "outcome": "MATERIAL_DELTA",
+  "paid_model_calls": 0,
+  "prior_receipt_path": "automation_intelligence/native_research_v1/cycles/native-39264013339-1/macro.json",
+  "run_id": "native-39296653305-1-macro",
+  "schema_version": "icarus-research-run-v1",
+  "started_at_utc": "2026-10-19T17:45:33.402501Z",
+  "substantive_work_performed": true,
+  "summary": "3 dated official release headlines; 3 daily macro series measured.",
+  "worker": "GITHUB_ACTIONS"
+}

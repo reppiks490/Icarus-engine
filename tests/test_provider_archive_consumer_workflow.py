@@ -21,7 +21,7 @@ def script(name):
     return textwrap.dedent(step(name).split('        run: |\n')[1])
 
 def python(name):
-    return script(name).split("<<'PY'", 1)[1].split('\n', 1)[1].rsplit('\nPY', 1)[0]
+    return script(name).split("<<'PY'", 1)[1].split('\n', 1)[1].split('\nPY', 1)[0]
 
 def execute(name):
     exec(compile(python(name), name, 'exec'), {})
@@ -181,3 +181,50 @@ def test_workflow_proof_binds_actual_receipt_hash_and_immutable_artifact(tmp_pat
     assert proof['artifact_id']==12157403530
     assert proof['consumer_ref']=='a'*40
     assert proof['provider_requests']==0 and proof['raw_values_exported'] is False
+
+
+def redirect_handler():
+    """Execute the actual redirect class without making any network request."""
+    tree=ast.parse(python('Download immutable encrypted artifact'))
+    node=next(node for node in tree.body if isinstance(node,ast.ClassDef) and node.name=='ScopedRedirect')
+    import urllib.request
+    import urllib.parse
+    namespace={'urllib':__import__('urllib')}
+    exec(compile(ast.Module(body=[node],type_ignores=[]),'redirect-contract','exec'),namespace)
+    return namespace['ScopedRedirect']()
+
+
+@pytest.mark.parametrize('target',['https://signed.blob.core.windows.net/object?signature=private','https://bucket.s3.amazonaws.com/object'])
+def test_cross_host_artifact_redirect_never_forwards_github_authorization(target):
+    import urllib.request
+    request=urllib.request.Request('https://api.github.com/repos/owner/repo/actions/artifacts/1/zip',headers={'Authorization':'Bearer synthetic-private-value','Accept':'application/vnd.github+json'})
+    redirected=redirect_handler().redirect_request(request,None,302,'Found',{},target)
+    assert redirected.full_url==target
+    assert not redirected.has_header('Authorization')
+    assert 'synthetic-private-value' not in str(redirected.header_items())
+    assert request.has_header('Authorization')
+
+
+def test_same_host_https_redirect_keeps_scoped_authorization():
+    import urllib.request
+    request=urllib.request.Request('https://api.github.com/one',headers={'Authorization':'Bearer synthetic-private-value'})
+    redirected=redirect_handler().redirect_request(request,None,302,'Found',{},'https://api.github.com/two')
+    assert redirected.get_header('Authorization')=='Bearer synthetic-private-value'
+
+
+@pytest.mark.parametrize('target',['http://api.github.com/one','https://attacker:password@api.github.com/path'])
+def test_insecure_or_credentialed_redirect_rejected(target):
+    import urllib.request
+    request=urllib.request.Request('https://api.github.com/one',headers={'Authorization':'Bearer synthetic-private-value'})
+    with pytest.raises(ValueError): redirect_handler().redirect_request(request,None,302,'Found',{},target)
+
+
+def test_downloader_uses_guarded_opener_and_intake_has_only_fixed_failure_code():
+    download=step('Download immutable encrypted artifact')
+    assert 'opener = urllib.request.build_opener(ScopedRedirect())' in download
+    assert download.count('opener.open(request(')==2
+    assert 'urllib.request.urlopen(' not in download
+    intake=step('Consume private archive offline')
+    assert "echo '::error::PROVIDER_ARCHIVE_OFFLINE_INTAKE_FAILED'" in intake
+    assert 'cat ' not in intake and 'tail ' not in intake
+    assert 'exit "$intake_exit"' in intake

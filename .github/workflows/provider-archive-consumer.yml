@@ -78,21 +78,31 @@ jobs:
           set -euo pipefail
           umask 077
           python - <<'PY' > "$PROOF_ROOT/download.log" 2>&1
-          import hashlib, json, os, subprocess, urllib.request
+          import hashlib, json, os, subprocess, urllib.request, urllib.parse
           from pathlib import Path
           root = Path(os.environ['PROOF_ROOT'])
           pin = json.loads((root / 'pin.json').read_text())
           api = f'https://api.github.com/repos/reppiks490/Icarus-engine/actions/artifacts/{pin["artifact_id"]}'
+          class ScopedRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self, req, fp, code, msg, headers, newurl):
+                  target = urllib.parse.urlsplit(newurl)
+                  if target.scheme != 'https' or target.username or target.password:
+                      raise ValueError('Unsafe artifact redirect')
+                  redirected = super().redirect_request(req, fp, code, msg, headers, newurl)
+                  if redirected is not None and urllib.parse.urlsplit(req.full_url).hostname != target.hostname:
+                      redirected.remove_header('Authorization')
+                  return redirected
+          opener = urllib.request.build_opener(ScopedRedirect())
           def request(url):
               return urllib.request.Request(url, headers={'Authorization': 'Bearer ' + os.environ['GH_TOKEN'], 'Accept': 'application/vnd.github+json'})
-          with urllib.request.urlopen(request(api), timeout=60) as response:
+          with opener.open(request(api), timeout=60) as response:
               meta = json.load(response)
           if (meta.get('id') != pin['artifact_id'] or meta.get('name') != pin['artifact_name'] or meta.get('expired') is not False
               or meta.get('digest') != pin['digest'] or meta.get('workflow_run', {}).get('id') != pin['workflow_run']
               or meta['workflow_run'].get('head_sha') != pin['workflow_head']
               or meta['workflow_run'].get('repository_id') != 1377828482):
               raise ValueError('Artifact identity mismatch')
-          with urllib.request.urlopen(request(api + '/zip'), timeout=60) as response:
+          with opener.open(request(api + '/zip'), timeout=60) as response:
               data = response.read(128 * 1024 * 1024 + 1)
           if len(data) > 128 * 1024 * 1024 or 'sha256:' + hashlib.sha256(data).hexdigest() != pin['digest']:
               raise ValueError('Artifact digest mismatch')
@@ -131,7 +141,7 @@ jobs:
           ICARUS_DATA_ARCHIVE_KEY: ${{ secrets.ICARUS_DATA_ARCHIVE_KEY }}
         shell: bash
         run: |
-          set -euo pipefail
+          set -uo pipefail
           umask 077
           python - <<'PY' > "$PROOF_ROOT/intake.log" 2>&1
           import hashlib, json, os, re, runpy, socket, sys
@@ -166,6 +176,11 @@ jobs:
                   if exc.code not in (None, 0):
                       raise
           PY
+          intake_exit=$?
+          if [ "$intake_exit" -ne 0 ]; then
+            echo '::error::PROVIDER_ARCHIVE_OFFLINE_INTAKE_FAILED'
+          fi
+          exit "$intake_exit"
       - name: Validate metadata only receipts
         shell: bash
         run: |

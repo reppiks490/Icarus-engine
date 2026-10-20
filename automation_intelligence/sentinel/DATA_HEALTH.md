@@ -1,4 +1,4 @@
-# Data health — 2026-10-20 18:58 UTC
+# Data health — 2026-10-20 19:25 UTC
 
 **FAILING** 4 · **BLOCKED** 6 · **DEGRADED** 6 · **OK** 70
 
@@ -8,7 +8,7 @@
 |---|---|---|
 | feed:databento_dx_5m | FAILING | FeedError: Databento historical request failed for DX.v.0: BentoClientError: 422 dataset_unavailable_range Part or all of your request for dataset 'IFUS.IMPACT' |
 | feed:databento_vxm_5m | FAILING | FeedError: Databento historical request failed for VXM.v.0: BentoClientError: 403 license_not_found_unauthorized A live data license is required to access XCBF. |
-| workflow:cl-depth-sweep.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/39408129200 |
+| workflow:cl-depth-sweep.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/39479202256 |
 | workflow:databento-depth-research-context.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/39479202295 |
 | provider:alpaca | BLOCKED | no key reaches the runner |
 | provider:finnhub | BLOCKED | BLOCKED_AUTHENTICATION |
@@ -29,7 +29,7 @@ economic_events, feed:btcusd_cb_5m, feed:btcusdt_5m, feed:cboe_skew, feed:cboe_v
 
 ## Order-book data
 
-Vaulted files: {'bars_primary': 33, 'bars_secondary': 2, 'bars_third': 1, 'corpus': 135, 'panel': 13, 'sweep': 3} (key: HKDF(DATABENTO_API_KEY)). Last vault decrypt/hash check: OK at 2026-10-20T18:49:06+00:00 with 0 failures. D1 status: {'D1-A': 'INSUFFICIENT_DATA', 'D1-B': 'INSUFFICIENT_DATA', 'days': 1}.
+Vaulted files: {'bars_primary': 33, 'bars_secondary': 2, 'bars_third': 1, 'corpus': 135, 'panel': 13, 'sweep': 6} (key: HKDF(DATABENTO_API_KEY)). Last vault decrypt/hash check: OK at 2026-10-20T19:07:05+00:00 with 0 failures. D1 status: {'D1-A': 'INSUFFICIENT_DATA', 'D1-B': 'INSUFFICIENT_DATA', 'days': 1}.
 
 | Budget | Cap | Spent | Left |
 |---|---|---|---|
@@ -39,7 +39,7 @@ Vaulted files: {'bars_primary': 33, 'bars_secondary': 2, 'bars_third': 1, 'corpu
 | depth__index | $93.0 | $92.99 | $0.01 |
 | depth__sweep__primary | $34.34 | $34.32 | $0.03 |
 | depth__sweep__secondary | $3.36 | $3.31 | $0.05 |
-| depth__sweep__third | $12.0 | $5.96 | $6.04 |
+| depth__sweep__third | $12.0 | $8.37 | $3.63 |
 | history__ES | $25.0 | $18.14 | $6.86 |
 | history__NQ | $25.0 | $17.5 | $7.5 |
 

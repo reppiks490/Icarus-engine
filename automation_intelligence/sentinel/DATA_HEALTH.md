@@ -1,6 +1,6 @@
-# Data health — 2026-10-19 22:41 UTC
+# Data health — 2026-10-20 00:25 UTC
 
-**FAILING** 4 · **BLOCKED** 6 · **DEGRADED** 6 · **OK** 70
+**FAILING** 4 · **BLOCKED** 7 · **DEGRADED** 5 · **OK** 70
 
 ## Needs attention
 
@@ -15,13 +15,13 @@
 | provider:intrinio | BLOCKED | no key reaches the runner |
 | provider:quiver | BLOCKED | no key reaches the runner |
 | provider:tickstream | BLOCKED | no key reaches the runner |
+| provider:twelve | BLOCKED | BLOCKED |
 | provider:unusual_whales | BLOCKED | BLOCKED_AUTHENTICATION |
 | provider:alphavantage | DEGRADED | 43487 rows; 3 endpoints denied by plan |
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
 | provider:eodhd | DEGRADED | 2510 rows; 29 endpoints denied by plan |
-| provider:fmp | DEGRADED | 53 rows; 85 endpoints denied by plan |
+| provider:fmp | DEGRADED | dedicated fabric live (3 calls, 53 known rows); generic sampler blocked; 85 endpoints denied by plan |
 | provider:tiingo | DEGRADED | 47487 rows; 4 endpoints denied by plan |
-| provider:twelve | DEGRADED | 8 rows; 1 endpoints denied by plan |
 
 ## Delivering
 
@@ -50,6 +50,6 @@ Champions: 0. Pulse variants: {'CANDLES': 'REJECTED', 'HA_HA_FILLS': 'ARTIFACT_R
 ## Coordination (Claude, ChatGPT, Atlas)
 
 - claude: done 5, in progress 2, planned 9, waiting 1; awaiting its reply: 14; stale in-progress: X1, CL-84
-- chatgpt: done 3, in progress 8, planned 5, waiting 9; awaiting its reply: 2; stale in-progress: X1-Codex, IB01, M01
+- chatgpt: done 3, in progress 8, planned 5, waiting 9; awaiting its reply: 2; stale in-progress: X1-Codex, IB01, IB04, M01
 - atlas: waiting 4; awaiting its reply: 2
 - malformed messages: to-claude/20261011T213350Z-atlas-registry-checkpoint.md: to, date, reply-needed, file name; to-claude/20261013T2311Z-chatgpt-ib03-pr336-review.md: from, to, date, subject, reply-needed; to-claude/20261013T2327Z-chatgpt-ib03-pr336-final-head.md: from, to, date, subject, reply-needed; to-claude/20261013T2338Z-chatgpt-ib03-pr336-review.md: from, to, date, subject, reply-needed; to-claude/20261014T0003Z-chatgpt-ib03-pr336-head-update.md: from, to, date, subject, reply-needed; to-chatgpt/20261011T213350Z-atlas-registry-checkpoint.md: to, date, reply-needed, file name

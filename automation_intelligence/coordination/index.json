@@ -1137,7 +1137,10 @@
         "tests_engine/test_command_center_routes.py",
         "tests_engine/test_workspace_chart_routes.py",
         "docs/superpowers/specs/2026-10-18-four-workspace-delivery.md",
-        ".github/workflows/test.yml"
+        ".github/workflows/test.yml",
+        "docs/superpowers/plans/2026-10-20-workspace-configuration.md",
+        "icarus_engine/workspace_config.py",
+        "tests_engine/test_workspace_config.py"
       ],
       "declared_targets": [
         {
@@ -1191,21 +1194,31 @@
         {
           "path": ".github/workflows/test.yml",
           "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "docs/superpowers/plans/2026-10-20-workspace-configuration.md",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/workspace_config.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "tests_engine/test_workspace_config.py",
+          "repo": "reppiks490/Icarus"
         }
       ],
       "dependencies": [
         "session:icarus2-20261020-federation-integration",
-        "pr:reppiks490/Icarus#462",
-        "external:owner-PC-runtime-unverified",
-        "review:shared-dashboard-written-spec"
+        "external:owner-PC-runtime-unverified"
       ],
       "goal": "Owner-directed comprehensive federation audit and meaningful, evidence-gated system recovery; prepare a two-primary-worker handoff for Icarus 2.",
       "home_repo": "reppiks490/Icarus",
-      "last_event_at_utc": "2026-10-20T18:42:58.074Z",
-      "latest_summary": "Runtime recovery checkpoint: draftPR462 head4368a33 adds the independently reviewed chart pagination repair and Windows regression selection after full local3475passed/4skipped/111subtests. New12case module selected in existingWindows job; YAML and67modulepaths validated, not a Windows execution claim. Both Icarusrepos now public; newercl-lab39471755340 executing corpus step, so historical4job-start billing rejections are not a proven currentblanketblock. Earlier sourcehead d47c41f PRconfigWindows118812901733 failed waiting3s for background-worker fixture entry; same-source pushWindows passed and localconfig12passed. Cause unresolved; do not dismiss. Currenthead4hostedchecks running. Shared-dashboard written spec independently reviewed; explicit humanapproval pending before architectureplanning under previouslyreadskill. RestartNO_GO; no merge/deploy/fullrestart/livearming/providerrequest.",
-      "latest_type": "HANDOFF",
+      "last_event_at_utc": "2026-10-20T23:06:36.749Z",
+      "latest_summary": "Owner approved the published shared-dashboard specification and directed continued implementation without restarting or live trading. Icarus 1 resumes its stable identity and runtime branch. Recovery head 4368a33 now has all four PR workflows successful; earlier Windows configuration-start timeout stays recorded. Implement workspace-owned versioned per-asset settings and optimistic revision/rollback contracts first. Icarus 2 continues its separate integration-brain cycle. Inspect newly advanced runtime main before integrating it; no unreviewed old stack merge.",
+      "latest_type": "PLAN",
       "model_family": "openai",
-      "phase": "verification-and-dashboard-design-review",
+      "phase": "approved-workspace-configuration-foundation",
       "pr": 462,
       "reclaimable": false,
       "reserved_paths": [
@@ -1221,7 +1234,10 @@
         "tests_engine/test_command_center_routes.py",
         "tests_engine/test_workspace_chart_routes.py",
         "docs/superpowers/specs/2026-10-18-four-workspace-delivery.md",
-        ".github/workflows/test.yml"
+        ".github/workflows/test.yml",
+        "docs/superpowers/plans/2026-10-20-workspace-configuration.md",
+        "icarus_engine/workspace_config.py",
+        "tests_engine/test_workspace_config.py"
       ],
       "reserved_targets": [
         {
@@ -1274,6 +1290,18 @@
         },
         {
           "path": ".github/workflows/test.yml",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "docs/superpowers/plans/2026-10-20-workspace-configuration.md",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/workspace_config.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "tests_engine/test_workspace_config.py",
           "repo": "reppiks490/Icarus"
         }
       ],
@@ -1290,14 +1318,12 @@
         "integration_brain",
         "tests/test_integration_brain.py",
         "tests/test_integration_brain_transport.py",
-        "tests/test_icarus2_workflow.py",
-        "coordination/icarus2/worker.json",
-        "coordination/icarus2/AUTOMATION.md",
+        "tests/test_icarus2_cli.py",
+        "docs/icarus2-integration-brain.md",
         "coordination/icarus2/DESIGN.md",
         "coordination/icarus2/PLAN.md",
         "coordination/icarus2/swarm-inputs",
-        "docs/icarus2-integration-brain.md",
-        ".github/workflows/icarus2-integration-brain.yml"
+        "coordination/icarus2/cycles/icarus2-20261020T225043Z.json"
       ],
       "declared_targets": [
         {
@@ -1313,15 +1339,11 @@
           "repo": "reppiks490/icarus-owner-actions"
         },
         {
-          "path": "tests/test_icarus2_workflow.py",
+          "path": "tests/test_icarus2_cli.py",
           "repo": "reppiks490/icarus-owner-actions"
         },
         {
-          "path": "coordination/icarus2/worker.json",
-          "repo": "reppiks490/icarus-owner-actions"
-        },
-        {
-          "path": "coordination/icarus2/AUTOMATION.md",
+          "path": "docs/icarus2-integration-brain.md",
           "repo": "reppiks490/icarus-owner-actions"
         },
         {
@@ -1337,11 +1359,7 @@
           "repo": "reppiks490/icarus-owner-actions"
         },
         {
-          "path": "docs/icarus2-integration-brain.md",
-          "repo": "reppiks490/icarus-owner-actions"
-        },
-        {
-          "path": ".github/workflows/icarus2-integration-brain.yml",
+          "path": "coordination/icarus2/cycles/icarus2-20261020T225043Z.json",
           "repo": "reppiks490/icarus-owner-actions"
         }
       ],
@@ -1351,25 +1369,23 @@
       ],
       "goal": "Owner-authorized recurring cross-repository integration, repair and validation in tandem with Icarus 1; distinct specialist swarms, evidence-bound work, durable GitHub handoffs. Prior stopped tasks remain stopped.",
       "home_repo": "reppiks490/icarus-owner-actions",
-      "last_event_at_utc": "2026-10-20T18:26:08.809337Z",
-      "latest_summary": "Direct handoff to Icarus1: owner-directed Icarus2 is registered at coordination/icarus2/worker.json; independent control-contract reviewCLEAR after stop-boundary repair. Actual automation6ad7b206db408191bfd5aeccfddde143 created+re-read enabled hourly America/Chicago; no completedfuturecycle claimed. Canonicalsource roles remain separate: Icarus1 restart/accounting/server/recovery; Icarus2 federation integration and cross-review. Four specialist audits completed onexact6repoheads and SYNAPSE purevalidator58testsGREEN; collector/firstboundednativecycle stillbeingverified. Existingpausedautomationsunchanged. Per-run audits found newer successful Enginejobs alongside historicalbillingrejects; do not treatentireActionsserviceasgloballyunavailable. Consumerproviderhash-onlyonmain, typedconsumptiondraft457; hybridbacklog1531unresolved andfreshlivenessnotcognition remainexplicit. Narrowbootstrapclaimsnowexclude futurecycle-historynamespace so recurringruns can safelyclaimtheirown exactrecords.",
-      "latest_type": "HANDOFF",
+      "last_event_at_utc": "2026-10-20T22:53:28.424194Z",
+      "latest_summary": "Continue the existing Icarus2 integration in finite cycle icarus2-20261020T225043Z. Fresh source controls are valid, Icarus1 session remains separate, and no conflicting targets were found. Repair reproduced collector hostname, absent head-read receipt, unproven job-count and future-clock validation defects. Exclude worker.json, AUTOMATION.md and all workflows/schedulers from this cycle; preserve prior stopped tasks. Five native functional reviewers are active. No execution authority.",
+      "latest_type": "CLAIM",
       "model_family": "openai",
-      "phase": "icarus2-runtime-established",
+      "phase": "bounded-collector-regression-repair",
       "pr": null,
       "reclaimable": false,
       "reserved_paths": [
         "integration_brain",
         "tests/test_integration_brain.py",
         "tests/test_integration_brain_transport.py",
-        "tests/test_icarus2_workflow.py",
-        "coordination/icarus2/worker.json",
-        "coordination/icarus2/AUTOMATION.md",
+        "tests/test_icarus2_cli.py",
+        "docs/icarus2-integration-brain.md",
         "coordination/icarus2/DESIGN.md",
         "coordination/icarus2/PLAN.md",
         "coordination/icarus2/swarm-inputs",
-        "docs/icarus2-integration-brain.md",
-        ".github/workflows/icarus2-integration-brain.yml"
+        "coordination/icarus2/cycles/icarus2-20261020T225043Z.json"
       ],
       "reserved_targets": [
         {
@@ -1385,15 +1401,11 @@
           "repo": "reppiks490/icarus-owner-actions"
         },
         {
-          "path": "tests/test_icarus2_workflow.py",
+          "path": "tests/test_icarus2_cli.py",
           "repo": "reppiks490/icarus-owner-actions"
         },
         {
-          "path": "coordination/icarus2/worker.json",
-          "repo": "reppiks490/icarus-owner-actions"
-        },
-        {
-          "path": "coordination/icarus2/AUTOMATION.md",
+          "path": "docs/icarus2-integration-brain.md",
           "repo": "reppiks490/icarus-owner-actions"
         },
         {
@@ -1409,11 +1421,7 @@
           "repo": "reppiks490/icarus-owner-actions"
         },
         {
-          "path": "docs/icarus2-integration-brain.md",
-          "repo": "reppiks490/icarus-owner-actions"
-        },
-        {
-          "path": ".github/workflows/icarus2-integration-brain.yml",
+          "path": "coordination/icarus2/cycles/icarus2-20261020T225043Z.json",
           "repo": "reppiks490/icarus-owner-actions"
         }
       ],
@@ -1429,7 +1437,7 @@
     "stale": 17,
     "terminal": 24
   },
-  "generated_at_utc": "2026-10-20T18:43:30.384911Z",
+  "generated_at_utc": "2026-10-20T23:06:47.422480Z",
   "owner_status": {
     "claude": {
       "active": false,

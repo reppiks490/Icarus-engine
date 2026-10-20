@@ -1,18 +1,18 @@
 {
   "catalog": {
-    "asset_datasets_collected": 56,
+    "asset_datasets_collected": 75,
     "asset_templates": 21,
-    "assets": 22822,
+    "assets": 23822,
     "collected_operations": 17,
     "denied_operations": 0,
     "operations": 31,
-    "pending_pages": 631,
+    "pending_pages": 622,
     "qualification": "INCOMPLETE_UNTIL_EVERY_OPERATION_ASSET_PAGE_TIME_RANGE_AND_TRANSPORT_IS_VERIFIED",
     "unresolved_operations": 0
   },
   "chatgpt_tokens_used": 0,
   "checkpoint_status": "ENCRYPTED_AES256_GCM",
-  "completed_at_utc": "2026-10-20T17:03:05.684638+00:00",
+  "completed_at_utc": "2026-10-20T20:38:09.190095+00:00",
   "databento_excluded": true,
   "execution_authorized": false,
   "paid_model_calls": 0,
@@ -21,26 +21,45 @@
       "archive_status": [
         "ENCRYPTED_AES256_GCM"
       ],
-      "blocked": [
-        {
-          "asset_specific": true,
-          "failure_code": "502",
-          "operation": "fred:get:/source/releases"
-        }
-      ],
-      "collected_pages": 19,
-      "collected_rows": 512,
+      "blocked": [],
+      "collected_pages": 20,
+      "collected_rows": 1029,
       "credential_present": true,
       "endpoint_count": 31,
       "requests": 20,
-      "research_features": [],
+      "research_features": [
+        {
+          "features": {
+            "value": {
+              "maximum": 79.0,
+              "mean": 69.7,
+              "minimum": 56.0,
+              "samples": 10,
+              "standard_deviation": 6.986415389883427
+            }
+          },
+          "operation": "fred:get:/series/observations"
+        },
+        {
+          "features": {
+            "value": {
+              "maximum": 94.0,
+              "mean": 82.77777777777777,
+              "minimum": 65.0,
+              "samples": 9,
+              "standard_deviation": 12.025692659910167
+            }
+          },
+          "operation": "fred:get:/series/observations"
+        }
+      ],
       "status": "COLLECTED_PARTIAL",
       "substantive_work_performed": true
     }
   },
   "raw_payloads_public": false,
   "requests": 20,
-  "run_id": "providers-39461943466-1-fred",
+  "run_id": "providers-39492930464-1-fred",
   "schema_version": "icarus-provider-collection-cycle-v1",
-  "started_at_utc": "2026-10-20T16:58:05.275874+00:00"
+  "started_at_utc": "2026-10-20T20:33:45.026819+00:00"
 }

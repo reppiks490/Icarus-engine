@@ -1,6 +1,6 @@
-# Data health — 2026-10-21 19:24 UTC
+# Data health — 2026-10-21 19:27 UTC
 
-**FAILING** 4 · **BLOCKED** 8 · **STALE** 3 · **DEGRADED** 5 · **UNKNOWN** 1 · **OK** 65
+**FAILING** 5 · **BLOCKED** 8 · **STALE** 3 · **DEGRADED** 5 · **OK** 65
 
 ## Needs attention
 
@@ -8,8 +8,9 @@
 |---|---|---|
 | feed:databento_dx_5m | FAILING | FeedError: Databento historical request failed for DX.v.0: BentoClientError: 422 dataset_unavailable_range Part or all of your request for dataset 'IFUS.IMPACT' |
 | feed:databento_vxm_5m | FAILING | FeedError: Databento historical request failed for VXM.v.0: BentoClientError: 403 license_not_found_unauthorized A live data license is required to access XCBF. |
-| workflow:cl-depth-sweep.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/39651204391 |
+| workflow:cl-depth-sweep.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/39661356699 |
 | workflow:cl-lab.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/39650903499 |
+| workflow:databento-depth-research-context.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/39661356567 |
 | provider:alpaca | BLOCKED | no key reaches the runner |
 | provider:finnhub | BLOCKED | BLOCKED_AUTHENTICATION |
 | provider:fred | BLOCKED | BLOCKED |
@@ -19,14 +20,13 @@
 | provider:twelve | BLOCKED | BLOCKED |
 | provider:unusual_whales | BLOCKED | BLOCKED_AUTHENTICATION |
 | workflow:provider-exhaustive-collection.yml | STALE | last success 4.1 h ago (expected within 3 h) |
-| workflow:provider-supplemental-collection.yml | STALE | last success 3.8 h ago (expected within 3 h) |
-| workflow:provider-supplemental-promote.yml | STALE | last success 3.8 h ago (expected within 3 h) |
+| workflow:provider-supplemental-collection.yml | STALE | last success 3.9 h ago (expected within 3 h) |
+| workflow:provider-supplemental-promote.yml | STALE | last success 3.9 h ago (expected within 3 h) |
 | provider:alphavantage | DEGRADED | key present but 0 rows (NO_READY_JOBS) |
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
 | provider:eodhd | DEGRADED | dedicated fabric live (11 calls, 2510 known rows); generic sampler blocked; 29 endpoints denied by plan |
 | provider:fmp | DEGRADED | 81 rows; 85 endpoints denied by plan |
 | provider:tiingo | DEGRADED | 47507 rows; 4 endpoints denied by plan |
-| workflow:databento-depth-research-context.yml | UNKNOWN | no completed run on main |
 
 ## Delivering
 

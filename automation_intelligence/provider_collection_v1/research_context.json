@@ -39,9 +39,9 @@
         "qualification": "INCOMPLETE_UNTIL_EVERY_OPERATION_ASSET_PAGE_TIME_RANGE_AND_TRANSPORT_IS_VERIFIED",
         "unresolved_operations": 0
       },
-      "collected_pages": 0,
-      "collected_rows": 0,
-      "completed_at_utc": "2026-10-21T15:33:34.861882+00:00",
+      "collected_pages": 5,
+      "collected_rows": 14367,
+      "completed_at_utc": "2026-10-21T19:33:58.678083+00:00",
       "credential_present": true,
       "last_successful_receipt": {
         "catalog": {
@@ -56,8 +56,8 @@
           "unresolved_operations": 0
         },
         "collected_pages": 5,
-        "collected_rows": 22698,
-        "completed_at_utc": "2026-10-21T10:32:51.601851+00:00",
+        "collected_rows": 14367,
+        "completed_at_utc": "2026-10-21T19:33:58.678083+00:00",
         "credential_present": true,
         "historical_only": true,
         "requests": 5,
@@ -65,73 +65,124 @@
           {
             "features": {
               "value": {
-                "maximum": 14.8,
-                "mean": 5.652966101694915,
-                "minimum": 2.5,
-                "samples": 944,
-                "standard_deviation": 1.7026312186282522
+                "maximum": 30.72,
+                "mean": 3.874910651716884,
+                "minimum": 1.21,
+                "samples": 5708,
+                "standard_deviation": 2.069136909397363
               }
             },
-            "operation": "alphavantage:get:UNEMPLOYMENT"
+            "operation": "alphavantage:get:NATURAL_GAS"
           },
           {
             "features": {
               "value": {
-                "maximum": 694088.0,
-                "mean": 344918.8057553957,
-                "minimum": 126717.0,
-                "samples": 417,
-                "standard_deviation": 138025.85763752306
-              }
-            },
-            "operation": "alphavantage:get:RETAIL_SALES"
-          },
-          {
-            "features": {
-              "value": {
-                "maximum": 361376.0,
-                "mean": 210019.4265060241,
-                "minimum": 103025.0,
+                "maximum": 13552.04090909091,
+                "mean": 5310.802880933418,
+                "minimum": 1377.37608695652,
                 "samples": 415,
-                "standard_deviation": 50418.48827614559
+                "standard_deviation": 2986.354478343762
               }
             },
-            "operation": "alphavantage:get:DURABLES"
+            "operation": "alphavantage:get:COPPER"
           },
           {
             "features": {
-              "value": {
-                "maximum": 143.95,
-                "mean": 54.47630873957012,
-                "minimum": 9.1,
-                "samples": 9108,
-                "standard_deviation": 33.008089864086514
+              "close": {
+                "maximum": 1.1679,
+                "mean": 1.1460730000000006,
+                "minimum": 1.1153,
+                "samples": 100,
+                "standard_deviation": 0.013458527816964242
               }
             },
-            "operation": "alphavantage:get:BRENT"
+            "operation": "alphavantage:get:FX_DAILY"
           },
           {
             "features": {
-              "value": {
-                "maximum": 145.31,
-                "mean": 50.03167909272284,
-                "minimum": -36.98,
-                "samples": 9523,
-                "standard_deviation": 29.870279443635646
+              "close": {
+                "maximum": 124720.09,
+                "mean": 22323.746827037925,
+                "minimum": 0.05,
+                "samples": 5941,
+                "standard_deviation": 31156.784591287917
+              },
+              "volume": {
+                "maximum": 212195781011.71082,
+                "mean": 21268724762.34223,
+                "minimum": 0.0,
+                "samples": 5941,
+                "standard_deviation": 35104228674.31836
               }
             },
-            "operation": "alphavantage:get:WTI"
+            "operation": "alphavantage:get:DIGITAL_CURRENCY_DAILY"
           }
         ],
-        "run_id": "supplemental-39585245750-alphavantage",
+        "run_id": "supplemental-39662589335-alphavantage",
         "status": "COLLECTED_PARTIAL",
         "substantive_work_performed": true
       },
-      "requests": 0,
-      "research_features": [],
-      "run_id": "supplemental-39626718704-alphavantage",
-      "status": "NO_READY_JOBS",
-      "substantive_work_performed": false
+      "requests": 5,
+      "research_features": [
+        {
+          "features": {
+            "value": {
+              "maximum": 30.72,
+              "mean": 3.874910651716884,
+              "minimum": 1.21,
+              "samples": 5708,
+              "standard_deviation": 2.069136909397363
+            }
+          },
+          "operation": "alphavantage:get:NATURAL_GAS"
+        },
+        {
+          "features": {
+            "value": {
+              "maximum": 13552.04090909091,
+              "mean": 5310.802880933418,
+              "minimum": 1377.37608695652,
+              "samples": 415,
+              "standard_deviation": 2986.354478343762
+            }
+          },
+          "operation": "alphavantage:get:COPPER"
+        },
+        {
+          "features": {
+            "close": {
+              "maximum": 1.1679,
+              "mean": 1.1460730000000006,
+              "minimum": 1.1153,
+              "samples": 100,
+              "standard_deviation": 0.013458527816964242
+            }
+          },
+          "operation": "alphavantage:get:FX_DAILY"
+        },
+        {
+          "features": {
+            "close": {
+              "maximum": 124720.09,
+              "mean": 22323.746827037925,
+              "minimum": 0.05,
+              "samples": 5941,
+              "standard_deviation": 31156.784591287917
+            },
+            "volume": {
+              "maximum": 212195781011.71082,
+              "mean": 21268724762.34223,
+              "minimum": 0.0,
+              "samples": 5941,
+              "standard_deviation": 35104228674.31836
+            }
+          },
+          "operation": "alphavantage:get:DIGITAL_CURRENCY_DAILY"
+        }
+      ],
+      "run_id": "supplemental-39662589335-alphavantage",
+      "status": "COLLECTED_PARTIAL",
+      "substantive_work_performed": true
     },
     "bybit": {
       "catalog": {
@@ -215,12 +266,12 @@
       },
       "collected_pages": 0,
       "collected_rows": 0,
-      "completed_at_utc": "2026-10-21T15:33:22.391606+00:00",
+      "completed_at_utc": "2026-10-21T19:33:06.522364+00:00",
       "credential_present": true,
       "last_successful_receipt": null,
       "requests": 1,
       "research_features": [],
-      "run_id": "supplemental-39626718704-finnhub",
+      "run_id": "supplemental-39662589335-finnhub",
       "status": "BLOCKED_AUTHENTICATION",
       "substantive_work_performed": false
     },
@@ -557,7 +608,7 @@
       },
       "collected_pages": 0,
       "collected_rows": 0,
-      "completed_at_utc": "2026-10-21T15:33:24.759762+00:00",
+      "completed_at_utc": "2026-10-21T19:33:09.540069+00:00",
       "credential_present": true,
       "last_successful_receipt": {
         "catalog": {
@@ -616,21 +667,21 @@
       },
       "requests": 1,
       "research_features": [],
-      "run_id": "supplemental-39626718704-unusual_whales",
+      "run_id": "supplemental-39662589335-unusual_whales",
       "status": "BLOCKED_AUTHENTICATION",
       "substantive_work_performed": false
     }
   },
   "raw_payloads_included": false,
   "schema_version": "icarus-provider-research-context-v1",
-  "snapshot_at_utc": "2026-10-21T15:33:34.861882+00:00",
+  "snapshot_at_utc": "2026-10-21T19:33:58.678083+00:00",
   "source_root": "automation_intelligence/provider_collection_v1/latest+automation_intelligence/provider_collection_v1/cycles",
   "summary": {
-    "collected_pages": 33,
-    "collected_rows": 20081,
+    "collected_pages": 38,
+    "collected_rows": 34448,
     "providers_blocked": 9,
-    "providers_substantive": 2,
+    "providers_substantive": 3,
     "providers_total": 14,
-    "requests": 122
+    "requests": 127
   }
 }

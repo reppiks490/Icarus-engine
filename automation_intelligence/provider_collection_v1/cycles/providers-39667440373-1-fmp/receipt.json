@@ -1,0 +1,126 @@
+{
+  "catalog": {
+    "asset_datasets_collected": 13,
+    "asset_templates": 109,
+    "assets": 6770,
+    "collected_operations": 13,
+    "denied_operations": 85,
+    "operations": 230,
+    "pending_pages": 100,
+    "qualification": "INCOMPLETE_UNTIL_EVERY_OPERATION_ASSET_PAGE_TIME_RANGE_AND_TRANSPORT_IS_VERIFIED",
+    "unresolved_operations": 0
+  },
+  "chatgpt_tokens_used": 0,
+  "checkpoint_status": "ENCRYPTED_AES256_GCM",
+  "completed_at_utc": "2026-10-21T20:11:19.457142+00:00",
+  "databento_excluded": true,
+  "execution_authorized": false,
+  "paid_model_calls": 0,
+  "providers": {
+    "fmp": {
+      "archive_status": [
+        "ENCRYPTED_AES256_GCM"
+      ],
+      "blocked": [
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/search-exchange-variants"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/sec-filings-search/symbol"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/ratings-snapshot"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/senate-trades"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/ratios"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/shares-float"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "400",
+          "operation": "fmp:get:/exchange-market-hours"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/splits"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/ratios-ttm"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/stock-price-change"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/revenue-geographic-segmentation"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/technical-indicators/adx"
+        }
+      ],
+      "collected_pages": 8,
+      "collected_rows": 6872,
+      "credential_present": true,
+      "endpoint_count": 230,
+      "requests": 20,
+      "research_features": [
+        {
+          "features": {
+            "price": {
+              "maximum": 54.89,
+              "mean": 7.259496,
+              "minimum": 0.0699,
+              "samples": 50,
+              "standard_deviation": 11.502596113694684
+            }
+          },
+          "operation": "fmp:get:/biggest-gainers"
+        },
+        {
+          "features": {
+            "price": {
+              "maximum": 25.06,
+              "mean": 2.9295099999999996,
+              "minimum": 0.0806,
+              "samples": 50,
+              "standard_deviation": 4.928748992563935
+            }
+          },
+          "operation": "fmp:get:/biggest-losers"
+        }
+      ],
+      "status": "COLLECTED_PARTIAL",
+      "substantive_work_performed": true
+    }
+  },
+  "raw_payloads_public": false,
+  "requests": 20,
+  "run_id": "providers-39667440373-1-fmp",
+  "schema_version": "icarus-provider-collection-cycle-v1",
+  "started_at_utc": "2026-10-21T20:07:10.329708+00:00"
+}

@@ -1,6 +1,6 @@
-# Data health — 2026-10-21 04:41 UTC
+# Data health — 2026-10-21 04:45 UTC
 
-**FAILING** 2 · **BLOCKED** 6 · **STALE** 4 · **DEGRADED** 6 · **OK** 68
+**FAILING** 2 · **BLOCKED** 7 · **STALE** 4 · **DEGRADED** 5 · **OK** 68
 
 ## Needs attention
 
@@ -13,17 +13,17 @@
 | provider:intrinio | BLOCKED | no key reaches the runner |
 | provider:quiver | BLOCKED | no key reaches the runner |
 | provider:tickstream | BLOCKED | no key reaches the runner |
+| provider:twelve | BLOCKED | BLOCKED |
 | provider:unusual_whales | BLOCKED | BLOCKED_AUTHENTICATION |
 | workflow:native-five-research.yml | STALE | last success 3.1 h ago (expected within 3 h) |
-| workflow:provider-exhaustive-collection.yml | STALE | last success 4.7 h ago (expected within 3 h) |
-| workflow:provider-supplemental-collection.yml | STALE | last success 4.6 h ago (expected within 3 h) |
+| workflow:provider-exhaustive-collection.yml | STALE | last success 4.8 h ago (expected within 3 h) |
+| workflow:provider-supplemental-collection.yml | STALE | last success 4.7 h ago (expected within 3 h) |
 | workflow:provider-supplemental-promote.yml | STALE | last success 4.6 h ago (expected within 3 h) |
 | provider:alphavantage | DEGRADED | 65 rows; 3 endpoints denied by plan |
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
 | provider:eodhd | DEGRADED | 2510 rows; 29 endpoints denied by plan |
-| provider:fmp | DEGRADED | dedicated fabric live (13 calls, 57 known rows); generic sampler blocked; 85 endpoints denied by plan |
+| provider:fmp | DEGRADED | 63 rows; 85 endpoints denied by plan |
 | provider:tiingo | DEGRADED | 47507 rows; 4 endpoints denied by plan |
-| provider:twelve | DEGRADED | 140 rows; 1 endpoints denied by plan |
 
 ## Delivering
 

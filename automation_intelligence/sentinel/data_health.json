@@ -76,9 +76,8 @@
  "counts": {
   "BLOCKED": 6,
   "DEGRADED": 6,
-  "FAILING": 4,
-  "OK": 69,
-  "STALE": 1
+  "FAILING": 5,
+  "OK": 69
  },
  "depth": {
   "budgets": {
@@ -149,7 +148,7 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-10-21T00:06:51+00:00",
+ "generated_at": "2026-10-21T00:07:31+00:00",
  "research": {
   "champions": 0,
   "cl_last_run": "2026-10-20T18:48:36.850809+00:00",
@@ -205,6 +204,12 @@
    "why": "latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/39483480895"
   },
   {
+   "age_h": 0.1,
+   "source": "workflow:interrepo-peer-intelligence.yml",
+   "verdict": "FAILING",
+   "why": "latest run cancelled: https://github.com/reppiks490/Icarus-engine/actions/runs/39519371787"
+  },
+  {
    "age_h": 0.3,
    "path": "automation_intelligence/provider_collection_v1/latest/alpaca.json",
    "rows": 0,
@@ -213,7 +218,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 3.3,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/finnhub.json",
    "rows": 0,
    "source": "provider:finnhub",
@@ -245,7 +250,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 3.3,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/unusual_whales.json",
    "rows": 0,
    "source": "provider:unusual_whales",
@@ -253,18 +258,12 @@
    "why": "BLOCKED_AUTHENTICATION"
   },
   {
-   "age_h": 3.3,
-   "source": "workflow:provider-supplemental-promote.yml",
-   "verdict": "STALE",
-   "why": "last success 3.3 h ago (expected within 3 h)"
-  },
-  {
-   "age_h": 3.3,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/alphavantage.json",
-   "rows": 1466,
+   "rows": 65,
    "source": "provider:alphavantage",
    "verdict": "DEGRADED",
-   "why": "1466 rows; 3 endpoints denied by plan"
+   "why": "65 rows; 3 endpoints denied by plan"
   },
   {
    "age_h": 0.3,
@@ -726,28 +725,22 @@
    "why": "last success 3.1 h ago"
   },
   {
-   "age_h": 22.8,
+   "age_h": 22.9,
    "source": "workflow:external-data-fabric.yml",
    "verdict": "OK",
-   "why": "last success 22.8 h ago"
+   "why": "last success 22.9 h ago"
   },
   {
-   "age_h": 0.1,
-   "source": "workflow:interrepo-peer-intelligence.yml",
-   "verdict": "OK",
-   "why": "last success 0.1 h ago"
-  },
-  {
-   "age_h": 0.9,
+   "age_h": 0.0,
    "source": "workflow:native-five-research.yml",
    "verdict": "OK",
-   "why": "last success 0.9 h ago"
+   "why": "last success 0.0 h ago"
   },
   {
-   "age_h": 2.1,
+   "age_h": 2.2,
    "source": "workflow:native-provider-access.yml",
    "verdict": "OK",
-   "why": "last success 2.1 h ago"
+   "why": "last success 2.2 h ago"
   },
   {
    "age_h": 2.5,
@@ -756,14 +749,20 @@
    "why": "last success 2.5 h ago"
   },
   {
-   "age_h": 0.1,
+   "age_h": 0.2,
    "source": "workflow:provider-exhaustive-collection.yml",
    "verdict": "OK",
-   "why": "last success 0.1 h ago"
+   "why": "last success 0.2 h ago"
   },
   {
    "age_h": 0.0,
    "source": "workflow:provider-supplemental-collection.yml",
+   "verdict": "OK",
+   "why": "last success 0.0 h ago"
+  },
+  {
+   "age_h": 0.0,
+   "source": "workflow:provider-supplemental-promote.yml",
    "verdict": "OK",
    "why": "last success 0.0 h ago"
   },

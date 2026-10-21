@@ -77,8 +77,8 @@
   "BLOCKED": 6,
   "DEGRADED": 6,
   "FAILING": 4,
-  "OK": 68,
-  "STALE": 2
+  "OK": 69,
+  "STALE": 1
  },
  "depth": {
   "budgets": {
@@ -149,7 +149,7 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-10-21T10:33:13+00:00",
+ "generated_at": "2026-10-21T10:33:49+00:00",
  "research": {
   "champions": 0,
   "cl_last_run": "2026-10-21T06:53:10.211145+00:00",
@@ -213,7 +213,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 5.3,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/finnhub.json",
    "rows": 0,
    "source": "provider:finnhub",
@@ -245,7 +245,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 5.3,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/unusual_whales.json",
    "rows": 0,
    "source": "provider:unusual_whales",
@@ -259,18 +259,12 @@
    "why": "last success 3.9 h ago (expected within 3 h)"
   },
   {
-   "age_h": 5.3,
-   "source": "workflow:provider-supplemental-promote.yml",
-   "verdict": "STALE",
-   "why": "last success 5.3 h ago (expected within 3 h)"
-  },
-  {
-   "age_h": 5.3,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/alphavantage.json",
-   "rows": 43491,
+   "rows": 22698,
    "source": "provider:alphavantage",
    "verdict": "DEGRADED",
-   "why": "43491 rows; 3 endpoints denied by plan"
+   "why": "22698 rows; 3 endpoints denied by plan"
   },
   {
    "age_h": 0.5,
@@ -764,6 +758,12 @@
   {
    "age_h": 0.0,
    "source": "workflow:provider-supplemental-collection.yml",
+   "verdict": "OK",
+   "why": "last success 0.0 h ago"
+  },
+  {
+   "age_h": 0.0,
+   "source": "workflow:provider-supplemental-promote.yml",
    "verdict": "OK",
    "why": "last success 0.0 h ago"
   },

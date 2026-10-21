@@ -1,6 +1,6 @@
-# Data health — 2026-10-21 08:48 UTC
+# Data health — 2026-10-21 09:43 UTC
 
-**FAILING** 4 · **BLOCKED** 7 · **STALE** 4 · **DEGRADED** 5 · **OK** 66
+**FAILING** 5 · **BLOCKED** 7 · **STALE** 3 · **DEGRADED** 5 · **OK** 66
 
 ## Needs attention
 
@@ -9,7 +9,8 @@
 | feed:databento_dx_5m | FAILING | FeedError: Databento historical request failed for DX.v.0: BentoClientError: 422 dataset_unavailable_range Part or all of your request for dataset 'IFUS.IMPACT' |
 | feed:databento_vxm_5m | FAILING | FeedError: Databento historical request failed for VXM.v.0: BentoClientError: 403 license_not_found_unauthorized A live data license is required to access XCBF. |
 | workflow:cl-depth-sweep.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/39571531411 |
-| workflow:databento-depth-research-context.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/39558940783 |
+| workflow:databento-depth-research-context.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/39571531550 |
+| workflow:interrepo-peer-intelligence.yml | FAILING | latest run cancelled: https://github.com/reppiks490/Icarus-engine/actions/runs/39578981852 |
 | provider:alpaca | BLOCKED | no key reaches the runner |
 | provider:finnhub | BLOCKED | BLOCKED_AUTHENTICATION |
 | provider:intrinio | BLOCKED | no key reaches the runner |
@@ -17,10 +18,9 @@
 | provider:tickstream | BLOCKED | no key reaches the runner |
 | provider:twelve | BLOCKED | BLOCKED |
 | provider:unusual_whales | BLOCKED | BLOCKED_AUTHENTICATION |
-| workflow:interrepo-peer-intelligence.yml | STALE | last success 1.7 h ago (expected within 1 h) |
-| workflow:provider-exhaustive-collection.yml | STALE | last success 4.0 h ago (expected within 3 h) |
-| workflow:provider-supplemental-collection.yml | STALE | last success 3.5 h ago (expected within 3 h) |
-| workflow:provider-supplemental-promote.yml | STALE | last success 3.5 h ago (expected within 3 h) |
+| workflow:provider-exhaustive-collection.yml | STALE | last success 4.9 h ago (expected within 3 h) |
+| workflow:provider-supplemental-collection.yml | STALE | last success 4.5 h ago (expected within 3 h) |
+| workflow:provider-supplemental-promote.yml | STALE | last success 4.5 h ago (expected within 3 h) |
 | provider:alphavantage | DEGRADED | 43491 rows; 3 endpoints denied by plan |
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
 | provider:eodhd | DEGRADED | 2510 rows; 29 endpoints denied by plan |

@@ -77,8 +77,8 @@
   "BLOCKED": 7,
   "DEGRADED": 5,
   "FAILING": 2,
-  "OK": 68,
-  "STALE": 4
+  "OK": 69,
+  "STALE": 3
  },
  "depth": {
   "budgets": {
@@ -149,7 +149,7 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-10-21T04:45:59+00:00",
+ "generated_at": "2026-10-21T04:48:22+00:00",
  "research": {
   "champions": 0,
   "cl_last_run": "2026-10-21T00:31:38.394622+00:00",
@@ -231,7 +231,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 0.0,
+   "age_h": 0.1,
    "path": "automation_intelligence/provider_collection_v1/latest/twelve.json",
    "rows": 0,
    "source": "provider:twelve",
@@ -247,16 +247,10 @@
    "why": "BLOCKED_AUTHENTICATION"
   },
   {
-   "age_h": 3.1,
+   "age_h": 3.2,
    "source": "workflow:native-five-research.yml",
    "verdict": "STALE",
-   "why": "last success 3.1 h ago (expected within 3 h)"
-  },
-  {
-   "age_h": 4.8,
-   "source": "workflow:provider-exhaustive-collection.yml",
-   "verdict": "STALE",
-   "why": "last success 4.8 h ago (expected within 3 h)"
+   "why": "last success 3.2 h ago (expected within 3 h)"
   },
   {
    "age_h": 4.7,
@@ -265,10 +259,10 @@
    "why": "last success 4.7 h ago (expected within 3 h)"
   },
   {
-   "age_h": 4.6,
+   "age_h": 4.7,
    "source": "workflow:provider-supplemental-promote.yml",
    "verdict": "STALE",
-   "why": "last success 4.6 h ago (expected within 3 h)"
+   "why": "last success 4.7 h ago (expected within 3 h)"
   },
   {
    "age_h": 4.7,
@@ -287,7 +281,7 @@
    "why": "no key; keyless endpoints only, none ready"
   },
   {
-   "age_h": 0.0,
+   "age_h": 0.1,
    "path": "automation_intelligence/provider_collection_v1/latest/eodhd.json",
    "rows": 2510,
    "source": "provider:eodhd",
@@ -295,7 +289,7 @@
    "why": "2510 rows; 29 endpoints denied by plan"
   },
   {
-   "age_h": 0.0,
+   "age_h": 0.1,
    "path": "automation_intelligence/provider_collection_v1/latest/fmp.json",
    "rows": 63,
    "source": "provider:fmp",
@@ -303,7 +297,7 @@
    "why": "63 rows; 85 endpoints denied by plan"
   },
   {
-   "age_h": 0.0,
+   "age_h": 0.1,
    "path": "automation_intelligence/provider_collection_v1/latest/tiingo.json",
    "rows": 47507,
    "source": "provider:tiingo",
@@ -311,7 +305,7 @@
    "why": "47507 rows; 4 endpoints denied by plan"
   },
   {
-   "age_h": 7.1,
+   "age_h": 7.2,
    "rows": 245,
    "source": "economic_events",
    "verdict": "OK",
@@ -325,7 +319,7 @@
    "why": "5536 rows to 2026-10-21T00:05"
   },
   {
-   "age_h": 28.8,
+   "age_h": 28.9,
    "rows": 224352,
    "source": "feed:btcusdt_5m",
    "verdict": "OK",
@@ -626,7 +620,7 @@
    "why": "109706 rows to 2026-10-20T15:35"
   },
   {
-   "age_h": 28.8,
+   "age_h": 28.9,
    "rows": 224352,
    "source": "feed:ethusdt_5m",
    "verdict": "OK",
@@ -696,14 +690,14 @@
    "why": "16706 rows to 2026-10-19T00:00"
   },
   {
-   "age_h": 4.6,
+   "age_h": 4.7,
    "rows": 196930,
    "source": "fred_alfred",
    "verdict": "OK",
    "why": "39/39 series ok"
   },
   {
-   "age_h": 0.0,
+   "age_h": 0.1,
    "path": "automation_intelligence/provider_collection_v1/latest/fred.json",
    "rows": 13,
    "source": "provider:fred",
@@ -711,7 +705,7 @@
    "why": "13 rows"
   },
   {
-   "age_h": 4.8,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/massive.json",
    "rows": 20000,
    "source": "provider:massive",
@@ -726,10 +720,10 @@
    "why": "2375 filings"
   },
   {
-   "age_h": 4.2,
+   "age_h": 4.3,
    "source": "workflow:cl-lab.yml",
    "verdict": "OK",
-   "why": "last success 4.2 h ago"
+   "why": "last success 4.3 h ago"
   },
   {
    "age_h": 4.2,
@@ -744,10 +738,10 @@
    "why": "last success 4.1 h ago"
   },
   {
-   "age_h": 3.8,
+   "age_h": 3.9,
    "source": "workflow:external-data-fabric.yml",
    "verdict": "OK",
-   "why": "last success 3.8 h ago"
+   "why": "last success 3.9 h ago"
   },
   {
    "age_h": 0.0,
@@ -762,10 +756,16 @@
    "why": "last success 6.8 h ago"
   },
   {
-   "age_h": 7.1,
+   "age_h": 7.2,
    "source": "workflow:official-economic-events.yml",
    "verdict": "OK",
-   "why": "last success 7.1 h ago"
+   "why": "last success 7.2 h ago"
+  },
+  {
+   "age_h": 0.0,
+   "source": "workflow:provider-exhaustive-collection.yml",
+   "verdict": "OK",
+   "why": "last success 0.0 h ago"
   },
   {
    "age_h": 0.2,

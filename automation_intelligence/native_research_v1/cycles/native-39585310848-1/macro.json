@@ -1,0 +1,124 @@
+{
+  "automation_id": "github-native-research-v1",
+  "blockers": [
+    "Release titles establish publication, not macro surprise or causal impact.",
+    "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+    "No consensus estimates acquired; economic surprise remains unknown."
+  ],
+  "chatgpt_tokens_used": 0,
+  "code_revision": "7e64842076ace223dfdb14c0e73d0581c0a86ae4",
+  "completed_at_utc": "2026-10-21T10:33:59.276150Z",
+  "event_paths": [
+    "automation_intelligence/mcp_interface/events/native-39585310848-1_native_macro.json"
+  ],
+  "evidence": [
+    "automation_intelligence/native_research_v1/cycles/native-39585310848-1/evidence.json"
+  ],
+  "execution_authorized": false,
+  "input_sha256": "c580049a44afe0ddaf97fc32567fd12e0d461b6d370128cfc318ed5f42d07513",
+  "lane": "macro",
+  "local_interpretation": {
+    "authority": "UNVERIFIED_MODEL_INFERENCE",
+    "model": "Qwen/Qwen3-1.7B-GGUF@90862c4:Q8_0",
+    "payload": {
+      "conflicts": [],
+      "data_gaps": [],
+      "execution_authorized": false,
+      "lane": "macro",
+      "net_new_delta": "LOCAL_NEXT_TEST_SELECTION",
+      "summary": "Does the next official release change the daily macro context?"
+    },
+    "response_id": "local-3dc1754c694e11cb5673d914",
+    "status": "GENERATED"
+  },
+  "measurements": {
+    "gaps": [
+      "Release titles establish publication, not macro surprise or causal impact.",
+      "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+      "No consensus estimates acquired; economic surprise remains unknown."
+    ],
+    "limits": "Publication and daily change are facts; surprise, causality and intraday propagation remain unverified.",
+    "releases": [
+      {
+        "published_epoch": 1792569600.0,
+        "retrieval_finished": 1792578822.795682,
+        "retrieval_started": 1792578822.2753317,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261021_1~d190f2c349.en.pdf",
+        "title": "Piero Cipollone: Pontes and Appia: unlocking opportunities for banks"
+      },
+      {
+        "published_epoch": 1792556100.0,
+        "retrieval_finished": 1792578822.795682,
+        "retrieval_started": 1792578822.2753317,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261021~401d6c4b70.en.html",
+        "title": "Philip R. Lane: Euro liquidity lines and the international monetary system"
+      },
+      {
+        "published_epoch": 1792479600.0,
+        "retrieval_finished": 1792578822.795682,
+        "retrieval_started": 1792578822.2753317,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/inter/date/2026/html/ecb.in261020~97e2e4bc38.en.html",
+        "title": "Frank Elderson: Interview with Die Presse"
+      },
+      {
+        "published_epoch": 1792389600.0,
+        "retrieval_finished": 1792578822.795682,
+        "retrieval_started": 1792578822.2753317,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261019~f0a3e053de.en.html",
+        "title": "Frank Elderson: From climate and nature risks to economic resilience and competitiveness"
+      },
+      {
+        "published_epoch": 1792504955.0,
+        "retrieval_finished": 1792578822.8903122,
+        "retrieval_started": 1792578822.7961328,
+        "source": "BLS",
+        "source_url": "https://www.bls.gov/bls/",
+        "title": "Major Economic Indicators Latest Numbers"
+      }
+    ],
+    "series": [
+      {
+        "change": 0.0600000000000005,
+        "date": "2026-10-19",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-10-16",
+        "series": "DGS10",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10",
+        "value": 5.15
+      },
+      {
+        "change": 0.02999999999999936,
+        "date": "2026-10-19",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-10-16",
+        "series": "DGS2",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2",
+        "value": 4.77
+      },
+      {
+        "change": -0.16450000000000387,
+        "date": "2026-10-16",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-10-15",
+        "series": "DTWEXBGS",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DTWEXBGS",
+        "value": 121.4048
+      }
+    ],
+    "status": "VERIFIED",
+    "summary": "5 dated official release headlines; 3 daily macro series measured."
+  },
+  "outcome": "MATERIAL_DELTA",
+  "paid_model_calls": 0,
+  "prior_receipt_path": "automation_intelligence/native_research_v1/cycles/native-39556803924-1/macro.json",
+  "run_id": "native-39585310848-1-macro",
+  "schema_version": "icarus-research-run-v1",
+  "started_at_utc": "2026-10-21T10:33:43.304574Z",
+  "substantive_work_performed": true,
+  "summary": "5 dated official release headlines; 3 daily macro series measured.",
+  "worker": "GITHUB_ACTIONS"
+}

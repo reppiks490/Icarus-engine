@@ -1,6 +1,6 @@
 # Data health — 2026-10-21 19:24 UTC
 
-**FAILING** 5 · **BLOCKED** 8 · **STALE** 3 · **DEGRADED** 5 · **OK** 65
+**FAILING** 4 · **BLOCKED** 8 · **STALE** 3 · **DEGRADED** 5 · **UNKNOWN** 1 · **OK** 65
 
 ## Needs attention
 
@@ -10,7 +10,6 @@
 | feed:databento_vxm_5m | FAILING | FeedError: Databento historical request failed for VXM.v.0: BentoClientError: 403 license_not_found_unauthorized A live data license is required to access XCBF. |
 | workflow:cl-depth-sweep.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/39651204391 |
 | workflow:cl-lab.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/39650903499 |
-| workflow:databento-depth-research-context.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/39571531550 |
 | provider:alpaca | BLOCKED | no key reaches the runner |
 | provider:finnhub | BLOCKED | BLOCKED_AUTHENTICATION |
 | provider:fred | BLOCKED | BLOCKED |
@@ -27,6 +26,7 @@
 | provider:eodhd | DEGRADED | dedicated fabric live (11 calls, 2510 known rows); generic sampler blocked; 29 endpoints denied by plan |
 | provider:fmp | DEGRADED | 81 rows; 85 endpoints denied by plan |
 | provider:tiingo | DEGRADED | 47507 rows; 4 endpoints denied by plan |
+| workflow:databento-depth-research-context.yml | UNKNOWN | no completed run on main |
 
 ## Delivering
 

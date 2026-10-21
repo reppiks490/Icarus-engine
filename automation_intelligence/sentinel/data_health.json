@@ -76,9 +76,10 @@
  "counts": {
   "BLOCKED": 8,
   "DEGRADED": 5,
-  "FAILING": 5,
+  "FAILING": 4,
   "OK": 65,
-  "STALE": 3
+  "STALE": 3,
+  "UNKNOWN": 1
  },
  "depth": {
   "budgets": {
@@ -149,7 +150,7 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-10-21T19:24:10+00:00",
+ "generated_at": "2026-10-21T19:24:34+00:00",
  "research": {
   "champions": 0,
   "cl_last_run": "2026-10-21T06:53:10.211145+00:00",
@@ -205,12 +206,6 @@
    "why": "latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/39650903499"
   },
   {
-   "age_h": null,
-   "source": "workflow:databento-depth-research-context.yml",
-   "verdict": "FAILING",
-   "why": "latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/39571531550"
-  },
-  {
    "age_h": 4.2,
    "path": "automation_intelligence/provider_collection_v1/latest/alpaca.json",
    "rows": 0,
@@ -219,7 +214,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 3.8,
+   "age_h": 3.9,
    "path": "automation_intelligence/provider_collection_v1/latest/finnhub.json",
    "rows": 0,
    "source": "provider:finnhub",
@@ -267,7 +262,7 @@
    "why": "BLOCKED"
   },
   {
-   "age_h": 3.8,
+   "age_h": 3.9,
    "path": "automation_intelligence/provider_collection_v1/latest/unusual_whales.json",
    "rows": 0,
    "source": "provider:unusual_whales",
@@ -331,6 +326,11 @@
    "source": "provider:tiingo",
    "verdict": "DEGRADED",
    "why": "47507 rows; 4 endpoints denied by plan"
+  },
+  {
+   "source": "workflow:databento-depth-research-context.yml",
+   "verdict": "UNKNOWN",
+   "why": "no completed run on main"
   },
   {
    "age_h": 2.2,
@@ -726,10 +726,10 @@
    "why": "2375 filings"
   },
   {
-   "age_h": 10.7,
+   "age_h": 0.0,
    "source": "workflow:databento-depth-corpus.yml",
    "verdict": "OK",
-   "why": "last success 10.7 h ago"
+   "why": "last success 0.0 h ago"
   },
   {
    "age_h": 1.1,

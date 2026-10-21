@@ -1,0 +1,108 @@
+{
+  "automation_id": "github-native-research-v1",
+  "blockers": [
+    "No strategy profitability, causal effect or model-promotion claim.",
+    "Small event samples remain unqualified; these rolling holdouts are diagnostic, not a reusable promotion holdout."
+  ],
+  "chatgpt_tokens_used": 0,
+  "code_revision": "515eb21b2767e9785ededf330c078158625aea05",
+  "completed_at_utc": "2026-10-21T06:41:30.227800Z",
+  "event_paths": [
+    "automation_intelligence/mcp_interface/events/native-39556803924-1_native_aion.json"
+  ],
+  "evidence": [
+    "automation_intelligence/native_research_v1/cycles/native-39556803924-1/evidence.json"
+  ],
+  "execution_authorized": false,
+  "input_sha256": "169119466bb0d08031ed113530b8576113c49d44f762ae0611cd9cb5d1b62ac2",
+  "lane": "aion",
+  "local_interpretation": {
+    "authority": "UNVERIFIED_MODEL_INFERENCE",
+    "model": "Qwen/Qwen3-1.7B-GGUF@90862c4:Q8_0",
+    "payload": {
+      "conflicts": [],
+      "data_gaps": [],
+      "execution_authorized": false,
+      "lane": "aion",
+      "net_new_delta": "LOCAL_NEXT_TEST_SELECTION",
+      "summary": "Does the association survive time-block and cross-venue negative controls?"
+    },
+    "response_id": "local-35b3f388efef91e1c2f2aff9",
+    "status": "GENERATED"
+  },
+  "measurements": {
+    "experiments": [
+      {
+        "baseline_hours": 28,
+        "causal_claim": false,
+        "costs": "NOT_APPLICABLE_NONTRADING_ASSOCIATION",
+        "embargo_samples": 2,
+        "fixed_threshold": 2.5,
+        "hypothesis_id": "reported-volume-z2.5-next-hour-range-v1",
+        "multiple_testing": "One fixed hypothesis per representation; repeated rolling windows overlap and are not independent confirmations.",
+        "performance_claim": false,
+        "qualification": "DESCRIPTIVE_OOS_ONLY",
+        "representation": "coinbase_spot",
+        "test": {
+          "control_count": 115,
+          "control_mean_next_range": 0.004014989882042239,
+          "difference": 0.004047319201583423,
+          "event_count": 11,
+          "event_mean_next_range": 0.008062309083625662
+        },
+        "test_first_start": 1792105200,
+        "train": {
+          "control_count": 166,
+          "control_mean_next_range": 0.004814593876135199,
+          "difference": 0.0020135177618735246,
+          "event_count": 26,
+          "event_mean_next_range": 0.0068281116380087235
+        },
+        "train_last_end": 1792101600
+      },
+      {
+        "baseline_hours": 28,
+        "causal_claim": false,
+        "costs": "NOT_APPLICABLE_NONTRADING_ASSOCIATION",
+        "embargo_samples": 2,
+        "fixed_threshold": 2.5,
+        "hypothesis_id": "reported-volume-z2.5-next-hour-range-v1",
+        "multiple_testing": "One fixed hypothesis per representation; repeated rolling windows overlap and are not independent confirmations.",
+        "performance_claim": false,
+        "qualification": "DESCRIPTIVE_OOS_ONLY",
+        "representation": "kraken_spot",
+        "test": {
+          "control_count": 236,
+          "control_mean_next_range": 0.004031086168496585,
+          "difference": 0.0027627891824712585,
+          "event_count": 39,
+          "event_mean_next_range": 0.006793875350967844
+        },
+        "test_first_start": 1791568800,
+        "train": {
+          "control_count": 373,
+          "control_mean_next_range": 0.004535307634407064,
+          "difference": 0.0029108066817060832,
+          "event_count": 41,
+          "event_mean_next_range": 0.007446114316113147
+        },
+        "train_last_end": 1791565200
+      }
+    ],
+    "gaps": [
+      "No strategy profitability, causal effect or model-promotion claim.",
+      "Small event samples remain unqualified; these rolling holdouts are diagnostic, not a reusable promotion holdout."
+    ],
+    "status": "VERIFIED",
+    "summary": "2 temporally separated descriptive experiments measured."
+  },
+  "outcome": "MATERIAL_DELTA",
+  "paid_model_calls": 0,
+  "prior_receipt_path": "automation_intelligence/native_research_v1/cycles/native-39548456365-1/aion.json",
+  "run_id": "native-39556803924-1-aion",
+  "schema_version": "icarus-research-run-v1",
+  "started_at_utc": "2026-10-21T06:41:03.562888Z",
+  "substantive_work_performed": true,
+  "summary": "2 temporally separated descriptive experiments measured.",
+  "worker": "GITHUB_ACTIONS"
+}

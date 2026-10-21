@@ -77,8 +77,7 @@
   "BLOCKED": 7,
   "DEGRADED": 6,
   "FAILING": 5,
-  "OK": 67,
-  "STALE": 1
+  "OK": 68
  },
  "depth": {
   "budgets": {
@@ -149,7 +148,7 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-10-21T22:42:42+00:00",
+ "generated_at": "2026-10-21T22:43:20+00:00",
  "research": {
   "champions": 0,
   "cl_last_run": "2026-10-21T06:53:10.211145+00:00",
@@ -219,7 +218,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 3.2,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/finnhub.json",
    "rows": 0,
    "source": "provider:finnhub",
@@ -259,7 +258,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 3.2,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/unusual_whales.json",
    "rows": 0,
    "source": "provider:unusual_whales",
@@ -267,18 +266,12 @@
    "why": "BLOCKED_AUTHENTICATION"
   },
   {
-   "age_h": 3.1,
-   "source": "workflow:provider-supplemental-promote.yml",
-   "verdict": "STALE",
-   "why": "last success 3.1 h ago (expected within 3 h)"
-  },
-  {
-   "age_h": 3.1,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/alphavantage.json",
-   "rows": 14367,
+   "rows": 101,
    "source": "provider:alphavantage",
    "verdict": "DEGRADED",
-   "why": "14367 rows; 3 endpoints denied by plan"
+   "why": "101 rows; 3 endpoints denied by plan"
   },
   {
    "age_h": 2.6,
@@ -738,10 +731,10 @@
    "why": "last success 0.2 h ago"
   },
   {
-   "age_h": 2.0,
+   "age_h": 0.0,
    "source": "workflow:native-five-research.yml",
    "verdict": "OK",
-   "why": "last success 2.0 h ago"
+   "why": "last success 0.0 h ago"
   },
   {
    "age_h": 0.7,
@@ -764,6 +757,12 @@
   {
    "age_h": 0.0,
    "source": "workflow:provider-supplemental-collection.yml",
+   "verdict": "OK",
+   "why": "last success 0.0 h ago"
+  },
+  {
+   "age_h": 0.0,
+   "source": "workflow:provider-supplemental-promote.yml",
    "verdict": "OK",
    "why": "last success 0.0 h ago"
   },

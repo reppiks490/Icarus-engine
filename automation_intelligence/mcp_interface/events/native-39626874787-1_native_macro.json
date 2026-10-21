@@ -1,0 +1,91 @@
+{
+  "at_utc": "2026-10-21T15:36:00.380189Z",
+  "category": "AUDIT",
+  "event_id": "native-39626874787-1-native-macro",
+  "evidence": [
+    {
+      "classification": "FACT",
+      "code_revision": "1f69c1c9d8e359d1d26e73d3ab921917ee4c5133",
+      "evidence_sha256": "b3bcca8eb6341db6b6e559d0a42d99bcebb72d5a03f8bb857ad2f984535d7990",
+      "measurement": {
+        "gaps": [
+          "FRED DGS10: unavailable (ValueError)",
+          "FRED DGS2: unavailable (ValueError)",
+          "FRED DTWEXBGS: unavailable (ValueError)",
+          "Release titles establish publication, not macro surprise or causal impact.",
+          "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+          "No consensus estimates acquired; economic surprise remains unknown."
+        ],
+        "limits": "Publication and daily change are facts; surprise, causality and intraday propagation remain unverified.",
+        "releases": [
+          {
+            "published_epoch": 1792569600.0,
+            "retrieval_finished": 1792596959.9172497,
+            "retrieval_started": 1792596959.3587706,
+            "source": "ECB",
+            "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261021_1~d190f2c349.en.pdf",
+            "title": "Piero Cipollone: Pontes and Appia: unlocking opportunities for banks"
+          },
+          {
+            "published_epoch": 1792556100.0,
+            "retrieval_finished": 1792596959.9172497,
+            "retrieval_started": 1792596959.3587706,
+            "source": "ECB",
+            "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261021~401d6c4b70.en.html",
+            "title": "Philip R. Lane: Euro liquidity lines and the international monetary system"
+          },
+          {
+            "published_epoch": 1792479600.0,
+            "retrieval_finished": 1792596959.9172497,
+            "retrieval_started": 1792596959.3587706,
+            "source": "ECB",
+            "source_url": "https://www.ecb.europa.eu//press/inter/date/2026/html/ecb.in261020~97e2e4bc38.en.html",
+            "title": "Frank Elderson: Interview with Die Presse"
+          },
+          {
+            "published_epoch": 1792389600.0,
+            "retrieval_finished": 1792596959.9172497,
+            "retrieval_started": 1792596959.3587706,
+            "source": "ECB",
+            "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261019~f0a3e053de.en.html",
+            "title": "Frank Elderson: From climate and nature risks to economic resilience and competitiveness"
+          },
+          {
+            "published_epoch": 1792504955.0,
+            "retrieval_finished": 1792596960.00251,
+            "retrieval_started": 1792596959.9176528,
+            "source": "BLS",
+            "source_url": "https://www.bls.gov/bls/",
+            "title": "Major Economic Indicators Latest Numbers"
+          }
+        ],
+        "series": [],
+        "status": "VERIFIED",
+        "summary": "5 dated official release headlines; 0 daily macro series measured."
+      }
+    }
+  ],
+  "execution_authorized": false,
+  "interpretation_authority": "UNVERIFIED_MODEL_INFERENCE",
+  "oracle": {
+    "finding": "5 dated official release headlines; 0 daily macro series measured.",
+    "status": "VERIFIED"
+  },
+  "paths": [
+    "automation_intelligence/native_research_v1/cycles/native-39626874787-1/evidence.json",
+    "automation_intelligence/native_research_v1/cycles/native-39626874787-1/macro.json"
+  ],
+  "schema_version": "icarus-mcp-event-v1",
+  "severity": "MEDIUM",
+  "source": "MACRO_AUTOMATION",
+  "status": "VERIFIED",
+  "summary": "5 dated official release headlines; 0 daily macro series measured.",
+  "supermesh_x": {
+    "finding": "5 dated official release headlines; 0 daily macro series measured.",
+    "status": "VERIFIED"
+  },
+  "surface": [
+    "macro native research"
+  ],
+  "worker": "GITHUB_NATIVE_RESEARCH_V1"
+}

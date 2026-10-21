@@ -77,8 +77,8 @@
   "BLOCKED": 8,
   "DEGRADED": 5,
   "FAILING": 4,
-  "OK": 67,
-  "STALE": 2
+  "OK": 68,
+  "STALE": 1
  },
  "depth": {
   "budgets": {
@@ -149,7 +149,7 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-10-21T15:33:59+00:00",
+ "generated_at": "2026-10-21T15:34:40+00:00",
  "research": {
   "champions": 0,
   "cl_last_run": "2026-10-21T06:53:10.211145+00:00",
@@ -213,7 +213,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 5.0,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/finnhub.json",
    "rows": 0,
    "source": "provider:finnhub",
@@ -261,7 +261,7 @@
    "why": "BLOCKED"
   },
   {
-   "age_h": 5.0,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/unusual_whales.json",
    "rows": 0,
    "source": "provider:unusual_whales",
@@ -269,24 +269,18 @@
    "why": "BLOCKED_AUTHENTICATION"
   },
   {
-   "age_h": 3.2,
+   "age_h": 3.3,
    "source": "workflow:native-five-research.yml",
    "verdict": "STALE",
-   "why": "last success 3.2 h ago (expected within 3 h)"
+   "why": "last success 3.3 h ago (expected within 3 h)"
   },
   {
-   "age_h": 5.0,
-   "source": "workflow:provider-supplemental-promote.yml",
-   "verdict": "STALE",
-   "why": "last success 5.0 h ago (expected within 3 h)"
-  },
-  {
-   "age_h": 5.0,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/alphavantage.json",
-   "rows": 22698,
+   "rows": 0,
    "source": "provider:alphavantage",
    "verdict": "DEGRADED",
-   "why": "22698 rows; 3 endpoints denied by plan"
+   "why": "key present but 0 rows (NO_READY_JOBS)"
   },
   {
    "age_h": 0.4,
@@ -335,7 +329,7 @@
    "why": "5613 rows to 2026-10-21T06:30"
   },
   {
-   "age_h": 15.6,
+   "age_h": 15.7,
    "rows": 224640,
    "source": "feed:btcusdt_5m",
    "verdict": "OK",
@@ -622,7 +616,7 @@
    "why": "109738 rows to 2026-10-20T18:15"
   },
   {
-   "age_h": 15.6,
+   "age_h": 15.7,
    "rows": 224640,
    "source": "feed:ethusdt_5m",
    "verdict": "OK",
@@ -744,10 +738,10 @@
    "why": "last success 0.2 h ago"
   },
   {
-   "age_h": 3.0,
+   "age_h": 3.1,
    "source": "workflow:native-provider-access.yml",
    "verdict": "OK",
-   "why": "last success 3.0 h ago"
+   "why": "last success 3.1 h ago"
   },
   {
    "age_h": 3.7,
@@ -756,14 +750,20 @@
    "why": "last success 3.7 h ago"
   },
   {
-   "age_h": 0.2,
+   "age_h": 0.3,
    "source": "workflow:provider-exhaustive-collection.yml",
    "verdict": "OK",
-   "why": "last success 0.2 h ago"
+   "why": "last success 0.3 h ago"
   },
   {
    "age_h": 0.0,
    "source": "workflow:provider-supplemental-collection.yml",
+   "verdict": "OK",
+   "why": "last success 0.0 h ago"
+  },
+  {
+   "age_h": 0.0,
+   "source": "workflow:provider-supplemental-promote.yml",
    "verdict": "OK",
    "why": "last success 0.0 h ago"
   },

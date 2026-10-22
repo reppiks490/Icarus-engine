@@ -1,18 +1,18 @@
 {
   "catalog": {
-    "asset_datasets_collected": 20,
+    "asset_datasets_collected": 16,
     "asset_templates": 109,
     "assets": 6770,
-    "collected_operations": 18,
-    "denied_operations": 67,
+    "collected_operations": 22,
+    "denied_operations": 60,
     "operations": 230,
-    "pending_pages": 119,
+    "pending_pages": 134,
     "qualification": "INCOMPLETE_UNTIL_EVERY_OPERATION_ASSET_PAGE_TIME_RANGE_AND_TRANSPORT_IS_VERIFIED",
     "unresolved_operations": 0
   },
   "chatgpt_tokens_used": 0,
   "checkpoint_status": "ENCRYPTED_AES256_GCM",
-  "completed_at_utc": "2026-10-22T04:41:16.590233+00:00",
+  "completed_at_utc": "2026-10-22T10:20:56.066819+00:00",
   "databento_excluded": true,
   "execution_authorized": false,
   "paid_model_calls": 0,
@@ -25,71 +25,76 @@
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/aftermarket-trade"
+          "operation": "fmp:get:/batch-quote-short"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/analyst-estimates"
+          "operation": "fmp:get:/stock-price-change"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/balance-sheet-statement"
+          "operation": "fmp:get:/cash-flow-statement"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/senate-trades"
+          "operation": "fmp:get:/cash-flow-statement-as-reported"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/balance-sheet-statement-as-reported"
+          "operation": "fmp:get:/technical-indicators/adx"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/balance-sheet-statement-growth"
+          "operation": "fmp:get:/cash-flow-statement-growth"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/shares-float"
+          "operation": "fmp:get:/cash-flow-statement-ttm"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/balance-sheet-statement-ttm"
+          "operation": "fmp:get:/technical-indicators/dema"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/batch-aftermarket-quote"
+          "operation": "fmp:get:/custom-discounted-cash-flow"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/splits"
+          "operation": "fmp:get:/technical-indicators/ema"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/batch-aftermarket-trade"
+          "operation": "fmp:get:/custom-levered-discounted-cash-flow"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/batch-exchange-quote"
+          "operation": "fmp:get:/discounted-cash-flow"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/batch-quote"
+          "operation": "fmp:get:/technical-indicators/rsi"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/dividends"
         }
       ],
-      "collected_pages": 7,
-      "collected_rows": 205,
+      "collected_pages": 6,
+      "collected_rows": 323,
       "credential_present": true,
       "endpoint_count": 230,
       "requests": 20,
@@ -100,7 +105,7 @@
   },
   "raw_payloads_public": false,
   "requests": 20,
-  "run_id": "providers-39723309665-1-fmp",
+  "run_id": "providers-39760651945-1-fmp",
   "schema_version": "icarus-provider-collection-cycle-v1",
-  "started_at_utc": "2026-10-22T04:37:02.324791+00:00"
+  "started_at_utc": "2026-10-22T10:16:42.534193+00:00"
 }

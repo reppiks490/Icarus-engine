@@ -1,6 +1,6 @@
-# Data health — 2026-10-22 22:45 UTC
+# Data health — 2026-10-22 23:32 UTC
 
-**FAILING** 4 · **BLOCKED** 7 · **DEGRADED** 5 · **OK** 70
+**FAILING** 4 · **BLOCKED** 6 · **DEGRADED** 6 · **OK** 70
 
 ## Needs attention
 
@@ -15,13 +15,13 @@
 | provider:intrinio | BLOCKED | no key reaches the runner |
 | provider:quiver | BLOCKED | no key reaches the runner |
 | provider:tickstream | BLOCKED | no key reaches the runner |
-| provider:twelve | BLOCKED | BLOCKED |
 | provider:unusual_whales | BLOCKED | BLOCKED_AUTHENTICATION |
 | provider:alphavantage | DEGRADED | 14374 rows; 3 endpoints denied by plan |
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
-| provider:eodhd | DEGRADED | dedicated fabric live (11 calls, 2510 known rows); generic sampler blocked; 17 endpoints denied by plan |
-| provider:fmp | DEGRADED | 160 rows; 40 endpoints denied by plan |
+| provider:eodhd | DEGRADED | 2510 rows; 22 endpoints denied by plan |
+| provider:fmp | DEGRADED | 7014 rows; 33 endpoints denied by plan |
 | provider:tiingo | DEGRADED | 47517 rows; 4 endpoints denied by plan |
+| provider:twelve | DEGRADED | 72088 rows; 1 endpoints denied by plan |
 
 ## Delivering
 

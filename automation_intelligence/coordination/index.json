@@ -1120,27 +1120,62 @@
     {
       "actor": "Icarus 1 / Codex",
       "branch": "icarus1/restart-readiness-20261020",
-      "cooperates_with": [
-        "icarus2-20261020-federation-integration"
-      ],
+      "cooperates_with": [],
       "coordination_mode": "independent",
-      "declared_paths": [],
-      "declared_targets": [],
+      "declared_paths": [
+        "icarus_engine/workspace_api.py",
+        "icarus_engine/workspace-client.js",
+        "tests_engine/test_runtime_expiry_regression.py"
+      ],
+      "declared_targets": [
+        {
+          "path": "icarus_engine/workspace_api.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/workspace-client.js",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "tests_engine/test_runtime_expiry_regression.py",
+          "repo": "reppiks490/Icarus"
+        }
+      ],
       "dependencies": [
-        "github-ci:39740988887",
-        "github-ci:39740988788"
+        "branch:icarus1/restart-readiness-20261020",
+        "head:48dd3be4052d2ba1db68a2330aa935ec2e7bce19",
+        "verification-pr:467",
+        "constraint:live-execution-remains-disabled",
+        "constraint:preserve-saved-workspace-settings-and-journals"
       ],
       "goal": "Owner-directed comprehensive federation audit and meaningful, evidence-gated system recovery; prepare a two-primary-worker handoff for Icarus 2.",
       "home_repo": "reppiks490/Icarus",
-      "last_event_at_utc": "2026-10-22T07:37:12.839291Z",
-      "latest_summary": "Final sourcefd891428 is clean and remote verified. Six hosted contracts succeeded; runtime39740988887 and UI39740988788 remain running. Per-panel guide pinned blob81ff3c85e91a9632948ec1d0da2b0415b7e535bc independently matches local. Current four-panel implementation/restart documentation and actual contained restart proof published; no final hosted all-green, all-eleven-adapter or owner-PC adoption claim. Root leases remain released.",
-      "latest_type": "WAITING",
+      "last_event_at_utc": "2026-10-22T17:22:49Z",
+      "latest_summary": "Runtime-expiry repair is implemented on icarus1/restart-readiness-20261020 at 48dd3be4052d2ba1db68a2330aa935ec2e7bce19. Selected status now snapshots only the selected workspace, and dashboard core-status reads join one in-flight transport request instead of replacing slow successful reads every three seconds. Two independent exact-head Linux full-suite runs have passed, including the new single-flight/selected-snapshot regression. Windows restart-persistence passed twice; the broader Windows suite remains in progress. No merge to main has been performed.",
+      "latest_type": "UPDATE",
       "model_family": "openai",
-      "phase": "final-panel-head-six-green-two-running",
+      "phase": "runtime-expiry-verification",
       "pr": 462,
       "reclaimable": false,
-      "reserved_paths": [],
-      "reserved_targets": [],
+      "reserved_paths": [
+        "icarus_engine/workspace_api.py",
+        "icarus_engine/workspace-client.js",
+        "tests_engine/test_runtime_expiry_regression.py"
+      ],
+      "reserved_targets": [
+        {
+          "path": "icarus_engine/workspace_api.py",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "icarus_engine/workspace-client.js",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "tests_engine/test_runtime_expiry_regression.py",
+          "repo": "reppiks490/Icarus"
+        }
+      ],
       "session_id": "icarus1-20261020-system-recovery",
       "stale": false,
       "status": "active"
@@ -1196,7 +1231,7 @@
     "stale": 17,
     "terminal": 24
   },
-  "generated_at_utc": "2026-10-22T10:32:28.195345Z",
+  "generated_at_utc": "2026-10-22T17:23:14.847555Z",
   "owner_status": {
     "claude": {
       "active": false,

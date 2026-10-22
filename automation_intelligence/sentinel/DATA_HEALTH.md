@@ -1,4 +1,4 @@
-# Data health — 2026-10-22 06:49 UTC
+# Data health — 2026-10-22 07:00 UTC
 
 **FAILING** 4 · **BLOCKED** 7 · **STALE** 2 · **DEGRADED** 6 · **OK** 67
 
@@ -8,8 +8,8 @@
 |---|---|---|
 | feed:databento_dx_5m | FAILING | FeedError: Databento historical request failed for DX.v.0: BentoClientError: 422 dataset_unavailable_range Part or all of your request for dataset 'IFUS.IMPACT' |
 | feed:databento_vxm_5m | FAILING | FeedError: Databento historical request failed for VXM.v.0: BentoClientError: 403 license_not_found_unauthorized A live data license is required to access XCBF. |
-| workflow:cl-depth-sweep.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/39698195017 |
-| workflow:databento-depth-research-context.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/39661356567 |
+| workflow:cl-depth-sweep.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/39736913268 |
+| workflow:databento-depth-research-context.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/39736913280 |
 | provider:alpaca | BLOCKED | no key reaches the runner |
 | provider:finnhub | BLOCKED | BLOCKED_AUTHENTICATION |
 | provider:fred | BLOCKED | BLOCKED |
@@ -17,8 +17,8 @@
 | provider:quiver | BLOCKED | no key reaches the runner |
 | provider:tickstream | BLOCKED | no key reaches the runner |
 | provider:unusual_whales | BLOCKED | BLOCKED_AUTHENTICATION |
-| workflow:provider-supplemental-collection.yml | STALE | last success 5.0 h ago (expected within 3 h) |
-| workflow:provider-supplemental-promote.yml | STALE | last success 5.0 h ago (expected within 3 h) |
+| workflow:provider-supplemental-collection.yml | STALE | last success 5.2 h ago (expected within 3 h) |
+| workflow:provider-supplemental-promote.yml | STALE | last success 5.2 h ago (expected within 3 h) |
 | provider:alphavantage | DEGRADED | 65 rows; 3 endpoints denied by plan |
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
 | provider:eodhd | DEGRADED | 2510 rows; 11 endpoints denied by plan |
@@ -32,7 +32,7 @@ economic_events, feed:btcusd_cb_5m, feed:btcusdt_5m, feed:cboe_skew, feed:cboe_v
 
 ## Order-book data
 
-Vaulted files: {'bars_primary': 33, 'bars_secondary': 2, 'bars_third': 1, 'corpus': 135, 'panel': 13, 'sweep': 8} (key: HKDF(DATABENTO_API_KEY)). Last vault decrypt/hash check: OK at 2026-10-21T07:10:04+00:00 with 0 failures. D1 status: {'D1-A': 'INSUFFICIENT_DATA', 'D1-B': 'INSUFFICIENT_DATA', 'days': 3}.
+Vaulted files: {'bars_primary': 33, 'bars_secondary': 2, 'bars_third': 1, 'corpus': 135, 'panel': 13, 'sweep': 10} (key: HKDF(DATABENTO_API_KEY)). Last vault decrypt/hash check: OK at 2026-10-22T06:59:35+00:00 with 0 failures. D1 status: {'D1-A': 'INSUFFICIENT_DATA', 'D1-B': 'INSUFFICIENT_DATA', 'days': 3}.
 
 | Budget | Cap | Spent | Left |
 |---|---|---|---|
@@ -42,7 +42,7 @@ Vaulted files: {'bars_primary': 33, 'bars_secondary': 2, 'bars_third': 1, 'corpu
 | depth__index | $93.0 | $92.99 | $0.01 |
 | depth__sweep__primary | $34.34 | $34.32 | $0.03 |
 | depth__sweep__secondary | $3.36 | $3.31 | $0.05 |
-| depth__sweep__third | $12.0 | $10.94 | $1.05 |
+| depth__sweep__third | $12.0 | $11.87 | $0.13 |
 | history__ES | $25.0 | $18.14 | $6.86 |
 | history__NQ | $25.0 | $17.5 | $7.5 |
 

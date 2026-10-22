@@ -82,8 +82,7 @@
   "DEGRADED": 6,
   "FAILING": 4,
   "OK": 65,
-  "STALE": 1,
-  "UNKNOWN": 4
+  "UNKNOWN": 5
  },
  "depth": {
   "budgets": {
@@ -154,7 +153,7 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-10-22T15:21:48+00:00",
+ "generated_at": "2026-10-22T15:22:42+00:00",
  "research": {
   "champions": 0,
   "cl_last_run": "2026-10-22T06:49:13.618543+00:00",
@@ -258,12 +257,6 @@
    "why": "BLOCKED_AUTHENTICATION"
   },
   {
-   "age_h": 1.2,
-   "source": "workflow:interrepo-peer-intelligence.yml",
-   "verdict": "STALE",
-   "why": "last success 1.2 h ago (expected within 1 h)"
-  },
-  {
    "age_h": 1.3,
    "path": "automation_intelligence/provider_collection_v1/latest/alphavantage.json",
    "rows": 22706,
@@ -280,7 +273,7 @@
    "why": "no key; keyless endpoints only, none ready"
   },
   {
-   "age_h": 0.0,
+   "age_h": 0.1,
    "path": "automation_intelligence/provider_collection_v1/latest/eodhd.json",
    "rows": 2510,
    "source": "provider:eodhd",
@@ -296,7 +289,7 @@
    "why": "79 rows; 50 endpoints denied by plan"
   },
   {
-   "age_h": 0.0,
+   "age_h": 0.1,
    "path": "automation_intelligence/provider_collection_v1/latest/tiingo.json",
    "rows": 47517,
    "source": "provider:tiingo",
@@ -304,7 +297,7 @@
    "why": "47517 rows; 4 endpoints denied by plan"
   },
   {
-   "age_h": 0.0,
+   "age_h": 0.1,
    "path": "automation_intelligence/provider_collection_v1/latest/twelve.json",
    "rows": 3,
    "source": "provider:twelve",
@@ -317,17 +310,22 @@
    "why": "no completed run on main"
   },
   {
-   "source": "workflow:depth-vault.yml",
+   "source": "workflow:databento-depth-corpus.yml",
    "verdict": "UNKNOWN",
    "why": "no completed run on main"
   },
   {
-   "source": "workflow:native-provider-access.yml",
+   "source": "workflow:external-data-fabric.yml",
    "verdict": "UNKNOWN",
    "why": "no completed run on main"
   },
   {
-   "source": "workflow:provider-supplemental-promote.yml",
+   "source": "workflow:native-five-research.yml",
+   "verdict": "UNKNOWN",
+   "why": "no completed run on main"
+  },
+  {
+   "source": "workflow:provider-exhaustive-collection.yml",
    "verdict": "UNKNOWN",
    "why": "no completed run on main"
   },
@@ -346,7 +344,7 @@
    "why": "5901 rows to 2026-10-22T06:30"
   },
   {
-   "age_h": 15.4,
+   "age_h": 15.5,
    "rows": 224928,
    "source": "feed:btcusdt_5m",
    "verdict": "OK",
@@ -570,7 +568,7 @@
    "why": "150015 rows to 2026-10-21T22:05"
   },
   {
-   "age_h": 18.4,
+   "age_h": 18.5,
    "rows": 125366,
    "source": "feed:databento_sr3_5m",
    "verdict": "OK",
@@ -633,7 +631,7 @@
    "why": "109948 rows to 2026-10-21T18:15"
   },
   {
-   "age_h": 15.4,
+   "age_h": 15.5,
    "rows": 224928,
    "source": "feed:ethusdt_5m",
    "verdict": "OK",
@@ -710,7 +708,7 @@
    "why": "39/39 series ok"
   },
   {
-   "age_h": 0.0,
+   "age_h": 0.1,
    "path": "automation_intelligence/provider_collection_v1/latest/fred.json",
    "rows": 1020,
    "source": "provider:fred",
@@ -733,22 +731,22 @@
    "why": "2379 filings"
   },
   {
-   "age_h": 6.6,
-   "source": "workflow:databento-depth-corpus.yml",
+   "age_h": 3.1,
+   "source": "workflow:depth-vault.yml",
    "verdict": "OK",
-   "why": "last success 6.6 h ago"
+   "why": "last success 3.1 h ago"
   },
   {
-   "age_h": 14.5,
-   "source": "workflow:external-data-fabric.yml",
+   "age_h": 0.0,
+   "source": "workflow:interrepo-peer-intelligence.yml",
    "verdict": "OK",
-   "why": "last success 14.5 h ago"
+   "why": "last success 0.0 h ago"
   },
   {
-   "age_h": 1.3,
-   "source": "workflow:native-five-research.yml",
+   "age_h": 2.8,
+   "source": "workflow:native-provider-access.yml",
    "verdict": "OK",
-   "why": "last success 1.3 h ago"
+   "why": "last success 2.8 h ago"
   },
   {
    "age_h": 3.5,
@@ -757,14 +755,14 @@
    "why": "last success 3.5 h ago"
   },
   {
-   "age_h": 0.0,
-   "source": "workflow:provider-exhaustive-collection.yml",
+   "age_h": 1.2,
+   "source": "workflow:provider-supplemental-collection.yml",
    "verdict": "OK",
-   "why": "last success 0.0 h ago"
+   "why": "last success 1.2 h ago"
   },
   {
    "age_h": 1.2,
-   "source": "workflow:provider-supplemental-collection.yml",
+   "source": "workflow:provider-supplemental-promote.yml",
    "verdict": "OK",
    "why": "last success 1.2 h ago"
   },

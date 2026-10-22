@@ -1,0 +1,108 @@
+{
+  "at_utc": "2026-10-22T06:44:13.546150Z",
+  "category": "AUDIT",
+  "event_id": "native-39735678251-1-native-macro",
+  "evidence": [
+    {
+      "classification": "FACT",
+      "code_revision": "7eac6b6f36d9abc41d5aa88b706ff275602558dc",
+      "evidence_sha256": "a43b4faf19fadef7e3e750b4d67adf5b662d4b932926224576387dbcc7962505",
+      "measurement": {
+        "gaps": [
+          "Release titles establish publication, not macro surprise or causal impact.",
+          "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+          "No consensus estimates acquired; economic surprise remains unknown."
+        ],
+        "limits": "Publication and daily change are facts; surprise, causality and intraday propagation remain unverified.",
+        "releases": [
+          {
+            "published_epoch": 1792569600.0,
+            "retrieval_finished": 1792651452.558898,
+            "retrieval_started": 1792651451.9768405,
+            "source": "ECB",
+            "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261021_1~d190f2c349.en.pdf",
+            "title": "Piero Cipollone: Pontes and Appia: unlocking opportunities for banks"
+          },
+          {
+            "published_epoch": 1792556100.0,
+            "retrieval_finished": 1792651452.558898,
+            "retrieval_started": 1792651451.9768405,
+            "source": "ECB",
+            "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261021~401d6c4b70.en.html",
+            "title": "Philip R. Lane: Euro liquidity lines and the international monetary system"
+          },
+          {
+            "published_epoch": 1792479600.0,
+            "retrieval_finished": 1792651452.558898,
+            "retrieval_started": 1792651451.9768405,
+            "source": "ECB",
+            "source_url": "https://www.ecb.europa.eu//press/inter/date/2026/html/ecb.in261020~97e2e4bc38.en.html",
+            "title": "Frank Elderson: Interview with Die Presse"
+          },
+          {
+            "published_epoch": 1792504955.0,
+            "retrieval_finished": 1792651452.7414405,
+            "retrieval_started": 1792651452.5593915,
+            "source": "BLS",
+            "source_url": "https://www.bls.gov/bls/",
+            "title": "Major Economic Indicators Latest Numbers"
+          }
+        ],
+        "series": [
+          {
+            "change": -0.03000000000000025,
+            "date": "2026-10-20",
+            "freshness": "DAILY_OBSERVATION",
+            "prior_date": "2026-10-19",
+            "series": "DGS10",
+            "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10",
+            "value": 5.12
+          },
+          {
+            "change": 0.020000000000000462,
+            "date": "2026-10-20",
+            "freshness": "DAILY_OBSERVATION",
+            "prior_date": "2026-10-19",
+            "series": "DGS2",
+            "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2",
+            "value": 4.79
+          },
+          {
+            "change": -0.16450000000000387,
+            "date": "2026-10-16",
+            "freshness": "DAILY_OBSERVATION",
+            "prior_date": "2026-10-15",
+            "series": "DTWEXBGS",
+            "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DTWEXBGS",
+            "value": 121.4048
+          }
+        ],
+        "status": "VERIFIED",
+        "summary": "4 dated official release headlines; 3 daily macro series measured."
+      }
+    }
+  ],
+  "execution_authorized": false,
+  "interpretation_authority": "UNVERIFIED_MODEL_INFERENCE",
+  "oracle": {
+    "finding": "4 dated official release headlines; 3 daily macro series measured.",
+    "status": "VERIFIED"
+  },
+  "paths": [
+    "automation_intelligence/native_research_v1/cycles/native-39735678251-1/evidence.json",
+    "automation_intelligence/native_research_v1/cycles/native-39735678251-1/macro.json"
+  ],
+  "schema_version": "icarus-mcp-event-v1",
+  "severity": "MEDIUM",
+  "source": "MACRO_AUTOMATION",
+  "status": "VERIFIED",
+  "summary": "4 dated official release headlines; 3 daily macro series measured.",
+  "supermesh_x": {
+    "finding": "4 dated official release headlines; 3 daily macro series measured.",
+    "status": "VERIFIED"
+  },
+  "surface": [
+    "macro native research"
+  ],
+  "worker": "GITHUB_NATIVE_RESEARCH_V1"
+}

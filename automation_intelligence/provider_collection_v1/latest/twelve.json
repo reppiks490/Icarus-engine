@@ -1,41 +1,84 @@
 {
   "catalog": {
-    "asset_datasets_collected": 2,
+    "asset_datasets_collected": 1,
     "asset_templates": 162,
     "assets": 72197,
-    "collected_operations": 8,
+    "collected_operations": 7,
     "denied_operations": 1,
     "operations": 185,
-    "pending_pages": 371,
+    "pending_pages": 397,
     "qualification": "INCOMPLETE_UNTIL_EVERY_OPERATION_ASSET_PAGE_TIME_RANGE_AND_TRANSPORT_IS_VERIFIED",
     "unresolved_operations": 4
   },
   "chatgpt_tokens_used": 0,
   "checkpoint_status": "ENCRYPTED_AES256_GCM",
-  "completed_at_utc": "2026-10-22T04:41:25.922037+00:00",
+  "completed_at_utc": "2026-10-22T10:14:12.192840+00:00",
   "databento_excluded": true,
   "execution_authorized": false,
   "paid_model_calls": 0,
   "providers": {
     "twelve": {
-      "archive_status": [
-        "ENCRYPTED_AES256_GCM"
-      ],
+      "archive_status": [],
       "blocked": [
         {
           "asset_specific": true,
           "failure_code": "403",
-          "operation": "twelve:get:/fund_holders"
+          "operation": "twelve:get:/income_statement"
         },
         {
           "asset_specific": true,
           "failure_code": "404",
-          "operation": "twelve:get:/sub"
+          "operation": "twelve:get:/trima"
         },
         {
           "asset_specific": true,
           "failure_code": "403",
-          "operation": "twelve:get:/growth_estimates"
+          "operation": "twelve:get:/income_statement/consolidated"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "404",
+          "operation": "twelve:get:/tsf"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "403",
+          "operation": "twelve:get:/insider_transactions"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "404",
+          "operation": "twelve:get:/typprice"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "403",
+          "operation": "twelve:get:/institutional_holders"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "404",
+          "operation": "twelve:get:/ultosc"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "403",
+          "operation": "twelve:get:/ipo_calendar"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "404",
+          "operation": "twelve:get:/var"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "403",
+          "operation": "twelve:get:/key_executives"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "404",
+          "operation": "twelve:get:/vwap"
         },
         {
           "asset_specific": true,
@@ -45,7 +88,17 @@
         {
           "asset_specific": true,
           "failure_code": "404",
-          "operation": "twelve:get:/stoch"
+          "operation": "twelve:get:/wclprice"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "404",
+          "operation": "twelve:get:/adx"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "404",
+          "operation": "twelve:get:/willr"
         },
         {
           "asset_specific": true,
@@ -55,82 +108,32 @@
         {
           "asset_specific": true,
           "failure_code": "404",
-          "operation": "twelve:get:/add"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "403",
-          "operation": "twelve:get:/supertrend_heikinashicandles"
+          "operation": "twelve:get:/wma"
         },
         {
           "asset_specific": true,
           "failure_code": "404",
-          "operation": "twelve:get:/stochf"
+          "operation": "twelve:get:/ht_trendline"
         },
         {
           "asset_specific": true,
           "failure_code": "404",
-          "operation": "twelve:get:/ht_phasor"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "404",
-          "operation": "twelve:get:/t3ma"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "404",
-          "operation": "twelve:get:/stochrsi"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "403",
-          "operation": "twelve:get:/tax_info"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "404",
-          "operation": "twelve:get:/adosc"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "404",
-          "operation": "twelve:get:/tema"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "404",
-          "operation": "twelve:get:/sub"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "404",
-          "operation": "twelve:get:/time_series"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "404",
-          "operation": "twelve:get:/ht_sine"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "404",
-          "operation": "twelve:get:/trange"
+          "operation": "twelve:get:/ad"
         }
       ],
-      "collected_pages": 1,
-      "collected_rows": 3,
+      "collected_pages": 0,
+      "collected_rows": 0,
       "credential_present": true,
       "endpoint_count": 185,
       "requests": 20,
       "research_features": [],
-      "status": "COLLECTED_PARTIAL",
-      "substantive_work_performed": true
+      "status": "BLOCKED",
+      "substantive_work_performed": false
     }
   },
   "raw_payloads_public": false,
   "requests": 20,
-  "run_id": "providers-39723309665-1-twelve",
+  "run_id": "providers-39760651945-1-twelve",
   "schema_version": "icarus-provider-collection-cycle-v1",
-  "started_at_utc": "2026-10-22T04:36:57.201154+00:00"
+  "started_at_utc": "2026-10-22T10:09:42.974798+00:00"
 }

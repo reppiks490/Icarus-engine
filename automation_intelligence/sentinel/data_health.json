@@ -80,16 +80,16 @@
  "counts": {
   "BLOCKED": 7,
   "DEGRADED": 6,
-  "FAILING": 5,
-  "OK": 66,
+  "FAILING": 4,
+  "OK": 67,
   "STALE": 2
  },
  "depth": {
   "budgets": {
    "corpus__primary": {
     "cap_usd": 3.54,
-    "left_usd": 1.57,
-    "spent_usd": 1.98
+    "left_usd": 1.42,
+    "spent_usd": 2.12
    },
    "corpus__secondary": {
     "cap_usd": 2.19,
@@ -153,10 +153,10 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-10-22T06:44:42+00:00",
+ "generated_at": "2026-10-22T06:49:34+00:00",
  "research": {
   "champions": 0,
-  "cl_last_run": "2026-10-21T06:53:10.211145+00:00",
+  "cl_last_run": "2026-10-22T06:49:13.618543+00:00",
   "pulse": {
    "CANDLES": "REJECTED",
    "HA_HA_FILLS": "ARTIFACT_REFERENCE",
@@ -203,19 +203,13 @@
    "why": "latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/39698195017"
   },
   {
-   "age_h": 23.9,
-   "source": "workflow:cl-lab.yml",
-   "verdict": "FAILING",
-   "why": "latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/39697948869"
-  },
-  {
    "age_h": null,
    "source": "workflow:databento-depth-research-context.yml",
    "verdict": "FAILING",
    "why": "latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/39661356567"
   },
   {
-   "age_h": 2.1,
+   "age_h": 2.2,
    "path": "automation_intelligence/provider_collection_v1/latest/alpaca.json",
    "rows": 0,
    "source": "provider:alpaca",
@@ -223,7 +217,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 5.0,
+   "age_h": 5.1,
    "path": "automation_intelligence/provider_collection_v1/latest/finnhub.json",
    "rows": 0,
    "source": "provider:finnhub",
@@ -231,7 +225,7 @@
    "why": "BLOCKED_AUTHENTICATION"
   },
   {
-   "age_h": 2.0,
+   "age_h": 2.1,
    "path": "automation_intelligence/provider_collection_v1/latest/fred.json",
    "rows": 0,
    "source": "provider:fred",
@@ -239,7 +233,7 @@
    "why": "BLOCKED"
   },
   {
-   "age_h": 2.1,
+   "age_h": 2.2,
    "path": "automation_intelligence/provider_collection_v1/latest/intrinio.json",
    "rows": 0,
    "source": "provider:intrinio",
@@ -247,7 +241,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 2.1,
+   "age_h": 2.2,
    "path": "automation_intelligence/provider_collection_v1/latest/quiver.json",
    "rows": 0,
    "source": "provider:quiver",
@@ -255,7 +249,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 2.1,
+   "age_h": 2.2,
    "path": "automation_intelligence/provider_collection_v1/latest/tickstream.json",
    "rows": 0,
    "source": "provider:tickstream",
@@ -263,7 +257,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 5.0,
+   "age_h": 5.1,
    "path": "automation_intelligence/provider_collection_v1/latest/unusual_whales.json",
    "rows": 0,
    "source": "provider:unusual_whales",
@@ -277,10 +271,10 @@
    "why": "last success 5.0 h ago (expected within 3 h)"
   },
   {
-   "age_h": 4.9,
+   "age_h": 5.0,
    "source": "workflow:provider-supplemental-promote.yml",
    "verdict": "STALE",
-   "why": "last success 4.9 h ago (expected within 3 h)"
+   "why": "last success 5.0 h ago (expected within 3 h)"
   },
   {
    "age_h": 5.0,
@@ -291,7 +285,7 @@
    "why": "65 rows; 3 endpoints denied by plan"
   },
   {
-   "age_h": 2.1,
+   "age_h": 2.2,
    "path": "automation_intelligence/provider_collection_v1/latest/bybit.json",
    "rows": 0,
    "source": "provider:bybit",
@@ -338,378 +332,378 @@
    "why": "247 events, 109 high impact"
   },
   {
-   "age_h": 24.2,
-   "rows": 5613,
+   "age_h": 0.3,
+   "rows": 5901,
    "source": "feed:btcusd_cb_5m",
    "verdict": "OK",
-   "why": "5613 rows to 2026-10-21T06:30"
+   "why": "5901 rows to 2026-10-22T06:30"
+  },
+  {
+   "age_h": 6.9,
+   "rows": 224928,
+   "source": "feed:btcusdt_5m",
+   "verdict": "OK",
+   "why": "224928 rows to 2026-10-21T23:55"
   },
   {
    "age_h": 30.8,
-   "rows": 224640,
-   "source": "feed:btcusdt_5m",
-   "verdict": "OK",
-   "why": "224640 rows to 2026-10-20T23:55"
-  },
-  {
-   "age_h": 54.7,
-   "rows": 9252,
+   "rows": 9253,
    "source": "feed:cboe_skew",
    "verdict": "OK",
-   "why": "9252 rows to 2026-10-20T00:00"
+   "why": "9253 rows to 2026-10-21T00:00"
   },
   {
-   "age_h": 54.7,
-   "rows": 9298,
+   "age_h": 30.8,
+   "rows": 9299,
    "source": "feed:cboe_vix",
    "verdict": "OK",
-   "why": "9298 rows to 2026-10-20T00:00"
+   "why": "9299 rows to 2026-10-21T00:00"
   },
   {
-   "age_h": 54.7,
-   "rows": 4298,
+   "age_h": 30.8,
+   "rows": 4299,
    "source": "feed:cboe_vix3m",
    "verdict": "OK",
-   "why": "4298 rows to 2026-10-20T00:00"
+   "why": "4299 rows to 2026-10-21T00:00"
   },
   {
-   "age_h": 54.7,
-   "rows": 3972,
+   "age_h": 30.8,
+   "rows": 3973,
    "source": "feed:cboe_vix9d",
    "verdict": "OK",
-   "why": "3972 rows to 2026-10-20T00:00"
+   "why": "3973 rows to 2026-10-21T00:00"
   },
   {
-   "age_h": 54.7,
-   "rows": 5129,
+   "age_h": 30.8,
+   "rows": 5130,
    "source": "feed:cboe_vvix",
    "verdict": "OK",
-   "why": "5129 rows to 2026-10-20T00:00"
+   "why": "5130 rows to 2026-10-21T00:00"
   },
   {
-   "age_h": 222.7,
+   "age_h": 222.8,
    "rows": 186182,
    "source": "feed:cftc_disaggregated_all",
    "verdict": "OK",
    "why": "186182 rows to 2026-10-13T00:00"
   },
   {
-   "age_h": 222.7,
+   "age_h": 222.8,
    "rows": 47027,
    "source": "feed:cftc_tff_all",
    "verdict": "OK",
    "why": "47027 rows to 2026-10-13T00:00"
   },
   {
-   "age_h": 222.7,
+   "age_h": 222.8,
    "rows": 2224,
    "source": "feed:cftc_tff_nasdaq",
    "verdict": "OK",
    "why": "2224 rows to 2026-10-13T00:00"
   },
   {
-   "age_h": 32.7,
-   "rows": 151442,
+   "age_h": 8.7,
+   "rows": 151718,
    "source": "feed:databento_6a_5m",
    "verdict": "OK",
-   "why": "151442 rows to 2026-10-20T22:05"
+   "why": "151718 rows to 2026-10-21T22:05"
   },
   {
-   "age_h": 32.7,
-   "rows": 151017,
+   "age_h": 8.7,
+   "rows": 151293,
    "source": "feed:databento_6b_5m",
    "verdict": "OK",
-   "why": "151017 rows to 2026-10-20T22:05"
+   "why": "151293 rows to 2026-10-21T22:05"
   },
   {
-   "age_h": 32.7,
-   "rows": 151728,
+   "age_h": 8.7,
+   "rows": 152004,
    "source": "feed:databento_6e_5m",
    "verdict": "OK",
-   "why": "151728 rows to 2026-10-20T22:05"
+   "why": "152004 rows to 2026-10-21T22:05"
   },
   {
-   "age_h": 32.7,
-   "rows": 151660,
+   "age_h": 8.7,
+   "rows": 151936,
    "source": "feed:databento_6j_5m",
    "verdict": "OK",
-   "why": "151660 rows to 2026-10-20T22:05"
+   "why": "151936 rows to 2026-10-21T22:05"
   },
   {
-   "age_h": 32.7,
-   "rows": 144244,
+   "age_h": 8.7,
+   "rows": 144513,
    "source": "feed:databento_btc_5m",
    "verdict": "OK",
-   "why": "144244 rows to 2026-10-20T22:05"
+   "why": "144513 rows to 2026-10-21T22:05"
   },
   {
-   "age_h": 32.7,
-   "rows": 151187,
+   "age_h": 8.7,
+   "rows": 151463,
    "source": "feed:databento_cl_5m",
    "verdict": "OK",
-   "why": "151187 rows to 2026-10-20T22:05"
+   "why": "151463 rows to 2026-10-21T22:05"
   },
   {
-   "age_h": 32.7,
-   "rows": 151083,
+   "age_h": 8.7,
+   "rows": 151359,
    "source": "feed:databento_es_5m",
    "verdict": "OK",
-   "why": "151083 rows to 2026-10-20T22:05"
+   "why": "151359 rows to 2026-10-21T22:05"
   },
   {
-   "age_h": 32.7,
-   "rows": 150884,
+   "age_h": 8.7,
+   "rows": 151160,
    "source": "feed:databento_gc_5m",
    "verdict": "OK",
-   "why": "150884 rows to 2026-10-20T22:05"
+   "why": "151160 rows to 2026-10-21T22:05"
   },
   {
-   "age_h": 32.7,
-   "rows": 150750,
+   "age_h": 8.7,
+   "rows": 151025,
    "source": "feed:databento_hg_5m",
    "verdict": "OK",
-   "why": "150750 rows to 2026-10-20T22:05"
+   "why": "151025 rows to 2026-10-21T22:05"
   },
   {
-   "age_h": 32.7,
-   "rows": 151009,
+   "age_h": 8.7,
+   "rows": 151285,
    "source": "feed:databento_m2k_5m",
    "verdict": "OK",
-   "why": "151009 rows to 2026-10-20T22:05"
+   "why": "151285 rows to 2026-10-21T22:05"
   },
   {
-   "age_h": 32.7,
-   "rows": 157324,
+   "age_h": 8.7,
+   "rows": 157609,
    "source": "feed:databento_mbt_5m",
    "verdict": "OK",
-   "why": "157324 rows to 2026-10-20T22:05"
+   "why": "157609 rows to 2026-10-21T22:05"
   },
   {
-   "age_h": 32.7,
-   "rows": 150336,
+   "age_h": 8.7,
+   "rows": 150612,
    "source": "feed:databento_mcl_5m",
    "verdict": "OK",
-   "why": "150336 rows to 2026-10-20T22:05"
+   "why": "150612 rows to 2026-10-21T22:05"
   },
   {
-   "age_h": 32.7,
-   "rows": 151083,
+   "age_h": 8.7,
+   "rows": 151359,
    "source": "feed:databento_mes_5m",
    "verdict": "OK",
-   "why": "151083 rows to 2026-10-20T22:05"
+   "why": "151359 rows to 2026-10-21T22:05"
   },
   {
-   "age_h": 32.7,
-   "rows": 150575,
+   "age_h": 8.7,
+   "rows": 150851,
    "source": "feed:databento_mgc_5m",
    "verdict": "OK",
-   "why": "150575 rows to 2026-10-20T22:05"
+   "why": "150851 rows to 2026-10-21T22:05"
   },
   {
-   "age_h": 32.7,
-   "rows": 151083,
+   "age_h": 8.7,
+   "rows": 151359,
    "source": "feed:databento_mnq_5m",
    "verdict": "OK",
-   "why": "151083 rows to 2026-10-20T22:05"
+   "why": "151359 rows to 2026-10-21T22:05"
   },
   {
-   "age_h": 32.7,
-   "rows": 151051,
+   "age_h": 8.7,
+   "rows": 151327,
    "source": "feed:databento_mym_5m",
    "verdict": "OK",
-   "why": "151051 rows to 2026-10-20T22:05"
+   "why": "151327 rows to 2026-10-21T22:05"
   },
   {
-   "age_h": 32.7,
-   "rows": 150582,
+   "age_h": 8.7,
+   "rows": 150858,
    "source": "feed:databento_ng_5m",
    "verdict": "OK",
-   "why": "150582 rows to 2026-10-20T22:05"
+   "why": "150858 rows to 2026-10-21T22:05"
   },
   {
-   "age_h": 32.7,
-   "rows": 151083,
+   "age_h": 8.7,
+   "rows": 151359,
    "source": "feed:databento_nq_5m",
    "verdict": "OK",
-   "why": "151083 rows to 2026-10-20T22:05"
+   "why": "151359 rows to 2026-10-21T22:05"
   },
   {
-   "age_h": 32.7,
-   "rows": 131943,
+   "age_h": 8.7,
+   "rows": 132205,
    "source": "feed:databento_pa_5m",
    "verdict": "OK",
-   "why": "131943 rows to 2026-10-20T22:05"
+   "why": "132205 rows to 2026-10-21T22:05"
   },
   {
-   "age_h": 32.7,
-   "rows": 150237,
+   "age_h": 8.7,
+   "rows": 150509,
    "source": "feed:databento_pl_5m",
    "verdict": "OK",
-   "why": "150237 rows to 2026-10-20T22:00"
+   "why": "150509 rows to 2026-10-21T22:05"
   },
   {
-   "age_h": 32.7,
-   "rows": 150893,
+   "age_h": 8.7,
+   "rows": 151169,
    "source": "feed:databento_rty_5m",
    "verdict": "OK",
-   "why": "150893 rows to 2026-10-20T22:05"
+   "why": "151169 rows to 2026-10-21T22:05"
   },
   {
-   "age_h": 32.7,
-   "rows": 150349,
+   "age_h": 8.7,
+   "rows": 150624,
    "source": "feed:databento_si_5m",
    "verdict": "OK",
-   "why": "150349 rows to 2026-10-20T22:05"
+   "why": "150624 rows to 2026-10-21T22:05"
   },
   {
-   "age_h": 32.7,
-   "rows": 149739,
+   "age_h": 8.7,
+   "rows": 150015,
    "source": "feed:databento_sil_5m",
    "verdict": "OK",
-   "why": "149739 rows to 2026-10-20T22:05"
+   "why": "150015 rows to 2026-10-21T22:05"
   },
   {
-   "age_h": 32.7,
-   "rows": 125154,
+   "age_h": 9.9,
+   "rows": 125366,
    "source": "feed:databento_sr3_5m",
    "verdict": "OK",
-   "why": "125154 rows to 2026-10-20T22:05"
+   "why": "125366 rows to 2026-10-21T20:55"
   },
   {
-   "age_h": 32.7,
-   "rows": 151015,
+   "age_h": 8.7,
+   "rows": 151291,
    "source": "feed:databento_ym_5m",
    "verdict": "OK",
-   "why": "151015 rows to 2026-10-20T22:05"
+   "why": "151291 rows to 2026-10-21T22:05"
   },
   {
-   "age_h": 32.7,
-   "rows": 149043,
+   "age_h": 8.7,
+   "rows": 149314,
    "source": "feed:databento_zb_5m",
    "verdict": "OK",
-   "why": "149043 rows to 2026-10-20T22:05"
+   "why": "149314 rows to 2026-10-21T22:05"
   },
   {
-   "age_h": 36.5,
-   "rows": 108896,
+   "age_h": 12.6,
+   "rows": 109106,
    "source": "feed:databento_zc_5m",
    "verdict": "OK",
-   "why": "108896 rows to 2026-10-20T18:15"
+   "why": "109106 rows to 2026-10-21T18:15"
   },
   {
-   "age_h": 32.7,
-   "rows": 149756,
+   "age_h": 8.7,
+   "rows": 150029,
    "source": "feed:databento_zf_5m",
    "verdict": "OK",
-   "why": "149756 rows to 2026-10-20T22:05"
+   "why": "150029 rows to 2026-10-21T22:05"
   },
   {
-   "age_h": 32.7,
-   "rows": 150685,
+   "age_h": 8.7,
+   "rows": 150961,
    "source": "feed:databento_zn_5m",
    "verdict": "OK",
-   "why": "150685 rows to 2026-10-20T22:05"
+   "why": "150961 rows to 2026-10-21T22:05"
   },
   {
-   "age_h": 36.5,
-   "rows": 111340,
+   "age_h": 12.6,
+   "rows": 111546,
    "source": "feed:databento_zs_5m",
    "verdict": "OK",
-   "why": "111340 rows to 2026-10-20T18:15"
+   "why": "111546 rows to 2026-10-21T18:15"
   },
   {
-   "age_h": 32.7,
-   "rows": 148343,
+   "age_h": 8.7,
+   "rows": 148612,
    "source": "feed:databento_zt_5m",
    "verdict": "OK",
-   "why": "148343 rows to 2026-10-20T22:05"
+   "why": "148612 rows to 2026-10-21T22:05"
   },
   {
-   "age_h": 36.5,
-   "rows": 109738,
+   "age_h": 12.6,
+   "rows": 109948,
    "source": "feed:databento_zw_5m",
    "verdict": "OK",
-   "why": "109738 rows to 2026-10-20T18:15"
+   "why": "109948 rows to 2026-10-21T18:15"
   },
   {
-   "age_h": 30.8,
-   "rows": 224640,
+   "age_h": 6.9,
+   "rows": 224928,
    "source": "feed:ethusdt_5m",
    "verdict": "OK",
-   "why": "224640 rows to 2026-10-20T23:55"
+   "why": "224928 rows to 2026-10-21T23:55"
   },
   {
-   "age_h": 78.7,
-   "rows": 26409,
+   "age_h": 54.8,
+   "rows": 26410,
    "source": "feed:fred_dff",
    "verdict": "OK",
-   "why": "26409 rows to 2026-10-19T00:00"
+   "why": "26410 rows to 2026-10-20T00:00"
   },
   {
-   "age_h": 78.7,
-   "rows": 16905,
+   "age_h": 54.8,
+   "rows": 16906,
    "source": "feed:fred_dgs10",
    "verdict": "OK",
-   "why": "16905 rows to 2026-10-19T00:00"
+   "why": "16906 rows to 2026-10-20T00:00"
   },
   {
-   "age_h": 78.7,
-   "rows": 13145,
-   "source": "feed:fred_dgs2",
-   "verdict": "OK",
-   "why": "13145 rows to 2026-10-19T00:00"
-  },
-  {
-   "age_h": 54.7,
-   "rows": 10643,
-   "source": "feed:fred_nasdaq100",
-   "verdict": "OK",
-   "why": "10643 rows to 2026-10-20T00:00"
-  },
-  {
-   "age_h": 54.7,
+   "age_h": 54.8,
    "rows": 13146,
-   "source": "feed:fred_t10y2y",
+   "source": "feed:fred_dgs2",
    "verdict": "OK",
    "why": "13146 rows to 2026-10-20T00:00"
   },
   {
-   "age_h": 78.7,
-   "rows": 9600,
-   "source": "feed:fred_vixcls",
+   "age_h": 30.8,
+   "rows": 10644,
+   "source": "feed:fred_nasdaq100",
    "verdict": "OK",
-   "why": "9600 rows to 2026-10-19T00:00"
+   "why": "10644 rows to 2026-10-21T00:00"
   },
   {
-   "age_h": 6.7,
+   "age_h": 30.8,
+   "rows": 13147,
+   "source": "feed:fred_t10y2y",
+   "verdict": "OK",
+   "why": "13147 rows to 2026-10-21T00:00"
+  },
+  {
+   "age_h": 54.8,
+   "rows": 9601,
+   "source": "feed:fred_vixcls",
+   "verdict": "OK",
+   "why": "9601 rows to 2026-10-20T00:00"
+  },
+  {
+   "age_h": 6.8,
    "rows": 11154,
    "source": "feed:treasury_auctions",
    "verdict": "OK",
    "why": "11154 rows to 2026-10-22T00:00"
   },
   {
-   "age_h": 78.7,
-   "rows": 8416,
+   "age_h": 54.8,
+   "rows": 8417,
    "source": "feed:treasury_debt_to_penny",
    "verdict": "OK",
-   "why": "8416 rows to 2026-10-19T00:00"
+   "why": "8417 rows to 2026-10-20T00:00"
   },
   {
-   "age_h": 78.7,
-   "rows": 16706,
+   "age_h": 54.8,
+   "rows": 16710,
    "source": "feed:treasury_operating_cash",
    "verdict": "OK",
-   "why": "16706 rows to 2026-10-19T00:00"
+   "why": "16710 rows to 2026-10-20T00:00"
   },
   {
-   "age_h": 24.2,
-   "rows": 196931,
+   "age_h": 0.3,
+   "rows": 196949,
    "source": "fred_alfred",
    "verdict": "OK",
    "why": "39/39 series ok"
   },
   {
-   "age_h": 2.0,
+   "age_h": 2.1,
    "path": "automation_intelligence/provider_collection_v1/latest/massive.json",
    "rows": 20000,
    "source": "provider:massive",
@@ -717,17 +711,23 @@
    "why": "20000 rows"
   },
   {
-   "age_h": 0.0,
+   "age_h": 0.1,
    "rows": 2377,
    "source": "sec_edgar",
    "verdict": "OK",
    "why": "2377 filings"
   },
   {
-   "age_h": 11.3,
+   "age_h": 0.0,
+   "source": "workflow:cl-lab.yml",
+   "verdict": "OK",
+   "why": "last success 0.0 h ago"
+  },
+  {
+   "age_h": 11.4,
    "source": "workflow:databento-depth-corpus.yml",
    "verdict": "OK",
-   "why": "last success 11.3 h ago"
+   "why": "last success 11.4 h ago"
   },
   {
    "age_h": 6.5,
@@ -736,34 +736,34 @@
    "why": "last success 6.5 h ago"
   },
   {
-   "age_h": 5.8,
+   "age_h": 5.9,
    "source": "workflow:external-data-fabric.yml",
    "verdict": "OK",
-   "why": "last success 5.8 h ago"
+   "why": "last success 5.9 h ago"
+  },
+  {
+   "age_h": 0.2,
+   "source": "workflow:interrepo-peer-intelligence.yml",
+   "verdict": "OK",
+   "why": "last success 0.2 h ago"
   },
   {
    "age_h": 0.1,
-   "source": "workflow:interrepo-peer-intelligence.yml",
+   "source": "workflow:native-five-research.yml",
    "verdict": "OK",
    "why": "last success 0.1 h ago"
   },
   {
-   "age_h": 0.0,
-   "source": "workflow:native-five-research.yml",
-   "verdict": "OK",
-   "why": "last success 0.0 h ago"
-  },
-  {
-   "age_h": 1.2,
+   "age_h": 1.3,
    "source": "workflow:native-provider-access.yml",
    "verdict": "OK",
-   "why": "last success 1.2 h ago"
+   "why": "last success 1.3 h ago"
   },
   {
-   "age_h": 1.9,
+   "age_h": 2.0,
    "source": "workflow:official-economic-events.yml",
    "verdict": "OK",
-   "why": "last success 1.9 h ago"
+   "why": "last success 2.0 h ago"
   },
   {
    "age_h": 2.0,
@@ -772,16 +772,16 @@
    "why": "last success 2.0 h ago"
   },
   {
-   "age_h": 0.0,
+   "age_h": 0.1,
    "source": "workflow:sec-edgar-data.yml",
    "verdict": "OK",
-   "why": "last success 0.0 h ago"
+   "why": "last success 0.1 h ago"
   },
   {
-   "age_h": 77.1,
+   "age_h": 77.2,
    "source": "workflow:tests.yml",
    "verdict": "OK",
-   "why": "last success 77.1 h ago"
+   "why": "last success 77.2 h ago"
   }
  ]
 }

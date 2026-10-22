@@ -1431,56 +1431,40 @@
     {
       "actor": "Icarus 2 / Codex",
       "branch": "icarus2/federation-integration-20261020",
-      "cooperates_with": [],
-      "coordination_mode": "independent",
+      "cooperates_with": [
+        "icarus1-20261020-system-recovery"
+      ],
+      "coordination_mode": "cooperate",
       "declared_paths": [
-        "icarus_engine/brain_sync.py",
-        "tests_engine/test_brain_sync.py",
-        "coordination/handoffs/icarus2-restart-verification-20261021.md"
+        "tests_engine/browser_depth.cjs"
       ],
       "declared_targets": [
         {
-          "path": "icarus_engine/brain_sync.py",
+          "path": "tests_engine/browser_depth.cjs",
           "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "tests_engine/test_brain_sync.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "coordination/handoffs/icarus2-restart-verification-20261021.md",
-          "repo": "reppiks490/icarus-owner-actions"
         }
       ],
       "dependencies": [
-        "session:icarus1-20261020-system-recovery"
+        "session:icarus1-20261020-system-recovery",
+        "github-ci:PR466",
+        "external:owner-PC-source-adoption-and-relaunch"
       ],
       "goal": "Owner-authorized recurring cross-repository integration, repair and validation in tandem with Icarus 1; distinct specialist swarms, evidence-bound work, durable GitHub handoffs. Prior stopped tasks remain stopped.",
       "home_repo": "reppiks490/icarus-owner-actions",
-      "last_event_at_utc": "2026-10-21T21:44:33.170072Z",
-      "latest_summary": "Independently verified native Brain event inventory defect. At Engineb83, exact directory tree54e042d has1076JSON files, ContentsAPI returns1000, all76omissions are allowlisted MACRO_AUTOMATION audit envelopes. Consumer slices before processed checks and can reportgreen; owner-runtime actual misses unobserved. Claim only Brain sync and its existing test module for regression-first complete pinned-tree fallback, explicit truncation rejection and bounded unseen-blob progress; preserve hashes, strict contract, research-only authority and gates. No producer/scheduler/recovery/runtime server changes. Existing open BrainPR330 touches different files.",
-      "latest_type": "CLAIM",
+      "last_event_at_utc": "2026-10-22T04:05:35Z",
+      "latest_summary": "Reviewed PR465 implementation: readout/topology effect restarts batch changed nodes and use one shared layout flush; PR465 exact-head Linux, Windows, and browser checks pass. Owner restart source is Icarus1 PR462 branch icarus1/restart-readiness-20261020 at 38d5328, so PR465 on main alone would not repair the running checkout. Cherry-picked the scoped fix onto that exact branch as PR466 (head 1c818c27), without changing PR462 or owner state. Focused real Chromium contract and full browser_depth pass on stacked source; syntax and diff checks pass. PR466 exact-head hosted checks are pending and independent Icarus1 review is requested. Owner PC remains outside cloud control; no restart completion claimed.",
+      "latest_type": "UPDATE",
       "model_family": "openai",
-      "phase": "bounded-brain-event-inventory-repair",
+      "phase": "stacked-restart-branch-fix-open-ci-pending",
       "pr": null,
       "reclaimable": false,
       "reserved_paths": [
-        "icarus_engine/brain_sync.py",
-        "tests_engine/test_brain_sync.py",
-        "coordination/handoffs/icarus2-restart-verification-20261021.md"
+        "tests_engine/browser_depth.cjs"
       ],
       "reserved_targets": [
         {
-          "path": "icarus_engine/brain_sync.py",
+          "path": "tests_engine/browser_depth.cjs",
           "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "tests_engine/test_brain_sync.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "coordination/handoffs/icarus2-restart-verification-20261021.md",
-          "repo": "reppiks490/icarus-owner-actions"
         }
       ],
       "session_id": "icarus2-20261020-federation-integration",
@@ -1495,7 +1479,7 @@
     "stale": 17,
     "terminal": 24
   },
-  "generated_at_utc": "2026-10-22T00:44:16.929164Z",
+  "generated_at_utc": "2026-10-22T05:27:42.103253Z",
   "owner_status": {
     "claude": {
       "active": false,

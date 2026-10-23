@@ -1,4 +1,4 @@
-# Data health — 2026-10-23 21:45 UTC
+# Data health — 2026-10-23 22:15 UTC
 
 **FAILING** 4 · **BLOCKED** 7 · **STALE** 2 · **DEGRADED** 5 · **OK** 68
 
@@ -17,12 +17,12 @@
 | provider:tickstream | BLOCKED | no key reaches the runner |
 | provider:twelve | BLOCKED | BLOCKED |
 | provider:unusual_whales | BLOCKED | BLOCKED_AUTHENTICATION |
-| workflow:provider-supplemental-collection.yml | STALE | last success 3.1 h ago (expected within 3 h) |
-| workflow:provider-supplemental-promote.yml | STALE | last success 3.1 h ago (expected within 3 h) |
+| workflow:provider-supplemental-collection.yml | STALE | last success 3.6 h ago (expected within 3 h) |
+| workflow:provider-supplemental-promote.yml | STALE | last success 3.6 h ago (expected within 3 h) |
 | provider:alphavantage | DEGRADED | 44745 rows; 3 endpoints denied by plan |
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
-| provider:eodhd | DEGRADED | 2510 rows; 29 endpoints denied by plan |
-| provider:fmp | DEGRADED | 53 rows; 13 endpoints denied by plan |
+| provider:eodhd | DEGRADED | dedicated fabric live (11 calls, 2510 known rows); generic sampler blocked; 29 endpoints denied by plan |
+| provider:fmp | DEGRADED | 53 rows; 18 endpoints denied by plan |
 | provider:tiingo | DEGRADED | 47527 rows; 4 endpoints denied by plan |
 
 ## Delivering

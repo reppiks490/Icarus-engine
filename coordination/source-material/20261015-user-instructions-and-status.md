@@ -29,9 +29,17 @@ This index separates the owner's visible chat instructions from what repository 
 
 ## Active work from this reading
 
-1. Finish exact-head CI for the all-four 2 fps transcript follow-up and merge only when all checks pass.
+1. All-four visible-text transcription is complete: [Icarus-engine #171](https://github.com/reppiks490/Icarus-engine/pull/171) merged at `7b606594a8e66400a4a2d6dbed36e186c54097f7`; all 12 listed exact-head checks pass.
 2. Review the updated A200 draft and its exact-head CI; continue requiring verified identity, entitlement, exchange-session schedules, and bar evidence before marking assets connected or Pulse-qualified.
 3. Recover or replace the unpublished broker implementation from the named platforms' official API/demo contracts, keeping `CODED`, mock-tested, sandbox-verified, and account-connected as distinct statuses.
 4. Preserve Pulse/champion authority boundaries; add time-aligned historical context only with leak-safe, as-of evidence and a reviewed interface.
 5. Reconcile the 22-subsystem instruction with the 202-item owner register, later continuations, and actual code/runtime evidence; then implement missing named requirements with exact repo/path/build/test evidence.
 6. Keep installation, data feed, strategy qualification, and broker execution as separately verified states.
+
+## Continuation status (2026-10-16)
+
+- The #377 browser workflow failed in the unrelated cinema contract when Playwright could not click the sound opt-in inside the scrollable appearance drawer. Test-only fix [Icarus #384](https://github.com/reppiks490/Icarus/pull/384), head `17b5540ad6477943ad2fc85dc520c6ee0831806b`, passed exact-head browser, Linux and Windows checks and merged as `2368863cbc24852c0d90a70aa41733a9075fa80f`. #377 incorporated the fix at head `e043394f7e027971755ad10a7796ce24d37a8f7f`; its fresh browser and other exact-head checks are pending.
+- RT01 follow-up [Icarus #385](https://github.com/reppiks490/Icarus/pull/385), head `e193bfd29407393a90f472d9d28765b24d330409`, carries structured HTTP 409 responses for command-center flatten conflicts onto current main. Four focused suites pass locally; exact-head CI is pending. No live execution or broker connection was used.
+- Review of #381 found no actionable order-reference replay issue; its focused venue suite passed (19 tests).
+- Review notes are open for #382 (candidate path matching does not check HTTP method and normalizes away trailing slashes) and #380 (proxy bearer validation calls `/api/access`, creating duplicate durable access/failure events). A bounded follow-up implementation for #380 is underway; no fix is claimed complete yet.
+- The current #377 UI update adds MFE/MAE fields that are not present in `MirroredEmulator.summary()` or `/status/public`; a PR comment requests implementing and testing the backend metrics or removing those columns before relying on the display.

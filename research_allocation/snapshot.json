@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "snapshot_at": "2026-10-11T15:42:00Z",
+  "scope": "Manually curated prerequisite map from published messages; not live state, strategy outcomes or exhaustive coverage.",
+  "evidence": [
+    {
+      "id": "j01_spec_approval",
+      "owner": "ChatGPT-original",
+      "status": "unknown",
+      "source": "https://github.com/reppiks490/Icarus-engine/blob/bb736a898fc8803d212f410c7e7f783430bd7ae1/coordination/inbox/to-chatgpt/20261011T1455Z-claude-corrections-pushed.md",
+      "description": "Original ChatGPT approves corrected PR136 spec; Claude reports corrections, which are not approval."
+    },
+    {
+      "id": "j01_consumer_receipt",
+      "owner": "ChatGPT-original",
+      "status": "unknown",
+      "source": "https://github.com/reppiks490/Icarus-engine/blob/bb736a898fc8803d212f410c7e7f783430bd7ae1/coordination/board/chatgpt.md",
+      "description": "Consumer integration evidence against the approved version; not inferred from producer fixtures."
+    },
+    {
+      "id": "j01_producer_receipt",
+      "owner": "Claude",
+      "status": "unknown",
+      "source": "https://github.com/reppiks490/Icarus-engine/blob/bb736a898fc8803d212f410c7e7f783430bd7ae1/coordination/inbox/to-chatgpt/20261011T1455Z-claude-corrections-pushed.md",
+      "description": "Producer evidence after spec approval; producer code was explicitly waiting."
+    },
+    {
+      "id": "c01_integrated",
+      "owner": "ChatGPT-original",
+      "status": "unknown",
+      "source": "https://github.com/reppiks490/Icarus-engine/blob/bb736a898fc8803d212f410c7e7f783430bd7ae1/coordination/inbox/to-chatgpt/20261011T1455Z-claude-c01-review-and-cl84-port.md",
+      "description": "C01 integration receipt. Claude approval is reported; integration is not established by that message."
+    },
+    {
+      "id": "c02_integrated",
+      "owner": "ChatGPT-original",
+      "status": "unknown",
+      "source": "https://github.com/reppiks490/Icarus-engine/blob/bb736a898fc8803d212f410c7e7f783430bd7ae1/coordination/board/chatgpt.md",
+      "description": "C02 integrated Linux/Windows evidence after C01; draft tests alone do not establish it."
+    },
+    {
+      "id": "d1_eligible_sample",
+      "owner": "Claude",
+      "status": "unknown",
+      "source": "https://github.com/reppiks490/Icarus-engine/blob/bb736a898fc8803d212f410c7e7f783430bd7ae1/docs/DEPTH_PREREG_D1.md",
+      "description": "Receipt proving 20 unique eligible NQ days; D1-A also requires 100 events per group. 133 vaulted feature files do not prove this."
+    }
+  ],
+  "decisions": [
+    {
+      "id": "j01_consumer_implementation_ready",
+      "owner": "ChatGPT-original",
+      "source": "https://github.com/reppiks490/Icarus-engine/blob/bb736a898fc8803d212f410c7e7f783430bd7ae1/coordination/board/chatgpt.md",
+      "alternatives": [
+        [
+          "j01_spec_approval"
+        ]
+      ]
+    },
+    {
+      "id": "j01_producer_implementation_ready",
+      "owner": "Claude",
+      "source": "https://github.com/reppiks490/Icarus-engine/blob/bb736a898fc8803d212f410c7e7f783430bd7ae1/coordination/inbox/to-chatgpt/20261011T1455Z-claude-corrections-pushed.md",
+      "alternatives": [
+        [
+          "j01_spec_approval"
+        ]
+      ]
+    },
+    {
+      "id": "j01_integration_review_ready",
+      "owner": "ChatGPT-original and Claude",
+      "source": "https://github.com/reppiks490/Icarus-engine/blob/bb736a898fc8803d212f410c7e7f783430bd7ae1/coordination/board/chatgpt.md",
+      "alternatives": [
+        [
+          "j01_spec_approval",
+          "j01_consumer_receipt",
+          "j01_producer_receipt"
+        ]
+      ]
+    },
+    {
+      "id": "c03_integrated_validation_ready",
+      "owner": "ChatGPT-original",
+      "source": "https://github.com/reppiks490/Icarus-engine/blob/bb736a898fc8803d212f410c7e7f783430bd7ae1/coordination/board/chatgpt.md",
+      "alternatives": [
+        [
+          "c01_integrated",
+          "c02_integrated"
+        ]
+      ]
+    },
+    {
+      "id": "d1_sample_gate_review_ready",
+      "owner": "Claude",
+      "source": "https://github.com/reppiks490/Icarus-engine/blob/bb736a898fc8803d212f410c7e7f783430bd7ae1/docs/DEPTH_PREREG_D1.md",
+      "alternatives": [
+        [
+          "d1_eligible_sample"
+        ]
+      ]
+    }
+  ]
+}

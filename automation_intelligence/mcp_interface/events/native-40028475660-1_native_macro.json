@@ -1,0 +1,100 @@
+{
+  "at_utc": "2026-10-23T21:41:51.369317Z",
+  "category": "AUDIT",
+  "event_id": "native-40028475660-1-native-macro",
+  "evidence": [
+    {
+      "classification": "FACT",
+      "code_revision": "03d5d523953ebd423debbffae0868f057297d0c6",
+      "evidence_sha256": "9e8ee7910730d6fa664cbcef0106a451ee8b19eaa1d929159b1a140bb79eb6f2",
+      "measurement": {
+        "gaps": [
+          "Release titles establish publication, not macro surprise or causal impact.",
+          "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+          "No consensus estimates acquired; economic surprise remains unknown."
+        ],
+        "limits": "Publication and daily change are facts; surprise, causality and intraday propagation remain unverified.",
+        "releases": [
+          {
+            "published_epoch": 1792742400.0,
+            "retrieval_finished": 1792791711.000632,
+            "retrieval_started": 1792791710.4680192,
+            "source": "ECB",
+            "source_url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr261023~a3d201c97c.en.html",
+            "title": "ECB Consumer Expectations Survey results \u2013 September 2026"
+          },
+          {
+            "published_epoch": 1792569600.0,
+            "retrieval_finished": 1792791711.000632,
+            "retrieval_started": 1792791710.4680192,
+            "source": "ECB",
+            "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261021_1~d190f2c349.en.pdf",
+            "title": "Piero Cipollone: Pontes and Appia: unlocking opportunities for banks"
+          },
+          {
+            "published_epoch": 1792556100.0,
+            "retrieval_finished": 1792791711.000632,
+            "retrieval_started": 1792791710.4680192,
+            "source": "ECB",
+            "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261021~401d6c4b70.en.html",
+            "title": "Philip R. Lane: Euro liquidity lines and the international monetary system"
+          }
+        ],
+        "series": [
+          {
+            "change": -0.16999999999999993,
+            "date": "2026-10-22",
+            "freshness": "DAILY_OBSERVATION",
+            "prior_date": "2026-10-21",
+            "series": "DGS10",
+            "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10",
+            "value": 4.96
+          },
+          {
+            "change": -0.15999999999999925,
+            "date": "2026-10-22",
+            "freshness": "DAILY_OBSERVATION",
+            "prior_date": "2026-10-21",
+            "series": "DGS2",
+            "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2",
+            "value": 4.65
+          },
+          {
+            "change": -0.16450000000000387,
+            "date": "2026-10-16",
+            "freshness": "STALE",
+            "prior_date": "2026-10-15",
+            "series": "DTWEXBGS",
+            "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DTWEXBGS",
+            "value": 121.4048
+          }
+        ],
+        "status": "VERIFIED",
+        "summary": "3 dated official release headlines; 3 daily macro series measured."
+      }
+    }
+  ],
+  "execution_authorized": false,
+  "interpretation_authority": "UNVERIFIED_MODEL_INFERENCE",
+  "oracle": {
+    "finding": "3 dated official release headlines; 3 daily macro series measured.",
+    "status": "VERIFIED"
+  },
+  "paths": [
+    "automation_intelligence/native_research_v1/cycles/native-40028475660-1/evidence.json",
+    "automation_intelligence/native_research_v1/cycles/native-40028475660-1/macro.json"
+  ],
+  "schema_version": "icarus-mcp-event-v1",
+  "severity": "MEDIUM",
+  "source": "MACRO_AUTOMATION",
+  "status": "VERIFIED",
+  "summary": "3 dated official release headlines; 3 daily macro series measured.",
+  "supermesh_x": {
+    "finding": "3 dated official release headlines; 3 daily macro series measured.",
+    "status": "VERIFIED"
+  },
+  "surface": [
+    "macro native research"
+  ],
+  "worker": "GITHUB_NATIVE_RESEARCH_V1"
+}

@@ -68,6 +68,19 @@ def _load(path: Path):
         return None
 
 
+def _receipt_age_h(stamp, now: datetime) -> float | None:
+    """Unrounded age of a timezone-bound receipt; unknown time is not delivery proof."""
+    if not isinstance(stamp, str):
+        return None
+    try:
+        at = datetime.fromisoformat(stamp.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if at.tzinfo is None:
+        return None
+    return (now - at).total_seconds() / 3600
+
+
 def _fabric_rows(provider: dict) -> int:
     """Count known rows in successful dedicated-fabric datasets without double counting."""
     total = 0
@@ -94,6 +107,8 @@ def providers(root: Path, now: datetime) -> list[dict]:
     out = []
     fabric = _load(root / AI / "cl_lab" / "external_data_fabric.json") or {}
     dedicated = fabric.get("providers") or {}
+    dedicated_age = _receipt_age_h(fabric.get("generated_at"), now)
+    dedicated_fresh = dedicated_age is not None and 0 <= dedicated_age <= WORKFLOWS["external-data-fabric.yml"]
     for path in sorted((root / AI / "provider_collection_v1" / "latest").glob("*.json")):
         d = _load(path) or {}
         name = path.stem
@@ -101,8 +116,11 @@ def providers(root: Path, now: datetime) -> list[dict]:
         cat = d.get("catalog") or {}
         rows, denied = p.get("collected_rows") or 0, cat.get("denied_operations") or 0
         dedicated_provider = dedicated.get(name) or {}
-        dedicated_live = dedicated_provider.get("status") in {"ok", "partial"} and (dedicated_provider.get("calls") or 0) > 0
+        dedicated_live = (dedicated_fresh and dedicated_provider.get("status") in {"ok", "partial"}
+                          and (dedicated_provider.get("calls") or 0) > 0)
         dedicated_rows = _fabric_rows(dedicated_provider) if dedicated_live else 0
+        dedicated_support = bool(p.get("credential_present")) and dedicated_live and (
+            p.get("status", "").startswith("BLOCKED") or dedicated_rows > rows)
         # Generic and dedicated collectors can overlap, so expose the larger known
         # lane count rather than summing unlike/possibly duplicated observations.
         if p.get("credential_present"):
@@ -125,7 +143,8 @@ def providers(root: Path, now: datetime) -> list[dict]:
         else:
             verdict, why = "OK", f"{rows} rows"
         out.append(dict(source=f"provider:{name}", verdict=verdict, why=why, rows=rows,
-                        age_h=_age_h(d.get("completed_at_utc"), now), path=str(path.relative_to(root))))
+                        age_h=round(dedicated_age, 1) if dedicated_support else _age_h(d.get("completed_at_utc"), now),
+                        path=str(AI / "cl_lab" / "external_data_fabric.json") if dedicated_support else str(path.relative_to(root))))
     return out
 
 

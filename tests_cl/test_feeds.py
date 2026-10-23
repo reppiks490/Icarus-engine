@@ -377,6 +377,71 @@ def test_secondary_lane_feeds_report_their_own_missing_key(tmp_path, monkeypatch
     assert ent["status"] == "unconfigured" and "DATABENTO_API_KEY_SECONDARY" in ent["error"]
 
 
+@pytest.mark.parametrize("primary_present", [False, True])
+def test_unallocated_corpus_account_refuses_before_provider_access(tmp_path, monkeypatch, primary_present):
+    monkeypatch.setenv("CL_DATABENTO_OHLCV_ACCOUNT", "third")
+    monkeypatch.setenv("DATABENTO_API_KEY_THIRD", "offline-third")
+    if primary_present:
+        monkeypatch.setenv("DATABENTO_API_KEY", "offline-primary")
+    else:
+        monkeypatch.delenv("DATABENTO_API_KEY", raising=False)
+    monkeypatch.setenv("CL_DATABENTO_START", "2026-09-01T00:00:00Z")
+    clients = []
+
+    def client(*, account):
+        clients.append(account)
+        return _rate_client(0.001)
+
+    monkeypatch.setattr(databento_feed, "historical_client", client)
+    result = registry.refresh_all(str(tmp_path / "cache"), only={"databento_nq_5m"},
+                                  now="2026-10-05T00:00Z", ledger_dir=str(tmp_path / "spend"))
+    entry = result["feeds"]["databento_nq_5m"]
+    assert entry["status"] == "error"
+    assert "approved corpus budget lane" in entry["error"]
+    assert clients == []
+    assert not (tmp_path / "cache" / "databento_nq_5m.csv.gz").exists()
+
+
+def test_environment_selected_corpus_account_uses_its_credential_and_ledger(tmp_path, monkeypatch):
+    monkeypatch.delenv("DATABENTO_API_KEY", raising=False)
+    monkeypatch.setenv("DATABENTO_API_KEY_SECONDARY", "offline-secondary")
+    monkeypatch.setenv("CL_DATABENTO_OHLCV_ACCOUNT", " SECONDARY ")
+    monkeypatch.setenv("CL_DATABENTO_START", "2026-09-01T00:00:00Z")
+    clients = []
+
+    def client(*, account):
+        clients.append(account)
+        return _rate_client(0.001)
+
+    monkeypatch.setattr(databento_feed, "historical_client", client)
+    result = registry.refresh_all(str(tmp_path / "cache"), only={"databento_nq_5m"},
+                                  now="2026-10-05T00:00Z", ledger_dir=str(tmp_path / "spend"))
+    assert result["feeds"]["databento_nq_5m"]["status"] == "ok"
+    assert clients == ["secondary"]
+    ledger = json.loads((tmp_path / "spend" / "corpus__secondary.json").read_text())
+    assert ledger["account"] == "secondary"
+    assert ledger["spent_usd"] > 0
+
+
+def test_invalid_corpus_account_is_isolated_from_other_feed_refreshes(tmp_path, monkeypatch):
+    monkeypatch.setenv("CL_DATABENTO_OHLCV_ACCOUNT", "typo")
+    monkeypatch.setenv("DATABENTO_API_KEY", "offline-primary")
+    monkeypatch.setattr(registry, "FEEDS", [
+        {"name": "invalid_paid", "kind": "databento", "root": "NQ", "intraday": True},
+        {"name": "public_fred", "kind": "fred", "series": "DGS10", "intraday": False},
+    ])
+    def forbidden_client(**kwargs):
+        pytest.fail("invalid account reached the provider client")
+    monkeypatch.setattr(databento_feed, "historical_client", forbidden_client)
+    frame = pd.DataFrame({"DGS10": [4.1]}, index=pd.date_range("2026-10-01", periods=1))
+    monkeypatch.setattr(sources, "fetch_fred", lambda series: frame)
+    result = registry.refresh_all(str(tmp_path / "cache"), now="2026-10-05T00:00Z",
+                                  ledger_dir=str(tmp_path / "spend"))
+    assert result["feeds"]["invalid_paid"]["status"] == "error"
+    assert "account" in result["feeds"]["invalid_paid"]["error"].lower()
+    assert result["feeds"]["public_fred"]["status"] == "ok"
+
+
 def test_cftc_full_report_paginates_and_preserves_numeric_fields(monkeypatch):
     pages = {
         0: [

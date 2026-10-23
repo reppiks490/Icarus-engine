@@ -81,8 +81,8 @@
   "BLOCKED": 7,
   "DEGRADED": 5,
   "FAILING": 2,
-  "OK": 70,
-  "STALE": 2
+  "OK": 71,
+  "STALE": 1
  },
  "depth": {
   "budgets": {
@@ -153,7 +153,7 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-10-23T07:54:57+00:00",
+ "generated_at": "2026-10-23T07:55:40+00:00",
  "research": {
   "champions": 0,
   "cl_last_run": "2026-10-23T06:43:30.168886+00:00",
@@ -203,7 +203,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 6.1,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/finnhub.json",
    "rows": 0,
    "source": "provider:finnhub",
@@ -243,7 +243,7 @@
    "why": "BLOCKED"
   },
   {
-   "age_h": 6.1,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/unusual_whales.json",
    "rows": 0,
    "source": "provider:unusual_whales",
@@ -257,18 +257,12 @@
    "why": "last success 3.1 h ago (expected within 3 h)"
   },
   {
-   "age_h": 6.0,
-   "source": "workflow:provider-supplemental-promote.yml",
-   "verdict": "STALE",
-   "why": "last success 6.0 h ago (expected within 3 h)"
-  },
-  {
-   "age_h": 6.0,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/alphavantage.json",
-   "rows": 1466,
+   "rows": 65,
    "source": "provider:alphavantage",
    "verdict": "DEGRADED",
-   "why": "1466 rows; 3 endpoints denied by plan"
+   "why": "65 rows; 3 endpoints denied by plan"
   },
   {
    "age_h": 3.2,
@@ -287,7 +281,7 @@
    "why": "2510 rows; 27 endpoints denied by plan"
   },
   {
-   "age_h": 3.1,
+   "age_h": 3.2,
    "path": "automation_intelligence/provider_collection_v1/latest/fmp.json",
    "rows": 61,
    "source": "provider:fmp",
@@ -295,7 +289,7 @@
    "why": "61 rows; 2 endpoints denied by plan"
   },
   {
-   "age_h": 3.1,
+   "age_h": 3.2,
    "path": "automation_intelligence/provider_collection_v1/latest/tiingo.json",
    "rows": 47527,
    "source": "provider:tiingo",
@@ -768,6 +762,12 @@
   {
    "age_h": 0.0,
    "source": "workflow:provider-supplemental-collection.yml",
+   "verdict": "OK",
+   "why": "last success 0.0 h ago"
+  },
+  {
+   "age_h": 0.0,
+   "source": "workflow:provider-supplemental-promote.yml",
    "verdict": "OK",
    "why": "last success 0.0 h ago"
   },

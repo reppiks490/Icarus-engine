@@ -1,4 +1,4 @@
-# Data health — 2026-10-23 00:57 UTC
+# Data health — 2026-10-23 01:03 UTC
 
 **FAILING** 3 · **BLOCKED** 6 · **DEGRADED** 6 · **OK** 71
 
@@ -8,7 +8,7 @@
 |---|---|---|
 | workflow:cl-depth-sweep.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/39878226828 |
 | workflow:databento-depth-research-context.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/39878226796 |
-| workflow:interrepo-peer-intelligence.yml | FAILING | latest run cancelled: https://github.com/reppiks490/Icarus-engine/actions/runs/39880896794 |
+| workflow:interrepo-peer-intelligence.yml | FAILING | latest run cancelled: https://github.com/reppiks490/Icarus-engine/actions/runs/39881652110 |
 | provider:alpaca | BLOCKED | no key reaches the runner |
 | provider:finnhub | BLOCKED | BLOCKED_AUTHENTICATION |
 | provider:intrinio | BLOCKED | no key reaches the runner |
@@ -19,7 +19,7 @@
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
 | provider:eodhd | DEGRADED | 2510 rows; 22 endpoints denied by plan |
 | provider:fmp | DEGRADED | 7014 rows; 33 endpoints denied by plan |
-| provider:tiingo | DEGRADED | 47517 rows; 4 endpoints denied by plan |
+| provider:tiingo | DEGRADED | 47527 rows; 4 endpoints denied by plan |
 | provider:twelve | DEGRADED | 72088 rows; 1 endpoints denied by plan |
 
 ## Delivering

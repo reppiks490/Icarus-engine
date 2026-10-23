@@ -103,3 +103,99 @@ def test_research_features_are_order_independent_and_reject_nan():
     records=[{'close':'10'},{'close':'20'},{'close':'nan'}]
     assert p.research_features(records)==p.research_features(list(reversed(records)))
     assert p.research_features(records)['close']==dict(samples=2,mean=15,minimum=10,maximum=20,standard_deviation=5)
+
+
+def test_verified_operations_are_exact_current_substantive_successes(tmp_path):
+    ops=[operation('/filled'),operation('/empty'),operation('/denied'),operation('/unattempted')]
+    seen=[]
+    def fetch(provider,path,params,key):
+        seen.append(path)
+        if path=='/filled':
+            return {'data':[{'close':123.456,'licensed_marker':'not-public'}],
+                    'operation':'twelve:get:/unattempted'}
+        if path=='/empty':return {'status':'ok','data':[]}
+        raise HTTPError('https://api.twelvedata.com/denied',403,'fixture-secret',{},None)
+    result=p.cycle(tmp_path,ops,{'TWELVE_DATA_API_KEY':'fixture'},run_id='operation-proof',request_budget=3,fetch=fetch)
+    entry=result['providers']['twelve']
+    assert seen==['/filled','/empty','/denied']
+    assert entry['verified_operations']==['twelve:get:/filled']
+    assert entry['substantive_work_performed'] is True
+    assert entry['blocked'][0]['operation']=='twelve:get:/denied'
+    assert 'not-public' not in json.dumps(result) and 'fixture-secret' not in json.dumps(result)
+    assert result['execution_authorized'] is False and result['raw_payloads_public'] is False
+    latest=json.loads((tmp_path/p.ROOT/'latest'/'twelve.json').read_text())
+    assert latest['providers']['twelve']['verified_operations']==entry['verified_operations']
+
+
+@pytest.mark.parametrize('data',[
+    {}, {'status':'ok'}, {'data':[]}, {'data':[{}]}, {'data':[{'close':None}]},
+    {'data':['']}, {'data':{'status':'ok'}}, {'data':[{'symbol':'  '}]},
+    {'data':[{'close':float('nan')}]}, {'data':[{'close':float('inf')}]},
+])
+def test_http_success_without_substantive_rows_verifies_no_operation(tmp_path,data):
+    result=p.cycle(tmp_path,[operation()],{'TWELVE_DATA_API_KEY':'fixture'},run_id='empty-proof',
+                   request_budget=1,fetch=lambda *args:data)
+    assert result['providers']['twelve']['verified_operations']==[]
+
+
+def test_verified_operations_are_sorted_unique_and_do_not_reuse_prior_receipts(tmp_path):
+    ops=[operation('/z'),operation('/a')]
+    def fetch(provider,path,params,key):
+        data={'data':[{'close':0}]}
+        if path=='/z' and 'page' not in params:
+            data['meta']={'current_page':1,'total_pages':2}
+        return data
+    first=p.cycle(tmp_path,ops,{'TWELVE_DATA_API_KEY':'fixture'},run_id='sorted-proof',request_budget=3,fetch=fetch)
+    assert first['providers']['twelve']['verified_operations']==['twelve:get:/a','twelve:get:/z']
+    second=p.cycle(tmp_path,ops,{'TWELVE_DATA_API_KEY':'fixture'},run_id='no-ready-proof',request_budget=1,
+                   fetch=lambda *args:pytest.fail('completed jobs must remain idle'))
+    assert second['providers']['twelve']['status']=='NO_READY_JOBS'
+    assert second['providers']['twelve']['verified_operations']==[]
+
+
+def test_later_operation_denial_prevents_qualification_despite_prior_page_success(tmp_path):
+    def fetch(provider,path,params,key):
+        if 'page' not in params:
+            return {'data':[{'close':10}], 'meta':{'current_page':1,'total_pages':2}}
+        return {'status':'error','code':403,'message':'fixture-secret'}
+    result=p.cycle(tmp_path,[operation()],{'TWELVE_DATA_API_KEY':'fixture'},run_id='mixed-proof',request_budget=2,fetch=fetch)
+    entry=result['providers']['twelve']
+    assert entry['collected_rows']==1
+    assert entry['substantive_work_performed'] is True
+    assert entry['blocked'][0]['operation']==operation()['id']
+    assert entry['verified_operations']==[]
+
+
+def test_missing_credentials_and_non_read_operations_verify_nothing(tmp_path):
+    missing=p.cycle(tmp_path,[operation()],{},run_id='missing-proof',request_budget=1)
+    assert missing['providers']['twelve']['verified_operations']==[]
+    assert missing['providers']['twelve']['substantive_work_performed'] is False
+    nonread=p.cycle(tmp_path/'nonread',[dict(operation('/orders'),method='POST')],{'TWELVE_DATA_API_KEY':'fixture'},
+                    run_id='nonread-proof',request_budget=1,fetch=lambda *args:pytest.fail('no non-GET requests'))
+    assert nonread['providers']['twelve']['verified_operations']==[]
+    assert nonread['requests']==0
+
+
+@pytest.mark.parametrize('value',[
+    {'payload':[]}, [None], {'payload':{'empty':{},'missing':None,'blank':'  '}},
+    {'payload':[float('nan'), {'missing':None}, float('inf')]},
+])
+def test_nested_empty_or_nonfinite_content_does_not_verify_operation(tmp_path,value):
+    result=p.cycle(tmp_path,[operation()],{'TWELVE_DATA_API_KEY':'fixture'},run_id='nested-empty',
+                   request_budget=1,fetch=lambda *args:{'data':[{'nested':value}]})
+    assert result['providers']['twelve']['verified_operations']==[]
+
+
+@pytest.mark.parametrize('value',[{'payload':[0]}, {'payload':[False]}, {'payload':{'flag':True}}])
+def test_populated_nested_zero_and_boolean_leaves_verify_operation(tmp_path,value):
+    result=p.cycle(tmp_path,[operation()],{'TWELVE_DATA_API_KEY':'fixture'},run_id='nested-value',
+                   request_budget=1,fetch=lambda *args:{'data':[{'nested':value}]})
+    assert result['providers']['twelve']['verified_operations']==[operation()['id']]
+
+
+def test_content_beyond_depth_bound_is_unverified(tmp_path):
+    value=0
+    for _ in range(100):value={'nested':value}
+    result=p.cycle(tmp_path,[operation()],{'TWELVE_DATA_API_KEY':'fixture'},run_id='nested-depth',
+                   request_budget=1,fetch=lambda *args:{'data':[value]})
+    assert result['providers']['twelve']['verified_operations']==[]

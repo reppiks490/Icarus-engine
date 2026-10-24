@@ -1,0 +1,102 @@
+{
+  "automation_id": "github-native-research-v1",
+  "blockers": [
+    "FED: release feed unavailable (HTTPError)",
+    "Release titles establish publication, not macro surprise or causal impact.",
+    "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+    "No consensus estimates acquired; economic surprise remains unknown."
+  ],
+  "chatgpt_tokens_used": 0,
+  "code_revision": "111621f9aefa55ac0c37c4dd8d6e6d695f8b9d13",
+  "completed_at_utc": "2026-10-24T09:47:40.674538Z",
+  "event_paths": [
+    "automation_intelligence/mcp_interface/events/native-40083230334-1_native_macro.json"
+  ],
+  "evidence": [
+    "automation_intelligence/native_research_v1/cycles/native-40083230334-1/evidence.json"
+  ],
+  "execution_authorized": false,
+  "input_sha256": "dd54e326a92384902515fcf84279ed71c3308a0406f0e46a19176d576653438c",
+  "lane": "macro",
+  "local_interpretation": {
+    "authority": "UNVERIFIED_MODEL_INFERENCE",
+    "model": "Qwen/Qwen3-1.7B-GGUF@90862c4:Q8_0",
+    "payload": {
+      "conflicts": [],
+      "data_gaps": [],
+      "execution_authorized": false,
+      "lane": "macro",
+      "net_new_delta": "LOCAL_NEXT_TEST_SELECTION",
+      "summary": "Does the next official release change the daily macro context?"
+    },
+    "response_id": "local-3dc1754c694e11cb5673d914",
+    "status": "GENERATED"
+  },
+  "measurements": {
+    "gaps": [
+      "FED: release feed unavailable (HTTPError)",
+      "Release titles establish publication, not macro surprise or causal impact.",
+      "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+      "No consensus estimates acquired; economic surprise remains unknown."
+    ],
+    "limits": "Publication and daily change are facts; surprise, causality and intraday propagation remain unverified.",
+    "releases": [
+      {
+        "published_epoch": 1792821600.0,
+        "retrieval_finished": 1792835250.994464,
+        "retrieval_started": 1792835250.4651415,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/inter/date/2026/html/ecb.in261024~ee2ba73cf3.en.html",
+        "title": "Piero Cipollone: Interview with Milano Finanza"
+      },
+      {
+        "published_epoch": 1792742400.0,
+        "retrieval_finished": 1792835250.994464,
+        "retrieval_started": 1792835250.4651415,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr261023~a3d201c97c.en.html",
+        "title": "ECB Consumer Expectations Survey results \u2013 September 2026"
+      }
+    ],
+    "series": [
+      {
+        "change": -0.16999999999999993,
+        "date": "2026-10-22",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-10-21",
+        "series": "DGS10",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10",
+        "value": 4.96
+      },
+      {
+        "change": -0.15999999999999925,
+        "date": "2026-10-22",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-10-21",
+        "series": "DGS2",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2",
+        "value": 4.65
+      },
+      {
+        "change": -0.16450000000000387,
+        "date": "2026-10-16",
+        "freshness": "STALE",
+        "prior_date": "2026-10-15",
+        "series": "DTWEXBGS",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DTWEXBGS",
+        "value": 121.4048
+      }
+    ],
+    "status": "VERIFIED",
+    "summary": "2 dated official release headlines; 3 daily macro series measured."
+  },
+  "outcome": "MATERIAL_DELTA",
+  "paid_model_calls": 0,
+  "prior_receipt_path": "automation_intelligence/native_research_v1/cycles/native-40070200342-1/macro.json",
+  "run_id": "native-40083230334-1-macro",
+  "schema_version": "icarus-research-run-v1",
+  "started_at_utc": "2026-10-24T09:47:31.901907Z",
+  "substantive_work_performed": true,
+  "summary": "2 dated official release headlines; 3 daily macro series measured.",
+  "worker": "GITHUB_ACTIONS"
+}

@@ -1,18 +1,18 @@
 {
   "catalog": {
-    "asset_datasets_collected": 5,
+    "asset_datasets_collected": 6,
     "asset_templates": 109,
     "assets": 6770,
-    "collected_operations": 17,
-    "denied_operations": 18,
+    "collected_operations": 16,
+    "denied_operations": 22,
     "operations": 230,
-    "pending_pages": 329,
+    "pending_pages": 341,
     "qualification": "INCOMPLETE_UNTIL_EVERY_OPERATION_ASSET_PAGE_TIME_RANGE_AND_TRANSPORT_IS_VERIFIED",
     "unresolved_operations": 0
   },
   "chatgpt_tokens_used": 0,
   "checkpoint_status": "ENCRYPTED_AES256_GCM",
-  "completed_at_utc": "2026-10-23T22:14:27.152103+00:00",
+  "completed_at_utc": "2026-10-24T00:46:42.493900+00:00",
   "databento_excluded": true,
   "execution_authorized": false,
   "paid_model_calls": 0,
@@ -23,104 +23,99 @@
       ],
       "blocked": [
         {
-          "asset_specific": false,
+          "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/batch-forex-quotes"
+          "operation": "fmp:get:/technical-indicators/ema"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/etf/holdings"
+          "operation": "fmp:get:/technical-indicators/rsi"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/sec-filings-search/symbol"
-        },
-        {
-          "asset_specific": false,
-          "failure_code": "402",
-          "operation": "fmp:get:/batch-index-quotes"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/etf/info"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/senate-trades"
+          "operation": "fmp:get:/technical-indicators/sma"
         },
         {
           "asset_specific": false,
           "failure_code": "402",
-          "operation": "fmp:get:/batch-mutualfund-quotes"
+          "operation": "fmp:get:/cik-list"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/shares-float"
+          "operation": "fmp:get:/technical-indicators/standarddeviation"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/etf/sector-weightings"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/splits"
+          "operation": "fmp:get:/technical-indicators/tema"
         },
         {
           "asset_specific": false,
           "failure_code": "402",
-          "operation": "fmp:get:/cash-flow-statement-bulk"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "400",
-          "operation": "fmp:get:/exchange-market-hours"
+          "operation": "fmp:get:/commitment-of-traders-analysis"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/stock-price-change"
+          "operation": "fmp:get:/technical-indicators/williams"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/financial-reports-json"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/technical-indicators/wma"
         },
         {
           "asset_specific": false,
           "failure_code": "402",
-          "operation": "fmp:get:/cash-flow-statement-growth-bulk"
+          "operation": "fmp:get:/commitment-of-traders-list"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/technical-indicators/adx"
+          "operation": "fmp:get:/acquisition-of-beneficial-ownership"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/financial-growth"
+          "operation": "fmp:get:/financial-reports-xlsx"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/technical-indicators/dema"
+          "operation": "fmp:get:/aftermarket-quote"
+        },
+        {
+          "asset_specific": false,
+          "failure_code": "402",
+          "operation": "fmp:get:/commitment-of-traders-report"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/aftermarket-trade"
         }
       ],
-      "collected_pages": 3,
-      "collected_rows": 0,
+      "collected_pages": 4,
+      "collected_rows": 6772,
       "credential_present": true,
       "endpoint_count": 230,
       "requests": 20,
       "research_features": [],
       "status": "COLLECTED_PARTIAL",
-      "substantive_work_performed": false
+      "substantive_work_performed": true
     }
   },
   "raw_payloads_public": false,
   "requests": 20,
-  "run_id": "providers-40031793304-1-fmp",
+  "run_id": "providers-40046253615-1-fmp",
   "schema_version": "icarus-provider-collection-cycle-v1",
-  "started_at_utc": "2026-10-23T22:10:18.811344+00:00"
+  "started_at_utc": "2026-10-24T00:42:30.896763+00:00"
 }

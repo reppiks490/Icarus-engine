@@ -1,4 +1,4 @@
-# Data health — 2026-10-24 19:46 UTC
+# Data health — 2026-10-24 20:50 UTC
 
 **FAILING** 4 · **BLOCKED** 7 · **DEGRADED** 5 · **OK** 70
 
@@ -8,7 +8,7 @@
 |---|---|---|
 | feed:databento_dx_5m | FAILING | FeedError: Databento cost estimate failed for DX.v.0: BentoClientError: 422 data_end_after_available_end The dataset IFUS.IMPACT has data available up to '2026- |
 | feed:databento_vxm_5m | FAILING | FeedError: Databento cost estimate failed for VXM.v.0: BentoClientError: 422 data_end_after_available_end The dataset XCBF.PITCH has data available up to '2026- |
-| workflow:cl-depth-sweep.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/40119790809 |
+| workflow:cl-depth-sweep.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/40127221022 |
 | workflow:databento-depth-research-context.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/40119790863 |
 | provider:alpaca | BLOCKED | no key reaches the runner |
 | provider:finnhub | BLOCKED | BLOCKED_AUTHENTICATION |
@@ -20,7 +20,7 @@
 | provider:alphavantage | DEGRADED | key present but 0 rows (NO_READY_JOBS) |
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
 | provider:eodhd | DEGRADED | 2510 rows; 29 endpoints denied by plan |
-| provider:fmp | DEGRADED | 53 rows; 39 endpoints denied by plan |
+| provider:fmp | DEGRADED | dedicated fabric live (3 calls, 53 known rows); generic sampler blocked; 44 endpoints denied by plan |
 | provider:tiingo | DEGRADED | 47537 rows; 4 endpoints denied by plan |
 
 ## Delivering

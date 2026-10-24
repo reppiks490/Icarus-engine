@@ -81,8 +81,9 @@
   "BLOCKED": 6,
   "DEGRADED": 6,
   "FAILING": 2,
-  "OK": 71,
-  "STALE": 1
+  "OK": 70,
+  "STALE": 1,
+  "UNKNOWN": 1
  },
  "depth": {
   "budgets": {
@@ -153,7 +154,7 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-10-24T14:07:46+00:00",
+ "generated_at": "2026-10-24T14:09:02+00:00",
  "research": {
   "champions": 0,
   "cl_last_run": "2026-10-24T06:39:06.223251+00:00",
@@ -243,10 +244,10 @@
    "why": "BLOCKED_AUTHENTICATION"
   },
   {
-   "age_h": 3.1,
+   "age_h": 3.2,
    "source": "workflow:provider-exhaustive-collection.yml",
    "verdict": "STALE",
-   "why": "last success 3.1 h ago (expected within 3 h)"
+   "why": "last success 3.2 h ago (expected within 3 h)"
   },
   {
    "age_h": 2.6,
@@ -297,6 +298,11 @@
    "why": "key present but 0 rows (COLLECTED_PARTIAL)"
   },
   {
+   "source": "workflow:interrepo-peer-intelligence.yml",
+   "verdict": "UNKNOWN",
+   "why": "no completed run on main"
+  },
+  {
    "age_h": 3.1,
    "rows": 247,
    "source": "economic_events",
@@ -318,56 +324,56 @@
    "why": "225504 rows to 2026-10-23T23:55"
   },
   {
-   "age_h": 38.1,
+   "age_h": 38.2,
    "rows": 9255,
    "source": "feed:cboe_skew",
    "verdict": "OK",
    "why": "9255 rows to 2026-10-23T00:00"
   },
   {
-   "age_h": 38.1,
+   "age_h": 38.2,
    "rows": 9301,
    "source": "feed:cboe_vix",
    "verdict": "OK",
    "why": "9301 rows to 2026-10-23T00:00"
   },
   {
-   "age_h": 38.1,
+   "age_h": 38.2,
    "rows": 4301,
    "source": "feed:cboe_vix3m",
    "verdict": "OK",
    "why": "4301 rows to 2026-10-23T00:00"
   },
   {
-   "age_h": 38.1,
+   "age_h": 38.2,
    "rows": 3975,
    "source": "feed:cboe_vix9d",
    "verdict": "OK",
    "why": "3975 rows to 2026-10-23T00:00"
   },
   {
-   "age_h": 38.1,
+   "age_h": 38.2,
    "rows": 5132,
    "source": "feed:cboe_vvix",
    "verdict": "OK",
    "why": "5132 rows to 2026-10-23T00:00"
   },
   {
-   "age_h": 110.1,
+   "age_h": 110.2,
    "rows": 186459,
    "source": "feed:cftc_disaggregated_all",
    "verdict": "OK",
    "why": "186459 rows to 2026-10-20T00:00"
   },
   {
-   "age_h": 110.1,
+   "age_h": 110.2,
    "rows": 47126,
    "source": "feed:cftc_tff_all",
    "verdict": "OK",
    "why": "47126 rows to 2026-10-20T00:00"
   },
   {
-   "age_h": 110.1,
+   "age_h": 110.2,
    "rows": 2227,
    "source": "feed:cftc_tff_nasdaq",
    "verdict": "OK",
@@ -402,7 +408,7 @@
    "why": "152485 rows to 2026-10-23T20:55"
   },
   {
-   "age_h": 17.1,
+   "age_h": 17.2,
    "rows": 145054,
    "source": "feed:databento_btc_5m",
    "verdict": "OK",
@@ -619,63 +625,63 @@
    "why": "225504 rows to 2026-10-23T23:55"
   },
   {
-   "age_h": 62.1,
+   "age_h": 62.2,
    "rows": 26412,
    "source": "feed:fred_dff",
    "verdict": "OK",
    "why": "26412 rows to 2026-10-22T00:00"
   },
   {
-   "age_h": 62.1,
+   "age_h": 62.2,
    "rows": 16908,
    "source": "feed:fred_dgs10",
    "verdict": "OK",
    "why": "16908 rows to 2026-10-22T00:00"
   },
   {
-   "age_h": 62.1,
+   "age_h": 62.2,
    "rows": 13148,
    "source": "feed:fred_dgs2",
    "verdict": "OK",
    "why": "13148 rows to 2026-10-22T00:00"
   },
   {
-   "age_h": 38.1,
+   "age_h": 38.2,
    "rows": 10646,
    "source": "feed:fred_nasdaq100",
    "verdict": "OK",
    "why": "10646 rows to 2026-10-23T00:00"
   },
   {
-   "age_h": 38.1,
+   "age_h": 38.2,
    "rows": 13149,
    "source": "feed:fred_t10y2y",
    "verdict": "OK",
    "why": "13149 rows to 2026-10-23T00:00"
   },
   {
-   "age_h": 62.1,
+   "age_h": 62.2,
    "rows": 9603,
    "source": "feed:fred_vixcls",
    "verdict": "OK",
    "why": "9603 rows to 2026-10-22T00:00"
   },
   {
-   "age_h": 62.1,
+   "age_h": 62.2,
    "rows": 11154,
    "source": "feed:treasury_auctions",
    "verdict": "OK",
    "why": "11154 rows to 2026-10-22T00:00"
   },
   {
-   "age_h": 62.1,
+   "age_h": 62.2,
    "rows": 8419,
    "source": "feed:treasury_debt_to_penny",
    "verdict": "OK",
    "why": "8419 rows to 2026-10-22T00:00"
   },
   {
-   "age_h": 62.1,
+   "age_h": 62.2,
    "rows": 16718,
    "source": "feed:treasury_operating_cash",
    "verdict": "OK",
@@ -697,7 +703,7 @@
    "why": "31 rows"
   },
   {
-   "age_h": 3.1,
+   "age_h": 3.2,
    "path": "automation_intelligence/provider_collection_v1/latest/massive.json",
    "rows": 20000,
    "source": "provider:massive",
@@ -736,16 +742,10 @@
    "why": "last success 13.1 h ago"
   },
   {
-   "age_h": 0.7,
-   "source": "workflow:interrepo-peer-intelligence.yml",
-   "verdict": "OK",
-   "why": "last success 0.7 h ago"
-  },
-  {
-   "age_h": 2.7,
+   "age_h": 0.0,
    "source": "workflow:native-five-research.yml",
    "verdict": "OK",
-   "why": "last success 2.7 h ago"
+   "why": "last success 0.0 h ago"
   },
   {
    "age_h": 2.4,
@@ -778,10 +778,10 @@
    "why": "last success 1.5 h ago"
   },
   {
-   "age_h": 132.5,
+   "age_h": 132.6,
    "source": "workflow:tests.yml",
    "verdict": "OK",
-   "why": "last success 132.5 h ago"
+   "why": "last success 132.6 h ago"
   }
  ]
 }

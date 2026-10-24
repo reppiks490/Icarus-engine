@@ -1,4 +1,4 @@
-# Data health — 2026-10-24 00:50 UTC
+# Data health — 2026-10-24 01:03 UTC
 
 **FAILING** 2 · **BLOCKED** 6 · **DEGRADED** 6 · **OK** 72
 
@@ -14,7 +14,7 @@
 | provider:quiver | BLOCKED | no key reaches the runner |
 | provider:tickstream | BLOCKED | no key reaches the runner |
 | provider:unusual_whales | BLOCKED | BLOCKED_AUTHENTICATION |
-| provider:alphavantage | DEGRADED | 21344 rows; 3 endpoints denied by plan |
+| provider:alphavantage | DEGRADED | 14376 rows; 3 endpoints denied by plan |
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
 | provider:eodhd | DEGRADED | 2510 rows; 29 endpoints denied by plan |
 | provider:fmp | DEGRADED | 6772 rows; 22 endpoints denied by plan |

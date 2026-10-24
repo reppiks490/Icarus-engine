@@ -1,4 +1,4 @@
-# Data health — 2026-10-24 23:14 UTC
+# Data health — 2026-10-24 23:16 UTC
 
 **FAILING** 4 · **BLOCKED** 6 · **DEGRADED** 6 · **OK** 70
 
@@ -18,7 +18,7 @@
 | provider:unusual_whales | BLOCKED | BLOCKED_AUTHENTICATION |
 | provider:alphavantage | DEGRADED | 44747 rows; 3 endpoints denied by plan |
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
-| provider:eodhd | DEGRADED | 2510 rows; 29 endpoints denied by plan |
+| provider:eodhd | DEGRADED | dedicated fabric live (11 calls, 2510 known rows); generic sampler blocked; 29 endpoints denied by plan |
 | provider:fmp | DEGRADED | dedicated fabric live (3 calls, 53 known rows); generic sampler blocked; 47 endpoints denied by plan |
 | provider:tiingo | DEGRADED | 47537 rows; 4 endpoints denied by plan |
 | provider:twelve | DEGRADED | 2 rows; 1 endpoints denied by plan |

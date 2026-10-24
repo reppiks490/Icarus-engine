@@ -1,4 +1,4 @@
-# Data health — 2026-10-24 01:03 UTC
+# Data health — 2026-10-24 01:10 UTC
 
 **FAILING** 2 · **BLOCKED** 6 · **DEGRADED** 6 · **OK** 72
 
@@ -18,7 +18,7 @@
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
 | provider:eodhd | DEGRADED | 2510 rows; 29 endpoints denied by plan |
 | provider:fmp | DEGRADED | 6772 rows; 22 endpoints denied by plan |
-| provider:tiingo | DEGRADED | 47527 rows; 4 endpoints denied by plan |
+| provider:tiingo | DEGRADED | 47537 rows; 4 endpoints denied by plan |
 | provider:twelve | DEGRADED | 72227 rows; 1 endpoints denied by plan |
 
 ## Delivering

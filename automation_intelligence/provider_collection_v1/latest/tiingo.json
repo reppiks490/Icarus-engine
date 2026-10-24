@@ -1,18 +1,18 @@
 {
   "catalog": {
-    "asset_datasets_collected": 54,
+    "asset_datasets_collected": 55,
     "asset_templates": 15,
     "assets": 26618,
     "collected_operations": 10,
     "denied_operations": 4,
     "operations": 29,
-    "pending_pages": 590,
+    "pending_pages": 597,
     "qualification": "INCOMPLETE_UNTIL_EVERY_OPERATION_ASSET_PAGE_TIME_RANGE_AND_TRANSPORT_IS_VERIFIED",
     "unresolved_operations": 1
   },
   "chatgpt_tokens_used": 0,
   "checkpoint_status": "ENCRYPTED_AES256_GCM",
-  "completed_at_utc": "2026-10-24T18:10:14.167325+00:00",
+  "completed_at_utc": "2026-10-24T20:48:06.036774+00:00",
   "databento_excluded": true,
   "execution_authorized": false,
   "paid_model_calls": 0,
@@ -25,32 +25,7 @@
         {
           "asset_specific": true,
           "failure_code": "403",
-          "operation": "tiingo:get:/tiingo/funds/{ticker}"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "404",
-          "operation": "tiingo:get:/tiingo/daily/{ticker}"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "403",
-          "operation": "tiingo:get:/boats/{ticker}/prices"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "403",
-          "operation": "tiingo:get:/tiingo/funds/{ticker}/metrics"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "403",
-          "operation": "tiingo:get:/boats/{ticker}"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "403",
-          "operation": "tiingo:get:/tiingo/funds/{ticker}"
+          "operation": "tiingo:get:/tiingo/corporate-actions/{ticker}/splits"
         },
         {
           "asset_specific": true,
@@ -60,12 +35,37 @@
         {
           "asset_specific": true,
           "failure_code": "403",
-          "operation": "tiingo:get:/tiingo/funds/{ticker}/metrics"
+          "operation": "tiingo:get:/tiingo/corporate-actions/{ticker}/splits"
         },
         {
           "asset_specific": true,
           "failure_code": "403",
-          "operation": "tiingo:get:/boats/{ticker}/prices"
+          "operation": "tiingo:get:/tiingo/funds/{ticker}"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "403",
+          "operation": "tiingo:get:/tiingo/corporate-actions/{ticker}/distributions"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "403",
+          "operation": "tiingo:get:/tiingo/corporate-actions/{ticker}/splits"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "403",
+          "operation": "tiingo:get:/tiingo/funds/{ticker}/metrics"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "404",
+          "operation": "tiingo:get:/tiingo/daily/{ticker}"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "404",
+          "operation": "tiingo:get:/tiingo/daily/{ticker}"
         },
         {
           "asset_specific": true,
@@ -75,32 +75,27 @@
         {
           "asset_specific": true,
           "failure_code": "403",
-          "operation": "tiingo:get:/tiingo/corporate-actions/{ticker}/distributions"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "403",
           "operation": "tiingo:get:/boats/{ticker}/prices"
         },
         {
           "asset_specific": true,
           "failure_code": "403",
-          "operation": "tiingo:get:/tiingo/corporate-actions/{ticker}/distributions"
+          "operation": "tiingo:get:/tiingo/funds/{ticker}"
         }
       ],
-      "collected_pages": 7,
-      "collected_rows": 0,
+      "collected_pages": 8,
+      "collected_rows": 1,
       "credential_present": true,
       "endpoint_count": 29,
       "requests": 20,
       "research_features": [],
       "status": "COLLECTED_PARTIAL",
-      "substantive_work_performed": false
+      "substantive_work_performed": true
     }
   },
   "raw_payloads_public": false,
   "requests": 20,
-  "run_id": "providers-40119101915-1-tiingo",
+  "run_id": "providers-40131047513-1-tiingo",
   "schema_version": "icarus-provider-collection-cycle-v1",
-  "started_at_utc": "2026-10-24T18:06:05.239166+00:00"
+  "started_at_utc": "2026-10-24T20:43:55.405555+00:00"
 }

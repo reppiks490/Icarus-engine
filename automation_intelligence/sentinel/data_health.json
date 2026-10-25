@@ -81,8 +81,9 @@
   "BLOCKED": 6,
   "DEGRADED": 5,
   "FAILING": 36,
-  "OK": 36,
-  "STALE": 3
+  "OK": 35,
+  "STALE": 3,
+  "UNKNOWN": 1
  },
  "depth": {
   "budgets": {
@@ -153,7 +154,7 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-10-25T15:59:12+00:00",
+ "generated_at": "2026-10-25T16:00:24+00:00",
  "research": {
   "champions": 0,
   "cl_last_run": "2026-10-25T07:35:38.564785+00:00",
@@ -260,7 +261,7 @@
    "why": "root not in CL_DATABENTO_ROOTS"
   },
   {
-   "age_h": 17.7,
+   "age_h": 17.8,
    "rows": 158216,
    "source": "feed:databento_mbt_5m",
    "verdict": "FAILING",
@@ -379,7 +380,7 @@
    "why": "root not in CL_DATABENTO_ROOTS"
   },
   {
-   "age_h": 45.7,
+   "age_h": 45.8,
    "rows": 109524,
    "source": "feed:databento_zc_5m",
    "verdict": "FAILING",
@@ -400,7 +401,7 @@
    "why": "root not in CL_DATABENTO_ROOTS"
   },
   {
-   "age_h": 45.7,
+   "age_h": 45.8,
    "rows": 111964,
    "source": "feed:databento_zs_5m",
    "verdict": "FAILING",
@@ -414,7 +415,7 @@
    "why": "root not in CL_DATABENTO_ROOTS"
   },
   {
-   "age_h": 45.7,
+   "age_h": 45.8,
    "rows": 110367,
    "source": "feed:databento_zw_5m",
    "verdict": "FAILING",
@@ -441,7 +442,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 1.4,
+   "age_h": 1.5,
    "path": "automation_intelligence/provider_collection_v1/latest/finnhub.json",
    "rows": 0,
    "source": "provider:finnhub",
@@ -473,7 +474,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 1.4,
+   "age_h": 1.5,
    "path": "automation_intelligence/provider_collection_v1/latest/unusual_whales.json",
    "rows": 0,
    "source": "provider:unusual_whales",
@@ -537,6 +538,11 @@
    "source": "provider:tiingo",
    "verdict": "DEGRADED",
    "why": "47537 rows; 4 endpoints denied by plan"
+  },
+  {
+   "source": "workflow:interrepo-peer-intelligence.yml",
+   "verdict": "UNKNOWN",
+   "why": "no completed run on main"
   },
   {
    "age_h": 4.5,
@@ -748,12 +754,6 @@
    "why": "last success 38.9 h ago"
   },
   {
-   "age_h": 0.0,
-   "source": "workflow:interrepo-peer-intelligence.yml",
-   "verdict": "OK",
-   "why": "last success 0.0 h ago"
-  },
-  {
    "age_h": 3.8,
    "source": "workflow:native-provider-access.yml",
    "verdict": "OK",
@@ -778,10 +778,10 @@
    "why": "last success 1.4 h ago"
   },
   {
-   "age_h": 8.5,
+   "age_h": -0.0,
    "source": "workflow:tests.yml",
    "verdict": "OK",
-   "why": "last success 8.5 h ago"
+   "why": "last success -0.0 h ago"
   }
  ]
 }

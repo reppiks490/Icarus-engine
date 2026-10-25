@@ -190,7 +190,7 @@ def _corpus_lane(lanes, feed, ledger_dir, cache_dir):
     acct = (feed.get("account") or os.environ.get("CL_DATABENTO_OHLCV_ACCOUNT") or "primary").strip().lower()
     lane_id = f"corpus:{acct}"
     if lane_id not in databento_budget.CORPUS_LANES:
-        return None
+        raise FeedError(f"no approved corpus budget lane for Databento account {acct!r}; request refused")
     if lane_id not in lanes:
         lanes[lane_id] = databento_budget.Lane(lane_id, ledger_dir, mirror=cache_dir)
         lanes[lane_id].run_spent = 0.0
@@ -240,24 +240,28 @@ def refresh_all(cache_dir, only=None, now=None, ledger_dir=None) -> dict:
             continue
         path = os.path.join(cache_dir, f"{feed['name']}.csv.gz")
         intraday = feed["intraday"]
-        # Databento is optional/paid. Absence of a key is a dormant capability,
-        # not a broken public-feed cycle; preserve any prior cache without error.
-        key_env = databento_feed.api_key_env(feed.get("account")) if feed["kind"] == "databento" else None
-        if feed["kind"] == "databento" and not (os.environ.get(key_env) or "").strip():
-            old = store.load_frame(path, intraday=True)
-            status = "cached" if old is not None and not old.empty else "unconfigured"
-            ent = store.manifest_entry(
-                feed["name"], old, status,
-                error=None if status == "cached" else f"{key_env} not configured",
-                intraday=True,
-            )
-            ent.update(kind="databento", root=feed["root"],
-                       dataset=feed.get("dataset") or "GLBX.MDP3",
-                       research_role=feed.get("research_role"),
-                       continuous_symbol=databento_feed.continuous_symbol(feed["root"]))
-            out["feeds"][feed["name"]] = ent
-            continue
         try:
+            if feed["kind"] == "databento":
+                # Bind credential presence, spend ledger and provider client to one account.
+                feed = {**feed, "account": (
+                    feed.get("account") or os.environ.get("CL_DATABENTO_OHLCV_ACCOUNT") or "primary"
+                ).strip().lower()}
+                key_env = databento_feed.api_key_env(feed["account"])
+                # Missing optional credentials preserve the prior cache as dormant.
+                if not (os.environ.get(key_env) or "").strip():
+                    old = store.load_frame(path, intraday=True)
+                    status = "cached" if old is not None and not old.empty else "unconfigured"
+                    ent = store.manifest_entry(
+                        feed["name"], old, status,
+                        error=None if status == "cached" else f"{key_env} not configured",
+                        intraday=True,
+                    )
+                    ent.update(kind="databento", root=feed["root"],
+                               dataset=feed.get("dataset") or "GLBX.MDP3",
+                               research_role=feed.get("research_role"),
+                               continuous_symbol=databento_feed.continuous_symbol(feed["root"]))
+                    out["feeds"][feed["name"]] = ent
+                    continue
             old = _load_cftc(path) if feed["kind"] in ("cftc", "cftc_report") else store.load_frame(path, intraday=intraday)
             lane = _corpus_lane(lanes, feed, ledger_dir, cache_dir) if feed["kind"] == "databento" else None
             cap = charge = None

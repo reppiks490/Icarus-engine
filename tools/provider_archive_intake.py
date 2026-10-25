@@ -16,9 +16,12 @@ import zlib
 from tools.provider_credentials import provider_credential
 
 MAX_BYTES = 32_000_000
-MAX_NODES = 1_000_000
-MAX_CHECKPOINT_DB_BYTES = 384_000_000
-MAX_CHECKPOINT_JSON_BYTES = 512_000_000
+# Authenticated provider envelopes keep MAX_BYTES; selected offline archives
+# may have larger, but still finite, JSON/SQLite projections.
+MAX_DECOMPRESSED_PAYLOAD_BYTES = 512_000_000
+MAX_NODES = 2_000_000
+MAX_CHECKPOINT_DB_BYTES = 2_000_000_000
+MAX_CHECKPOINT_JSON_BYTES = 2_700_000_000
 PROVIDERS = {'massive','twelve','fmp','eodhd','tiingo','intrinio','quiver','fred','alpaca','tickstream','bybit','alphavantage','finnhub','unusual_whales'}
 NATIVE = {'alphavantage','finnhub','unusual_whales'}
 SAFE_ID = re.compile(r'[A-Za-z0-9][A-Za-z0-9_-]{0,110}\Z')
@@ -137,8 +140,8 @@ def decrypt(envelope: bytes, *, provider: str, run_id: str, job: str, format: st
     compressed = _authenticated_compressed(envelope, provider=provider, run_id=run_id, job=job, format=format, env=env)
     try:
         decoder = zlib.decompressobj()
-        raw = decoder.decompress(compressed, MAX_BYTES + 1)
-        if len(raw) > MAX_BYTES or not decoder.eof or decoder.unused_data or decoder.unconsumed_tail:
+        raw = decoder.decompress(compressed, MAX_DECOMPRESSED_PAYLOAD_BYTES + 1)
+        if len(raw) > MAX_DECOMPRESSED_PAYLOAD_BYTES or not decoder.eof or decoder.unused_data or decoder.unconsumed_tail:
             raise ValueError('compressed payload rejected')
     except zlib.error:
         raise ValueError('compressed payload rejected') from None

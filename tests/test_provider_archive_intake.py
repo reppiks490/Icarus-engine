@@ -85,11 +85,20 @@ def test_json_rejections(raw):
     with pytest.raises(ValueError):intake.decrypt(envelope(None,raw=raw),provider='tiingo',run_id='run-1',job='1-0',format='exhaustive',env=ENV)
 
 def test_zlib_bound_and_trailing(monkeypatch):
-    monkeypatch.setattr(intake,'MAX_BYTES',200)
+    monkeypatch.setattr(intake,'MAX_DECOMPRESSED_PAYLOAD_BYTES',200)
     nonce=b'x'*12
     for compressed in [zlib.compress(b' '*1000),zlib.compress(b'{}')+b'extra',zlib.compress(b'{}')[:-1]]:
         data=nonce+AESGCM(KEY).encrypt(nonce,compressed,b'run-1:tiingo:1-0')
         with pytest.raises(ValueError):intake.decrypt(data,provider='tiingo',run_id='run-1',job='1-0',format='exhaustive',env=ENV)
+
+def test_authenticated_provider_payload_has_separate_bounded_expansion_limit():
+    raw = b'{"value":"' + b'x' * intake.MAX_BYTES + b'"}'
+    data = envelope(None, raw=raw)
+
+    assert len(data) < intake.MAX_BYTES
+    payload = intake.decrypt(data, provider='tiingo', run_id='run-1', job='1-0',
+                             format='exhaustive', env=ENV)
+    assert len(payload['value']) == intake.MAX_BYTES
 
 def test_private_io_symlinks_and_exclusive(tmp_path):
     original=tmp_path/'original';original.write_bytes(b'{}')

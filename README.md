@@ -268,3 +268,8 @@ See `CHANGELOG.md` for the numbered record of every refinement.
 The five bounded research lanes now have a GitHub-native worker with local-only interpretation. See [native research operations and qualification limits](docs/research/native-five-research.md). Scheduler receipts alone remain insufficient evidence of research.
 
 Provider collection: [catalog coverage, schedules and limits](docs/research/provider-exhaustive-collection.md).
+
+## License and ownership
+
+Copyright (c) 2026 reppiks490. **Proprietary — all rights reserved.**
+Public visibility does not grant permission to reuse, redistribute, sell, or claim this work as your own. Written permission is required except where applicable law, existing grants, third-party terms, or GitHub's terms provide otherwise. See [LICENSE.md](LICENSE.md) for the full notice and permission requests.

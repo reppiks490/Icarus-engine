@@ -1,4 +1,4 @@
-# Data health — 2026-10-25 06:02 UTC
+# Data health — 2026-10-25 06:14 UTC
 
 **FAILING** 3 · **BLOCKED** 6 · **STALE** 1 · **DEGRADED** 6 · **OK** 70
 
@@ -15,11 +15,11 @@
 | provider:quiver | BLOCKED | no key reaches the runner |
 | provider:tickstream | BLOCKED | no key reaches the runner |
 | provider:unusual_whales | BLOCKED | BLOCKED_AUTHENTICATION |
-| workflow:native-five-research.yml | STALE | last success 4.2 h ago (expected within 3 h) |
+| workflow:native-five-research.yml | STALE | last success 4.4 h ago (expected within 3 h) |
 | provider:alphavantage | DEGRADED | 21344 rows; 3 endpoints denied by plan |
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
-| provider:eodhd | DEGRADED | 2510 rows; 29 endpoints denied by plan |
-| provider:fmp | DEGRADED | 53 rows; 56 endpoints denied by plan |
+| provider:eodhd | DEGRADED | 3756 rows; 29 endpoints denied by plan |
+| provider:fmp | DEGRADED | 53 rows; 61 endpoints denied by plan |
 | provider:tiingo | DEGRADED | 47537 rows; 4 endpoints denied by plan |
 | provider:twelve | DEGRADED | key present but 0 rows (COLLECTED_PARTIAL) |
 

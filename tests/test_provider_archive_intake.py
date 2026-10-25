@@ -27,7 +27,7 @@ def save(path,data):
     path.write_bytes(data)
     return hashlib.sha256(data).hexdigest()
 
-def checkpoint(payload=PAYLOAD, provider='tiingo', bad=''):
+def checkpoint(payload=PAYLOAD, provider='tiingo', bad='', extra_bytes=0):
     db=sqlite3.connect(':memory:')
     db.executescript('CREATE TABLE operations(id,provider,descriptor,status); CREATE TABLE jobs(id,operation,asset); CREATE TABLE assets(id,provider,descriptor); CREATE TABLE receipts(job,at,sha,rows);')
     sha=hashlib.sha256(json.dumps(payload,sort_keys=True,separators=(',',':')).encode()).hexdigest()
@@ -35,6 +35,9 @@ def checkpoint(payload=PAYLOAD, provider='tiingo', bad=''):
     db.execute('INSERT INTO jobs VALUES(?,?,?)',(1,'op',2))
     db.execute('INSERT INTO assets VALUES(?,?,?)',(2,provider,json.dumps({'symbol':'PRIVATE_SYMBOL'})))
     db.execute('INSERT INTO receipts VALUES(?,?,?,?)',(1,1700000000,'0'*64 if bad=='sha' else sha,99 if bad=='rows' else len(payload)))
+    if extra_bytes:
+        db.execute('CREATE TABLE filler(payload BLOB)')
+        db.execute('INSERT INTO filler VALUES(?)',(b'x'*extra_bytes,))
     data=db.serialize();db.close()
     return envelope({'sqlite':base64.b64encode(data).decode()},provider=provider,run='checkpoint',job=provider)
 
@@ -191,6 +194,32 @@ def test_checkpoint_bound_diagnostic_abort_is_lower_bound(tmp_path):
     result=intake.checkpoint_bounds(checkpoint=path,checkpoint_sha256=digest,provider='tiingo',env=ENV,maximum_output=100000)
     assert result['decompressed_bytes']==100001
     assert not result['decompressed_size_exact'] and result['diagnostic_limit_reached']
+
+def test_authenticated_large_checkpoint_is_consumed_without_raising_payload_limit(tmp_path):
+    kw=args(tmp_path)
+    encrypted=checkpoint(provider=kw['provider'],extra_bytes=25_000_000)
+    kw['checkpoint_sha256']=save(kw['checkpoint'],encrypted)
+    bounds=intake.checkpoint_bounds(checkpoint=kw['checkpoint'],checkpoint_sha256=kw['checkpoint_sha256'],provider=kw['provider'],env=kw['env'])
+    assert kw['checkpoint'].stat().st_size < intake.MAX_BYTES
+    assert bounds['decompressed_bytes'] > intake.MAX_BYTES
+
+    result=intake.consume_archive(**kw)
+
+    assert result['checkpoint_binding_verified'] and result['corpus_used']
+    assert result['provider_requests']==0 and result['execution_authorized'] is False
+
+def test_checkpoint_stream_enforces_total_decompressed_bound_and_cleans_partial_file(tmp_path, monkeypatch):
+    encrypted = checkpoint()
+    compressed = intake._authenticated_compressed(
+        encrypted, provider='tiingo', run_id='checkpoint', job='tiingo',
+        format='exhaustive', env=ENV)
+    destination = tmp_path / 'checkpoint.sqlite'
+    monkeypatch.setattr(intake, 'MAX_CHECKPOINT_JSON_BYTES', 64)
+
+    with pytest.raises(ValueError, match='compressed payload'):
+        intake._stream_checkpoint_database(compressed, destination)
+
+    assert not destination.exists()
 
 def test_checkpoint_diagnostic_auth_before_decompression(tmp_path):
     path=tmp_path/'checkpoint';digest=save(path,envelope(None,run='checkpoint',job='tiingo',raw=b' '*10000))

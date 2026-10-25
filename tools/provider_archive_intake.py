@@ -10,12 +10,15 @@ from pathlib import Path
 import re
 import sqlite3
 import stat
+import tempfile
 import zipfile
 import zlib
 from tools.provider_credentials import provider_credential
 
 MAX_BYTES = 32_000_000
 MAX_NODES = 500_000
+MAX_CHECKPOINT_DB_BYTES = 384_000_000
+MAX_CHECKPOINT_JSON_BYTES = 512_000_000
 PROVIDERS = {'massive','twelve','fmp','eodhd','tiingo','intrinio','quiver','fred','alpaca','tickstream','bybit','alphavantage','finnhub','unusual_whales'}
 NATIVE = {'alphavantage','finnhub','unusual_whales'}
 SAFE_ID = re.compile(r'[A-Za-z0-9][A-Za-z0-9_-]{0,110}\Z')
@@ -185,21 +188,138 @@ def checkpoint_bounds(*, checkpoint, checkpoint_sha256, provider, env,
                 baseline_intake_limit_exceeded=total > MAX_BYTES)
 
 
-def _bind(checkpoint, provider, job, payload_sha):
-    if not isinstance(checkpoint, dict) or set(checkpoint) != {'sqlite'} or not isinstance(checkpoint['sqlite'], str):
-        raise ValueError('checkpoint schema rejected')
-    raw = base64.b64decode(checkpoint['sqlite'], validate=True)
-    if not 100 <= len(raw) <= MAX_BYTES or not raw.startswith(b'SQLite format 3\x00'):
-        raise ValueError('checkpoint database rejected')
+def _stream_checkpoint_database(compressed: bytes, destination: Path):
+    """Stream one authenticated checkpoint JSON SQLite field into a private file.
+
+    The ordinary provider payload limit remains MAX_BYTES. Checkpoint databases
+    have a separate hard disk bound and are never materialized as a JSON string
+    or an in-memory SQLite deserialize buffer.
+    """
+    prefix = (b'{', b'"sqlite"', b':', b'"')
+    whitespace = b' \t\r\n'
+    state = 'prefix'
+    token_index = token_offset = 0
+    carry = b''
+    padded = False
+    database_bytes = 0
+    json_bytes = 0
+
+    def write_base64(segment, output):
+        nonlocal carry, padded, database_bytes
+        if not segment:
+            return
+        if padded:
+            raise ValueError('checkpoint database rejected')
+        encoded = carry + segment
+        complete = len(encoded) // 4 * 4
+        if not complete:
+            carry = encoded
+            return
+        chunk, carry = encoded[:complete], encoded[complete:]
+        try:
+            decoded = base64.b64decode(chunk, validate=True)
+        except (ValueError, base64.binascii.Error):
+            raise ValueError('checkpoint database rejected') from None
+        if b'=' in chunk:
+            if b'=' in chunk[:-4]:
+                raise ValueError('checkpoint database rejected')
+            padded = True
+        database_bytes += len(decoded)
+        if database_bytes > MAX_CHECKPOINT_DB_BYTES:
+            raise ValueError('checkpoint database rejected')
+        output.write(decoded)
+
+    def feed(block, output):
+        nonlocal state, token_index, token_offset, json_bytes
+        json_bytes += len(block)
+        if json_bytes > MAX_CHECKPOINT_JSON_BYTES:
+            raise ValueError('compressed payload rejected')
+        offset = 0
+        while offset < len(block):
+            if state == 'prefix':
+                value = block[offset]
+                offset += 1
+                if token_offset == 0 and value in whitespace:
+                    continue
+                token = prefix[token_index]
+                if value != token[token_offset]:
+                    raise ValueError('checkpoint schema rejected')
+                token_offset += 1
+                if token_offset == len(token):
+                    token_index += 1
+                    token_offset = 0
+                    if token_index == len(prefix):
+                        state = 'base64'
+            elif state == 'base64':
+                ending = block.find(b'"', offset)
+                stop = len(block) if ending < 0 else ending
+                write_base64(block[offset:stop], output)
+                offset = stop
+                if ending >= 0:
+                    if carry or database_bytes < 100:
+                        raise ValueError('checkpoint database rejected')
+                    state = 'suffix'
+                    token_index = token_offset = 0
+                    offset += 1
+            elif state == 'suffix':
+                value = block[offset]
+                offset += 1
+                if token_offset == 0 and value in whitespace:
+                    continue
+                if value != b'}'[token_offset]:
+                    raise ValueError('checkpoint schema rejected')
+                token_offset += 1
+                if token_offset == 1:
+                    state = 'done'
+                    token_offset = 0
+            else:
+                if any(value not in whitespace for value in block[offset:]):
+                    raise ValueError('checkpoint schema rejected')
+                return
+
+    fd = os.open(destination, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    try:
+        with os.fdopen(fd, 'wb') as output:
+            decoder = zlib.decompressobj()
+            try:
+                for start in range(0, len(compressed), 65_536):
+                    pending = compressed[start:start + 65_536]
+                    while pending:
+                        block = decoder.decompress(pending, 65_536)
+                        feed(block, output)
+                        if decoder.unused_data:
+                            raise ValueError('compressed payload rejected')
+                        pending = decoder.unconsumed_tail
+                if not decoder.eof or decoder.unused_data or decoder.unconsumed_tail:
+                    raise ValueError('compressed payload rejected')
+            except zlib.error:
+                raise ValueError('compressed payload rejected') from None
+            if state != 'done' or database_bytes > MAX_CHECKPOINT_DB_BYTES:
+                raise ValueError('checkpoint schema rejected')
+            output.flush()
+            os.fsync(output.fileno())
+        if not 100 <= database_bytes <= MAX_CHECKPOINT_DB_BYTES:
+            raise ValueError('checkpoint database rejected')
+        with Path(destination).open('rb') as source:
+            if source.read(16) != b'SQLite format 3\x00':
+                raise ValueError('checkpoint database rejected')
+        return database_bytes
+    except BaseException:
+        try:
+            Path(destination).unlink(missing_ok=True)
+        except OSError:
+            pass
+        raise
+
+
+def _bind_database(db, provider, job, payload_sha):
     match = re.fullmatch(r'([1-9][0-9]*)-([0-9]+)', job)
     if not match:
         raise ValueError('job identity rejected')
     job_id = int(match[1])
     if job_id > 2**63 - 1:
         raise ValueError('job identity rejected')
-    db = sqlite3.connect(':memory:')
     try:
-        db.deserialize(raw)
         db.execute('PRAGMA trusted_schema=OFF')
         db.execute('PRAGMA query_only=ON')
         db.set_progress_handler(lambda: 1, 100_000)
@@ -223,12 +343,25 @@ def _bind(checkpoint, provider, job, payload_sha):
             rows = db.execute('SELECT provider,descriptor FROM assets WHERE id=?', (asset_id,)).fetchall()
             if len(rows) != 1 or rows[0][0] != provider:
                 raise ValueError('asset binding rejected')
+            if not isinstance(rows[0][1], str) or len(rows[0][1].encode()) > 1_000_000:
+                raise ValueError('asset descriptor rejected')
             asset = _json(rows[0][1].encode())
             if not isinstance(asset, dict):
                 raise ValueError('asset descriptor rejected')
         return operation, asset, receipts
     except sqlite3.Error:
         raise ValueError('checkpoint database rejected') from None
+
+
+def _bind_checkpoint(checkpoint_envelope, provider, job, payload_sha, env, directory):
+    compressed = _authenticated_compressed(checkpoint_envelope, provider=provider,
+        run_id='checkpoint', job=provider, format='exhaustive', env=env)
+    path = Path(directory) / 'checkpoint.sqlite'
+    _stream_checkpoint_database(compressed, path)
+    uri = path.resolve().as_uri() + '?mode=ro'
+    db = sqlite3.connect(uri, uri=True)
+    try:
+        return _bind_database(db, provider, job, payload_sha)
     finally:
         db.close()
 
@@ -300,8 +433,10 @@ def consume_archive(*, archive, archive_sha256, provider, run_id, job, format,
     if format != 'native':
         if checkpoint is None or checkpoint_sha256 is None:
             raise ValueError('checkpoint pin required')
-        saved = decrypt(_pinned(checkpoint, checkpoint_sha256), provider=provider, run_id='checkpoint', job=provider, format='exhaustive', env=env)
-        operation, asset, receipts = _bind(saved, provider, job, payload_sha)
+        checkpoint_envelope = _pinned(checkpoint, checkpoint_sha256)
+        with tempfile.TemporaryDirectory(prefix='icarus-provider-checkpoint-') as directory:
+            operation, asset, receipts = _bind_checkpoint(
+                checkpoint_envelope, provider, job, payload_sha, env, directory)
     elif checkpoint is not None or checkpoint_sha256 is not None:
         raise ValueError('native checkpoint unsupported')
     records = _records(payload)

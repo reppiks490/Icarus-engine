@@ -80,9 +80,9 @@
  "counts": {
   "BLOCKED": 6,
   "DEGRADED": 6,
-  "FAILING": 37,
+  "FAILING": 36,
   "OK": 35,
-  "STALE": 2
+  "STALE": 3
  },
  "depth": {
   "budgets": {
@@ -153,7 +153,7 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-10-25T10:06:27+00:00",
+ "generated_at": "2026-10-25T10:08:42+00:00",
  "research": {
   "champions": 0,
   "cl_last_run": "2026-10-25T07:35:38.564785+00:00",
@@ -211,7 +211,7 @@
    "why": "root not in CL_DATABENTO_ROOTS"
   },
   {
-   "age_h": 11.9,
+   "age_h": 12.0,
    "rows": 145073,
    "source": "feed:databento_btc_5m",
    "verdict": "FAILING",
@@ -433,12 +433,6 @@
    "why": "latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/40176987898"
   },
   {
-   "age_h": 10.5,
-   "source": "workflow:provider-supplemental-promote.yml",
-   "verdict": "FAILING",
-   "why": "latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/40164733746"
-  },
-  {
    "age_h": 4.0,
    "path": "automation_intelligence/provider_collection_v1/latest/alpaca.json",
    "rows": 0,
@@ -447,7 +441,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 10.5,
+   "age_h": 0.1,
    "path": "automation_intelligence/provider_collection_v1/latest/finnhub.json",
    "rows": 0,
    "source": "provider:finnhub",
@@ -479,12 +473,18 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 10.5,
+   "age_h": 0.1,
    "path": "automation_intelligence/provider_collection_v1/latest/unusual_whales.json",
    "rows": 0,
    "source": "provider:unusual_whales",
    "verdict": "BLOCKED",
    "why": "BLOCKED_AUTHENTICATION"
+  },
+  {
+   "age_h": 3.1,
+   "source": "workflow:native-five-research.yml",
+   "verdict": "STALE",
+   "why": "last success 3.1 h ago (expected within 3 h)"
   },
   {
    "age_h": 3.9,
@@ -499,12 +499,12 @@
    "why": "last success 3.1 h ago (expected within 3 h)"
   },
   {
-   "age_h": 10.5,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/alphavantage.json",
-   "rows": 21344,
+   "rows": 1466,
    "source": "provider:alphavantage",
    "verdict": "DEGRADED",
-   "why": "21344 rows; 3 endpoints denied by plan"
+   "why": "1466 rows; 3 endpoints denied by plan"
   },
   {
    "age_h": 4.0,
@@ -523,7 +523,7 @@
    "why": "3756 rows; 29 endpoints denied by plan"
   },
   {
-   "age_h": 33.0,
+   "age_h": 33.1,
    "path": "automation_intelligence/cl_lab/external_data_fabric.json",
    "rows": 53,
    "source": "provider:fmp",
@@ -531,7 +531,7 @@
    "why": "53 rows; 61 endpoints denied by plan"
   },
   {
-   "age_h": 33.0,
+   "age_h": 33.1,
    "path": "automation_intelligence/cl_lab/external_data_fabric.json",
    "rows": 47537,
    "source": "provider:tiingo",
@@ -742,22 +742,16 @@
    "why": "last success 1.5 h ago"
   },
   {
-   "age_h": 33.0,
+   "age_h": 33.1,
    "source": "workflow:external-data-fabric.yml",
    "verdict": "OK",
-   "why": "last success 33.0 h ago"
+   "why": "last success 33.1 h ago"
   },
   {
    "age_h": 0.3,
    "source": "workflow:interrepo-peer-intelligence.yml",
    "verdict": "OK",
    "why": "last success 0.3 h ago"
-  },
-  {
-   "age_h": 3.0,
-   "source": "workflow:native-five-research.yml",
-   "verdict": "OK",
-   "why": "last success 3.0 h ago"
   },
   {
    "age_h": 4.7,
@@ -774,6 +768,12 @@
   {
    "age_h": 0.0,
    "source": "workflow:provider-supplemental-collection.yml",
+   "verdict": "OK",
+   "why": "last success 0.0 h ago"
+  },
+  {
+   "age_h": 0.0,
+   "source": "workflow:provider-supplemental-promote.yml",
    "verdict": "OK",
    "why": "last success 0.0 h ago"
   },

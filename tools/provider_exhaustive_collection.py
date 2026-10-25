@@ -253,6 +253,18 @@ def research_features(records):
             features[field]=dict(samples=len(values),mean=mean,minimum=min(values),maximum=max(values),standard_deviation=math.sqrt(sum((v-mean)**2 for v in values)/len(values)))
     return features
 
+def substantive_rows(records):
+    """Require a populated JSON leaf within 32 levels, not merely a nonempty container."""
+    def populated(value,depth):
+        if depth>32:return False
+        if isinstance(value,dict):return any(populated(item,depth+1) for item in value.values())
+        if isinstance(value,list):return any(populated(item,depth+1) for item in value)
+        if isinstance(value,str):return bool(value.strip())
+        if isinstance(value,(bool,int)):return True
+        if isinstance(value,float):return math.isfinite(value)
+        return False
+    return any(populated(record,0) for record in records)
+
 def coverage(db):
     count=lambda sql:db.execute(sql).fetchone()[0]
     return dict(operations=count('SELECT count(*) FROM operations'),assets=count('SELECT count(*) FROM assets'),
@@ -289,6 +301,7 @@ def cycle(root,operations,env,*,run_id,request_budget=20,fetch=request,delay_sec
     for provider in sorted({(op.get('provider') or op['id'].split(':',1)[0]) for op in operations}):
         spec=PROVIDERS[provider];key=next((env.get(k,'').strip() for k in spec['keys'] if env.get(k,'').strip()),'')
         entry=dict(status='PENDING',credential_present=bool(key),requests=0,collected_pages=0,collected_rows=0,blocked=[],archive_status=[],research_features=[],
+                   verified_operations=[],substantive_work_performed=False,
                    endpoint_count=db.execute('SELECT count(*) FROM operations WHERE provider=?',(provider,)).fetchone()[0])
         result['providers'][provider]=entry
         if spec['keys'] and not key:
@@ -321,8 +334,11 @@ def cycle(root,operations,env,*,run_id,request_budget=20,fetch=request,delay_sec
                     db.execute("UPDATE jobs SET path=?,params=?,pages=pages+1 WHERE id=?",(next_path,json.dumps(next_params),jid))
                 else:db.execute("UPDATE jobs SET status='COLLECTED',pages=pages+1 WHERE id=?",(jid,))
                 entry['collected_pages']+=1
-                entry['collected_rows']+=len(rows(data))
-                feature=research_features(rows(data))
+                page_rows=rows(data)
+                entry['collected_rows']+=len(page_rows)
+                if opid.startswith(provider+':') and substantive_rows(page_rows):
+                    entry['verified_operations'].append(opid)
+                feature=research_features(page_rows)
                 if feature:entry['research_features'].append(dict(operation=opid,features=feature))
             except Exception as exc:
                 code=str(exc.code) if isinstance(exc,(urllib.error.HTTPError,ProviderFailure)) else type(exc).__name__
@@ -335,6 +351,9 @@ def cycle(root,operations,env,*,run_id,request_budget=20,fetch=request,delay_sec
             if delay_seconds and attempt+1<request_budget:time.sleep(delay_seconds)
         if entry['status']=='PENDING':entry['status']='COLLECTED_PARTIAL' if entry['collected_pages'] else 'BLOCKED' if entry['blocked'] else 'NO_READY_JOBS'
         entry['archive_status']=sorted(set(entry['archive_status']))
+        # Any failed asset/page keeps that operation unqualified in this receipt.
+        blocked_operations={item['operation'] for item in entry['blocked']}
+        entry['verified_operations']=sorted(set(entry['verified_operations'])-blocked_operations)
         entry['substantive_work_performed']=bool(entry['collected_rows'])
     result['catalog']=coverage(db)
     result['completed_at_utc']=datetime.now(timezone.utc).isoformat()

@@ -1,0 +1,231 @@
+name: corpus-consumer-plane
+
+# Manual recovery and isolated paper-profile warm-up only. No acquisition or research run.
+# Dispatch is permitted from main only; consumer code is pinned and runs offline.
+on:
+  workflow_dispatch:
+    inputs:
+      cache_name:
+        description: Existing encrypted bar cache to restore
+        type: choice
+        options: [all, bars_primary, bars_secondary, bars_third]
+        default: all
+        required: true
+
+permissions:
+  contents: read
+
+env:
+  # Reviewed Icarus consumer source. Update only alongside review of its exact tree.
+  APPROVED_CONSUMER_REF: "20870219a12f065915d88aaaae58946770728e9e"
+
+concurrency:
+  group: corpus-consumer-plane-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  consume:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        cache_name: ${{ fromJSON((inputs.cache_name == 'all' || inputs.cache_name == '') && '["bars_primary","bars_secondary","bars_third"]' || format('["{0}"]', inputs.cache_name)) }}
+    steps:
+      - name: Validate immutable inputs
+        env:
+          ENGINE_SHA: ${{ github.sha }}
+          CONSUMER_SHA: ${{ env.APPROVED_CONSUMER_REF }}
+          CACHE_NAME: ${{ matrix.cache_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          import re
+          import tempfile
+          if not all(re.fullmatch(r"[0-9a-f]{40}", os.environ[name])
+                     for name in ("ENGINE_SHA", "CONSUMER_SHA")):
+              raise SystemExit("An immutable lowercase commit is required")
+          if os.environ["CACHE_NAME"] not in {"bars_primary", "bars_secondary", "bars_third"}:
+              raise SystemExit("Unsupported cache")
+          root = Path(tempfile.mkdtemp(prefix="icarus-corpus-proof-", dir=os.environ["RUNNER_TEMP"]))
+          root.chmod(0o700)
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as stream:
+              stream.write(f"PROOF_ROOT={root}\n")
+              for name in ("ENGINE_SHA", "CONSUMER_SHA", "CACHE_NAME"):
+                  stream.write(f"{name}={os.environ[name]}\n")
+          PY
+
+      - name: Checkout exact Engine source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: engine
+          persist-credentials: false
+
+      - name: Checkout pinned reviewed Icarus consumer
+        uses: actions/checkout@v4
+        with:
+          repository: reppiks490/Icarus
+          ref: ${{ env.CONSUMER_SHA }}
+          path: consumer
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install vault cryptography only
+        run: python -m pip install "cryptography>=44,<47"
+
+      - name: Build isolated offline consumer image
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > "$RUNNER_TEMP/Dockerfile.corpus-consumer" <<'DOCKERFILE'
+          FROM python:3.12-slim
+          RUN python -m pip install --no-cache-dir --disable-pip-version-check \
+              "cryptography>=44,<47" "openpyxl>=3.1,<4" tzdata
+          ENV PYTHONDONTWRITEBYTECODE=1
+          DOCKERFILE
+          docker build --pull --tag icarus-corpus-consumer:locked \
+            --file "$RUNNER_TEMP/Dockerfile.corpus-consumer" "$RUNNER_TEMP"
+
+      - name: Verify immutable source revisions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          import subprocess
+          base = Path(os.environ["GITHUB_WORKSPACE"])
+          for repo, expected in (("engine", "ENGINE_SHA"), ("consumer", "CONSUMER_SHA")):
+              actual = subprocess.check_output(["git", "-C", str(base / repo), "rev-parse", "HEAD"], text=True).strip()
+              if actual != os.environ[expected]:
+                  raise SystemExit("Checkout revision mismatch")
+          PY
+
+      - name: Restore existing encrypted bars
+        id: restore
+        working-directory: engine
+        env:
+          DATABENTO_API_KEY: ${{ secrets.DATABENTO_API_KEY || secrets.DATABENTO_KEY }}
+          ICARUS_DATA_ARCHIVE_KEY: ${{ secrets.ICARUS_DATA_ARCHIVE_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          mkdir -m 700 "$PROOF_ROOT/restored"
+          python -m tools.depth_vault restore \
+            --cache "$CACHE_NAME=$PROOF_ROOT/restored" \
+            --vault data/depth_vault > "$PROOF_ROOT/restore.log" 2>&1
+
+      - name: Record conservative archive availability
+        if: steps.restore.outcome == 'success'
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          python - <<'PY'
+          import os
+          import time
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as stream:
+              stream.write(f"AVAILABLE_AT_NS={time.time_ns()}\n")
+          PY
+
+      - name: Consume private corpus with isolated paper profiles
+        id: consumer
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -uo pipefail
+          umask 077
+          mkdir -m 700 "$PROOF_ROOT/runtime" "$PROOF_ROOT/output"
+          docker run --rm --network=none --read-only --cap-drop=ALL \
+            --security-opt=no-new-privileges --pids-limit=128 --user "$(id -u):$(id -g)" \
+            --workdir /consumer \
+            --mount "type=bind,src=$GITHUB_WORKSPACE/consumer,dst=/consumer,readonly" \
+            --mount "type=bind,src=$PROOF_ROOT/restored,dst=/restored,readonly" \
+            --mount "type=bind,src=$GITHUB_WORKSPACE/engine/data/depth_vault/manifest.json,dst=/manifest.json,readonly" \
+            --mount "type=bind,src=$PROOF_ROOT/runtime,dst=/runtime" \
+            --mount "type=bind,src=$PROOF_ROOT/output,dst=/output" \
+            --env ICARUS_FEED=file --env PYTHONPATH=/consumer \
+            icarus-corpus-consumer:locked python -m tools.provider_corpus_intake \
+              --restored-dir /restored --vault-manifest /manifest.json \
+              --cache-name "$CACHE_NAME" --source-repo reppiks490/Icarus-engine \
+              --source-commit "$ENGINE_SHA" --available-at-ns "$AVAILABLE_AT_NS" \
+              --asof-ns "$(python -c 'import time; print(time.time_ns())')" \
+              --private-dir /runtime/private --receipt /output/receipt.json --max-bars 6000 \
+              --include-requested-futures > "$PROOF_ROOT/consumer.log" 2>&1
+          consumer_exit=$?
+          echo "exit_code=$consumer_exit" >> "$GITHUB_OUTPUT"
+          exit "$consumer_exit"
+
+      - name: Validate safe consumption receipt
+        id: receipt
+        if: always() && steps.restore.outcome == 'success'
+        env:
+          CONSUMER_EXIT_CODE: ${{ steps.consumer.outputs.exit_code }}
+        shell: bash
+        working-directory: engine
+        run: |
+          set -euo pipefail
+          umask 077
+          python tools/corpus_receipt_sanitizer.py \
+            --input "$PROOF_ROOT/output/receipt.json" \
+            --output "$PROOF_ROOT/safe-receipt.json" \
+            --engine-sha "$ENGINE_SHA" --consumer-sha "$CONSUMER_SHA" \
+            --cache-name "$CACHE_NAME" --available-at-ns "$AVAILABLE_AT_NS" \
+            --consumer-exit-code "$CONSUMER_EXIT_CODE"
+
+      - name: Summarize consumption result
+        if: always() && steps.receipt.outcome == 'success'
+        working-directory: engine
+        env:
+          RECEIPT: ${{ env.PROOF_ROOT }}/safe-receipt.json
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          receipt = json.loads(Path(os.environ["RECEIPT"]).read_text(encoding="utf-8"))
+          result = receipt["consumer_status"]
+          datasets = len(receipt["datasets"])
+          blocked = len(receipt["blocked_datasets"])
+          workspaces = len(receipt["workspaces"])
+          warmup = receipt["paper_warmup_status"]
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as summary:
+              summary.write(f"## Private corpus consumption: {result}\n\n")
+              summary.write(f"- Datasets admitted: {datasets}\n- Datasets blocked: {blocked}\n")
+              summary.write(f"- Isolated paper workspaces observed: {workspaces}\n")
+              summary.write(f"- Paper-profile warmup: {warmup}\n")
+              summary.write("- Owner PC settings and runtime: not read or changed\n")
+              summary.write("- Market validation, strategy qualification, and execution: not authorized\n")
+          PY
+
+      - name: Upload metadata receipt only
+        if: always() && steps.receipt.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: corpus-consumption-${{ matrix.cache_name }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.PROOF_ROOT }}/safe-receipt.json
+          if-no-files-found: error
+          include-hidden-files: false
+          retention-days: 7
+
+      - name: Remove private restored data and logs
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          case "${PROOF_ROOT:-}" in
+            "$RUNNER_TEMP"/icarus-corpus-proof-*) rm -rf -- "$PROOF_ROOT" ;;
+            *) exit 0 ;;
+          esac

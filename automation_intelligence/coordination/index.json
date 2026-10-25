@@ -1118,6 +1118,298 @@
       "status": "active"
     },
     {
+      "actor": "Codex",
+      "branch": "codex/icarus-pr462-full-integration-20261025",
+      "cooperates_with": [],
+      "coordination_mode": "independent",
+      "declared_paths": [
+        "coordination/events/2026/10/25/codex-20261025-icarus-completion/20261025T162637Z-update-current-mobile-security-and-runtime.json"
+      ],
+      "declared_targets": [
+        {
+          "path": "coordination/events/2026/10/25/codex-20261025-icarus-completion/20261025T162637Z-update-current-mobile-security-and-runtime.json",
+          "repo": "reppiks490/icarus-owner-actions"
+        }
+      ],
+      "dependencies": [
+        "pr:reppiks490/Icarus#198@c040d697091d8bdb5ab82cbe798fe2fb7fc4fddc",
+        "pr:reppiks490/Icarus-engine#209@15401aac4d51d70d031309f0b6520c00bd163bcc",
+        "pr:reppiks490/Icarus-engine#252@15401aac4d51d70d031309f0b6520c00bd163bcc",
+        "pr:reppiks490/divine-providence#60@a31f6563191e18f9b68d33966fac89680409a692",
+        "constraint:execution_authorized_false",
+        "constraint:no_live_broker_arming",
+        "constraint:no_provider_collection_or_new_spend"
+      ],
+      "goal": "Continue the user-requested exhaustive non-live Icarus completion: finish and verify the paper restart, then close or precisely document remaining owned adapter/integration gaps across Icarus and Icarus-engine. Preserve live arming, main merge, provider spend, and execution disabled.",
+      "home_repo": "reppiks490/Icarus",
+      "last_event_at_utc": "2026-10-25T16:26:37Z",
+      "latest_summary": "Continued the user's broad non-live completion request. Mobile gateway review found that the configured engine URL accepted remote origins and authenticated urllib redirects/proxy settings could disclose the gateway engine token. Added fail-closed loopback-origin validation, disabled ambient proxies and redirects, and added remote-origin, redirect-capture, and proxy-capture regressions; exact mobile gateway suite passes 12 tests. Pushed commits df484af331e459fdad7573b66f7acee9d1346b1a and c040d697091d8bdb5ab82cbe798fe2fb7fc4fddc to Icarus PR #198; hosted checks are pending. Current Icarus main already wraps disconnected request reads/writes and tests ConnectionAbortedError as a dropped client stream; the owner's observed traceback therefore still requires restarting any older running checkout/process to load merged code. Icarus-engine PR #252 is merged into FR-1 feature PR #209, not main; all current exact-head synthetic/API/accounting checks pass, but #209 remains draft and empirical gates remain. Divine Providence PR #60 increases only the observatory Windows job timeout from 25 to 40 minutes; exact-head Windows collection is still in progress. No live arming, provider collection/spend, physical restart, or phone pairing is claimed.",
+      "latest_type": "UPDATE",
+      "model_family": "openai",
+      "phase": "nonlive-integration-and-runtime-closeout",
+      "pr": 462,
+      "reclaimable": false,
+      "reserved_paths": [
+        "coordination/events/2026/10/25/codex-20261025-icarus-completion/20261025T162637Z-update-current-mobile-security-and-runtime.json"
+      ],
+      "reserved_targets": [
+        {
+          "path": "coordination/events/2026/10/25/codex-20261025-icarus-completion/20261025T162637Z-update-current-mobile-security-and-runtime.json",
+          "repo": "reppiks490/icarus-owner-actions"
+        }
+      ],
+      "session_id": "codex-20261025-icarus-completion",
+      "stale": false,
+      "status": "active"
+    },
+    {
+      "actor": "Codex",
+      "branch": "main",
+      "cooperates_with": [],
+      "coordination_mode": "independent",
+      "declared_paths": [
+        "LICENSE.md",
+        "README.md",
+        "LICENSE.md",
+        "README.md",
+        "LICENSE.md",
+        "README.md",
+        "LICENSE.md",
+        "README.md",
+        "LICENSE.md",
+        "README.md",
+        "LICENSE.md",
+        "README.md",
+        "LICENSE.md",
+        "README.md",
+        "LICENSE.md",
+        "README.md",
+        "LICENSE.md",
+        "README.md",
+        "LICENSE.md",
+        "README.md",
+        "LICENSE.md",
+        "README.md"
+      ],
+      "declared_targets": [
+        {
+          "path": "LICENSE.md",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "README.md",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "LICENSE.md",
+          "repo": "reppiks490/Icarus-engine"
+        },
+        {
+          "path": "README.md",
+          "repo": "reppiks490/Icarus-engine"
+        },
+        {
+          "path": "LICENSE.md",
+          "repo": "reppiks490/multi-level-csv"
+        },
+        {
+          "path": "README.md",
+          "repo": "reppiks490/multi-level-csv"
+        },
+        {
+          "path": "LICENSE.md",
+          "repo": "reppiks490/csv-data-multi-chart-type"
+        },
+        {
+          "path": "README.md",
+          "repo": "reppiks490/csv-data-multi-chart-type"
+        },
+        {
+          "path": "LICENSE.md",
+          "repo": "reppiks490/icarus-owner-actions"
+        },
+        {
+          "path": "README.md",
+          "repo": "reppiks490/icarus-owner-actions"
+        },
+        {
+          "path": "LICENSE.md",
+          "repo": "reppiks490/daedalus-research-os"
+        },
+        {
+          "path": "README.md",
+          "repo": "reppiks490/daedalus-research-os"
+        },
+        {
+          "path": "LICENSE.md",
+          "repo": "reppiks490/aion-parallax-research"
+        },
+        {
+          "path": "README.md",
+          "repo": "reppiks490/aion-parallax-research"
+        },
+        {
+          "path": "LICENSE.md",
+          "repo": "reppiks490/icarus-csv-evidence-lab"
+        },
+        {
+          "path": "README.md",
+          "repo": "reppiks490/icarus-csv-evidence-lab"
+        },
+        {
+          "path": "LICENSE.md",
+          "repo": "reppiks490/icarus-causal-router"
+        },
+        {
+          "path": "README.md",
+          "repo": "reppiks490/icarus-causal-router"
+        },
+        {
+          "path": "LICENSE.md",
+          "repo": "reppiks490/divine-providence"
+        },
+        {
+          "path": "README.md",
+          "repo": "reppiks490/divine-providence"
+        },
+        {
+          "path": "LICENSE.md",
+          "repo": "reppiks490/ideas-reality"
+        },
+        {
+          "path": "README.md",
+          "repo": "reppiks490/ideas-reality"
+        }
+      ],
+      "dependencies": [],
+      "goal": "Owner-requested restrictive licensing notices for ICARUS-related repositories; preserve third-party rights and existing grants.",
+      "home_repo": "reppiks490/icarus-owner-actions",
+      "last_event_at_utc": "2026-10-25T17:00:01Z",
+      "latest_summary": "Add root LICENSE.md and README licensing links across eleven owner ICARUS repositories. Knowledge delta: LICENSE.md states proprietary all-rights-reserved policy, exceptions for third-party material, prior grants, law and platform rights. No runtime or pyproject changes.",
+      "latest_type": "PLAN",
+      "model_family": "openai",
+      "phase": "licensing",
+      "pr": null,
+      "reclaimable": false,
+      "reserved_paths": [
+        "LICENSE.md",
+        "README.md",
+        "LICENSE.md",
+        "README.md",
+        "LICENSE.md",
+        "README.md",
+        "LICENSE.md",
+        "README.md",
+        "LICENSE.md",
+        "README.md",
+        "LICENSE.md",
+        "README.md",
+        "LICENSE.md",
+        "README.md",
+        "LICENSE.md",
+        "README.md",
+        "LICENSE.md",
+        "README.md",
+        "LICENSE.md",
+        "README.md",
+        "LICENSE.md",
+        "README.md"
+      ],
+      "reserved_targets": [
+        {
+          "path": "LICENSE.md",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "README.md",
+          "repo": "reppiks490/Icarus"
+        },
+        {
+          "path": "LICENSE.md",
+          "repo": "reppiks490/Icarus-engine"
+        },
+        {
+          "path": "README.md",
+          "repo": "reppiks490/Icarus-engine"
+        },
+        {
+          "path": "LICENSE.md",
+          "repo": "reppiks490/multi-level-csv"
+        },
+        {
+          "path": "README.md",
+          "repo": "reppiks490/multi-level-csv"
+        },
+        {
+          "path": "LICENSE.md",
+          "repo": "reppiks490/csv-data-multi-chart-type"
+        },
+        {
+          "path": "README.md",
+          "repo": "reppiks490/csv-data-multi-chart-type"
+        },
+        {
+          "path": "LICENSE.md",
+          "repo": "reppiks490/icarus-owner-actions"
+        },
+        {
+          "path": "README.md",
+          "repo": "reppiks490/icarus-owner-actions"
+        },
+        {
+          "path": "LICENSE.md",
+          "repo": "reppiks490/daedalus-research-os"
+        },
+        {
+          "path": "README.md",
+          "repo": "reppiks490/daedalus-research-os"
+        },
+        {
+          "path": "LICENSE.md",
+          "repo": "reppiks490/aion-parallax-research"
+        },
+        {
+          "path": "README.md",
+          "repo": "reppiks490/aion-parallax-research"
+        },
+        {
+          "path": "LICENSE.md",
+          "repo": "reppiks490/icarus-csv-evidence-lab"
+        },
+        {
+          "path": "README.md",
+          "repo": "reppiks490/icarus-csv-evidence-lab"
+        },
+        {
+          "path": "LICENSE.md",
+          "repo": "reppiks490/icarus-causal-router"
+        },
+        {
+          "path": "README.md",
+          "repo": "reppiks490/icarus-causal-router"
+        },
+        {
+          "path": "LICENSE.md",
+          "repo": "reppiks490/divine-providence"
+        },
+        {
+          "path": "README.md",
+          "repo": "reppiks490/divine-providence"
+        },
+        {
+          "path": "LICENSE.md",
+          "repo": "reppiks490/ideas-reality"
+        },
+        {
+          "path": "README.md",
+          "repo": "reppiks490/ideas-reality"
+        }
+      ],
+      "session_id": "codex-20261025-icarus-licensing",
+      "stale": false,
+      "status": "active"
+    },
+    {
       "actor": "Icarus 1 / Codex",
       "branch": "icarus1/restart-readiness-20261020",
       "cooperates_with": [
@@ -1304,173 +1596,11 @@
       "model_family": "openai",
       "phase": "shared-history-read-private-learning-write",
       "pr": 462,
-      "reclaimable": false,
-      "reserved_paths": [
-        "icarus_engine/dashboard.html",
-        "icarus_engine/workspace_api.py",
-        "icarus_engine/paper_workspaces.py",
-        "icarus_engine/server.py",
-        "icarus_engine/world-immersion.js",
-        "tests_engine/test_workspace_dashboard_browser.py",
-        "tests_engine/test_workspace_api.py",
-        "tests_engine/test_workspace_client.py",
-        "tests_engine/test_world_immersion.py",
-        "tests_engine/browser_depth.cjs",
-        "docs/recovery",
-        "START_HERE.md",
-        "icarus_engine/experience-ui.js",
-        "icarus_engine/experience-ui.css",
-        "icarus_engine/workspace_panels.py",
-        "icarus_engine/workspace_research_engines.py",
-        "tests_engine/test_workspace_research_panels.py",
-        "tests_engine/test_runtime_layout_browser.py",
-        ".github/workflows/ui-visual-contract.yml",
-        ".github/workflows/test.yml",
-        "icarus_engine/workspace-client.js",
-        "icarus_engine/workspace_context.py",
-        "tests_engine/test_workspace_access.py",
-        "icarus_engine/connections-ui.js",
-        "icarus_engine/workspace-dashboard.html",
-        "tests_engine/test_connections_layout_browser.py",
-        "icarus_engine/workspace_intelligence_panels.py",
-        "tests_engine/test_workspace_intelligence_panels.py",
-        "icarus_engine/workspace_golive.py",
-        "tests_engine/test_workspace_golive.py",
-        "icarus_engine/learning_fabric.py",
-        "tests_engine/test_learning_history_roots.py"
-      ],
-      "reserved_targets": [
-        {
-          "path": "icarus_engine/dashboard.html",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "icarus_engine/workspace_api.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "icarus_engine/paper_workspaces.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "icarus_engine/server.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "icarus_engine/world-immersion.js",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "tests_engine/test_workspace_dashboard_browser.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "tests_engine/test_workspace_api.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "tests_engine/test_workspace_client.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "tests_engine/test_world_immersion.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "tests_engine/browser_depth.cjs",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "docs/recovery",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "START_HERE.md",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "icarus_engine/experience-ui.js",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "icarus_engine/experience-ui.css",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "icarus_engine/workspace_panels.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "icarus_engine/workspace_research_engines.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "tests_engine/test_workspace_research_panels.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "tests_engine/test_runtime_layout_browser.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": ".github/workflows/ui-visual-contract.yml",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": ".github/workflows/test.yml",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "icarus_engine/workspace-client.js",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "icarus_engine/workspace_context.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "tests_engine/test_workspace_access.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "icarus_engine/connections-ui.js",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "icarus_engine/workspace-dashboard.html",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "tests_engine/test_connections_layout_browser.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "icarus_engine/workspace_intelligence_panels.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "tests_engine/test_workspace_intelligence_panels.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "icarus_engine/workspace_golive.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "tests_engine/test_workspace_golive.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "icarus_engine/learning_fabric.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "tests_engine/test_learning_history_roots.py",
-          "repo": "reppiks490/Icarus"
-        }
-      ],
+      "reclaimable": true,
+      "reserved_paths": [],
+      "reserved_targets": [],
       "session_id": "icarus1-20261020-system-recovery",
-      "stale": false,
+      "stale": true,
       "status": "active"
     },
     {
@@ -1507,23 +1637,11 @@
       "model_family": "openai",
       "phase": "private-learning-shared-history-read-boundary",
       "pr": 462,
-      "reclaimable": false,
-      "reserved_paths": [
-        "icarus_engine/learning_fabric.py",
-        "tests_engine/test_learning_history_roots.py"
-      ],
-      "reserved_targets": [
-        {
-          "path": "icarus_engine/learning_fabric.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "tests_engine/test_learning_history_roots.py",
-          "repo": "reppiks490/Icarus"
-        }
-      ],
+      "reclaimable": true,
+      "reserved_paths": [],
+      "reserved_targets": [],
       "session_id": "icarus1-20261022-access-support",
-      "stale": false,
+      "stale": true,
       "status": "active"
     },
     {
@@ -1563,28 +1681,11 @@
       "model_family": "openai",
       "phase": "connections-layout-verified-parent-integration",
       "pr": null,
-      "reclaimable": false,
-      "reserved_paths": [
-        "icarus_engine/connections-ui.js",
-        "icarus_engine/workspace-dashboard.html",
-        "tests_engine/test_connections_layout_browser.py"
-      ],
-      "reserved_targets": [
-        {
-          "path": "icarus_engine/connections-ui.js",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "icarus_engine/workspace-dashboard.html",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "tests_engine/test_connections_layout_browser.py",
-          "repo": "reppiks490/Icarus"
-        }
-      ],
+      "reclaimable": true,
+      "reserved_paths": [],
+      "reserved_targets": [],
       "session_id": "icarus1-20261022-connections-layout-support",
-      "stale": false,
+      "stale": true,
       "status": "active"
     },
     {
@@ -1619,23 +1720,11 @@
       "model_family": "openai",
       "phase": "selected-golive-diagnostic-reader",
       "pr": 462,
-      "reclaimable": false,
-      "reserved_paths": [
-        "icarus_engine/workspace_golive.py",
-        "tests_engine/test_workspace_golive.py"
-      ],
-      "reserved_targets": [
-        {
-          "path": "icarus_engine/workspace_golive.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "tests_engine/test_workspace_golive.py",
-          "repo": "reppiks490/Icarus"
-        }
-      ],
+      "reclaimable": true,
+      "reserved_paths": [],
+      "reserved_targets": [],
       "session_id": "icarus1-20261022-golive-support",
-      "stale": false,
+      "stale": true,
       "status": "active"
     },
     {
@@ -1670,23 +1759,11 @@
       "model_family": "openai",
       "phase": "selected-intelligence-read-adapters",
       "pr": 462,
-      "reclaimable": false,
-      "reserved_paths": [
-        "icarus_engine/workspace_intelligence_panels.py",
-        "tests_engine/test_workspace_intelligence_panels.py"
-      ],
-      "reserved_targets": [
-        {
-          "path": "icarus_engine/workspace_intelligence_panels.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "tests_engine/test_workspace_intelligence_panels.py",
-          "repo": "reppiks490/Icarus"
-        }
-      ],
+      "reclaimable": true,
+      "reserved_paths": [],
+      "reserved_targets": [],
       "session_id": "icarus1-20261022-research-panels-support",
-      "stale": false,
+      "stale": true,
       "status": "active"
     },
     {
@@ -1737,38 +1814,11 @@
       "model_family": "openai",
       "phase": "ui-stability-scope-reconciliation",
       "pr": null,
-      "reclaimable": false,
-      "reserved_paths": [
-        "icarus_engine/world-immersion.js",
-        "icarus_engine/experience-ui.js",
-        "icarus_engine/experience-ui.css",
-        "tests_engine/test_world_immersion.py",
-        "tests_engine/test_runtime_layout_browser.py"
-      ],
-      "reserved_targets": [
-        {
-          "path": "icarus_engine/world-immersion.js",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "icarus_engine/experience-ui.js",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "icarus_engine/experience-ui.css",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "tests_engine/test_world_immersion.py",
-          "repo": "reppiks490/Icarus"
-        },
-        {
-          "path": "tests_engine/test_runtime_layout_browser.py",
-          "repo": "reppiks490/Icarus"
-        }
-      ],
+      "reclaimable": true,
+      "reserved_paths": [],
+      "reserved_targets": [],
       "session_id": "icarus1-20261022-ui-stability-support",
-      "stale": false,
+      "stale": true,
       "status": "active"
     },
     {
@@ -1779,42 +1829,43 @@
       ],
       "coordination_mode": "cooperate",
       "declared_paths": [
-        "tests_engine/test_paper_workspaces.py",
-        "docs/recovery/archive/2026-10-23/INDEX.md"
+        "pyproject.toml",
+        ".github/workflows/test.yml"
       ],
       "declared_targets": [
         {
-          "path": "tests_engine/test_paper_workspaces.py",
+          "path": "pyproject.toml",
           "repo": "reppiks490/Icarus"
         },
         {
-          "path": "docs/recovery/archive/2026-10-23/INDEX.md",
+          "path": ".github/workflows/test.yml",
           "repo": "reppiks490/Icarus"
         }
       ],
       "dependencies": [
-        "external:owner-PC-current-last_error-readback"
+        "ci:final-head-windows-suite",
+        "external:owner-PC-setup-startup-status-rendered-views"
       ],
       "goal": "Owner-authorized recurring cross-repository integration, repair and validation in tandem with Icarus 1; distinct specialist swarms, evidence-bound work, durable GitHub handoffs. Prior stopped tasks remain stopped.",
       "home_repo": "reppiks490/icarus-owner-actions",
-      "last_event_at_utc": "2026-10-23T15:00:00Z",
-      "latest_summary": "Extend047 for existing shutdown cleanup regression to inject lifecycle-controller close failure rather than the retired legacy manager.stop callback. Preserve all-services-finally/socketclose contract. Add byte-identical old-guide archive index entry when replacing currentrestart guide; allpriorclaimsremain. Independentreview continues beforepublication; noallrequirementscomplete claim.",
-      "latest_type": "UPDATE",
+      "last_event_at_utc": "2026-10-24T23:24:00Z",
+      "latest_summary": "Begin phone pairing; pause new subsystem/defaults work at working desktop boundary",
+      "latest_type": "HANDOFF",
       "model_family": "openai",
-      "phase": "power-regression-contract",
+      "phase": "legacy",
       "pr": null,
       "reclaimable": false,
       "reserved_paths": [
-        "tests_engine/test_paper_workspaces.py",
-        "docs/recovery/archive/2026-10-23/INDEX.md"
+        "pyproject.toml",
+        ".github/workflows/test.yml"
       ],
       "reserved_targets": [
         {
-          "path": "tests_engine/test_paper_workspaces.py",
+          "path": "pyproject.toml",
           "repo": "reppiks490/Icarus"
         },
         {
-          "path": "docs/recovery/archive/2026-10-23/INDEX.md",
+          "path": ".github/workflows/test.yml",
           "repo": "reppiks490/Icarus"
         }
       ],
@@ -1825,12 +1876,12 @@
   ],
   "collisions": [],
   "counts": {
-    "active": 24,
+    "active": 26,
     "collisions": 0,
-    "stale": 17,
+    "stale": 23,
     "terminal": 24
   },
-  "generated_at_utc": "2026-10-23T15:52:14.262865Z",
+  "generated_at_utc": "2026-10-25T16:41:50.784210Z",
   "owner_status": {
     "claude": {
       "active": false,

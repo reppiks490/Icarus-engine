@@ -12,7 +12,7 @@
   },
   "chatgpt_tokens_used": 0,
   "checkpoint_status": "ENCRYPTED_AES256_GCM",
-  "completed_at_utc": "2026-10-24T23:38:40.542751+00:00",
+  "completed_at_utc": "2026-10-25T10:06:08.500757+00:00",
   "databento_excluded": true,
   "execution_authorized": false,
   "paid_model_calls": 0,
@@ -22,56 +22,56 @@
         "ENCRYPTED_AES256_GCM"
       ],
       "blocked": [],
-      "collected_pages": 3,
-      "collected_rows": 21344,
+      "collected_pages": 5,
+      "collected_rows": 1466,
       "credential_present": true,
       "endpoint_count": 28,
-      "requests": 3,
+      "requests": 5,
       "research_features": [
         {
           "features": {
             "value": {
-              "maximum": 361376.0,
-              "mean": 210019.4265060241,
-              "minimum": 103025.0,
-              "samples": 415,
-              "standard_deviation": 50418.48827614559
+              "maximum": 336.94,
+              "mean": 92.75882111436948,
+              "minimum": 9.7,
+              "samples": 1364,
+              "standard_deviation": 91.4634135155751
             }
           },
-          "operation": "alphavantage:get:DURABLES"
+          "operation": "alphavantage:get:CPI"
         },
         {
           "features": {
-            "value": {
-              "maximum": 143.95,
-              "mean": 54.505041703248985,
-              "minimum": 9.1,
-              "samples": 9112,
-              "standard_deviation": 33.029421683218224
+            "close": {
+              "maximum": 779.09,
+              "mean": 758.1463999999999,
+              "minimum": 725.43,
+              "samples": 100,
+              "standard_deviation": 13.77682340164089
+            },
+            "volume": {
+              "maximum": 93989416.0,
+              "mean": 47500737.75,
+              "minimum": 18685018.0,
+              "samples": 100,
+              "standard_deviation": 14431435.017135138
             }
           },
-          "operation": "alphavantage:get:BRENT"
-        },
-        {
-          "features": {
-            "value": {
-              "maximum": 145.31,
-              "mean": 50.054342395297525,
-              "minimum": -36.98,
-              "samples": 9527,
-              "standard_deviation": 29.884898199354165
-            }
-          },
-          "operation": "alphavantage:get:WTI"
+          "operation": "alphavantage:get:TIME_SERIES_DAILY"
         }
       ],
       "status": "COLLECTED_PARTIAL",
-      "substantive_work_performed": true
+      "substantive_work_performed": true,
+      "verified_operations": [
+        "alphavantage:get:CPI",
+        "alphavantage:get:GLOBAL_QUOTE",
+        "alphavantage:get:TIME_SERIES_DAILY"
+      ]
     }
   },
   "raw_payloads_public": false,
-  "requests": 3,
-  "run_id": "supplemental-40143511784-alphavantage",
+  "requests": 5,
+  "run_id": "supplemental-40183301205-alphavantage",
   "schema_version": "icarus-provider-collection-cycle-v1",
-  "started_at_utc": "2026-10-24T23:38:00.224216+00:00"
+  "started_at_utc": "2026-10-25T10:05:15.732093+00:00"
 }

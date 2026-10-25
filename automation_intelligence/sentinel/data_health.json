@@ -81,8 +81,7 @@
   "BLOCKED": 6,
   "DEGRADED": 5,
   "FAILING": 36,
-  "OK": 38,
-  "UNKNOWN": 1
+  "OK": 39
  },
  "depth": {
   "budgets": {
@@ -153,7 +152,7 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-10-25T16:52:21+00:00",
+ "generated_at": "2026-10-25T16:53:29+00:00",
  "research": {
   "champions": 0,
   "cl_last_run": "2026-10-25T07:35:38.564785+00:00",
@@ -521,11 +520,6 @@
    "why": "47537 rows; 4 endpoints denied by plan"
   },
   {
-   "source": "workflow:interrepo-peer-intelligence.yml",
-   "verdict": "UNKNOWN",
-   "why": "no completed run on main"
-  },
-  {
    "age_h": 0.5,
    "rows": 247,
    "source": "economic_events",
@@ -673,14 +667,14 @@
    "why": "16718 rows to 2026-10-22T00:00"
   },
   {
-   "age_h": 9.3,
+   "age_h": 9.4,
    "rows": 196988,
    "source": "fred_alfred",
    "verdict": "OK",
    "why": "39/39 series ok"
   },
   {
-   "age_h": 0.6,
+   "age_h": 0.7,
    "path": "automation_intelligence/provider_collection_v1/latest/fred.json",
    "rows": 434,
    "source": "provider:fred",
@@ -696,7 +690,7 @@
    "why": "20000 rows"
   },
   {
-   "age_h": 0.6,
+   "age_h": 0.7,
    "path": "automation_intelligence/provider_collection_v1/latest/twelve.json",
    "rows": 201,
    "source": "provider:twelve",
@@ -717,10 +711,10 @@
    "why": "last success 9.3 h ago"
   },
   {
-   "age_h": 8.3,
+   "age_h": 8.4,
    "source": "workflow:databento-depth-corpus.yml",
    "verdict": "OK",
-   "why": "last success 8.3 h ago"
+   "why": "last success 8.4 h ago"
   },
   {
    "age_h": 5.0,
@@ -736,15 +730,21 @@
   },
   {
    "age_h": 0.0,
+   "source": "workflow:interrepo-peer-intelligence.yml",
+   "verdict": "OK",
+   "why": "last success 0.0 h ago"
+  },
+  {
+   "age_h": 0.0,
    "source": "workflow:native-five-research.yml",
    "verdict": "OK",
    "why": "last success 0.0 h ago"
   },
   {
-   "age_h": 4.7,
+   "age_h": 0.0,
    "source": "workflow:native-provider-access.yml",
    "verdict": "OK",
-   "why": "last success 4.7 h ago"
+   "why": "last success 0.0 h ago"
   },
   {
    "age_h": 0.5,
@@ -771,16 +771,16 @@
    "why": "last success 2.3 h ago"
   },
   {
-   "age_h": 0.0,
+   "age_h": 0.1,
    "source": "workflow:sec-edgar-data.yml",
    "verdict": "OK",
-   "why": "last success 0.0 h ago"
+   "why": "last success 0.1 h ago"
   },
   {
-   "age_h": 0.1,
+   "age_h": 0.2,
    "source": "workflow:tests.yml",
    "verdict": "OK",
-   "why": "last success 0.1 h ago"
+   "why": "last success 0.2 h ago"
   }
  ]
 }

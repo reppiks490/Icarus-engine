@@ -80,8 +80,9 @@
  "counts": {
   "BLOCKED": 6,
   "DEGRADED": 5,
-  "FAILING": 36,
-  "OK": 39
+  "FAILING": 37,
+  "OK": 37,
+  "UNKNOWN": 1
  },
  "depth": {
   "budgets": {
@@ -152,7 +153,7 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-10-25T16:53:29+00:00",
+ "generated_at": "2026-10-25T16:57:23+00:00",
  "research": {
   "champions": 0,
   "cl_last_run": "2026-10-25T07:35:38.564785+00:00",
@@ -210,7 +211,7 @@
    "why": "root not in CL_DATABENTO_ROOTS"
   },
   {
-   "age_h": 18.7,
+   "age_h": 18.8,
    "rows": 145073,
    "source": "feed:databento_btc_5m",
    "verdict": "FAILING",
@@ -259,7 +260,7 @@
    "why": "root not in CL_DATABENTO_ROOTS"
   },
   {
-   "age_h": 18.6,
+   "age_h": 18.7,
    "rows": 158216,
    "source": "feed:databento_mbt_5m",
    "verdict": "FAILING",
@@ -378,7 +379,7 @@
    "why": "root not in CL_DATABENTO_ROOTS"
   },
   {
-   "age_h": 46.6,
+   "age_h": 46.7,
    "rows": 109524,
    "source": "feed:databento_zc_5m",
    "verdict": "FAILING",
@@ -399,7 +400,7 @@
    "why": "root not in CL_DATABENTO_ROOTS"
   },
   {
-   "age_h": 46.6,
+   "age_h": 46.7,
    "rows": 111964,
    "source": "feed:databento_zs_5m",
    "verdict": "FAILING",
@@ -413,7 +414,7 @@
    "why": "root not in CL_DATABENTO_ROOTS"
   },
   {
-   "age_h": 46.6,
+   "age_h": 46.7,
    "rows": 110367,
    "source": "feed:databento_zw_5m",
    "verdict": "FAILING",
@@ -432,7 +433,13 @@
    "why": "latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/40176987898"
   },
   {
-   "age_h": 0.7,
+   "age_h": 0.2,
+   "source": "workflow:tests.yml",
+   "verdict": "FAILING",
+   "why": "latest run cancelled: https://github.com/reppiks490/Icarus-engine/actions/runs/40214012857"
+  },
+  {
+   "age_h": 0.8,
    "path": "automation_intelligence/provider_collection_v1/latest/alpaca.json",
    "rows": 0,
    "source": "provider:alpaca",
@@ -440,7 +447,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 2.3,
+   "age_h": 2.4,
    "path": "automation_intelligence/provider_collection_v1/latest/finnhub.json",
    "rows": 0,
    "source": "provider:finnhub",
@@ -448,7 +455,7 @@
    "why": "BLOCKED_AUTHENTICATION"
   },
   {
-   "age_h": 0.7,
+   "age_h": 0.8,
    "path": "automation_intelligence/provider_collection_v1/latest/intrinio.json",
    "rows": 0,
    "source": "provider:intrinio",
@@ -456,7 +463,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 0.7,
+   "age_h": 0.8,
    "path": "automation_intelligence/provider_collection_v1/latest/quiver.json",
    "rows": 0,
    "source": "provider:quiver",
@@ -464,7 +471,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 0.7,
+   "age_h": 0.8,
    "path": "automation_intelligence/provider_collection_v1/latest/tickstream.json",
    "rows": 0,
    "source": "provider:tickstream",
@@ -472,7 +479,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 2.3,
+   "age_h": 2.4,
    "path": "automation_intelligence/provider_collection_v1/latest/unusual_whales.json",
    "rows": 0,
    "source": "provider:unusual_whales",
@@ -480,7 +487,7 @@
    "why": "BLOCKED_AUTHENTICATION"
   },
   {
-   "age_h": 2.3,
+   "age_h": 2.4,
    "path": "automation_intelligence/provider_collection_v1/latest/alphavantage.json",
    "rows": 65,
    "source": "provider:alphavantage",
@@ -488,7 +495,7 @@
    "why": "65 rows; 3 endpoints denied by plan"
   },
   {
-   "age_h": 0.7,
+   "age_h": 0.8,
    "path": "automation_intelligence/provider_collection_v1/latest/bybit.json",
    "rows": 0,
    "source": "provider:bybit",
@@ -496,7 +503,7 @@
    "why": "no key; keyless endpoints only, none ready"
   },
   {
-   "age_h": 39.8,
+   "age_h": 39.9,
    "path": "automation_intelligence/cl_lab/external_data_fabric.json",
    "rows": 2510,
    "source": "provider:eodhd",
@@ -504,7 +511,7 @@
    "why": "2510 rows; 29 endpoints denied by plan"
   },
   {
-   "age_h": 39.8,
+   "age_h": 39.9,
    "path": "automation_intelligence/cl_lab/external_data_fabric.json",
    "rows": 53,
    "source": "provider:fmp",
@@ -512,7 +519,7 @@
    "why": "53 rows; 71 endpoints denied by plan"
   },
   {
-   "age_h": 39.8,
+   "age_h": 39.9,
    "path": "automation_intelligence/cl_lab/external_data_fabric.json",
    "rows": 47537,
    "source": "provider:tiingo",
@@ -520,14 +527,19 @@
    "why": "47537 rows; 4 endpoints denied by plan"
   },
   {
-   "age_h": 0.5,
+   "source": "workflow:interrepo-peer-intelligence.yml",
+   "verdict": "UNKNOWN",
+   "why": "no completed run on main"
+  },
+  {
+   "age_h": 0.6,
    "rows": 247,
    "source": "economic_events",
    "verdict": "OK",
    "why": "247 events, 109 high impact"
   },
   {
-   "age_h": 9.4,
+   "age_h": 9.5,
    "rows": 6777,
    "source": "feed:btcusd_cb_5m",
    "verdict": "OK",
@@ -541,56 +553,56 @@
    "why": "225792 rows to 2026-10-24T23:55"
   },
   {
-   "age_h": 64.9,
+   "age_h": 65.0,
    "rows": 9255,
    "source": "feed:cboe_skew",
    "verdict": "OK",
    "why": "9255 rows to 2026-10-23T00:00"
   },
   {
-   "age_h": 64.9,
+   "age_h": 65.0,
    "rows": 9301,
    "source": "feed:cboe_vix",
    "verdict": "OK",
    "why": "9301 rows to 2026-10-23T00:00"
   },
   {
-   "age_h": 64.9,
+   "age_h": 65.0,
    "rows": 4301,
    "source": "feed:cboe_vix3m",
    "verdict": "OK",
    "why": "4301 rows to 2026-10-23T00:00"
   },
   {
-   "age_h": 64.9,
+   "age_h": 65.0,
    "rows": 3975,
    "source": "feed:cboe_vix9d",
    "verdict": "OK",
    "why": "3975 rows to 2026-10-23T00:00"
   },
   {
-   "age_h": 64.9,
+   "age_h": 65.0,
    "rows": 5132,
    "source": "feed:cboe_vvix",
    "verdict": "OK",
    "why": "5132 rows to 2026-10-23T00:00"
   },
   {
-   "age_h": 136.9,
+   "age_h": 137.0,
    "rows": 186459,
    "source": "feed:cftc_disaggregated_all",
    "verdict": "OK",
    "why": "186459 rows to 2026-10-20T00:00"
   },
   {
-   "age_h": 136.9,
+   "age_h": 137.0,
    "rows": 47126,
    "source": "feed:cftc_tff_all",
    "verdict": "OK",
    "why": "47126 rows to 2026-10-20T00:00"
   },
   {
-   "age_h": 136.9,
+   "age_h": 137.0,
    "rows": 2227,
    "source": "feed:cftc_tff_nasdaq",
    "verdict": "OK",
@@ -604,63 +616,63 @@
    "why": "225792 rows to 2026-10-24T23:55"
   },
   {
-   "age_h": 88.9,
+   "age_h": 89.0,
    "rows": 26412,
    "source": "feed:fred_dff",
    "verdict": "OK",
    "why": "26412 rows to 2026-10-22T00:00"
   },
   {
-   "age_h": 88.9,
+   "age_h": 89.0,
    "rows": 16908,
    "source": "feed:fred_dgs10",
    "verdict": "OK",
    "why": "16908 rows to 2026-10-22T00:00"
   },
   {
-   "age_h": 88.9,
+   "age_h": 89.0,
    "rows": 13148,
    "source": "feed:fred_dgs2",
    "verdict": "OK",
    "why": "13148 rows to 2026-10-22T00:00"
   },
   {
-   "age_h": 64.9,
+   "age_h": 65.0,
    "rows": 10646,
    "source": "feed:fred_nasdaq100",
    "verdict": "OK",
    "why": "10646 rows to 2026-10-23T00:00"
   },
   {
-   "age_h": 64.9,
+   "age_h": 65.0,
    "rows": 13149,
    "source": "feed:fred_t10y2y",
    "verdict": "OK",
    "why": "13149 rows to 2026-10-23T00:00"
   },
   {
-   "age_h": 88.9,
+   "age_h": 89.0,
    "rows": 9603,
    "source": "feed:fred_vixcls",
    "verdict": "OK",
    "why": "9603 rows to 2026-10-22T00:00"
   },
   {
-   "age_h": 88.9,
+   "age_h": 89.0,
    "rows": 11154,
    "source": "feed:treasury_auctions",
    "verdict": "OK",
    "why": "11154 rows to 2026-10-22T00:00"
   },
   {
-   "age_h": 88.9,
+   "age_h": 89.0,
    "rows": 8419,
    "source": "feed:treasury_debt_to_penny",
    "verdict": "OK",
    "why": "8419 rows to 2026-10-22T00:00"
   },
   {
-   "age_h": 88.9,
+   "age_h": 89.0,
    "rows": 16718,
    "source": "feed:treasury_operating_cash",
    "verdict": "OK",
@@ -682,7 +694,7 @@
    "why": "434 rows"
   },
   {
-   "age_h": 0.6,
+   "age_h": 0.7,
    "path": "automation_intelligence/provider_collection_v1/latest/massive.json",
    "rows": 20000,
    "source": "provider:massive",
@@ -705,10 +717,10 @@
    "why": "2379 filings"
   },
   {
-   "age_h": 9.3,
+   "age_h": 9.4,
    "source": "workflow:cl-lab.yml",
    "verdict": "OK",
-   "why": "last success 9.3 h ago"
+   "why": "last success 9.4 h ago"
   },
   {
    "age_h": 8.4,
@@ -723,64 +735,52 @@
    "why": "last success 5.0 h ago"
   },
   {
-   "age_h": 39.8,
+   "age_h": 39.9,
    "source": "workflow:external-data-fabric.yml",
    "verdict": "OK",
-   "why": "last success 39.8 h ago"
+   "why": "last success 39.9 h ago"
   },
   {
-   "age_h": 0.0,
-   "source": "workflow:interrepo-peer-intelligence.yml",
-   "verdict": "OK",
-   "why": "last success 0.0 h ago"
-  },
-  {
-   "age_h": 0.0,
+   "age_h": 0.1,
    "source": "workflow:native-five-research.yml",
    "verdict": "OK",
-   "why": "last success 0.0 h ago"
+   "why": "last success 0.1 h ago"
   },
   {
-   "age_h": 0.0,
+   "age_h": 0.1,
    "source": "workflow:native-provider-access.yml",
    "verdict": "OK",
-   "why": "last success 0.0 h ago"
-  },
-  {
-   "age_h": 0.5,
-   "source": "workflow:official-economic-events.yml",
-   "verdict": "OK",
-   "why": "last success 0.5 h ago"
+   "why": "last success 0.1 h ago"
   },
   {
    "age_h": 0.6,
-   "source": "workflow:provider-exhaustive-collection.yml",
+   "source": "workflow:official-economic-events.yml",
    "verdict": "OK",
    "why": "last success 0.6 h ago"
   },
   {
-   "age_h": 2.3,
-   "source": "workflow:provider-supplemental-collection.yml",
+   "age_h": 0.7,
+   "source": "workflow:provider-exhaustive-collection.yml",
    "verdict": "OK",
-   "why": "last success 2.3 h ago"
+   "why": "last success 0.7 h ago"
   },
   {
-   "age_h": 2.3,
+   "age_h": 2.4,
+   "source": "workflow:provider-supplemental-collection.yml",
+   "verdict": "OK",
+   "why": "last success 2.4 h ago"
+  },
+  {
+   "age_h": 2.4,
    "source": "workflow:provider-supplemental-promote.yml",
    "verdict": "OK",
-   "why": "last success 2.3 h ago"
+   "why": "last success 2.4 h ago"
   },
   {
    "age_h": 0.1,
    "source": "workflow:sec-edgar-data.yml",
    "verdict": "OK",
    "why": "last success 0.1 h ago"
-  },
-  {
-   "age_h": 0.2,
-   "source": "workflow:tests.yml",
-   "verdict": "OK",
-   "why": "last success 0.2 h ago"
   }
  ]
 }

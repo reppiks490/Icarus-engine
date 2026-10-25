@@ -1,18 +1,18 @@
 {
   "catalog": {
-    "asset_datasets_collected": 5,
+    "asset_datasets_collected": 7,
     "asset_templates": 28,
-    "assets": 105539,
-    "collected_operations": 3,
+    "assets": 105540,
+    "collected_operations": 4,
     "denied_operations": 29,
     "operations": 88,
-    "pending_pages": 492,
+    "pending_pages": 482,
     "qualification": "INCOMPLETE_UNTIL_EVERY_OPERATION_ASSET_PAGE_TIME_RANGE_AND_TRANSPORT_IS_VERIFIED",
     "unresolved_operations": 19
   },
   "chatgpt_tokens_used": 0,
   "checkpoint_status": "ENCRYPTED_AES256_GCM",
-  "completed_at_utc": "2026-10-25T01:14:51.474862+00:00",
+  "completed_at_utc": "2026-10-25T05:10:20.262676+00:00",
   "databento_excluded": true,
   "execution_authorized": false,
   "paid_model_calls": 0,
@@ -24,13 +24,28 @@
       "blocked": [
         {
           "asset_specific": true,
-          "failure_code": "404",
-          "operation": "eodhd:get:/eod/{ticker}"
+          "failure_code": "403",
+          "operation": "eodhd:get:/logo/{symbol}"
         },
         {
           "asset_specific": true,
-          "failure_code": "404",
-          "operation": "eodhd:get:/splits/{ticker}"
+          "failure_code": "403",
+          "operation": "eodhd:get:/mp/praams/analyse/equity/ticker/{ticker}"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "403",
+          "operation": "eodhd:get:/mp/praams/bank/balance_sheet/ticker/{ticker}"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "403",
+          "operation": "eodhd:get:/mp/investverte/country/{symbol}"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "403",
+          "operation": "eodhd:get:/mp/praams/bank/income_statement/ticker/{ticker}"
         },
         {
           "asset_specific": true,
@@ -40,17 +55,47 @@
         {
           "asset_specific": true,
           "failure_code": "403",
-          "operation": "eodhd:get:/calendar/earnings"
+          "operation": "eodhd:get:/mp/praams/reports/equity/ticker/{ticker}"
         },
         {
           "asset_specific": true,
           "failure_code": "403",
-          "operation": "eodhd:get:/calendar/earnings"
+          "operation": "eodhd:get:/mp/investverte/esg/{symbol}"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "403",
+          "operation": "eodhd:get:/mp/unicornbay/spglobal/comp/{symbol}"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "PROVIDER_ERROR",
+          "operation": "eodhd:get:/real-time/{ticker}"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "403",
+          "operation": "eodhd:get:/mp/investverte/sector/{symbol}"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "404",
+          "operation": "eodhd:get:/splits/{ticker}"
         },
         {
           "asset_specific": true,
           "failure_code": "403",
           "operation": "eodhd:get:/historical-market-cap/{ticker}"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "403",
+          "operation": "eodhd:get:/calendar/earnings"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "403",
+          "operation": "eodhd:get:/mp/praams/analyse/equity/ticker/{ticker}"
         },
         {
           "asset_specific": true,
@@ -64,63 +109,47 @@
         },
         {
           "asset_specific": true,
-          "failure_code": "403",
-          "operation": "eodhd:get:/calendar/trends"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "403",
-          "operation": "eodhd:get:/logo-svg/{symbol}"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "403",
-          "operation": "eodhd:get:/historical-market-cap/{ticker}"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "403",
-          "operation": "eodhd:get:/logo/{symbol}"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "403",
-          "operation": "eodhd:get:/mp/investverte/country/{symbol}"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "403",
-          "operation": "eodhd:get:/logo-svg/{symbol}"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "403",
-          "operation": "eodhd:get:/mp/investverte/esg/{symbol}"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "423",
-          "operation": "eodhd:get:/eod-bulk-last-day/{exchange}"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "403",
-          "operation": "eodhd:get:/mp/investverte/sector/{symbol}"
+          "failure_code": "404",
+          "operation": "eodhd:get:/div/{ticker}"
         }
       ],
-      "collected_pages": 3,
-      "collected_rows": 2464,
+      "collected_pages": 2,
+      "collected_rows": 553,
       "credential_present": true,
       "endpoint_count": 88,
       "requests": 20,
-      "research_features": [],
+      "research_features": [
+        {
+          "features": {
+            "close": {
+              "maximum": 119.89,
+              "mean": 118.8811646586346,
+              "minimum": 117.6,
+              "samples": 249,
+              "standard_deviation": 0.5329208831211726
+            },
+            "volume": {
+              "maximum": 0.0,
+              "mean": 0.0,
+              "minimum": 0.0,
+              "samples": 249,
+              "standard_deviation": 0.0
+            }
+          },
+          "operation": "eodhd:get:/eod/{ticker}"
+        }
+      ],
       "status": "COLLECTED_PARTIAL",
-      "substantive_work_performed": true
+      "substantive_work_performed": true,
+      "verified_operations": [
+        "eodhd:get:/eod/{ticker}",
+        "eodhd:get:/exchange-symbol-list/{exchangeCode}"
+      ]
     }
   },
   "raw_payloads_public": false,
   "requests": 20,
-  "run_id": "providers-40149490737-1-eodhd",
+  "run_id": "providers-40164231385-1-eodhd",
   "schema_version": "icarus-provider-collection-cycle-v1",
-  "started_at_utc": "2026-10-25T01:09:42.921210+00:00"
+  "started_at_utc": "2026-10-25T05:05:36.280287+00:00"
 }

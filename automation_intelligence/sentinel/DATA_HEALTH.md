@@ -1,6 +1,6 @@
-# Data health — 2026-10-25 07:18 UTC
+# Data health — 2026-10-25 07:31 UTC
 
-**FAILING** 5 · **BLOCKED** 6 · **DEGRADED** 6 · **UNKNOWN** 1 · **OK** 68
+**FAILING** 6 · **BLOCKED** 6 · **DEGRADED** 6 · **OK** 68
 
 ## Needs attention
 
@@ -10,6 +10,7 @@
 | feed:databento_vxm_5m | FAILING | FeedError: Databento historical request failed for VXM.v.0: BentoClientError: 403 license_not_found_unauthorized A live data license is required to access XCBF. |
 | workflow:cl-depth-sweep.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/40171301957 |
 | workflow:databento-depth-research-context.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/40171302130 |
+| workflow:interrepo-peer-intelligence.yml | FAILING | latest run cancelled: https://github.com/reppiks490/Icarus-engine/actions/runs/40173054194 |
 | workflow:provider-supplemental-promote.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/40164733746 |
 | provider:alpaca | BLOCKED | no key reaches the runner |
 | provider:finnhub | BLOCKED | BLOCKED_AUTHENTICATION |
@@ -23,7 +24,6 @@
 | provider:fmp | DEGRADED | 53 rows; 61 endpoints denied by plan |
 | provider:tiingo | DEGRADED | 47537 rows; 4 endpoints denied by plan |
 | provider:twelve | DEGRADED | key present but 0 rows (COLLECTED_PARTIAL) |
-| workflow:interrepo-peer-intelligence.yml | UNKNOWN | no completed run on main |
 
 ## Delivering
 

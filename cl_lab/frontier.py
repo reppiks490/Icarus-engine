@@ -481,13 +481,30 @@ def _clean(x):
 
 # --------------------------------------------------------------------------- data versions and trials (§8)
 
-def data_version(tape: Tape, win: str) -> str:
-    """Hash of the raw RTH arrays of a window plus the roll-detection version: a new data version adds trials."""
-    days = window_days(tape, win)
-    h = hashlib.sha256(integrity.DATA_VERSION.encode())
+def data_version(tape: Tape, win: str, through: date | None = None) -> str:
+    """Bind every causal input through the window's last session, including earlier context.
+
+    Future extensions cannot change an earlier window's identity. The prefix includes overnight
+    prices, timestamps, contract identities and prior index closes used by roll detection, as well
+    as earlier RTH history used by ATR and bands. Volume does not enter FR-1.
+    """
+    days = window_days(tape, win, through)
+    h = hashlib.sha256(("fr1-causal-inputs-v2|" + integrity.DATA_VERSION + "|" + win).encode())
+    if not len(days):
+        return h.hexdigest()
+    last = int(days[-1])
     for arr in (tape.O, tape.H, tape.L, tape.C):
-        h.update(np.ascontiguousarray(arr[days]).tobytes())
-    h.update(json.dumps([str(tape.dates[i]) for i in days]).encode())
+        h.update(np.ascontiguousarray(arr[:last + 1], dtype="<f8").tobytes())
+    h.update(json.dumps([str(d) for d in tape.dates[:last + 1]]).encode())
+    positions = tape.P[last][tape.P[last] >= 0]
+    if len(tape.adf) and len(positions):
+        raw = tape.adf.iloc[:int(positions.max()) + 1]
+        cols = ["open", "high", "low", "close", "instrument_id"]
+        frame = raw.reindex(columns=cols).apply(pd.to_numeric, errors="coerce").astype(float)
+        h.update(pd.util.hash_pandas_object(frame, index=True).to_numpy(dtype="<u8").tobytes())
+    if tape.index_close is not None:
+        ix = tape.index_close[[d < tape.dates[last] for d in tape.index_close.index]]
+        h.update(json.dumps([(str(d), float(v)) for d, v in ix.items()], separators=(",", ":")).encode())
     return h.hexdigest()
 
 
@@ -507,6 +524,9 @@ def _eligible(st: dict) -> bool:
 
 def evaluate(tape: Tape, snapshot: dict, n_sets: int = N_NULL, sources: dict | None = None) -> dict:
     """Run FR-1 on a built tape. ``snapshot`` is the frozen trial-ledger snapshot (§8)."""
+    mixed = mixed_contract_sessions(tape)
+    if mixed:
+        raise ValueError("mixed-contract RTH dataset: " + ", ".join(mixed))
     sources = sources or SOURCES
     ctx = build_context(tape, tuple(sorted({s.get("lookback", 10) for s in sources.values()})))
     tune_days, hold_days = window_days(tape, "TUNE"), window_days(tape, "HOLD")
@@ -557,7 +577,9 @@ def evaluate(tape: Tape, snapshot: dict, n_sets: int = N_NULL, sources: dict | N
     # HOLD: Holm across the sources that reached HOLD (§7)
     reached = [n for n, r in out["sources"].items() if "hold" in r]
     if reached:
-        holm = stats.holm([out["sources"][n]["hold"]["nw_p"] for n in reached], HOLD_GATE["alpha"])
+        # All reached sources belong to the registered family, including those with invalid tests.
+        pvals = [out["sources"][n]["hold"]["nw_p"] for n in reached]
+        holm = stats.holm([p if np.isfinite(p) else 1.0 for p in pvals], HOLD_GATE["alpha"])
         for n, padj in zip(reached, holm.p_adjusted.tolist()):
             hs = out["sources"][n]["hold"]
             hs["holm_p"] = padj
@@ -622,14 +644,26 @@ def forward_evaluation(tape: Tape, real: dict, m_fwd: np.ndarray, fd: np.ndarray
         status = "FORWARD_PASS_BELOW_TARGET"
     else:
         status = "FORWARD_REJECTED"
-    h = hashlib.sha256(integrity.DATA_VERSION.encode())
-    for arr in (tape.O, tape.H, tape.L, tape.C):
-        h.update(np.ascontiguousarray(arr[days]).tobytes())
     return dict(status=status, evaluated_through=str(through), alpha=alpha, wilson_one_sided_lower=wl,
-                gates=gates, target=target, stats=_clean(st), data_version=h.hexdigest())
+                gates=gates, target=target, stats=_clean(st), data_version=data_version(tape, "FORWARD", through))
 
 
 # --------------------------------------------------------------------------- the real run
+
+def mixed_contract_sessions(tape: Tape) -> list[str]:
+    """Reject the whole dataset when a detected switch lies in an RTH session.
+
+    Reporting after evaluation would allow an old-contract entry to fill against a new-contract
+    print. A switch on the first RTH bar also leaves the pre-session context in the old
+    contract basis, so that boundary is blocked too. No retrospective session mask or
+    repaired fill/context is introduced here.
+    """
+    if tape.adf.empty:
+        return []
+    return sorted({str(r["session"]) for r in integrity.detect_rolls(tape.adf, tape.index_close)
+                   if r.get("status") == "DETECTED" and r.get("pos") is not None
+                   and bool(tape.adf["rth"].iloc[int(r["pos"])])})
+
 
 def load_raw_mnq(cache_dir: str, csv_path: str = "data/mnq_5m_full.csv") -> tuple[pd.DataFrame, pd.Series | None, dict]:
     """The committed MNQ 5m tape extended by the cached Databento corpus, RAW (never back-adjusted), with
@@ -652,21 +686,58 @@ def load_raw_mnq(cache_dir: str, csv_path: str = "data/mnq_5m_full.csv") -> tupl
 
 def run(cache_dir: str, out_path: str, ledger_path: str = trial_ledger.LEDGER, root: str = ".",
         snapshot_path: str = "automation_intelligence/research/fr1_snapshot.json", n_sets: int = N_NULL) -> dict:
+    try:
+        with trial_ledger.run_lock(ledger_path):
+            return _run_locked(cache_dir, out_path, ledger_path, root, snapshot_path, n_sets)
+    except trial_ledger.SourceError as ex:
+        base = dict(schema=SCHEMA, registration=REGISTRATION, execution_authorized=False,
+                    production_decision_authorized=False)
+        out = dict(base, status="BLOCKED", blockers=[str(ex)])
+        _write(out_path, out)
+        return out
+
+
+def _run_locked(cache_dir: str, out_path: str, ledger_path: str, root: str,
+                snapshot_path: str, n_sets: int) -> dict:
     base = dict(schema=SCHEMA, registration=REGISTRATION, execution_authorized=False,
                 production_decision_authorized=False)
-    imp = trial_ledger.import_historical(root, ledger_path)
+    # Read-only source validation preserves fail-before-loader behavior for missing history.
+    try:
+        _, checks = trial_ledger.historical_trials(root)
+        bad = trial_ledger.blockers(checks)
+    except (trial_ledger.SourceError, KeyError, TypeError, ValueError, OSError, AttributeError) as ex:
+        checks, bad = None, [str(ex)]
+    if bad:
+        out = dict(base, status="BLOCKED", blockers=bad,
+                   ledger_import=dict(status="BLOCKED", added=0, checks=checks, blockers=bad))
+        _write(out_path, out)
+        return out
+    adf, ix, prov = load_raw_mnq(cache_dir)
+    tape = build_tape(adf, ix)
+    mixed = mixed_contract_sessions(tape)
+    if mixed:
+        out = dict(base, status="BLOCKED", blockers=["mixed-contract RTH dataset: " + ", ".join(mixed)])
+        _write(out_path, out)
+        return out
+    snap = None
+    if os.path.exists(snapshot_path):
+        try:
+            with open(snapshot_path, encoding="utf-8") as fh:
+                snap = json.load(fh)
+            if not isinstance(snap, dict) or snap.get("registration") != REGISTRATION:
+                raise ValueError("frozen snapshot has an incompatible registration")
+        except (OSError, ValueError) as ex:
+            out = dict(base, status="BLOCKED", blockers=[str(ex)])
+            _write(out_path, out)
+            return out
+    imp = trial_ledger.import_historical(root, ledger_path, frozen_snapshot=snap)
     if imp["status"] != "OK":
         out = dict(base, status="BLOCKED", blockers=imp["blockers"], ledger_import=imp)
         _write(out_path, out)
         return out
-    if os.path.exists(snapshot_path):
-        with open(snapshot_path, encoding="utf-8") as fh:
-            snap = json.load(fh)
-    else:
+    if snap is None:
         snap = trial_ledger.snapshot(ledger_path, exclude_sources=("fr-1",))
         _write(snapshot_path, dict(snap, registration=REGISTRATION))
-    adf, ix, prov = load_raw_mnq(cache_dir)
-    tape = build_tape(adf, ix)
     res = evaluate(tape, snap, n_sets=n_sets)
     added = trial_ledger.append(ledger_path, res.pop("trials"))
     rolls = integrity.detect_rolls(adf, ix)

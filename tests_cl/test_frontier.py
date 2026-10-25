@@ -1,6 +1,9 @@
 # CL (Claude, Anthropic) — 2026-10-11 — FR-1 required tests (docs/FRONTIER_PREREG_FR1.md §9), synthetic data only
 import json
 import math
+import multiprocessing as mp
+import os
+import time
 
 import numpy as np
 import pandas as pd
@@ -356,6 +359,50 @@ def test_run_is_blocked_before_any_computation_when_a_source_is_missing(tmp_path
                  snapshot_path=str(tmp_path / "snap.json"))
     assert out["status"] == "BLOCKED" and called == []
     assert json.loads((tmp_path / "out.json").read_text())["status"] == "BLOCKED"
+
+
+def _concurrent_run_worker(root, out_path, ledger_path, snapshot_path, active_path, overlap, start_barrier):
+    """Run against synthetic sources while marking the real run's loader boundary."""
+    def slow_synthetic_loader(*_args, **_kwargs):
+        try:
+            fd = os.open(active_path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+            owns_marker = True
+        except FileExistsError:
+            overlap.set()
+            fd = None
+            owns_marker = False
+        time.sleep(0.25)
+        if fd is not None:
+            os.close(fd)
+        if owns_marker:
+            os.unlink(active_path)
+        return make_adf(start="2024-03-01", n_days=60, seed=81), None, {}
+
+    fr.load_raw_mnq = slow_synthetic_loader
+    start_barrier.wait(timeout=10)
+    result = fr.run("unused", out_path, ledger_path, root=root, snapshot_path=snapshot_path, n_sets=2)
+    if result["status"] != "EVALUATED":
+        raise AssertionError(f"synthetic run did not complete: {result}")
+
+
+def test_complete_fr1_runs_are_serialized_across_processes(tmp_path):
+    pytest.importorskip("fcntl")  # The research ledger currently requires a POSIX advisory lock.
+    _fake_sources(tmp_path)
+    ctx = mp.get_context("spawn")
+    barrier = ctx.Barrier(2)
+    overlap = ctx.Event()
+    paths = [str(tmp_path / name) for name in ("out.json", "ledger.jsonl", "snapshot.json", "active")]
+    workers = [ctx.Process(target=_concurrent_run_worker,
+                           args=(str(tmp_path), *paths, overlap, barrier)) for _ in range(2)]
+    for worker in workers:
+        worker.start()
+    for worker in workers:
+        worker.join(30)
+        if worker.is_alive():
+            worker.terminate()
+            worker.join()
+    assert [worker.exitcode for worker in workers] == [0, 0]
+    assert not overlap.is_set(), "two complete FR-1 runs entered their source/evaluation phase together"
 
 
 def test_rerun_of_unchanged_inputs_adds_no_fr1_trials(tmp_path):

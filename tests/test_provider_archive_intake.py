@@ -178,6 +178,18 @@ def test_empty_exhaustive_wrapper_is_not_consumption(tmp_path):
     assert not result['corpus_used']
     assert all(count==0 for count in result['diagnostics'].values())
 
+def test_json_accepts_payloads_within_expanded_bounded_node_budget():
+    raw = b'[' + b','.join([b'0'] * 600_000) + b']'
+
+    assert len(raw) < intake.MAX_BYTES
+    assert len(intake._json(raw)) == 600_000
+
+def test_json_rejects_payloads_over_structural_budget(monkeypatch):
+    monkeypatch.setattr(intake, 'MAX_NODES', 3)
+
+    with pytest.raises(ValueError, match='JSON structure bound'):
+        intake._json(b'[0,1,2]')
+
 def test_checkpoint_bound_diagnostic_counts_only(tmp_path):
     raw=b'{"private":"'+b'SECRET_LICENSED_VALUE'*10000+b'"}'
     data=envelope(None,run='checkpoint',job='tiingo',raw=raw)

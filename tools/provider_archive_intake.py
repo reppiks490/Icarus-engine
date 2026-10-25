@@ -16,7 +16,7 @@ import zlib
 from tools.provider_credentials import provider_credential
 
 MAX_BYTES = 32_000_000
-MAX_NODES = 500_000
+MAX_NODES = 1_000_000
 MAX_CHECKPOINT_DB_BYTES = 384_000_000
 MAX_CHECKPOINT_JSON_BYTES = 512_000_000
 PROVIDERS = {'massive','twelve','fmp','eodhd','tiingo','intrinio','quiver','fred','alpaca','tickstream','bybit','alphavantage','finnhub','unusual_whales'}
@@ -80,17 +80,24 @@ def _json(raw: bytes):
         result = json.loads(raw, object_pairs_hook=pairs, parse_int=integer, parse_float=floating, parse_constant=reject)
     except (RecursionError, UnicodeError) as exc:
         raise ValueError('JSON rejected') from exc
-    stack = [(result, 0)]
+    # Traverse lazily so the structural bound does not itself allocate one
+    # tuple per sibling in very large but bounded archive arrays.
+    stack = [(iter((result,)), 0)]
     count = 0
     while stack:
-        value, depth = stack.pop()
+        children, depth = stack[-1]
+        try:
+            value = next(children)
+        except StopIteration:
+            stack.pop()
+            continue
         count += 1
         if count > MAX_NODES or depth > 32:
             raise ValueError('JSON structure bound')
         if isinstance(value, dict):
-            stack.extend((item, depth + 1) for item in value.values())
+            stack.append((iter(value.values()), depth + 1))
         elif isinstance(value, list):
-            stack.extend((item, depth + 1) for item in value)
+            stack.append((iter(value), depth + 1))
     return result
 
 

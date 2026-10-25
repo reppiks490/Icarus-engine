@@ -80,9 +80,10 @@
  "counts": {
   "BLOCKED": 6,
   "DEGRADED": 5,
-  "FAILING": 37,
+  "FAILING": 36,
   "OK": 37,
-  "STALE": 1
+  "STALE": 1,
+  "UNKNOWN": 1
  },
  "depth": {
   "budgets": {
@@ -153,7 +154,7 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-10-25T16:43:30+00:00",
+ "generated_at": "2026-10-25T16:44:40+00:00",
  "research": {
   "champions": 0,
   "cl_last_run": "2026-10-25T07:35:38.564785+00:00",
@@ -433,12 +434,6 @@
    "why": "latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/40176987898"
   },
   {
-   "age_h": 0.7,
-   "source": "workflow:tests.yml",
-   "verdict": "FAILING",
-   "why": "latest run cancelled: https://github.com/reppiks490/Icarus-engine/actions/runs/40212865763"
-  },
-  {
    "age_h": 0.6,
    "path": "automation_intelligence/provider_collection_v1/latest/alpaca.json",
    "rows": 0,
@@ -487,10 +482,10 @@
    "why": "BLOCKED_AUTHENTICATION"
   },
   {
-   "age_h": 3.8,
+   "age_h": 3.9,
    "source": "workflow:native-five-research.yml",
    "verdict": "STALE",
-   "why": "last success 3.8 h ago (expected within 3 h)"
+   "why": "last success 3.9 h ago (expected within 3 h)"
   },
   {
    "age_h": 2.2,
@@ -531,6 +526,11 @@
    "source": "provider:tiingo",
    "verdict": "DEGRADED",
    "why": "47537 rows; 4 endpoints denied by plan"
+  },
+  {
+   "source": "workflow:interrepo-peer-intelligence.yml",
+   "verdict": "UNKNOWN",
+   "why": "no completed run on main"
   },
   {
    "age_h": 0.4,
@@ -742,16 +742,10 @@
    "why": "last success 39.7 h ago"
   },
   {
-   "age_h": 0.4,
-   "source": "workflow:interrepo-peer-intelligence.yml",
-   "verdict": "OK",
-   "why": "last success 0.4 h ago"
-  },
-  {
-   "age_h": 4.5,
+   "age_h": 4.6,
    "source": "workflow:native-provider-access.yml",
    "verdict": "OK",
-   "why": "last success 4.5 h ago"
+   "why": "last success 4.6 h ago"
   },
   {
    "age_h": 0.4,
@@ -760,10 +754,10 @@
    "why": "last success 0.4 h ago"
   },
   {
-   "age_h": 0.4,
+   "age_h": 0.5,
    "source": "workflow:provider-exhaustive-collection.yml",
    "verdict": "OK",
-   "why": "last success 0.4 h ago"
+   "why": "last success 0.5 h ago"
   },
   {
    "age_h": 2.2,
@@ -782,6 +776,12 @@
    "source": "workflow:sec-edgar-data.yml",
    "verdict": "OK",
    "why": "last success 0.6 h ago"
+  },
+  {
+   "age_h": 0.0,
+   "source": "workflow:tests.yml",
+   "verdict": "OK",
+   "why": "last success 0.0 h ago"
   }
  ]
 }

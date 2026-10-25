@@ -297,6 +297,15 @@ def _locked(path: Path):
             fcntl.flock(fh, fcntl.LOCK_UN)
 
 
+@contextmanager
+def run_lock(ledger_path: str | os.PathLike):
+    """Hold one process-wide lock across a complete FR-1 run keyed by its ledger."""
+    ledger = Path(ledger_path).expanduser().resolve()
+    lock_target = ledger.with_name(ledger.name + ".run")
+    with _locked(lock_target):
+        yield
+
+
 def _identities(rows: list[dict]) -> dict:
     have = {}
     for row in rows:

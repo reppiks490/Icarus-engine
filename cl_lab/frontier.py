@@ -686,6 +686,19 @@ def load_raw_mnq(cache_dir: str, csv_path: str = "data/mnq_5m_full.csv") -> tupl
 
 def run(cache_dir: str, out_path: str, ledger_path: str = trial_ledger.LEDGER, root: str = ".",
         snapshot_path: str = "automation_intelligence/research/fr1_snapshot.json", n_sets: int = N_NULL) -> dict:
+    try:
+        with trial_ledger.run_lock(ledger_path):
+            return _run_locked(cache_dir, out_path, ledger_path, root, snapshot_path, n_sets)
+    except trial_ledger.SourceError as ex:
+        base = dict(schema=SCHEMA, registration=REGISTRATION, execution_authorized=False,
+                    production_decision_authorized=False)
+        out = dict(base, status="BLOCKED", blockers=[str(ex)])
+        _write(out_path, out)
+        return out
+
+
+def _run_locked(cache_dir: str, out_path: str, ledger_path: str, root: str,
+                snapshot_path: str, n_sets: int) -> dict:
     base = dict(schema=SCHEMA, registration=REGISTRATION, execution_authorized=False,
                 production_decision_authorized=False)
     # Read-only source validation preserves fail-before-loader behavior for missing history.

@@ -380,6 +380,7 @@ def test_secondary_lane_feeds_report_their_own_missing_key(tmp_path, monkeypatch
 @pytest.mark.parametrize("primary_present", [False, True])
 def test_unallocated_corpus_account_refuses_before_provider_access(tmp_path, monkeypatch, primary_present):
     monkeypatch.setenv("CL_DATABENTO_OHLCV_ACCOUNT", "third")
+    monkeypatch.setenv("CL_DATABENTO_ROOTS", "NQ")  # explicitly opt in; exercise the account budget guard
     monkeypatch.setenv("DATABENTO_API_KEY_THIRD", "offline-third")
     if primary_present:
         monkeypatch.setenv("DATABENTO_API_KEY", "offline-primary")
@@ -406,6 +407,7 @@ def test_environment_selected_corpus_account_uses_its_credential_and_ledger(tmp_
     monkeypatch.delenv("DATABENTO_API_KEY", raising=False)
     monkeypatch.setenv("DATABENTO_API_KEY_SECONDARY", "offline-secondary")
     monkeypatch.setenv("CL_DATABENTO_OHLCV_ACCOUNT", " SECONDARY ")
+    monkeypatch.setenv("CL_DATABENTO_ROOTS", "NQ")  # this test exercises a permitted offline request
     monkeypatch.setenv("CL_DATABENTO_START", "2026-09-01T00:00:00Z")
     clients = []
 
@@ -425,6 +427,7 @@ def test_environment_selected_corpus_account_uses_its_credential_and_ledger(tmp_
 
 def test_invalid_corpus_account_is_isolated_from_other_feed_refreshes(tmp_path, monkeypatch):
     monkeypatch.setenv("CL_DATABENTO_OHLCV_ACCOUNT", "typo")
+    monkeypatch.setenv("CL_DATABENTO_ROOTS", "NQ")
     monkeypatch.setenv("DATABENTO_API_KEY", "offline-primary")
     monkeypatch.setattr(registry, "FEEDS", [
         {"name": "invalid_paid", "kind": "databento", "root": "NQ", "intraday": True},
@@ -511,3 +514,93 @@ def test_cftc_panel_integrity_uses_date_contract_key():
     dup = pd.concat([df, df.iloc[[0]]])
     rep2 = registry._cftc_panel_integrity(dup)
     assert rep2["duplicate_records"] == 1
+
+
+# ---- CL-84 (ported from PR 84, 2026-10-11): a key authenticates; only allowlisted roots may spend ----
+def _no_paid_request(monkeypatch):
+    calls = []
+
+    def fake(root, old, now, **kw):
+        calls.append(root)
+        raise AssertionError("paid Databento request attempted")
+
+    monkeypatch.setattr(registry.databento_feed, "fetch_continuous_5m", fake)
+    return calls
+
+
+def _frame(start="2026-10-01T14:00Z", n=3):
+    idx = pd.date_range(start, periods=n, freq="5min")
+    return pd.DataFrame(dict(open=1.0, high=1.0, low=1.0, close=1.0, volume=1.0), index=idx)
+
+
+def test_databento_key_alone_requests_nothing(tmp_path, monkeypatch):
+    monkeypatch.setenv("DATABENTO_API_KEY", "x")
+    monkeypatch.delenv("CL_DATABENTO_ROOTS", raising=False)
+    calls = _no_paid_request(monkeypatch)
+    man = registry.refresh_all(str(tmp_path / "cache"), only={"databento_nq_5m", "databento_mnq_5m"},
+                               now="2026-10-11T12:00Z", ledger_dir=str(tmp_path / "spend"))
+    assert calls == []
+    assert man["databento_policy"] == {"selected_roots": [], "policy_error": None}
+    for name in ("databento_nq_5m", "databento_mnq_5m"):
+        ent = man["feeds"][name]
+        assert ent["status"] == "configured_dormant" and ent["selected"] is False
+        assert "CL_DATABENTO_ROOTS" in ent["error"] and ent["integrity"]["rows"] == 0
+
+
+def test_databento_unknown_root_blocks_every_feed_without_request(tmp_path, monkeypatch):
+    monkeypatch.setenv("DATABENTO_API_KEY", "x")
+    monkeypatch.setenv("CL_DATABENTO_ROOTS", "NQ,NQX")
+    calls = _no_paid_request(monkeypatch)
+    man = registry.refresh_all(str(tmp_path / "cache"), only={"databento_nq_5m", "databento_es_5m"},
+                               now="2026-10-11T12:00Z", ledger_dir=str(tmp_path / "spend"))
+    assert calls == []
+    assert man["databento_policy"]["policy_error"] == "unknown CL_DATABENTO_ROOTS: NQX"
+    for name in ("databento_nq_5m", "databento_es_5m"):
+        assert man["feeds"][name]["status"] == "blocked" and man["feeds"][name]["selected"] is False
+
+
+def test_databento_unselected_root_keeps_its_cache_and_selected_root_is_requested(tmp_path, monkeypatch):
+    cache = tmp_path / "cache"
+    cache.mkdir()
+    store.save_frame(_frame(), str(cache / "databento_es_5m.csv.gz"))
+    monkeypatch.setenv("DATABENTO_API_KEY", "x")
+    monkeypatch.setenv("CL_DATABENTO_MAX_USD_PER_FEED", "1.00")
+    monkeypatch.setenv("CL_DATABENTO_ROOTS", " nq , ")            # case and blanks are normalised
+    calls = []
+
+    def fake(root, old, now, **kw):
+        calls.append(root)
+        kw["charge"](0.10, lambda: None)
+        return _frame("2026-10-02T14:00Z"), dict(request_performed=True, estimated_cost_usd=0.10)
+
+    monkeypatch.setattr(registry.databento_feed, "fetch_continuous_5m", fake)
+    man = registry.refresh_all(str(cache), only={"databento_nq_5m", "databento_es_5m"},
+                               now="2026-10-11T12:00Z", ledger_dir=str(tmp_path / "spend"))
+    assert calls == ["NQ"]
+    assert man["databento_policy"]["selected_roots"] == ["NQ"]
+    nq, es = man["feeds"]["databento_nq_5m"], man["feeds"]["databento_es_5m"]
+    assert nq["status"] == "ok" and nq["selected"] is True
+    assert es["status"] == "cached" and es["selected"] is False
+    assert es["integrity"]["rows"] == 3 and es["sha256"] == store.sha256_frame(store.load_frame(
+        str(cache / "databento_es_5m.csv.gz"), intraday=True))
+
+
+def test_databento_failed_refresh_reports_the_cache_it_kept(tmp_path, monkeypatch):
+    cache = tmp_path / "cache"
+    cache.mkdir()
+    path = cache / "databento_nq_5m.csv.gz"
+    store.save_frame(_frame(), str(path))
+    before = path.read_bytes()
+    monkeypatch.setenv("DATABENTO_API_KEY", "x")
+    monkeypatch.setenv("CL_DATABENTO_ROOTS", "NQ")
+
+    def fail(root, old, now, **kw):
+        raise FeedError("Databento historical request failed for NQ.v.0: gateway")
+
+    monkeypatch.setattr(registry.databento_feed, "fetch_continuous_5m", fail)
+    man = registry.refresh_all(str(cache), only={"databento_nq_5m"}, now="2026-10-11T12:00Z",
+                               ledger_dir=str(tmp_path / "spend"))
+    ent = man["feeds"]["databento_nq_5m"]
+    assert ent["status"] == "error" and "gateway" in ent["error"]
+    assert ent["integrity"]["rows"] == 3 and ent["sha256"] is not None and ent["selected"] is True
+    assert path.read_bytes() == before

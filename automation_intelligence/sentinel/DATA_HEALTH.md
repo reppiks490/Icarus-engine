@@ -1,4 +1,4 @@
-# Data health — 2026-10-25 15:58 UTC
+# Data health — 2026-10-25 15:59 UTC
 
 **FAILING** 36 · **BLOCKED** 6 · **STALE** 3 · **DEGRADED** 5 · **OK** 36
 
@@ -84,6 +84,6 @@ Champions: 0. Pulse variants: {'CANDLES': 'REJECTED', 'HA_HA_FILLS': 'ARTIFACT_R
 ## Coordination (Claude, ChatGPT, Atlas)
 
 - claude: done 5, in progress 2, planned 9, waiting 1; awaiting its reply: 14; stale in-progress: X1, CL-84
-- chatgpt: done 3, in progress 8, planned 5, waiting 9; awaiting its reply: 2; stale in-progress: X1-Codex, IB01, IB04, REVIEW01, A200, SYS22, C02, M01
+- chatgpt: done 3, in progress 9, planned 5, waiting 9; awaiting its reply: 2; stale in-progress: X1-Codex, IB01, IB04, REVIEW01, A200, SYS22, C02, M01
 - atlas: waiting 4; awaiting its reply: 2
 - malformed messages: to-claude/20261011T213350Z-atlas-registry-checkpoint.md: to, date, reply-needed, file name; to-claude/20261013T2311Z-chatgpt-ib03-pr336-review.md: from, to, date, subject, reply-needed; to-claude/20261013T2327Z-chatgpt-ib03-pr336-final-head.md: from, to, date, subject, reply-needed; to-claude/20261013T2338Z-chatgpt-ib03-pr336-review.md: from, to, date, subject, reply-needed; to-claude/20261014T0003Z-chatgpt-ib03-pr336-head-update.md: from, to, date, subject, reply-needed; to-chatgpt/20261011T213350Z-atlas-registry-checkpoint.md: to, date, reply-needed, file name

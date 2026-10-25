@@ -1,25 +1,32 @@
 {
   "catalog": {
-    "asset_datasets_collected": 4,
+    "asset_datasets_collected": 3,
     "asset_templates": 109,
     "assets": 6770,
     "collected_operations": 7,
-    "denied_operations": 47,
+    "denied_operations": 51,
     "operations": 230,
-    "pending_pages": 410,
+    "pending_pages": 421,
     "qualification": "INCOMPLETE_UNTIL_EVERY_OPERATION_ASSET_PAGE_TIME_RANGE_AND_TRANSPORT_IS_VERIFIED",
     "unresolved_operations": 0
   },
   "chatgpt_tokens_used": 0,
   "checkpoint_status": "ENCRYPTED_AES256_GCM",
-  "completed_at_utc": "2026-10-24T23:13:50.591225+00:00",
+  "completed_at_utc": "2026-10-25T01:13:57.205487+00:00",
   "databento_excluded": true,
   "execution_authorized": false,
   "paid_model_calls": 0,
   "providers": {
     "fmp": {
-      "archive_status": [],
+      "archive_status": [
+        "ENCRYPTED_AES256_GCM"
+      ],
       "blocked": [
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/income-statement-as-reported"
+        },
         {
           "asset_specific": true,
           "failure_code": "402",
@@ -28,37 +35,12 @@
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/historical-chart/5min"
-        },
-        {
-          "asset_specific": false,
-          "failure_code": "402",
-          "operation": "fmp:get:/industry-performance-snapshot"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/historical-employee-count"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
           "operation": "fmp:get:/income-statement-ttm"
         },
         {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/historical-market-capitalization"
-        },
-        {
           "asset_specific": false,
           "failure_code": "402",
-          "operation": "fmp:get:/insider-trading/reporting-name"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/historical-price-eod/dividend-adjusted"
+          "operation": "fmp:get:/institutional-ownership/dates"
         },
         {
           "asset_specific": true,
@@ -68,17 +50,7 @@
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/historical-price-eod/full"
-        },
-        {
-          "asset_specific": false,
-          "failure_code": "402",
-          "operation": "fmp:get:/insider-trading/search"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/historical-price-eod/light"
+          "operation": "fmp:get:/key-metrics-ttm"
         },
         {
           "asset_specific": true,
@@ -86,9 +58,9 @@
           "operation": "fmp:get:/institutional-ownership/extract-analytics/holder"
         },
         {
-          "asset_specific": true,
+          "asset_specific": false,
           "failure_code": "402",
-          "operation": "fmp:get:/historical-price-eod/non-split-adjusted"
+          "operation": "fmp:get:/institutional-ownership/extract"
         },
         {
           "asset_specific": true,
@@ -97,8 +69,8 @@
         },
         {
           "asset_specific": true,
-          "failure_code": "400",
-          "operation": "fmp:get:/holidays-by-exchange"
+          "failure_code": "402",
+          "operation": "fmp:get:/levered-discounted-cash-flow"
         },
         {
           "asset_specific": true,
@@ -106,9 +78,9 @@
           "operation": "fmp:get:/key-executives"
         },
         {
-          "asset_specific": true,
+          "asset_specific": false,
           "failure_code": "402",
-          "operation": "fmp:get:/house-trades"
+          "operation": "fmp:get:/institutional-ownership/holder-industry-breakdown"
         },
         {
           "asset_specific": true,
@@ -118,22 +90,37 @@
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/income-statement"
+          "operation": "fmp:get:/market-capitalization"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/key-metrics-ttm"
+        },
+        {
+          "asset_specific": false,
+          "failure_code": "402",
+          "operation": "fmp:get:/institutional-ownership/holder-performance-summary"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/levered-discounted-cash-flow"
         }
       ],
-      "collected_pages": 0,
-      "collected_rows": 0,
+      "collected_pages": 3,
+      "collected_rows": 6772,
       "credential_present": true,
       "endpoint_count": 230,
       "requests": 20,
       "research_features": [],
-      "status": "BLOCKED",
-      "substantive_work_performed": false
+      "status": "COLLECTED_PARTIAL",
+      "substantive_work_performed": true
     }
   },
   "raw_payloads_public": false,
   "requests": 20,
-  "run_id": "providers-40141510978-1-fmp",
+  "run_id": "providers-40149490737-1-fmp",
   "schema_version": "icarus-provider-collection-cycle-v1",
-  "started_at_utc": "2026-10-24T23:09:37.113915+00:00"
+  "started_at_utc": "2026-10-25T01:09:45.415769+00:00"
 }

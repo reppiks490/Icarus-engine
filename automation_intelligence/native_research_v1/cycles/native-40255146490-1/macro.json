@@ -1,0 +1,89 @@
+{
+  "automation_id": "github-native-research-v1",
+  "blockers": [
+    "Release titles establish publication, not macro surprise or causal impact.",
+    "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+    "No consensus estimates acquired; economic surprise remains unknown."
+  ],
+  "chatgpt_tokens_used": 0,
+  "code_revision": "b3cf4ad42e7bc3d797fe6b7ac9f748e12b618fe1",
+  "completed_at_utc": "2026-10-26T01:42:54.963893Z",
+  "event_paths": [],
+  "evidence": [
+    "automation_intelligence/native_research_v1/cycles/native-40255146490-1/evidence.json"
+  ],
+  "execution_authorized": false,
+  "input_sha256": "2bf734bc918ce54dc7fc10ac537cd0864256573e381dbc0504ba04a1de0c51c9",
+  "lane": "macro",
+  "local_interpretation": {
+    "authority": "UNVERIFIED_MODEL_INFERENCE",
+    "reason": "No semantic change",
+    "status": "NOT_RUN"
+  },
+  "measurements": {
+    "gaps": [
+      "Release titles establish publication, not macro surprise or causal impact.",
+      "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+      "No consensus estimates acquired; economic surprise remains unknown."
+    ],
+    "limits": "Publication and daily change are facts; surprise, causality and intraday propagation remain unverified.",
+    "releases": [
+      {
+        "published_epoch": 1792821600.0,
+        "retrieval_finished": 1792978964.3534284,
+        "retrieval_started": 1792978963.5906088,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/inter/date/2026/html/ecb.in261024~ee2ba73cf3.en.html",
+        "title": "Piero Cipollone: Interview with Milano Finanza"
+      },
+      {
+        "published_epoch": 1792742400.0,
+        "retrieval_finished": 1792978964.3534284,
+        "retrieval_started": 1792978963.5906088,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr261023~a3d201c97c.en.html",
+        "title": "ECB Consumer Expectations Survey results \u2013 September 2026"
+      }
+    ],
+    "series": [
+      {
+        "change": -0.16999999999999993,
+        "date": "2026-10-22",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-10-21",
+        "series": "DGS10",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10",
+        "value": 4.96
+      },
+      {
+        "change": -0.15999999999999925,
+        "date": "2026-10-22",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-10-21",
+        "series": "DGS2",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2",
+        "value": 4.65
+      },
+      {
+        "change": -0.16450000000000387,
+        "date": "2026-10-16",
+        "freshness": "STALE",
+        "prior_date": "2026-10-15",
+        "series": "DTWEXBGS",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DTWEXBGS",
+        "value": 121.4048
+      }
+    ],
+    "status": "VERIFIED",
+    "summary": "2 dated official release headlines; 3 daily macro series measured."
+  },
+  "outcome": "NO_MATERIAL_DELTA",
+  "paid_model_calls": 0,
+  "prior_receipt_path": "automation_intelligence/native_research_v1/cycles/native-40241782096-1/macro.json",
+  "run_id": "native-40255146490-1-macro",
+  "schema_version": "icarus-research-run-v1",
+  "started_at_utc": "2026-10-26T01:42:45.132986Z",
+  "substantive_work_performed": true,
+  "summary": "2 dated official release headlines; 3 daily macro series measured.",
+  "worker": "GITHUB_ACTIONS"
+}

@@ -1,4 +1,4 @@
-# Data health — 2026-10-26 00:26 UTC
+# Data health — 2026-10-26 01:38 UTC
 
 **FAILING** 36 · **BLOCKED** 6 · **DEGRADED** 6 · **OK** 38
 
@@ -48,7 +48,7 @@
 | provider:quiver | BLOCKED | no key reaches the runner |
 | provider:tickstream | BLOCKED | no key reaches the runner |
 | provider:unusual_whales | BLOCKED | BLOCKED_AUTHENTICATION |
-| provider:alphavantage | DEGRADED | key present but 0 rows (NO_READY_JOBS) |
+| provider:alphavantage | DEGRADED | 21344 rows; 3 endpoints denied by plan |
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
 | provider:eodhd | DEGRADED | dedicated fabric live (11 calls, 2510 known rows); generic sampler blocked; 29 endpoints denied by plan |
 | provider:fmp | DEGRADED | dedicated fabric live (3 calls, 53 known rows); generic sampler blocked; 85 endpoints denied by plan |

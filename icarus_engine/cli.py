@@ -104,7 +104,8 @@ def _start_guest_if_enabled(port: Portfolio, args: argparse.Namespace):
 
 
 def cmd_run(args: argparse.Namespace) -> int:
-    from .server import serve
+    from .server import resolve_owner_token, serve
+    args.token = resolve_owner_token()
     journal = Journal(args.db)
     port = _portfolio(args, journal)
     journal.log("INFO", f"ICARUS Engine starting: {port.order} tf={args.tf}m preset={args.preset} profile={args.profile} fills={args.fill_on or 'preset/real'}")
@@ -120,7 +121,7 @@ def cmd_run(args: argparse.Namespace) -> int:
             journal.log("WARN", f"guest surface unavailable: {type(ex).__name__}: {ex}")
             print(f"\n  guest surface unavailable: {type(ex).__name__}: {ex}\n")
     print(f"\nICARUS ENGINE  assets={port.order}  tf={args.tf}m  preset={args.preset}")
-    print(f"  dashboard : http://127.0.0.1:{args.port}/     admin token: {args.token}")
+    print(f"  dashboard : http://127.0.0.1:{args.port}/     authentication token configured")
     print("  warming up each asset from history, then LIVE (futures wait for the CME open); Ctrl+C to stop\n")
     if args.open:
         import webbrowser
@@ -247,7 +248,6 @@ def main(argv: Optional[list] = None) -> int:
     s = sub.add_parser("run", help="live paper trading + dashboard")
     common(s)
     s.add_argument("--port", type=int, default=8791)
-    s.add_argument("--token", default="icarus")
     s.add_argument("--poll", type=float, default=5.0)
     s.add_argument("--open", action="store_true")
     s.add_argument("--guest", action="store_true", help="enable the isolated guest viewer/experiment surface")
@@ -286,6 +286,10 @@ def main(argv: Optional[list] = None) -> int:
     i.set_defaults(fn=cmd_import_tv)
 
     args = p.parse_args(argv)
+    if args.cmd == "run":
+        from .server import configured_owner_token
+        if not configured_owner_token():
+            p.error("Set a unique non-placeholder ICARUS_TOKEN (or legacy ICARUS_ADMIN_TOKEN/ADMIN_TOKEN) before starting Icarus")
     if getattr(args, "preset", None) == "":
         args.preset = None
     return int(args.fn(args) or 0)

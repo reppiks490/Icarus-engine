@@ -1,0 +1,100 @@
+{
+  "at_utc": "2026-10-26T23:29:47.501721Z",
+  "category": "AUDIT",
+  "event_id": "native-40419832194-1-native-macro",
+  "evidence": [
+    {
+      "classification": "FACT",
+      "code_revision": "fc066a9a80bfaf6aa717001d06a8cc9cbaa603fa",
+      "evidence_sha256": "35ef907656d3c872bf15773e446084dda1036521dab8cba7d81cf2c1a5d12990",
+      "measurement": {
+        "gaps": [
+          "Release titles establish publication, not macro surprise or causal impact.",
+          "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+          "No consensus estimates acquired; economic surprise remains unknown."
+        ],
+        "limits": "Publication and daily change are facts; surprise, causality and intraday propagation remain unverified.",
+        "releases": [
+          {
+            "published_epoch": 1793005200.0,
+            "retrieval_finished": 1793057387.0230825,
+            "retrieval_started": 1793057386.202478,
+            "source": "ECB",
+            "source_url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr261026~bde7b6d11a.en.html",
+            "title": "Survey on the Access to Finance of Enterprises: lending conditions tightened"
+          },
+          {
+            "published_epoch": 1792990800.0,
+            "retrieval_finished": 1793057387.0230825,
+            "retrieval_started": 1793057386.202478,
+            "source": "ECB",
+            "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261026~d903d7ad85.en.html",
+            "title": "Frank Elderson: Taking action for nature \u2013 investing in economic resilience and prosperity"
+          },
+          {
+            "published_epoch": 1792821600.0,
+            "retrieval_finished": 1793057387.0230825,
+            "retrieval_started": 1793057386.202478,
+            "source": "ECB",
+            "source_url": "https://www.ecb.europa.eu//press/inter/date/2026/html/ecb.in261024~ee2ba73cf3.en.html",
+            "title": "Piero Cipollone: Interview with Milano Finanza"
+          }
+        ],
+        "series": [
+          {
+            "change": 0.040000000000000036,
+            "date": "2026-10-23",
+            "freshness": "DAILY_OBSERVATION",
+            "prior_date": "2026-10-22",
+            "series": "DGS10",
+            "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10",
+            "value": 5.0
+          },
+          {
+            "change": 0.040000000000000036,
+            "date": "2026-10-23",
+            "freshness": "DAILY_OBSERVATION",
+            "prior_date": "2026-10-22",
+            "series": "DGS2",
+            "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2",
+            "value": 4.69
+          },
+          {
+            "change": -0.03289999999999793,
+            "date": "2026-10-23",
+            "freshness": "DAILY_OBSERVATION",
+            "prior_date": "2026-10-22",
+            "series": "DTWEXBGS",
+            "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DTWEXBGS",
+            "value": 121.3202
+          }
+        ],
+        "status": "VERIFIED",
+        "summary": "3 dated official release headlines; 3 daily macro series measured."
+      }
+    }
+  ],
+  "execution_authorized": false,
+  "interpretation_authority": "UNVERIFIED_MODEL_INFERENCE",
+  "oracle": {
+    "finding": "3 dated official release headlines; 3 daily macro series measured.",
+    "status": "VERIFIED"
+  },
+  "paths": [
+    "automation_intelligence/native_research_v1/cycles/native-40419832194-1/evidence.json",
+    "automation_intelligence/native_research_v1/cycles/native-40419832194-1/macro.json"
+  ],
+  "schema_version": "icarus-mcp-event-v1",
+  "severity": "MEDIUM",
+  "source": "MACRO_AUTOMATION",
+  "status": "VERIFIED",
+  "summary": "3 dated official release headlines; 3 daily macro series measured.",
+  "supermesh_x": {
+    "finding": "3 dated official release headlines; 3 daily macro series measured.",
+    "status": "VERIFIED"
+  },
+  "surface": [
+    "macro native research"
+  ],
+  "worker": "GITHUB_NATIVE_RESEARCH_V1"
+}

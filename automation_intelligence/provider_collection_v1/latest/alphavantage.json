@@ -12,7 +12,7 @@
   },
   "chatgpt_tokens_used": 0,
   "checkpoint_status": "ENCRYPTED_AES256_GCM",
-  "completed_at_utc": "2026-10-26T01:36:57.291742+00:00",
+  "completed_at_utc": "2026-10-26T06:56:37.967768+00:00",
   "databento_excluded": true,
   "execution_authorized": false,
   "paid_model_calls": 0,
@@ -22,61 +22,81 @@
         "ENCRYPTED_AES256_GCM"
       ],
       "blocked": [],
-      "collected_pages": 3,
-      "collected_rows": 21344,
+      "collected_pages": 5,
+      "collected_rows": 14378,
       "credential_present": true,
       "endpoint_count": 28,
-      "requests": 3,
+      "requests": 5,
       "research_features": [
         {
           "features": {
             "value": {
-              "maximum": 361376.0,
-              "mean": 210019.4265060241,
-              "minimum": 103025.0,
-              "samples": 415,
-              "standard_deviation": 50418.48827614559
+              "maximum": 30.72,
+              "mean": 3.8744555322128806,
+              "minimum": 1.21,
+              "samples": 5712,
+              "standard_deviation": 2.0684847728169418
             }
           },
-          "operation": "alphavantage:get:DURABLES"
+          "operation": "alphavantage:get:NATURAL_GAS"
         },
         {
           "features": {
             "value": {
-              "maximum": 143.95,
-              "mean": 54.505041703248985,
-              "minimum": 9.1,
-              "samples": 9112,
-              "standard_deviation": 33.029421683218224
+              "maximum": 14473.05590909091,
+              "mean": 5354.406513809027,
+              "minimum": 1377.37608695652,
+              "samples": 417,
+              "standard_deviation": 3044.6803492178483
             }
           },
-          "operation": "alphavantage:get:BRENT"
+          "operation": "alphavantage:get:COPPER"
         },
         {
           "features": {
-            "value": {
-              "maximum": 145.31,
-              "mean": 50.054342395297525,
-              "minimum": -36.98,
-              "samples": 9527,
-              "standard_deviation": 29.884898199354165
+            "close": {
+              "maximum": 1.1679,
+              "mean": 1.1449980000000006,
+              "minimum": 1.1153,
+              "samples": 100,
+              "standard_deviation": 0.013915782263315284
             }
           },
-          "operation": "alphavantage:get:WTI"
+          "operation": "alphavantage:get:FX_DAILY"
+        },
+        {
+          "features": {
+            "close": {
+              "maximum": 124720.09,
+              "mean": 22372.977778242905,
+              "minimum": 0.05,
+              "samples": 5946,
+              "standard_deviation": 31189.899917845334
+            },
+            "volume": {
+              "maximum": 212195781011.71082,
+              "mean": 21250839865.238846,
+              "minimum": 0.0,
+              "samples": 5946,
+              "standard_deviation": 35094881267.52227
+            }
+          },
+          "operation": "alphavantage:get:DIGITAL_CURRENCY_DAILY"
         }
       ],
       "status": "COLLECTED_PARTIAL",
       "substantive_work_performed": true,
       "verified_operations": [
-        "alphavantage:get:BRENT",
-        "alphavantage:get:DURABLES",
-        "alphavantage:get:WTI"
+        "alphavantage:get:COPPER",
+        "alphavantage:get:DIGITAL_CURRENCY_DAILY",
+        "alphavantage:get:FX_DAILY",
+        "alphavantage:get:NATURAL_GAS"
       ]
     }
   },
   "raw_payloads_public": false,
-  "requests": 3,
-  "run_id": "supplemental-40255008061-alphavantage",
+  "requests": 5,
+  "run_id": "supplemental-40282671975-alphavantage",
   "schema_version": "icarus-provider-collection-cycle-v1",
-  "started_at_utc": "2026-10-26T01:36:17.531143+00:00"
+  "started_at_utc": "2026-10-26T06:55:44.570173+00:00"
 }

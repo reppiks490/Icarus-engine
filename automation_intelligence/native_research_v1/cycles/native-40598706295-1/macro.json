@@ -1,0 +1,97 @@
+{
+  "automation_id": "github-native-research-v1",
+  "blockers": [
+    "Release titles establish publication, not macro surprise or causal impact.",
+    "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+    "No consensus estimates acquired; economic surprise remains unknown."
+  ],
+  "chatgpt_tokens_used": 0,
+  "code_revision": "0b73db112d03ed8d95b6d2e01a4000182fe28d6f",
+  "completed_at_utc": "2026-10-27T23:00:00.985076Z",
+  "event_paths": [],
+  "evidence": [
+    "automation_intelligence/native_research_v1/cycles/native-40598706295-1/evidence.json"
+  ],
+  "execution_authorized": false,
+  "input_sha256": "cfceee5292da9cc428874bf9e60a017dcbc2b36ce7a5fb1a53a3149cac08c449",
+  "lane": "macro",
+  "local_interpretation": {
+    "authority": "UNVERIFIED_MODEL_INFERENCE",
+    "reason": "No semantic change",
+    "status": "NOT_RUN"
+  },
+  "measurements": {
+    "gaps": [
+      "Release titles establish publication, not macro surprise or causal impact.",
+      "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+      "No consensus estimates acquired; economic surprise remains unknown."
+    ],
+    "limits": "Publication and daily change are facts; surprise, causality and intraday propagation remain unverified.",
+    "releases": [
+      {
+        "published_epoch": 1793059200.0,
+        "retrieval_finished": 1793141988.9646018,
+        "retrieval_started": 1793141987.9747806,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr261027~506ef03145.en.html",
+        "title": "October 2026 euro area bank lending survey"
+      },
+      {
+        "published_epoch": 1793005200.0,
+        "retrieval_finished": 1793141988.9646018,
+        "retrieval_started": 1793141987.9747806,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr261026~bde7b6d11a.en.html",
+        "title": "Survey on the Access to Finance of Enterprises: lending conditions tightened"
+      },
+      {
+        "published_epoch": 1792990800.0,
+        "retrieval_finished": 1793141988.9646018,
+        "retrieval_started": 1793141987.9747806,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261026~d903d7ad85.en.html",
+        "title": "Frank Elderson: Taking action for nature \u2013 investing in economic resilience and prosperity"
+      }
+    ],
+    "series": [
+      {
+        "change": 0.0,
+        "date": "2026-10-26",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-10-23",
+        "series": "DGS10",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10",
+        "value": 5.0
+      },
+      {
+        "change": -0.010000000000000675,
+        "date": "2026-10-26",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-10-23",
+        "series": "DGS2",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2",
+        "value": 4.68
+      },
+      {
+        "change": -0.03289999999999793,
+        "date": "2026-10-23",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-10-22",
+        "series": "DTWEXBGS",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DTWEXBGS",
+        "value": 121.3202
+      }
+    ],
+    "status": "VERIFIED",
+    "summary": "3 dated official release headlines; 3 daily macro series measured."
+  },
+  "outcome": "NO_MATERIAL_DELTA",
+  "paid_model_calls": 0,
+  "prior_receipt_path": "automation_intelligence/native_research_v1/cycles/native-40586964868-1/macro.json",
+  "run_id": "native-40598706295-1-macro",
+  "schema_version": "icarus-research-run-v1",
+  "started_at_utc": "2026-10-27T22:59:49.467728Z",
+  "substantive_work_performed": true,
+  "summary": "3 dated official release headlines; 3 daily macro series measured.",
+  "worker": "GITHUB_ACTIONS"
+}

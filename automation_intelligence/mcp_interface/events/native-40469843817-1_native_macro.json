@@ -1,0 +1,92 @@
+{
+  "at_utc": "2026-10-27T07:55:17.726995Z",
+  "category": "AUDIT",
+  "event_id": "native-40469843817-1-native-macro",
+  "evidence": [
+    {
+      "classification": "FACT",
+      "code_revision": "90e5f97481995cd77529412347460ffa74ff6783",
+      "evidence_sha256": "dadfcc411def92dfa0fc3f44c304f741e780b6058151baed7134ecece47a7728",
+      "measurement": {
+        "gaps": [
+          "Release titles establish publication, not macro surprise or causal impact.",
+          "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+          "No consensus estimates acquired; economic surprise remains unknown."
+        ],
+        "limits": "Publication and daily change are facts; surprise, causality and intraday propagation remain unverified.",
+        "releases": [
+          {
+            "published_epoch": 1793005200.0,
+            "retrieval_finished": 1793087717.2147386,
+            "retrieval_started": 1793087716.3652563,
+            "source": "ECB",
+            "source_url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr261026~bde7b6d11a.en.html",
+            "title": "Survey on the Access to Finance of Enterprises: lending conditions tightened"
+          },
+          {
+            "published_epoch": 1792990800.0,
+            "retrieval_finished": 1793087717.2147386,
+            "retrieval_started": 1793087716.3652563,
+            "source": "ECB",
+            "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261026~d903d7ad85.en.html",
+            "title": "Frank Elderson: Taking action for nature \u2013 investing in economic resilience and prosperity"
+          }
+        ],
+        "series": [
+          {
+            "change": 0.040000000000000036,
+            "date": "2026-10-23",
+            "freshness": "DAILY_OBSERVATION",
+            "prior_date": "2026-10-22",
+            "series": "DGS10",
+            "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10",
+            "value": 5.0
+          },
+          {
+            "change": 0.040000000000000036,
+            "date": "2026-10-23",
+            "freshness": "DAILY_OBSERVATION",
+            "prior_date": "2026-10-22",
+            "series": "DGS2",
+            "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2",
+            "value": 4.69
+          },
+          {
+            "change": -0.03289999999999793,
+            "date": "2026-10-23",
+            "freshness": "DAILY_OBSERVATION",
+            "prior_date": "2026-10-22",
+            "series": "DTWEXBGS",
+            "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DTWEXBGS",
+            "value": 121.3202
+          }
+        ],
+        "status": "VERIFIED",
+        "summary": "2 dated official release headlines; 3 daily macro series measured."
+      }
+    }
+  ],
+  "execution_authorized": false,
+  "interpretation_authority": "UNVERIFIED_MODEL_INFERENCE",
+  "oracle": {
+    "finding": "2 dated official release headlines; 3 daily macro series measured.",
+    "status": "VERIFIED"
+  },
+  "paths": [
+    "automation_intelligence/native_research_v1/cycles/native-40469843817-1/evidence.json",
+    "automation_intelligence/native_research_v1/cycles/native-40469843817-1/macro.json"
+  ],
+  "schema_version": "icarus-mcp-event-v1",
+  "severity": "MEDIUM",
+  "source": "MACRO_AUTOMATION",
+  "status": "VERIFIED",
+  "summary": "2 dated official release headlines; 3 daily macro series measured.",
+  "supermesh_x": {
+    "finding": "2 dated official release headlines; 3 daily macro series measured.",
+    "status": "VERIFIED"
+  },
+  "surface": [
+    "macro native research"
+  ],
+  "worker": "GITHUB_NATIVE_RESEARCH_V1"
+}

@@ -1,139 +1,140 @@
 {
   "catalog": {
-    "asset_datasets_collected": 3,
+    "asset_datasets_collected": 2,
     "asset_templates": 162,
     "assets": 72363,
     "collected_operations": 8,
     "denied_operations": 1,
     "operations": 185,
-    "pending_pages": 687,
+    "pending_pages": 691,
     "qualification": "INCOMPLETE_UNTIL_EVERY_OPERATION_ASSET_PAGE_TIME_RANGE_AND_TRANSPORT_IS_VERIFIED",
     "unresolved_operations": 4
   },
   "chatgpt_tokens_used": 0,
   "checkpoint_status": "ENCRYPTED_AES256_GCM",
-  "completed_at_utc": "2026-10-27T21:22:03.505502+00:00",
+  "completed_at_utc": "2026-10-28T01:22:41.555506+00:00",
   "databento_excluded": true,
   "execution_authorized": false,
   "paid_model_calls": 0,
   "providers": {
     "twelve": {
-      "archive_status": [
-        "ENCRYPTED_AES256_GCM"
-      ],
+      "archive_status": [],
       "blocked": [
         {
           "asset_specific": true,
           "failure_code": "404",
-          "operation": "twelve:get:/logo"
+          "operation": "twelve:get:/bbands"
         },
         {
           "asset_specific": true,
           "failure_code": "404",
-          "operation": "twelve:get:/sub"
+          "operation": "twelve:get:/trima"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "400",
+          "operation": "twelve:get:/price"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "404",
+          "operation": "twelve:get:/tsf"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "404",
+          "operation": "twelve:get:/sar"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "404",
+          "operation": "twelve:get:/typprice"
         },
         {
           "asset_specific": true,
           "failure_code": "403",
-          "operation": "twelve:get:/pivot_points_hl"
+          "operation": "twelve:get:/price_target"
         },
         {
           "asset_specific": true,
           "failure_code": "404",
-          "operation": "twelve:get:/sum"
+          "operation": "twelve:get:/ultosc"
         },
         {
           "asset_specific": true,
           "failure_code": "404",
-          "operation": "twelve:get:/rsi"
+          "operation": "twelve:get:/macdext"
         },
         {
           "asset_specific": true,
           "failure_code": "404",
-          "operation": "twelve:get:/supertrend"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "404",
-          "operation": "twelve:get:/plus_di"
+          "operation": "twelve:get:/var"
         },
         {
           "asset_specific": true,
           "failure_code": "403",
-          "operation": "twelve:get:/supertrend_heikinashicandles"
+          "operation": "twelve:get:/profile"
         },
         {
           "asset_specific": true,
           "failure_code": "404",
-          "operation": "twelve:get:/ma"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "404",
-          "operation": "twelve:get:/plus_dm"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "404",
-          "operation": "twelve:get:/t3ma"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "404",
-          "operation": "twelve:get:/avgprice"
+          "operation": "twelve:get:/vwap"
         },
         {
           "asset_specific": true,
           "failure_code": "403",
-          "operation": "twelve:get:/tax_info"
+          "operation": "twelve:get:/analyst_ratings/light"
         },
         {
           "asset_specific": true,
           "failure_code": "404",
-          "operation": "twelve:get:/ppo"
+          "operation": "twelve:get:/wclprice"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "400",
+          "operation": "twelve:get:/quote"
         },
         {
           "asset_specific": true,
           "failure_code": "404",
-          "operation": "twelve:get:/tema"
+          "operation": "twelve:get:/willr"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "403",
+          "operation": "twelve:get:/analyst_ratings/us_equities"
         },
         {
           "asset_specific": true,
           "failure_code": "404",
-          "operation": "twelve:get:/macd"
+          "operation": "twelve:get:/wma"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "403",
+          "operation": "twelve:get:/recommendations"
         },
         {
           "asset_specific": true,
           "failure_code": "404",
-          "operation": "twelve:get:/time_series"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "404",
-          "operation": "twelve:get:/press_releases"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "404",
-          "operation": "twelve:get:/trange"
+          "operation": "twelve:get:/ad"
         }
       ],
-      "collected_pages": 1,
-      "collected_rows": 3,
+      "collected_pages": 0,
+      "collected_rows": 0,
       "credential_present": true,
       "endpoint_count": 185,
       "requests": 20,
       "research_features": [],
-      "status": "COLLECTED_PARTIAL",
-      "substantive_work_performed": true,
-      "verified_operations": [
-        "twelve:get:/symbol_search"
-      ]
+      "status": "BLOCKED",
+      "substantive_work_performed": false,
+      "verified_operations": []
     }
   },
   "raw_payloads_public": false,
   "requests": 20,
-  "run_id": "providers-40585448469-1-twelve",
+  "run_id": "providers-40614147274-1-twelve",
   "schema_version": "icarus-provider-collection-cycle-v1",
-  "started_at_utc": "2026-10-27T21:17:42.953724+00:00"
+  "started_at_utc": "2026-10-28T01:18:21.710266+00:00"
 }

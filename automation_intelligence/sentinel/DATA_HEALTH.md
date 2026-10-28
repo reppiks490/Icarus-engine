@@ -1,4 +1,4 @@
-# Data health — 2026-10-28 00:43 UTC
+# Data health — 2026-10-28 00:44 UTC
 
 **FAILING** 36 · **BLOCKED** 6 · **STALE** 3 · **DEGRADED** 6 · **OK** 35
 
@@ -50,8 +50,8 @@
 | provider:unusual_whales | BLOCKED | BLOCKED_AUTHENTICATION |
 | workflow:interrepo-peer-intelligence.yml | STALE | last success 1.5 h ago (expected within 1 h) |
 | workflow:provider-exhaustive-collection.yml | STALE | last success 3.3 h ago (expected within 3 h) |
-| workflow:provider-supplemental-promote.yml | STALE | last success 3.2 h ago (expected within 3 h) |
-| provider:alphavantage | DEGRADED | key present but 0 rows (COLLECTED_PARTIAL) |
+| workflow:provider-supplemental-promote.yml | STALE | last success 3.3 h ago (expected within 3 h) |
+| provider:alphavantage | DEGRADED | 43503 rows; 3 endpoints denied by plan |
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
 | provider:eodhd | DEGRADED | dedicated fabric live (11 calls, 2510 known rows); generic sampler blocked; 29 endpoints denied by plan |
 | provider:fmp | DEGRADED | 55 rows; 85 endpoints denied by plan |

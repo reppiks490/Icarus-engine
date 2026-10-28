@@ -1,0 +1,120 @@
+{
+  "automation_id": "github-native-research-v1",
+  "blockers": [
+    "Direct NQ/MNQ, GC/MGC, SI, DXY and volatility indices not acquired by this public worker.",
+    "Twelve Data and Massive connector credentials not exported; no entitlement inferred.",
+    "No historical trade signs, depth sequence, liquidations, OI, funding or basis collected."
+  ],
+  "chatgpt_tokens_used": 0,
+  "code_revision": "880f1f9fcaf0633f85a70d1c4a20dbf99f3cc315",
+  "completed_at_utc": "2026-10-28T23:43:23.077722Z",
+  "event_paths": [
+    "automation_intelligence/mcp_interface/events/native-40789058532-1_native_flow.json"
+  ],
+  "evidence": [
+    "automation_intelligence/native_research_v1/cycles/native-40789058532-1/evidence.json"
+  ],
+  "execution_authorized": false,
+  "input_sha256": "f42089afb0d6cd7ded64691e81abceb738a094c725e5cb785f0ad6768157c5cb",
+  "lane": "flow",
+  "local_interpretation": {
+    "authority": "UNVERIFIED_MODEL_INFERENCE",
+    "model": "Qwen/Qwen3-1.7B-GGUF@90862c4:Q8_0",
+    "payload": {
+      "conflicts": [],
+      "data_gaps": [],
+      "execution_authorized": false,
+      "lane": "flow",
+      "net_new_delta": "LOCAL_NEXT_TEST_SELECTION",
+      "summary": "Can a fresh direct futures feed confirm or refute cross-market propagation?"
+    },
+    "response_id": "local-29988806bafbbdb0a922af9c",
+    "status": "GENERATED"
+  },
+  "measurements": {
+    "conflicts": [],
+    "current": [
+      {
+        "baseline_count": 28,
+        "baseline_end": 1793224800,
+        "baseline_start": 1793124000,
+        "end": 1793228400,
+        "lane_key": "coinbase_spot",
+        "provider": "coinbase",
+        "range": 298.10999999998603,
+        "range_z": 0.08239302640719275,
+        "representation": "BTC-USD spot",
+        "start": 1793224800,
+        "state": "ORDINARY",
+        "volume": 129.34094071,
+        "volume_z": -0.4313170882667574
+      },
+      {
+        "baseline_count": 28,
+        "baseline_end": 1793224800,
+        "baseline_start": 1793124000,
+        "end": 1793228400,
+        "lane_key": "kraken_spot",
+        "provider": "kraken",
+        "range": 342.40000000000873,
+        "range_z": 0.4090627273445378,
+        "representation": "BTC-USD spot",
+        "start": 1793224800,
+        "state": "ORDINARY",
+        "volume": 29.90257296,
+        "volume_z": -0.7428184949579663
+      },
+      {
+        "baseline_count": 28,
+        "baseline_end": 1793224800,
+        "baseline_start": 1793124000,
+        "end": 1793228400,
+        "lane_key": "bybit_spot",
+        "provider": "bybit",
+        "range": 301.1999999999971,
+        "range_z": 0.13436824894174815,
+        "representation": "BTCUSDT spot",
+        "start": 1793224800,
+        "state": "ORDINARY",
+        "volume": 185.078871,
+        "volume_z": -0.44849859452202007
+      },
+      {
+        "baseline_count": 28,
+        "baseline_end": 1793224800,
+        "baseline_start": 1793124000,
+        "end": 1793228400,
+        "lane_key": "bybit_linear",
+        "provider": "bybit",
+        "range": 323.1999999999971,
+        "range_z": 0.21747916339252218,
+        "representation": "BTCUSDT linear",
+        "start": 1793224800,
+        "state": "ORDINARY",
+        "volume": 1706.243,
+        "volume_z": 0.8520527233074787
+      }
+    ],
+    "gaps": [
+      "Direct NQ/MNQ, GC/MGC, SI, DXY and volatility indices not acquired by this public worker.",
+      "Twelve Data and Massive connector credentials not exported; no entitlement inferred.",
+      "No historical trade signs, depth sequence, liquidations, OI, funding or basis collected."
+    ],
+    "limits": [
+      "Candle volume is representation-specific reported activity, not directional order flow.",
+      "No depth-history, liquidation, absorption or cross-asset causal claim."
+    ],
+    "provider_family_count": 3,
+    "status": "VERIFIED",
+    "summary": "coinbase_spot: ORDINARY; kraken_spot: ORDINARY; bybit_spot: ORDINARY; bybit_linear: ORDINARY"
+  },
+  "outcome": "MATERIAL_DELTA",
+  "paid_model_calls": 0,
+  "prior_receipt_path": "automation_intelligence/native_research_v1/cycles/native-40757837289-1/flow.json",
+  "run_id": "native-40789058532-1-flow",
+  "schema_version": "icarus-research-run-v1",
+  "started_at_utc": "2026-10-28T23:43:06.765605Z",
+  "substantive_work_performed": true,
+  "summary": "coinbase_spot: ORDINARY; kraken_spot: ORDINARY; bybit_spot: ORDINARY; bybit_linear: ORDINARY",
+  "worker": "GITHUB_ACTIONS"
+}

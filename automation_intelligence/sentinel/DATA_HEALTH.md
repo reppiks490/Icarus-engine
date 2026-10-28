@@ -1,4 +1,4 @@
-# Data health — 2026-10-28 01:35 UTC
+# Data health — 2026-10-28 01:57 UTC
 
 **FAILING** 36 · **BLOCKED** 7 · **DEGRADED** 5 · **OK** 38
 
@@ -52,8 +52,8 @@
 | provider:alphavantage | DEGRADED | 43503 rows; 3 endpoints denied by plan |
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
 | provider:eodhd | DEGRADED | dedicated fabric live (11 calls, 2510 known rows); generic sampler blocked; 29 endpoints denied by plan |
-| provider:fmp | DEGRADED | dedicated fabric live (3 calls, 55 known rows); generic sampler blocked; 85 endpoints denied by plan |
-| provider:tiingo | DEGRADED | 47547 rows; 4 endpoints denied by plan |
+| provider:fmp | DEGRADED | dedicated fabric live (13 calls, 56 known rows); generic sampler blocked; 85 endpoints denied by plan |
+| provider:tiingo | DEGRADED | 47557 rows; 4 endpoints denied by plan |
 
 ## Delivering
 

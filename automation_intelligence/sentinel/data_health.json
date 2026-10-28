@@ -81,8 +81,8 @@
   "BLOCKED": 7,
   "DEGRADED": 5,
   "FAILING": 38,
-  "OK": 31,
-  "STALE": 5
+  "OK": 32,
+  "STALE": 4
  },
  "depth": {
   "budgets": {
@@ -153,7 +153,7 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-10-28T07:19:18+00:00",
+ "generated_at": "2026-10-28T07:20:28+00:00",
  "research": {
   "champions": 0,
   "cl_last_run": "2026-10-28T00:48:34.187030+00:00",
@@ -433,10 +433,10 @@
    "why": "latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/40611553351"
   },
   {
-   "age_h": 4.9,
+   "age_h": null,
    "source": "workflow:interrepo-peer-intelligence.yml",
    "verdict": "FAILING",
-   "why": "latest run cancelled: https://github.com/reppiks490/Icarus-engine/actions/runs/40649218908"
+   "why": "latest run cancelled: https://github.com/reppiks490/Icarus-engine/actions/runs/40649251676"
   },
   {
    "age_h": 8.6,
@@ -485,7 +485,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 5.9,
+   "age_h": 6.0,
    "path": "automation_intelligence/provider_collection_v1/latest/twelve.json",
    "rows": 0,
    "source": "provider:twelve",
@@ -511,12 +511,6 @@
    "source": "workflow:provider-exhaustive-collection.yml",
    "verdict": "STALE",
    "why": "last success 5.9 h ago (expected within 3 h)"
-  },
-  {
-   "age_h": 6.6,
-   "source": "workflow:provider-supplemental-collection.yml",
-   "verdict": "STALE",
-   "why": "last success 6.6 h ago (expected within 3 h)"
   },
   {
    "age_h": 6.6,
@@ -725,7 +719,7 @@
    "why": "39/39 series ok"
   },
   {
-   "age_h": 5.9,
+   "age_h": 6.0,
    "path": "automation_intelligence/provider_collection_v1/latest/fred.json",
    "rows": 28,
    "source": "provider:fred",
@@ -754,16 +748,16 @@
    "why": "last success 6.5 h ago"
   },
   {
-   "age_h": 6.4,
+   "age_h": 6.5,
    "source": "workflow:databento-depth-corpus.yml",
    "verdict": "OK",
-   "why": "last success 6.4 h ago"
+   "why": "last success 6.5 h ago"
   },
   {
-   "age_h": 6.3,
+   "age_h": 6.4,
    "source": "workflow:depth-vault.yml",
    "verdict": "OK",
-   "why": "last success 6.3 h ago"
+   "why": "last success 6.4 h ago"
   },
   {
    "age_h": 5.6,
@@ -778,10 +772,16 @@
    "why": "last success 1.6 h ago"
   },
   {
-   "age_h": 62.3,
+   "age_h": 0.0,
+   "source": "workflow:provider-supplemental-collection.yml",
+   "verdict": "OK",
+   "why": "last success 0.0 h ago"
+  },
+  {
+   "age_h": 62.4,
    "source": "workflow:tests.yml",
    "verdict": "OK",
-   "why": "last success 62.3 h ago"
+   "why": "last success 62.4 h ago"
   }
  ]
 }

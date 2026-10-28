@@ -1,18 +1,18 @@
 {
   "catalog": {
-    "asset_datasets_collected": 5,
+    "asset_datasets_collected": 4,
     "asset_templates": 109,
     "assets": 6770,
-    "collected_operations": 8,
+    "collected_operations": 7,
     "denied_operations": 85,
     "operations": 230,
-    "pending_pages": 559,
+    "pending_pages": 581,
     "qualification": "INCOMPLETE_UNTIL_EVERY_OPERATION_ASSET_PAGE_TIME_RANGE_AND_TRANSPORT_IS_VERIFIED",
     "unresolved_operations": 0
   },
   "chatgpt_tokens_used": 0,
   "checkpoint_status": "ENCRYPTED_AES256_GCM",
-  "completed_at_utc": "2026-10-28T08:28:28.232354+00:00",
+  "completed_at_utc": "2026-10-28T16:08:31.382100+00:00",
   "databento_excluded": true,
   "execution_authorized": false,
   "paid_model_calls": 0,
@@ -25,27 +25,17 @@
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/funds/disclosure-dates"
+          "operation": "fmp:get:/employee-count"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/cash-flow-statement-growth"
+          "operation": "fmp:get:/enterprise-values"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/grades-consensus"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/cash-flow-statement-ttm"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/funds/disclosure-holders-latest"
+          "operation": "fmp:get:/esg-disclosures"
         },
         {
           "asset_specific": true,
@@ -55,17 +45,17 @@
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/custom-discounted-cash-flow"
+          "operation": "fmp:get:/esg-ratings"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/governance-executive-compensation"
+          "operation": "fmp:get:/historical-chart/30min"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/custom-levered-discounted-cash-flow"
+          "operation": "fmp:get:/etf/asset-exposure"
         },
         {
           "asset_specific": true,
@@ -75,17 +65,17 @@
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/discounted-cash-flow"
+          "operation": "fmp:get:/etf/country-weightings"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/grades"
+          "operation": "fmp:get:/historical-chart/4hour"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/dividends"
+          "operation": "fmp:get:/etf/holdings"
         },
         {
           "asset_specific": true,
@@ -95,17 +85,17 @@
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/earning-call-transcript"
+          "operation": "fmp:get:/etf/info"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/grades-consensus"
+          "operation": "fmp:get:/historical-chart/5min"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/earning-call-transcript-dates"
+          "operation": "fmp:get:/etf/sector-weightings"
         },
         {
           "asset_specific": true,
@@ -114,24 +104,28 @@
         },
         {
           "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/earnings"
+          "failure_code": "400",
+          "operation": "fmp:get:/exchange-market-hours"
         }
       ],
-      "collected_pages": 1,
-      "collected_rows": 0,
+      "collected_pages": 3,
+      "collected_rows": 6772,
       "credential_present": true,
       "endpoint_count": 230,
       "requests": 20,
       "research_features": [],
       "status": "COLLECTED_PARTIAL",
-      "substantive_work_performed": false,
-      "verified_operations": []
+      "substantive_work_performed": true,
+      "verified_operations": [
+        "fmp:get:/cryptocurrency-list",
+        "fmp:get:/forex-list",
+        "fmp:get:/index-list"
+      ]
     }
   },
   "raw_payloads_public": false,
   "requests": 20,
-  "run_id": "providers-40656409099-1-fmp",
+  "run_id": "providers-40721296297-1-fmp",
   "schema_version": "icarus-provider-collection-cycle-v1",
-  "started_at_utc": "2026-10-28T08:24:15.708465+00:00"
+  "started_at_utc": "2026-10-28T16:04:19.101452+00:00"
 }

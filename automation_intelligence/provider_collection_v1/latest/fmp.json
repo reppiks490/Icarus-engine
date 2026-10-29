@@ -6,13 +6,13 @@
     "collected_operations": 5,
     "denied_operations": 85,
     "operations": 230,
-    "pending_pages": 591,
+    "pending_pages": 594,
     "qualification": "INCOMPLETE_UNTIL_EVERY_OPERATION_ASSET_PAGE_TIME_RANGE_AND_TRANSPORT_IS_VERIFIED",
     "unresolved_operations": 0
   },
   "chatgpt_tokens_used": 0,
   "checkpoint_status": "ENCRYPTED_AES256_GCM",
-  "completed_at_utc": "2026-10-29T00:57:19.680438+00:00",
+  "completed_at_utc": "2026-10-29T07:05:06.466922+00:00",
   "databento_excluded": true,
   "execution_authorized": false,
   "paid_model_calls": 0,
@@ -21,34 +21,19 @@
       "archive_status": [],
       "blocked": [
         {
-          "asset_specific": false,
+          "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/etf-list"
-        },
-        {
-          "asset_specific": false,
-          "failure_code": "402",
-          "operation": "fmp:get:/stock-list"
+          "operation": "fmp:get:/house-trades"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/grades"
+          "operation": "fmp:get:/historical-market-capitalization"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/grades-consensus"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/historical-price-eod/non-split-adjusted"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/grades-historical"
+          "operation": "fmp:get:/income-statement-as-reported"
         },
         {
           "asset_specific": true,
@@ -58,17 +43,7 @@
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/historical-chart/15min"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/house-trades"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/historical-chart/1hour"
+          "operation": "fmp:get:/income-statement"
         },
         {
           "asset_specific": true,
@@ -78,17 +53,7 @@
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/historical-chart/1min"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/income-statement"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/historical-chart/30min"
+          "operation": "fmp:get:/income-statement-growth"
         },
         {
           "asset_specific": true,
@@ -98,7 +63,7 @@
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/historical-chart/4hour"
+          "operation": "fmp:get:/income-statement-as-reported"
         },
         {
           "asset_specific": true,
@@ -108,7 +73,7 @@
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/historical-chart/5min"
+          "operation": "fmp:get:/income-statement-ttm"
         },
         {
           "asset_specific": true,
@@ -118,7 +83,42 @@
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/historical-employee-count"
+          "operation": "fmp:get:/income-statement-growth"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/house-trades"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/insider-trading/statistics"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/income-statement"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/income-statement-ttm"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/income-statement-as-reported"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/institutional-ownership/extract-analytics/holder"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/income-statement-growth"
         }
       ],
       "collected_pages": 0,
@@ -134,7 +134,7 @@
   },
   "raw_payloads_public": false,
   "requests": 20,
-  "run_id": "providers-40796840776-1-fmp",
+  "run_id": "providers-40832627032-1-fmp",
   "schema_version": "icarus-provider-collection-cycle-v1",
-  "started_at_utc": "2026-10-29T00:53:11.262154+00:00"
+  "started_at_utc": "2026-10-29T07:00:55.128512+00:00"
 }

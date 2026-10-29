@@ -1,0 +1,56 @@
+{
+  "api_credential_required": false,
+  "canonical_state_mutated": false,
+  "deterministic_facts": {
+    "execution_authorized": false,
+    "expected_RUN_ID": "advanced-csv-20261004T221500Z",
+    "fallback_only": true,
+    "observed_worker_RUN_ID": "advanced-csv-20261004T211500Z",
+    "observed_worker_RUN_STATUS": "RUN_PERSISTED",
+    "run_id_match": false,
+    "slot_status": "FALLBACK_LIVENESS_ONLY",
+    "substantive_work_claimed": false,
+    "worker_receipt_status": "WORKER_RECEIPT_MISSING"
+  },
+  "execution_authorized": false,
+  "inference_backend": "local_gguf",
+  "input_path": "/home/runner/work/Icarus-engine/Icarus-engine/automation_intelligence/restored_five_native/receipts/advanced_csv/20261004T221500Z.json",
+  "input_sha256": "d5d3f93e32d474ff94f86d4c05412ce75944ad2fa799d562d6965ea249bc57b0",
+  "lane": "advanced_csv",
+  "llama_cpp_sha256": "98020bb5a2a9e0284110e5c110158e18dca984a547d5afde1631fef0f03dd826",
+  "model": "Qwen/Qwen3-1.7B-GGUF@90862c4:Q8_0",
+  "model_advisory": {
+    "conflicts": [
+      "The observed worker RUN status is 'RUN_PERSISTED' but the expected RUN ID is 'advanced-csv-20261004T221500Z', which i..."
+    ],
+    "data_gaps": [
+      "The observed worker RUN status indicates fallback-only liveness, but there is no evidence of substantive work being c...",
+      "The expected RUN ID does not match the observed worker RUN ID, suggesting a potential mismatch in the system's state."
+    ],
+    "execution_authorized": false,
+    "non_authoritative": true,
+    "summary": "Fallback-only liveness with mismatched RUN ID and no substantive work claimed."
+  },
+  "model_sha256": "061b54daade076b5d3362dac252678d17da8c68f07560be70818cace6590cb1a",
+  "observed_at_utc": "2026-10-29T21:01:41Z",
+  "paid_api_call_made": false,
+  "payload": {
+    "conflicts": [
+      "OBSERVED_WORKER_RUN_ID_DIFFERS_FROM_EXPECTED"
+    ],
+    "data_gaps": [
+      "FALLBACK_LIVENESS_ONLY",
+      "WORKER_RECEIPT_NOT_VERIFIED:WORKER_RECEIPT_MISSING",
+      "SUBSTANTIVE_WORK_NOT_PROVEN"
+    ],
+    "execution_authorized": false,
+    "lane": "advanced_csv",
+    "net_new_delta": "SHADOW_ASSESSMENT_ONLY",
+    "summary": "Fallback-only durability receipt; worker completion is not verified. Observed RUN_ID differs from expected. Substantive work is not proven by this durability evidence."
+  },
+  "response_id": "local-8e77a8f8162d146b223d015c",
+  "response_status": "completed",
+  "run_origin": "GITHUB_NATIVE_LOCAL_GGUF_SHADOW",
+  "schema_version": "restored-five-local-shadow-v2",
+  "substantive_research_source": "DURABLE_REPO_EVIDENCE_ONLY"
+}

@@ -1,0 +1,132 @@
+{
+  "at_utc": "2026-10-29T16:04:12.007930Z",
+  "category": "AUDIT",
+  "event_id": "native-40907520424-1-native-macro",
+  "evidence": [
+    {
+      "classification": "FACT",
+      "code_revision": "9fa33a776a1f436bff9d56ae8a91cc3bcf765b2d",
+      "evidence_sha256": "caf444334303d52a167e64e0b568d6304895563d3f39785325fa0f8f1156715d",
+      "measurement": {
+        "gaps": [
+          "Release titles establish publication, not macro surprise or causal impact.",
+          "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+          "No consensus estimates acquired; economic surprise remains unknown."
+        ],
+        "limits": "Publication and daily change are facts; surprise, causality and intraday propagation remain unverified.",
+        "releases": [
+          {
+            "published_epoch": 1793210400.0,
+            "retrieval_finished": 1793289850.7503107,
+            "retrieval_started": 1793289850.6725395,
+            "source": "FED",
+            "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261028a.htm",
+            "title": "Federal Reserve issues FOMC statement"
+          },
+          {
+            "published_epoch": 1793289000.0,
+            "retrieval_finished": 1793289851.303035,
+            "retrieval_started": 1793289850.75097,
+            "source": "ECB",
+            "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261029~e9b57c3495.en.html",
+            "title": "Piero Cipollone: Next-day securities settlement, tokenisation and the transformation of Europe\u2019s financial infrastructure"
+          },
+          {
+            "published_epoch": 1793282400.0,
+            "retrieval_finished": 1793289851.303035,
+            "retrieval_started": 1793289850.75097,
+            "source": "ECB",
+            "source_url": "https://www.ecb.europa.eu//press/press_conference/monetary-policy-statement/2026/html/ecb.is261029~5c5ffe99e5.en.html",
+            "title": "Christine Lagarde, Boris Vuj\u010di\u0107: Monetary policy statement"
+          },
+          {
+            "published_epoch": 1793279700.0,
+            "retrieval_finished": 1793289851.303035,
+            "retrieval_started": 1793289850.75097,
+            "source": "ECB",
+            "source_url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.mp261029~9a493adf17.en.html",
+            "title": "Monetary policy decisions"
+          },
+          {
+            "published_epoch": 1793268000.0,
+            "retrieval_finished": 1793289851.303035,
+            "retrieval_started": 1793289850.75097,
+            "source": "ECB",
+            "source_url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr261029~abbb6dc64b.en.html",
+            "title": "ECB President Lagarde to step down on 7 February 2027"
+          },
+          {
+            "published_epoch": 1793059200.0,
+            "retrieval_finished": 1793289851.303035,
+            "retrieval_started": 1793289850.75097,
+            "source": "ECB",
+            "source_url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr261027~506ef03145.en.html",
+            "title": "October 2026 euro area bank lending survey"
+          },
+          {
+            "published_epoch": 1793196073.0,
+            "retrieval_finished": 1793289851.4539115,
+            "retrieval_started": 1793289851.3035066,
+            "source": "BLS",
+            "source_url": "https://www.bls.gov/bls/",
+            "title": "Major Economic Indicators Latest Numbers"
+          }
+        ],
+        "series": [
+          {
+            "change": -0.009999999999999787,
+            "date": "2026-10-27",
+            "freshness": "DAILY_OBSERVATION",
+            "prior_date": "2026-10-26",
+            "series": "DGS10",
+            "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10",
+            "value": 4.99
+          },
+          {
+            "change": 0.020000000000000462,
+            "date": "2026-10-27",
+            "freshness": "DAILY_OBSERVATION",
+            "prior_date": "2026-10-26",
+            "series": "DGS2",
+            "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2",
+            "value": 4.7
+          },
+          {
+            "change": -0.03289999999999793,
+            "date": "2026-10-23",
+            "freshness": "DAILY_OBSERVATION",
+            "prior_date": "2026-10-22",
+            "series": "DTWEXBGS",
+            "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DTWEXBGS",
+            "value": 121.3202
+          }
+        ],
+        "status": "VERIFIED",
+        "summary": "7 dated official release headlines; 3 daily macro series measured."
+      }
+    }
+  ],
+  "execution_authorized": false,
+  "interpretation_authority": "UNVERIFIED_MODEL_INFERENCE",
+  "oracle": {
+    "finding": "7 dated official release headlines; 3 daily macro series measured.",
+    "status": "VERIFIED"
+  },
+  "paths": [
+    "automation_intelligence/native_research_v1/cycles/native-40907520424-1/evidence.json",
+    "automation_intelligence/native_research_v1/cycles/native-40907520424-1/macro.json"
+  ],
+  "schema_version": "icarus-mcp-event-v1",
+  "severity": "MEDIUM",
+  "source": "MACRO_AUTOMATION",
+  "status": "VERIFIED",
+  "summary": "7 dated official release headlines; 3 daily macro series measured.",
+  "supermesh_x": {
+    "finding": "7 dated official release headlines; 3 daily macro series measured.",
+    "status": "VERIFIED"
+  },
+  "surface": [
+    "macro native research"
+  ],
+  "worker": "GITHUB_NATIVE_RESEARCH_V1"
+}

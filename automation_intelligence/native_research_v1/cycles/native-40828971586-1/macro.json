@@ -1,0 +1,116 @@
+{
+  "automation_id": "github-native-research-v1",
+  "blockers": [
+    "Release titles establish publication, not macro surprise or causal impact.",
+    "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+    "No consensus estimates acquired; economic surprise remains unknown."
+  ],
+  "chatgpt_tokens_used": 0,
+  "code_revision": "79f0452a2a4329538ba14ca99ea2d0ff9dacf089",
+  "completed_at_utc": "2026-10-29T06:26:20.138485Z",
+  "event_paths": [
+    "automation_intelligence/mcp_interface/events/native-40828971586-1_native_macro.json"
+  ],
+  "evidence": [
+    "automation_intelligence/native_research_v1/cycles/native-40828971586-1/evidence.json"
+  ],
+  "execution_authorized": false,
+  "input_sha256": "85610a3fa99e5d1cf402511201e838b7f3184de756c719a5a49ac3b86737d13b",
+  "lane": "macro",
+  "local_interpretation": {
+    "authority": "UNVERIFIED_MODEL_INFERENCE",
+    "model": "Qwen/Qwen3-1.7B-GGUF@90862c4:Q8_0",
+    "payload": {
+      "conflicts": [],
+      "data_gaps": [],
+      "execution_authorized": false,
+      "lane": "macro",
+      "net_new_delta": "LOCAL_NEXT_TEST_SELECTION",
+      "summary": "Does the next official release change the daily macro context?"
+    },
+    "response_id": "local-3dc1754c694e11cb5673d914",
+    "status": "GENERATED"
+  },
+  "measurements": {
+    "gaps": [
+      "Release titles establish publication, not macro surprise or causal impact.",
+      "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+      "No consensus estimates acquired; economic surprise remains unknown."
+    ],
+    "limits": "Publication and daily change are facts; surprise, causality and intraday propagation remain unverified.",
+    "releases": [
+      {
+        "published_epoch": 1793210400.0,
+        "retrieval_finished": 1793255152.1907065,
+        "retrieval_started": 1793255152.126677,
+        "source": "FED",
+        "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261028a.htm",
+        "title": "Federal Reserve issues FOMC statement"
+      },
+      {
+        "published_epoch": 1793059200.0,
+        "retrieval_finished": 1793255152.5626369,
+        "retrieval_started": 1793255152.1912477,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr261027~506ef03145.en.html",
+        "title": "October 2026 euro area bank lending survey"
+      },
+      {
+        "published_epoch": 1793005200.0,
+        "retrieval_finished": 1793255152.5626369,
+        "retrieval_started": 1793255152.1912477,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr261026~bde7b6d11a.en.html",
+        "title": "Survey on the Access to Finance of Enterprises: lending conditions tightened"
+      },
+      {
+        "published_epoch": 1793196073.0,
+        "retrieval_finished": 1793255152.6261456,
+        "retrieval_started": 1793255152.5631053,
+        "source": "BLS",
+        "source_url": "https://www.bls.gov/bls/",
+        "title": "Major Economic Indicators Latest Numbers"
+      }
+    ],
+    "series": [
+      {
+        "change": -0.009999999999999787,
+        "date": "2026-10-27",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-10-26",
+        "series": "DGS10",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10",
+        "value": 4.99
+      },
+      {
+        "change": 0.020000000000000462,
+        "date": "2026-10-27",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-10-26",
+        "series": "DGS2",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2",
+        "value": 4.7
+      },
+      {
+        "change": -0.03289999999999793,
+        "date": "2026-10-23",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-10-22",
+        "series": "DTWEXBGS",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DTWEXBGS",
+        "value": 121.3202
+      }
+    ],
+    "status": "VERIFIED",
+    "summary": "4 dated official release headlines; 3 daily macro series measured."
+  },
+  "outcome": "MATERIAL_DELTA",
+  "paid_model_calls": 0,
+  "prior_receipt_path": "automation_intelligence/native_research_v1/cycles/native-40809246758-1/macro.json",
+  "run_id": "native-40828971586-1-macro",
+  "schema_version": "icarus-research-run-v1",
+  "started_at_utc": "2026-10-29T06:25:53.048755Z",
+  "substantive_work_performed": true,
+  "summary": "4 dated official release headlines; 3 daily macro series measured.",
+  "worker": "GITHUB_ACTIONS"
+}

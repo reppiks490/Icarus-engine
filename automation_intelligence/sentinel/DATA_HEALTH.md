@@ -1,6 +1,6 @@
-# Data health — 2026-10-29 00:22 UTC
+# Data health — 2026-10-29 01:03 UTC
 
-**FAILING** 36 · **BLOCKED** 7 · **DEGRADED** 5 · **OK** 38
+**FAILING** 36 · **BLOCKED** 8 · **DEGRADED** 4 · **OK** 38
 
 ## Needs attention
 
@@ -43,6 +43,7 @@
 | workflow:cl-depth-sweep.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/40775803065 |
 | workflow:databento-depth-research-context.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/40763504328 |
 | provider:alpaca | BLOCKED | no key reaches the runner |
+| provider:bybit | BLOCKED | no key reaches the runner |
 | provider:finnhub | BLOCKED | BLOCKED_AUTHENTICATION |
 | provider:intrinio | BLOCKED | no key reaches the runner |
 | provider:quiver | BLOCKED | no key reaches the runner |
@@ -50,9 +51,8 @@
 | provider:twelve | BLOCKED | BLOCKED |
 | provider:unusual_whales | BLOCKED | BLOCKED_AUTHENTICATION |
 | provider:alphavantage | DEGRADED | key present but 0 rows (QUOTA_OR_RATE_LIMIT_PAUSED) |
-| provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
-| provider:eodhd | DEGRADED | 2510 rows; 29 endpoints denied by plan |
-| provider:fmp | DEGRADED | 56 rows; 85 endpoints denied by plan |
+| provider:eodhd | DEGRADED | dedicated fabric live (11 calls, 2510 known rows); generic sampler blocked; 29 endpoints denied by plan |
+| provider:fmp | DEGRADED | dedicated fabric live (13 calls, 56 known rows); generic sampler blocked; 85 endpoints denied by plan |
 | provider:tiingo | DEGRADED | 47557 rows; 4 endpoints denied by plan |
 
 ## Delivering

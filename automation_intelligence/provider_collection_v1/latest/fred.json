@@ -1,18 +1,18 @@
 {
   "catalog": {
-    "asset_datasets_collected": 93,
+    "asset_datasets_collected": 96,
     "asset_templates": 21,
-    "assets": 40102,
-    "collected_operations": 19,
+    "assets": 40104,
+    "collected_operations": 18,
     "denied_operations": 0,
     "operations": 31,
-    "pending_pages": 1113,
+    "pending_pages": 1121,
     "qualification": "INCOMPLETE_UNTIL_EVERY_OPERATION_ASSET_PAGE_TIME_RANGE_AND_TRANSPORT_IS_VERIFIED",
     "unresolved_operations": 0
   },
   "chatgpt_tokens_used": 0,
   "checkpoint_status": "ENCRYPTED_AES256_GCM",
-  "completed_at_utc": "2026-10-30T19:22:49.385168+00:00",
+  "completed_at_utc": "2026-10-30T23:47:38.936764+00:00",
   "databento_excluded": true,
   "execution_authorized": false,
   "paid_model_calls": 0,
@@ -23,7 +23,7 @@
       ],
       "blocked": [],
       "collected_pages": 20,
-      "collected_rows": 28,
+      "collected_rows": 492,
       "credential_present": true,
       "endpoint_count": 31,
       "requests": 20,
@@ -31,11 +31,11 @@
         {
           "features": {
             "value": {
-              "maximum": 66.0,
-              "mean": 58.5,
-              "minimum": 53.0,
+              "maximum": 72.0,
+              "mean": 64.375,
+              "minimum": 54.0,
               "samples": 8,
-              "standard_deviation": 5.361902647381804
+              "standard_deviation": 6.799586384479573
             }
           },
           "operation": "fred:get:/series/observations"
@@ -45,18 +45,19 @@
       "substantive_work_performed": true,
       "verified_operations": [
         "fred:get:/release",
+        "fred:get:/release/series",
+        "fred:get:/release/sources",
+        "fred:get:/releases",
         "fred:get:/series",
         "fred:get:/series/categories",
         "fred:get:/series/observations",
-        "fred:get:/series/release",
-        "fred:get:/source",
-        "fred:get:/source/releases"
+        "fred:get:/sources"
       ]
     }
   },
   "raw_payloads_public": false,
   "requests": 20,
-  "run_id": "providers-41114052380-1-fred",
+  "run_id": "providers-41146025095-1-fred",
   "schema_version": "icarus-provider-collection-cycle-v1",
-  "started_at_utc": "2026-10-30T19:18:22.208300+00:00"
+  "started_at_utc": "2026-10-30T23:43:13.869166+00:00"
 }

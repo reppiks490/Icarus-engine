@@ -3,16 +3,16 @@
     "asset_datasets_collected": 0,
     "asset_templates": 0,
     "assets": 0,
-    "collected_operations": 21,
+    "collected_operations": 25,
     "denied_operations": 3,
     "operations": 28,
-    "pending_pages": 4,
+    "pending_pages": 0,
     "qualification": "INCOMPLETE_UNTIL_EVERY_OPERATION_ASSET_PAGE_TIME_RANGE_AND_TRANSPORT_IS_VERIFIED",
     "unresolved_operations": 0
   },
   "chatgpt_tokens_used": 0,
   "checkpoint_status": "ENCRYPTED_AES256_GCM",
-  "completed_at_utc": "2026-10-30T00:15:44.302587+00:00",
+  "completed_at_utc": "2026-10-30T06:22:36.713758+00:00",
   "databento_excluded": true,
   "execution_authorized": false,
   "paid_model_calls": 0,
@@ -23,7 +23,7 @@
       ],
       "blocked": [],
       "collected_pages": 5,
-      "collected_rows": 7414,
+      "collected_rows": 166,
       "credential_present": true,
       "endpoint_count": 28,
       "requests": 5,
@@ -31,59 +31,35 @@
         {
           "features": {
             "close": {
-              "maximum": 1.1679,
-              "mean": 1.1438320000000004,
-              "minimum": 1.1122,
+              "maximum": 779.09,
+              "mean": 759.0324,
+              "minimum": 725.43,
               "samples": 100,
-              "standard_deviation": 0.014743099267114777
-            }
-          },
-          "operation": "alphavantage:get:FX_DAILY"
-        },
-        {
-          "features": {
-            "close": {
-              "maximum": 124720.09,
-              "mean": 22402.536278270683,
-              "minimum": 0.05,
-              "samples": 5949,
-              "standard_deviation": 31209.790642376156
+              "standard_deviation": 13.643271683874072
             },
             "volume": {
-              "maximum": 212195781011.71082,
-              "mean": 21240123357.697315,
-              "minimum": 0.0,
-              "samples": 5949,
-              "standard_deviation": 35089274804.84162
+              "maximum": 87683517.0,
+              "mean": 46362425.05,
+              "minimum": 18685018.0,
+              "samples": 100,
+              "standard_deviation": 13953293.624659996
             }
           },
-          "operation": "alphavantage:get:DIGITAL_CURRENCY_DAILY"
-        },
-        {
-          "features": {
-            "value": {
-              "maximum": 336.94,
-              "mean": 92.75882111436948,
-              "minimum": 9.7,
-              "samples": 1364,
-              "standard_deviation": 91.4634135155751
-            }
-          },
-          "operation": "alphavantage:get:CPI"
+          "operation": "alphavantage:get:TIME_SERIES_DAILY"
         }
       ],
       "status": "COLLECTED_PARTIAL",
       "substantive_work_performed": true,
       "verified_operations": [
-        "alphavantage:get:CPI",
-        "alphavantage:get:DIGITAL_CURRENCY_DAILY",
-        "alphavantage:get:FX_DAILY"
+        "alphavantage:get:CONGRESS_TRADES",
+        "alphavantage:get:GLOBAL_QUOTE",
+        "alphavantage:get:TIME_SERIES_DAILY"
       ]
     }
   },
   "raw_payloads_public": false,
   "requests": 5,
-  "run_id": "supplemental-40978437343-alphavantage",
+  "run_id": "supplemental-41013601044-alphavantage",
   "schema_version": "icarus-provider-collection-cycle-v1",
-  "started_at_utc": "2026-10-30T00:14:49.953349+00:00"
+  "started_at_utc": "2026-10-30T06:21:43.780515+00:00"
 }

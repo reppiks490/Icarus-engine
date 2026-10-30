@@ -80,9 +80,9 @@
  "counts": {
   "BLOCKED": 6,
   "DEGRADED": 5,
-  "FAILING": 36,
+  "FAILING": 37,
   "OK": 36,
-  "STALE": 3
+  "STALE": 2
  },
  "depth": {
   "budgets": {
@@ -153,7 +153,7 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-10-30T00:16:11+00:00",
+ "generated_at": "2026-10-30T00:17:22+00:00",
  "research": {
   "champions": 0,
   "cl_last_run": "2026-10-29T07:45:56.782118+00:00",
@@ -433,6 +433,12 @@
    "why": "latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/40948648592"
   },
   {
+   "age_h": 0.0,
+   "source": "workflow:interrepo-peer-intelligence.yml",
+   "verdict": "FAILING",
+   "why": "latest run cancelled: https://github.com/reppiks490/Icarus-engine/actions/runs/40978676872"
+  },
+  {
    "age_h": 4.0,
    "path": "automation_intelligence/provider_collection_v1/latest/alpaca.json",
    "rows": 0,
@@ -441,7 +447,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 4.5,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/finnhub.json",
    "rows": 0,
    "source": "provider:finnhub",
@@ -473,7 +479,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 4.5,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/unusual_whales.json",
    "rows": 0,
    "source": "provider:unusual_whales",
@@ -487,24 +493,18 @@
    "why": "last success 3.8 h ago (expected within 3 h)"
   },
   {
-   "age_h": 4.4,
-   "source": "workflow:provider-supplemental-promote.yml",
-   "verdict": "STALE",
-   "why": "last success 4.4 h ago (expected within 3 h)"
-  },
-  {
    "age_h": 3.2,
    "source": "workflow:sec-edgar-data.yml",
    "verdict": "STALE",
    "why": "last success 3.2 h ago (expected within 3 h)"
   },
   {
-   "age_h": 4.4,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/alphavantage.json",
-   "rows": 29692,
+   "rows": 7414,
    "source": "provider:alphavantage",
    "verdict": "DEGRADED",
-   "why": "29692 rows; 3 endpoints denied by plan"
+   "why": "7414 rows; 3 endpoints denied by plan"
   },
   {
    "age_h": 4.0,
@@ -531,7 +531,7 @@
    "why": "6772 rows; 85 endpoints denied by plan"
   },
   {
-   "age_h": 3.8,
+   "age_h": 3.9,
    "path": "automation_intelligence/provider_collection_v1/latest/twelve.json",
    "rows": 72167,
    "source": "provider:twelve",
@@ -749,12 +749,6 @@
   },
   {
    "age_h": 0.7,
-   "source": "workflow:interrepo-peer-intelligence.yml",
-   "verdict": "OK",
-   "why": "last success 0.7 h ago"
-  },
-  {
-   "age_h": 0.7,
    "source": "workflow:native-five-research.yml",
    "verdict": "OK",
    "why": "last success 0.7 h ago"
@@ -774,6 +768,12 @@
   {
    "age_h": 0.0,
    "source": "workflow:provider-supplemental-collection.yml",
+   "verdict": "OK",
+   "why": "last success 0.0 h ago"
+  },
+  {
+   "age_h": 0.0,
+   "source": "workflow:provider-supplemental-promote.yml",
    "verdict": "OK",
    "why": "last success 0.0 h ago"
   },

@@ -1,6 +1,6 @@
-# Data health — 2026-10-30 18:51 UTC
+# Data health — 2026-10-30 18:55 UTC
 
-**FAILING** 36 · **BLOCKED** 7 · **STALE** 2 · **DEGRADED** 4 · **OK** 37
+**FAILING** 36 · **BLOCKED** 7 · **STALE** 1 · **DEGRADED** 4 · **UNKNOWN** 1 · **OK** 37
 
 ## Needs attention
 
@@ -49,12 +49,12 @@
 | provider:tickstream | BLOCKED | no key reaches the runner |
 | provider:twelve | BLOCKED | BLOCKED |
 | provider:unusual_whales | BLOCKED | BLOCKED_AUTHENTICATION |
-| workflow:interrepo-peer-intelligence.yml | STALE | last success 1.6 h ago (expected within 1 h) |
-| workflow:provider-exhaustive-collection.yml | STALE | last success 4.6 h ago (expected within 3 h) |
+| workflow:provider-exhaustive-collection.yml | STALE | last success 4.7 h ago (expected within 3 h) |
 | provider:alphavantage | DEGRADED | 43442 rows; 3 endpoints denied by plan |
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
 | provider:eodhd | DEGRADED | dedicated fabric live (11 calls, 2510 known rows); generic sampler blocked |
 | provider:fmp | DEGRADED | dedicated fabric live (3 calls, 47 known rows); generic sampler blocked; 84 endpoints denied by plan |
+| workflow:interrepo-peer-intelligence.yml | UNKNOWN | no completed run on main |
 
 ## Delivering
 

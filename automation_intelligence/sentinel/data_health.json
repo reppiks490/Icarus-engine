@@ -81,8 +81,8 @@
   "BLOCKED": 7,
   "DEGRADED": 4,
   "FAILING": 36,
-  "OK": 35,
-  "STALE": 4
+  "OK": 36,
+  "STALE": 3
  },
  "depth": {
   "budgets": {
@@ -153,7 +153,7 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-10-30T18:48:24+00:00",
+ "generated_at": "2026-10-30T18:50:16+00:00",
  "research": {
   "champions": 0,
   "cl_last_run": "2026-10-30T07:48:31.902838+00:00",
@@ -211,7 +211,7 @@
    "why": "root not in CL_DATABENTO_ROOTS"
   },
   {
-   "age_h": 140.6,
+   "age_h": 140.7,
    "rows": 145073,
    "source": "feed:databento_btc_5m",
    "verdict": "FAILING",
@@ -441,7 +441,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 5.3,
+   "age_h": 5.4,
    "path": "automation_intelligence/provider_collection_v1/latest/finnhub.json",
    "rows": 0,
    "source": "provider:finnhub",
@@ -457,7 +457,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 4.7,
+   "age_h": 4.8,
    "path": "automation_intelligence/provider_collection_v1/latest/quiver.json",
    "rows": 0,
    "source": "provider:quiver",
@@ -473,7 +473,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 4.6,
+   "age_h": 4.7,
    "path": "automation_intelligence/provider_collection_v1/latest/twelve.json",
    "rows": 0,
    "source": "provider:twelve",
@@ -481,7 +481,7 @@
    "why": "BLOCKED"
   },
   {
-   "age_h": 5.3,
+   "age_h": 5.4,
    "path": "automation_intelligence/provider_collection_v1/latest/unusual_whales.json",
    "rows": 0,
    "source": "provider:unusual_whales",
@@ -502,18 +502,12 @@
   },
   {
    "age_h": 5.3,
-   "source": "workflow:provider-supplemental-collection.yml",
-   "verdict": "STALE",
-   "why": "last success 5.3 h ago (expected within 3 h)"
-  },
-  {
-   "age_h": 5.3,
    "source": "workflow:provider-supplemental-promote.yml",
    "verdict": "STALE",
    "why": "last success 5.3 h ago (expected within 3 h)"
   },
   {
-   "age_h": 5.3,
+   "age_h": 5.4,
    "path": "automation_intelligence/provider_collection_v1/latest/alphavantage.json",
    "rows": 0,
    "source": "provider:alphavantage",
@@ -521,7 +515,7 @@
    "why": "key present but 0 rows (COLLECTED_PARTIAL)"
   },
   {
-   "age_h": 4.7,
+   "age_h": 4.8,
    "path": "automation_intelligence/provider_collection_v1/latest/bybit.json",
    "rows": 0,
    "source": "provider:bybit",
@@ -552,7 +546,7 @@
    "why": "247 events, 109 high impact"
   },
   {
-   "age_h": 11.1,
+   "age_h": 11.2,
    "rows": 8219,
    "source": "feed:btcusd_cb_5m",
    "verdict": "OK",
@@ -699,7 +693,7 @@
    "why": "39/39 series ok"
   },
   {
-   "age_h": 4.6,
+   "age_h": 4.7,
    "path": "automation_intelligence/provider_collection_v1/latest/fred.json",
    "rows": 68,
    "source": "provider:fred",
@@ -723,7 +717,7 @@
    "why": "47577 rows"
   },
   {
-   "age_h": 0.0,
+   "age_h": 0.1,
    "rows": 2388,
    "source": "sec_edgar",
    "verdict": "OK",
@@ -773,15 +767,21 @@
   },
   {
    "age_h": 0.0,
-   "source": "workflow:sec-edgar-data.yml",
+   "source": "workflow:provider-supplemental-collection.yml",
    "verdict": "OK",
    "why": "last success 0.0 h ago"
   },
   {
-   "age_h": 121.8,
+   "age_h": 0.1,
+   "source": "workflow:sec-edgar-data.yml",
+   "verdict": "OK",
+   "why": "last success 0.1 h ago"
+  },
+  {
+   "age_h": 121.9,
    "source": "workflow:tests.yml",
    "verdict": "OK",
-   "why": "last success 121.8 h ago"
+   "why": "last success 121.9 h ago"
   }
  ]
 }

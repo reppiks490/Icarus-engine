@@ -81,8 +81,8 @@
   "BLOCKED": 6,
   "DEGRADED": 5,
   "FAILING": 36,
-  "OK": 35,
-  "STALE": 4
+  "OK": 36,
+  "STALE": 3
  },
  "depth": {
   "budgets": {
@@ -153,7 +153,7 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-10-30T13:28:50+00:00",
+ "generated_at": "2026-10-30T13:29:58+00:00",
  "research": {
   "champions": 0,
   "cl_last_run": "2026-10-30T07:48:31.902838+00:00",
@@ -441,7 +441,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 7.1,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/finnhub.json",
    "rows": 0,
    "source": "provider:finnhub",
@@ -473,7 +473,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 7.1,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/unusual_whales.json",
    "rows": 0,
    "source": "provider:unusual_whales",
@@ -493,24 +493,18 @@
    "why": "last success 6.2 h ago (expected within 3 h)"
   },
   {
-   "age_h": 7.1,
-   "source": "workflow:provider-supplemental-promote.yml",
-   "verdict": "STALE",
-   "why": "last success 7.1 h ago (expected within 3 h)"
-  },
-  {
    "age_h": 6.4,
    "source": "workflow:sec-edgar-data.yml",
    "verdict": "STALE",
    "why": "last success 6.4 h ago (expected within 3 h)"
   },
   {
-   "age_h": 7.1,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/alphavantage.json",
-   "rows": 166,
+   "rows": 0,
    "source": "provider:alphavantage",
    "verdict": "DEGRADED",
-   "why": "166 rows; 3 endpoints denied by plan"
+   "why": "key present but 0 rows (COLLECTED_PARTIAL)"
   },
   {
    "age_h": 6.4,
@@ -529,7 +523,7 @@
    "why": "59158 rows; 2 endpoints denied by plan"
   },
   {
-   "age_h": 11.3,
+   "age_h": 11.4,
    "path": "automation_intelligence/cl_lab/external_data_fabric.json",
    "rows": 47,
    "source": "provider:fmp",
@@ -537,7 +531,7 @@
    "why": "47 rows; 85 endpoints denied by plan"
   },
   {
-   "age_h": 6.3,
+   "age_h": 6.4,
    "path": "automation_intelligence/provider_collection_v1/latest/twelve.json",
    "rows": 140,
    "source": "provider:twelve",
@@ -545,7 +539,7 @@
    "why": "140 rows; 1 endpoints denied by plan"
   },
   {
-   "age_h": 0.5,
+   "age_h": 0.6,
    "rows": 247,
    "source": "economic_events",
    "verdict": "OK",
@@ -692,7 +686,7 @@
    "why": "16734 rows to 2026-10-28T00:00"
   },
   {
-   "age_h": 5.7,
+   "age_h": 5.8,
    "rows": 197061,
    "source": "fred_alfred",
    "verdict": "OK",
@@ -715,7 +709,7 @@
    "why": "20000 rows"
   },
   {
-   "age_h": 11.3,
+   "age_h": 11.4,
    "path": "automation_intelligence/cl_lab/external_data_fabric.json",
    "rows": 47577,
    "source": "provider:tiingo",
@@ -723,7 +717,7 @@
    "why": "47577 rows"
   },
   {
-   "age_h": 6.4,
+   "age_h": 6.5,
    "rows": 2387,
    "source": "sec_edgar",
    "verdict": "OK",
@@ -774,6 +768,12 @@
   {
    "age_h": 0.0,
    "source": "workflow:provider-supplemental-collection.yml",
+   "verdict": "OK",
+   "why": "last success 0.0 h ago"
+  },
+  {
+   "age_h": 0.0,
+   "source": "workflow:provider-supplemental-promote.yml",
    "verdict": "OK",
    "why": "last success 0.0 h ago"
   },

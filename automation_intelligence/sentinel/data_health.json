@@ -81,8 +81,8 @@
   "BLOCKED": 6,
   "DEGRADED": 4,
   "FAILING": 36,
-  "OK": 38,
-  "STALE": 2
+  "OK": 39,
+  "STALE": 1
  },
  "depth": {
   "budgets": {
@@ -153,7 +153,7 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-10-30T23:11:17+00:00",
+ "generated_at": "2026-10-30T23:12:17+00:00",
  "research": {
   "champions": 0,
   "cl_last_run": "2026-10-30T07:48:31.902838+00:00",
@@ -260,7 +260,7 @@
    "why": "root not in CL_DATABENTO_ROOTS"
   },
   {
-   "age_h": 144.9,
+   "age_h": 145.0,
    "rows": 158216,
    "source": "feed:databento_mbt_5m",
    "verdict": "FAILING",
@@ -379,7 +379,7 @@
    "why": "root not in CL_DATABENTO_ROOTS"
   },
   {
-   "age_h": 172.9,
+   "age_h": 173.0,
    "rows": 109524,
    "source": "feed:databento_zc_5m",
    "verdict": "FAILING",
@@ -400,7 +400,7 @@
    "why": "root not in CL_DATABENTO_ROOTS"
   },
   {
-   "age_h": 172.9,
+   "age_h": 173.0,
    "rows": 111964,
    "source": "feed:databento_zs_5m",
    "verdict": "FAILING",
@@ -414,7 +414,7 @@
    "why": "root not in CL_DATABENTO_ROOTS"
   },
   {
-   "age_h": 172.9,
+   "age_h": 173.0,
    "rows": 110367,
    "source": "feed:databento_zw_5m",
    "verdict": "FAILING",
@@ -441,7 +441,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 4.4,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/finnhub.json",
    "rows": 0,
    "source": "provider:finnhub",
@@ -473,7 +473,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 4.4,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/unusual_whales.json",
    "rows": 0,
    "source": "provider:unusual_whales",
@@ -487,18 +487,12 @@
    "why": "last success 3.7 h ago (expected within 3 h)"
   },
   {
-   "age_h": 4.3,
-   "source": "workflow:provider-supplemental-promote.yml",
-   "verdict": "STALE",
-   "why": "last success 4.3 h ago (expected within 3 h)"
-  },
-  {
-   "age_h": 4.4,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/alphavantage.json",
-   "rows": 43442,
+   "rows": 12133,
    "source": "provider:alphavantage",
    "verdict": "DEGRADED",
-   "why": "43442 rows; 3 endpoints denied by plan"
+   "why": "12133 rows; 3 endpoints denied by plan"
   },
   {
    "age_h": 3.9,
@@ -509,7 +503,7 @@
    "why": "no key; keyless endpoints only, none ready"
   },
   {
-   "age_h": 21.0,
+   "age_h": 21.1,
    "path": "automation_intelligence/cl_lab/external_data_fabric.json",
    "rows": 47,
    "source": "provider:fmp",
@@ -525,7 +519,7 @@
    "why": "key present but 0 rows (COLLECTED_PARTIAL)"
   },
   {
-   "age_h": 0.8,
+   "age_h": 0.9,
    "rows": 247,
    "source": "economic_events",
    "verdict": "OK",
@@ -703,7 +697,7 @@
    "why": "20000 rows"
   },
   {
-   "age_h": 21.0,
+   "age_h": 21.1,
    "path": "automation_intelligence/cl_lab/external_data_fabric.json",
    "rows": 47577,
    "source": "provider:tiingo",
@@ -736,10 +730,10 @@
    "why": "last success 1.4 h ago"
   },
   {
-   "age_h": 21.0,
+   "age_h": 21.1,
    "source": "workflow:external-data-fabric.yml",
    "verdict": "OK",
-   "why": "last success 21.0 h ago"
+   "why": "last success 21.1 h ago"
   },
   {
    "age_h": 0.1,
@@ -760,14 +754,20 @@
    "why": "last success 0.5 h ago"
   },
   {
-   "age_h": 0.8,
+   "age_h": 0.9,
    "source": "workflow:official-economic-events.yml",
    "verdict": "OK",
-   "why": "last success 0.8 h ago"
+   "why": "last success 0.9 h ago"
   },
   {
    "age_h": 0.0,
    "source": "workflow:provider-supplemental-collection.yml",
+   "verdict": "OK",
+   "why": "last success 0.0 h ago"
+  },
+  {
+   "age_h": 0.0,
+   "source": "workflow:provider-supplemental-promote.yml",
    "verdict": "OK",
    "why": "last success 0.0 h ago"
   },

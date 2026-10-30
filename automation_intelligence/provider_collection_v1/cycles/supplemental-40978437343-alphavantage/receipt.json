@@ -1,0 +1,89 @@
+{
+  "catalog": {
+    "asset_datasets_collected": 0,
+    "asset_templates": 0,
+    "assets": 0,
+    "collected_operations": 21,
+    "denied_operations": 3,
+    "operations": 28,
+    "pending_pages": 4,
+    "qualification": "INCOMPLETE_UNTIL_EVERY_OPERATION_ASSET_PAGE_TIME_RANGE_AND_TRANSPORT_IS_VERIFIED",
+    "unresolved_operations": 0
+  },
+  "chatgpt_tokens_used": 0,
+  "checkpoint_status": "ENCRYPTED_AES256_GCM",
+  "completed_at_utc": "2026-10-30T00:15:44.302587+00:00",
+  "databento_excluded": true,
+  "execution_authorized": false,
+  "paid_model_calls": 0,
+  "providers": {
+    "alphavantage": {
+      "archive_status": [
+        "ENCRYPTED_AES256_GCM"
+      ],
+      "blocked": [],
+      "collected_pages": 5,
+      "collected_rows": 7414,
+      "credential_present": true,
+      "endpoint_count": 28,
+      "requests": 5,
+      "research_features": [
+        {
+          "features": {
+            "close": {
+              "maximum": 1.1679,
+              "mean": 1.1438320000000004,
+              "minimum": 1.1122,
+              "samples": 100,
+              "standard_deviation": 0.014743099267114777
+            }
+          },
+          "operation": "alphavantage:get:FX_DAILY"
+        },
+        {
+          "features": {
+            "close": {
+              "maximum": 124720.09,
+              "mean": 22402.536278270683,
+              "minimum": 0.05,
+              "samples": 5949,
+              "standard_deviation": 31209.790642376156
+            },
+            "volume": {
+              "maximum": 212195781011.71082,
+              "mean": 21240123357.697315,
+              "minimum": 0.0,
+              "samples": 5949,
+              "standard_deviation": 35089274804.84162
+            }
+          },
+          "operation": "alphavantage:get:DIGITAL_CURRENCY_DAILY"
+        },
+        {
+          "features": {
+            "value": {
+              "maximum": 336.94,
+              "mean": 92.75882111436948,
+              "minimum": 9.7,
+              "samples": 1364,
+              "standard_deviation": 91.4634135155751
+            }
+          },
+          "operation": "alphavantage:get:CPI"
+        }
+      ],
+      "status": "COLLECTED_PARTIAL",
+      "substantive_work_performed": true,
+      "verified_operations": [
+        "alphavantage:get:CPI",
+        "alphavantage:get:DIGITAL_CURRENCY_DAILY",
+        "alphavantage:get:FX_DAILY"
+      ]
+    }
+  },
+  "raw_payloads_public": false,
+  "requests": 5,
+  "run_id": "supplemental-40978437343-alphavantage",
+  "schema_version": "icarus-provider-collection-cycle-v1",
+  "started_at_utc": "2026-10-30T00:14:49.953349+00:00"
+}

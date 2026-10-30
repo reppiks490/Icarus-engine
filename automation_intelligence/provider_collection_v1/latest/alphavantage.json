@@ -12,7 +12,7 @@
   },
   "chatgpt_tokens_used": 0,
   "checkpoint_status": "ENCRYPTED_AES256_GCM",
-  "completed_at_utc": "2026-10-29T19:49:11.903382+00:00",
+  "completed_at_utc": "2026-10-30T00:15:44.302587+00:00",
   "databento_excluded": true,
   "execution_authorized": false,
   "paid_model_calls": 0,
@@ -23,86 +23,67 @@
       ],
       "blocked": [],
       "collected_pages": 5,
-      "collected_rows": 29692,
+      "collected_rows": 7414,
       "credential_present": true,
       "endpoint_count": 28,
       "requests": 5,
       "research_features": [
         {
           "features": {
-            "value": {
-              "maximum": 368559.0,
-              "mean": 210400.28125,
-              "minimum": 103025.0,
-              "samples": 416,
-              "standard_deviation": 50952.180664581836
+            "close": {
+              "maximum": 1.1679,
+              "mean": 1.1438320000000004,
+              "minimum": 1.1122,
+              "samples": 100,
+              "standard_deviation": 0.014743099267114777
             }
           },
-          "operation": "alphavantage:get:DURABLES"
+          "operation": "alphavantage:get:FX_DAILY"
+        },
+        {
+          "features": {
+            "close": {
+              "maximum": 124720.09,
+              "mean": 22402.536278270683,
+              "minimum": 0.05,
+              "samples": 5949,
+              "standard_deviation": 31209.790642376156
+            },
+            "volume": {
+              "maximum": 212195781011.71082,
+              "mean": 21240123357.697315,
+              "minimum": 0.0,
+              "samples": 5949,
+              "standard_deviation": 35089274804.84162
+            }
+          },
+          "operation": "alphavantage:get:DIGITAL_CURRENCY_DAILY"
         },
         {
           "features": {
             "value": {
-              "maximum": 143.95,
-              "mean": 54.54340462871611,
-              "minimum": 9.1,
-              "samples": 9117,
-              "standard_deviation": 33.06108505670562
+              "maximum": 336.94,
+              "mean": 92.75882111436948,
+              "minimum": 9.7,
+              "samples": 1364,
+              "standard_deviation": 91.4634135155751
             }
           },
-          "operation": "alphavantage:get:BRENT"
-        },
-        {
-          "features": {
-            "value": {
-              "maximum": 145.31,
-              "mean": 50.083327738145144,
-              "minimum": -36.98,
-              "samples": 9532,
-              "standard_deviation": 29.903883143337303
-            }
-          },
-          "operation": "alphavantage:get:WTI"
-        },
-        {
-          "features": {
-            "value": {
-              "maximum": 30.72,
-              "mean": 3.873519328319044,
-              "minimum": 1.21,
-              "samples": 5717,
-              "standard_deviation": 2.0678283824318875
-            }
-          },
-          "operation": "alphavantage:get:NATURAL_GAS"
-        },
-        {
-          "features": {
-            "value": {
-              "maximum": 14473.05590909091,
-              "mean": 5354.406513809027,
-              "minimum": 1377.37608695652,
-              "samples": 417,
-              "standard_deviation": 3044.6803492178483
-            }
-          },
-          "operation": "alphavantage:get:COPPER"
+          "operation": "alphavantage:get:CPI"
         }
       ],
       "status": "COLLECTED_PARTIAL",
       "substantive_work_performed": true,
       "verified_operations": [
-        "alphavantage:get:BRENT",
-        "alphavantage:get:COPPER",
-        "alphavantage:get:DURABLES",
-        "alphavantage:get:NATURAL_GAS",
-        "alphavantage:get:WTI"
+        "alphavantage:get:CPI",
+        "alphavantage:get:DIGITAL_CURRENCY_DAILY",
+        "alphavantage:get:FX_DAILY"
       ]
     }
   },
   "raw_payloads_public": false,
   "requests": 5,
-  "run_id": "supplemental-40943317546-alphavantage",
+  "run_id": "supplemental-40978437343-alphavantage",
   "schema_version": "icarus-provider-collection-cycle-v1",
-  "started_at_utc": "2026-10-29T19:48:16.400794+00:00"
+  "started_at_utc": "2026-10-30T00:14:49.953349+00:00"
 }

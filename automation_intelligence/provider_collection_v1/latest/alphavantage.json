@@ -3,16 +3,16 @@
     "asset_datasets_collected": 0,
     "asset_templates": 0,
     "assets": 0,
-    "collected_operations": 25,
+    "collected_operations": 22,
     "denied_operations": 3,
     "operations": 28,
-    "pending_pages": 0,
+    "pending_pages": 3,
     "qualification": "INCOMPLETE_UNTIL_EVERY_OPERATION_ASSET_PAGE_TIME_RANGE_AND_TRANSPORT_IS_VERIFIED",
     "unresolved_operations": 0
   },
   "chatgpt_tokens_used": 0,
   "checkpoint_status": "ENCRYPTED_AES256_GCM",
-  "completed_at_utc": "2026-10-30T06:22:36.713758+00:00",
+  "completed_at_utc": "2026-10-30T13:28:25.356313+00:00",
   "databento_excluded": true,
   "execution_authorized": false,
   "paid_model_calls": 0,
@@ -21,45 +21,37 @@
       "archive_status": [
         "ENCRYPTED_AES256_GCM"
       ],
-      "blocked": [],
-      "collected_pages": 5,
-      "collected_rows": 166,
+      "blocked": [
+        {
+          "asset_specific": false,
+          "failure_code": "403",
+          "operation": "alphavantage:get:TIME_SERIES_INTRADAY"
+        },
+        {
+          "asset_specific": false,
+          "failure_code": "403",
+          "operation": "alphavantage:get:NEWS_SENTIMENT"
+        },
+        {
+          "asset_specific": false,
+          "failure_code": "403",
+          "operation": "alphavantage:get:OVERVIEW"
+        }
+      ],
+      "collected_pages": 2,
+      "collected_rows": 0,
       "credential_present": true,
       "endpoint_count": 28,
       "requests": 5,
-      "research_features": [
-        {
-          "features": {
-            "close": {
-              "maximum": 779.09,
-              "mean": 759.0324,
-              "minimum": 725.43,
-              "samples": 100,
-              "standard_deviation": 13.643271683874072
-            },
-            "volume": {
-              "maximum": 87683517.0,
-              "mean": 46362425.05,
-              "minimum": 18685018.0,
-              "samples": 100,
-              "standard_deviation": 13953293.624659996
-            }
-          },
-          "operation": "alphavantage:get:TIME_SERIES_DAILY"
-        }
-      ],
+      "research_features": [],
       "status": "COLLECTED_PARTIAL",
-      "substantive_work_performed": true,
-      "verified_operations": [
-        "alphavantage:get:CONGRESS_TRADES",
-        "alphavantage:get:GLOBAL_QUOTE",
-        "alphavantage:get:TIME_SERIES_DAILY"
-      ]
+      "substantive_work_performed": false,
+      "verified_operations": []
     }
   },
   "raw_payloads_public": false,
   "requests": 5,
-  "run_id": "supplemental-41013601044-alphavantage",
+  "run_id": "supplemental-41063369797-alphavantage",
   "schema_version": "icarus-provider-collection-cycle-v1",
-  "started_at_utc": "2026-10-30T06:21:43.780515+00:00"
+  "started_at_utc": "2026-10-30T13:27:32.466421+00:00"
 }

@@ -1,0 +1,140 @@
+{
+  "at_utc": "2026-10-30T10:27:20.439593Z",
+  "category": "AUDIT",
+  "event_id": "native-41040635826-1-native-macro",
+  "evidence": [
+    {
+      "classification": "FACT",
+      "code_revision": "907c28463d87e6377645b73e43478f1a59a328c3",
+      "evidence_sha256": "d3f43230feece789f599c560a4e64112ff4635471f73e9d7b1ba55886e5439a8",
+      "measurement": {
+        "gaps": [
+          "Release titles establish publication, not macro surprise or causal impact.",
+          "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+          "No consensus estimates acquired; economic surprise remains unknown."
+        ],
+        "limits": "Publication and daily change are facts; surprise, causality and intraday propagation remain unverified.",
+        "releases": [
+          {
+            "published_epoch": 1793305800.0,
+            "retrieval_finished": 1793356039.0272548,
+            "retrieval_started": 1793356038.8884687,
+            "source": "FED",
+            "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20261029a.htm",
+            "title": "Federal Reserve Board announces approval of application by The Bank of Nova Scotia"
+          },
+          {
+            "published_epoch": 1793210400.0,
+            "retrieval_finished": 1793356039.0272548,
+            "retrieval_started": 1793356038.8884687,
+            "source": "FED",
+            "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261028a.htm",
+            "title": "Federal Reserve issues FOMC statement"
+          },
+          {
+            "published_epoch": 1793350800.0,
+            "retrieval_finished": 1793356039.6937554,
+            "retrieval_started": 1793356039.027892,
+            "source": "ECB",
+            "source_url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr261030~e92c3c838c.en.html",
+            "title": "Results of the ECB Survey of Professional Forecasters for the fourth quarter of 2026"
+          },
+          {
+            "published_epoch": 1793289000.0,
+            "retrieval_finished": 1793356039.6937554,
+            "retrieval_started": 1793356039.027892,
+            "source": "ECB",
+            "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261029~e9b57c3495.en.html",
+            "title": "Piero Cipollone: Next-day securities settlement, tokenisation and the transformation of Europe\u2019s financial infrastructure"
+          },
+          {
+            "published_epoch": 1793282400.0,
+            "retrieval_finished": 1793356039.6937554,
+            "retrieval_started": 1793356039.027892,
+            "source": "ECB",
+            "source_url": "https://www.ecb.europa.eu//press/press_conference/monetary-policy-statement/2026/html/ecb.is261029~5c5ffe99e5.en.html",
+            "title": "Christine Lagarde, Boris Vuj\u010di\u0107: Monetary policy statement (with Q&A)"
+          },
+          {
+            "published_epoch": 1793279700.0,
+            "retrieval_finished": 1793356039.6937554,
+            "retrieval_started": 1793356039.027892,
+            "source": "ECB",
+            "source_url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.mp261029~9a493adf17.en.html",
+            "title": "Monetary policy decisions"
+          },
+          {
+            "published_epoch": 1793268000.0,
+            "retrieval_finished": 1793356039.6937554,
+            "retrieval_started": 1793356039.027892,
+            "source": "ECB",
+            "source_url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr261029~abbb6dc64b.en.html",
+            "title": "ECB President Lagarde to step down on 7 February 2027"
+          },
+          {
+            "published_epoch": 1793196073.0,
+            "retrieval_finished": 1793356039.8518636,
+            "retrieval_started": 1793356039.694187,
+            "source": "BLS",
+            "source_url": "https://www.bls.gov/bls/",
+            "title": "Major Economic Indicators Latest Numbers"
+          }
+        ],
+        "series": [
+          {
+            "change": 0.05999999999999961,
+            "date": "2026-10-28",
+            "freshness": "DAILY_OBSERVATION",
+            "prior_date": "2026-10-27",
+            "series": "DGS10",
+            "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10",
+            "value": 5.05
+          },
+          {
+            "change": -0.03000000000000025,
+            "date": "2026-10-28",
+            "freshness": "DAILY_OBSERVATION",
+            "prior_date": "2026-10-27",
+            "series": "DGS2",
+            "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2",
+            "value": 4.67
+          },
+          {
+            "change": -0.03289999999999793,
+            "date": "2026-10-23",
+            "freshness": "STALE",
+            "prior_date": "2026-10-22",
+            "series": "DTWEXBGS",
+            "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DTWEXBGS",
+            "value": 121.3202
+          }
+        ],
+        "status": "VERIFIED",
+        "summary": "8 dated official release headlines; 3 daily macro series measured."
+      }
+    }
+  ],
+  "execution_authorized": false,
+  "interpretation_authority": "UNVERIFIED_MODEL_INFERENCE",
+  "oracle": {
+    "finding": "8 dated official release headlines; 3 daily macro series measured.",
+    "status": "VERIFIED"
+  },
+  "paths": [
+    "automation_intelligence/native_research_v1/cycles/native-41040635826-1/evidence.json",
+    "automation_intelligence/native_research_v1/cycles/native-41040635826-1/macro.json"
+  ],
+  "schema_version": "icarus-mcp-event-v1",
+  "severity": "MEDIUM",
+  "source": "MACRO_AUTOMATION",
+  "status": "VERIFIED",
+  "summary": "8 dated official release headlines; 3 daily macro series measured.",
+  "supermesh_x": {
+    "finding": "8 dated official release headlines; 3 daily macro series measured.",
+    "status": "VERIFIED"
+  },
+  "surface": [
+    "macro native research"
+  ],
+  "worker": "GITHUB_NATIVE_RESEARCH_V1"
+}

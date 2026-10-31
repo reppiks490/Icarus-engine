@@ -81,8 +81,7 @@
   "BLOCKED": 6,
   "DEGRADED": 4,
   "FAILING": 36,
-  "OK": 39,
-  "STALE": 1
+  "OK": 40
  },
  "depth": {
   "budgets": {
@@ -153,7 +152,7 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-10-31T02:42:45+00:00",
+ "generated_at": "2026-10-31T02:44:15+00:00",
  "research": {
   "champions": 0,
   "cl_last_run": "2026-10-31T01:06:02.183018+00:00",
@@ -211,7 +210,7 @@
    "why": "root not in CL_DATABENTO_ROOTS"
   },
   {
-   "age_h": 148.5,
+   "age_h": 148.6,
    "rows": 145073,
    "source": "feed:databento_btc_5m",
    "verdict": "FAILING",
@@ -441,7 +440,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 3.5,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/finnhub.json",
    "rows": 0,
    "source": "provider:finnhub",
@@ -473,7 +472,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 3.5,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/unusual_whales.json",
    "rows": 0,
    "source": "provider:unusual_whales",
@@ -481,18 +480,12 @@
    "why": "BLOCKED_AUTHENTICATION"
   },
   {
-   "age_h": 3.5,
-   "source": "workflow:provider-supplemental-promote.yml",
-   "verdict": "STALE",
-   "why": "last success 3.5 h ago (expected within 3 h)"
-  },
-  {
-   "age_h": 3.5,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/alphavantage.json",
-   "rows": 12133,
+   "rows": 25037,
    "source": "provider:alphavantage",
    "verdict": "DEGRADED",
-   "why": "12133 rows; 3 endpoints denied by plan"
+   "why": "25037 rows; 3 endpoints denied by plan"
   },
   {
    "age_h": 3.0,
@@ -503,7 +496,7 @@
    "why": "no key; keyless endpoints only, none ready"
   },
   {
-   "age_h": 2.9,
+   "age_h": 3.0,
    "path": "automation_intelligence/provider_collection_v1/latest/fmp.json",
    "rows": 6772,
    "source": "provider:fmp",
@@ -760,14 +753,20 @@
    "why": "last success 4.4 h ago"
   },
   {
-   "age_h": 2.8,
+   "age_h": 2.9,
    "source": "workflow:provider-exhaustive-collection.yml",
    "verdict": "OK",
-   "why": "last success 2.8 h ago"
+   "why": "last success 2.9 h ago"
   },
   {
    "age_h": 0.0,
    "source": "workflow:provider-supplemental-collection.yml",
+   "verdict": "OK",
+   "why": "last success 0.0 h ago"
+  },
+  {
+   "age_h": 0.0,
+   "source": "workflow:provider-supplemental-promote.yml",
    "verdict": "OK",
    "why": "last success 0.0 h ago"
   },
@@ -778,10 +777,10 @@
    "why": "last success 0.8 h ago"
   },
   {
-   "age_h": 129.7,
+   "age_h": 129.8,
    "source": "workflow:tests.yml",
    "verdict": "OK",
-   "why": "last success 129.7 h ago"
+   "why": "last success 129.8 h ago"
   }
  ]
 }

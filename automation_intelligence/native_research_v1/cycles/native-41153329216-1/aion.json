@@ -1,0 +1,97 @@
+{
+  "automation_id": "github-native-research-v1",
+  "blockers": [
+    "No strategy profitability, causal effect or model-promotion claim.",
+    "Small event samples remain unqualified; these rolling holdouts are diagnostic, not a reusable promotion holdout."
+  ],
+  "chatgpt_tokens_used": 0,
+  "code_revision": "5991bebde7db67af7857b38a7a471e1dec89bf1b",
+  "completed_at_utc": "2026-10-31T01:04:16.780341Z",
+  "event_paths": [],
+  "evidence": [
+    "automation_intelligence/native_research_v1/cycles/native-41153329216-1/evidence.json"
+  ],
+  "execution_authorized": false,
+  "input_sha256": "f80b1e64edfb0f9694a1eecb7509efbc5aecb02446a11073f984ea4f9bad8f43",
+  "lane": "aion",
+  "local_interpretation": {
+    "authority": "UNVERIFIED_MODEL_INFERENCE",
+    "reason": "No semantic change",
+    "status": "NOT_RUN"
+  },
+  "measurements": {
+    "experiments": [
+      {
+        "baseline_hours": 28,
+        "causal_claim": false,
+        "costs": "NOT_APPLICABLE_NONTRADING_ASSOCIATION",
+        "embargo_samples": 2,
+        "fixed_threshold": 2.5,
+        "hypothesis_id": "reported-volume-z2.5-next-hour-range-v1",
+        "multiple_testing": "One fixed hypothesis per representation; repeated rolling windows overlap and are not independent confirmations.",
+        "performance_claim": false,
+        "qualification": "DESCRIPTIVE_OOS_ONLY",
+        "representation": "coinbase_spot",
+        "test": {
+          "control_count": 104,
+          "control_mean_next_range": 0.005269464755543085,
+          "difference": 0.004938441849985985,
+          "event_count": 22,
+          "event_mean_next_range": 0.01020790660552907
+        },
+        "test_first_start": 1792951200,
+        "train": {
+          "control_count": 169,
+          "control_mean_next_range": 0.00420746231395173,
+          "difference": 0.003327357572053426,
+          "event_count": 23,
+          "event_mean_next_range": 0.007534819886005156
+        },
+        "train_last_end": 1792947600
+      },
+      {
+        "baseline_hours": 28,
+        "causal_claim": false,
+        "costs": "NOT_APPLICABLE_NONTRADING_ASSOCIATION",
+        "embargo_samples": 2,
+        "fixed_threshold": 2.5,
+        "hypothesis_id": "reported-volume-z2.5-next-hour-range-v1",
+        "multiple_testing": "One fixed hypothesis per representation; repeated rolling windows overlap and are not independent confirmations.",
+        "performance_claim": false,
+        "qualification": "DESCRIPTIVE_OOS_ONLY",
+        "representation": "kraken_spot",
+        "test": {
+          "control_count": 239,
+          "control_mean_next_range": 0.00474143416191243,
+          "difference": 0.002999482872851948,
+          "event_count": 36,
+          "event_mean_next_range": 0.007740917034764378
+        },
+        "test_first_start": 1792414800,
+        "train": {
+          "control_count": 359,
+          "control_mean_next_range": 0.003986706232739778,
+          "difference": 0.0026917627700190107,
+          "event_count": 55,
+          "event_mean_next_range": 0.006678469002758789
+        },
+        "train_last_end": 1792411200
+      }
+    ],
+    "gaps": [
+      "No strategy profitability, causal effect or model-promotion claim.",
+      "Small event samples remain unqualified; these rolling holdouts are diagnostic, not a reusable promotion holdout."
+    ],
+    "status": "VERIFIED",
+    "summary": "2 temporally separated descriptive experiments measured."
+  },
+  "outcome": "NO_MATERIAL_DELTA",
+  "paid_model_calls": 0,
+  "prior_receipt_path": "automation_intelligence/native_research_v1/cycles/native-41132812160-1/aion.json",
+  "run_id": "native-41153329216-1-aion",
+  "schema_version": "icarus-research-run-v1",
+  "started_at_utc": "2026-10-31T01:04:16.748152Z",
+  "substantive_work_performed": true,
+  "summary": "2 temporally separated descriptive experiments measured.",
+  "worker": "GITHUB_ACTIONS"
+}

@@ -1,0 +1,116 @@
+{
+  "at_utc": "2026-11-01T16:25:26.442185Z",
+  "category": "AUDIT",
+  "event_id": "native-41325943613-1-native-macro",
+  "evidence": [
+    {
+      "classification": "FACT",
+      "code_revision": "9e51e91fcc4bca94bd932e03d7464636a1998552",
+      "evidence_sha256": "11a60a4b0c0d17ed2390940845298c653eae37da533144c5d8908158f1620e26",
+      "measurement": {
+        "gaps": [
+          "Release titles establish publication, not macro surprise or causal impact.",
+          "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+          "No consensus estimates acquired; economic surprise remains unknown."
+        ],
+        "limits": "Publication and daily change are facts; surprise, causality and intraday propagation remain unverified.",
+        "releases": [
+          {
+            "published_epoch": 1793305800.0,
+            "retrieval_finished": 1793550325.2629964,
+            "retrieval_started": 1793550325.2026768,
+            "source": "FED",
+            "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20261029a.htm",
+            "title": "Federal Reserve Board announces approval of application by The Bank of Nova Scotia"
+          },
+          {
+            "published_epoch": 1793376600.0,
+            "retrieval_finished": 1793550326.110544,
+            "retrieval_started": 1793550325.2636192,
+            "source": "ECB",
+            "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261030~08d9d540f0.en.html",
+            "title": "Philip R. Lane: AI adoption in Europe"
+          },
+          {
+            "published_epoch": 1793368800.0,
+            "retrieval_finished": 1793550326.110544,
+            "retrieval_started": 1793550325.2636192,
+            "source": "ECB",
+            "source_url": "https://www.ecb.europa.eu//press/govcdec/otherdec/2026/html/ecb.gc261030~e40f864093.en.html",
+            "title": "Decisions taken by the Governing Council of the ECB (in addition to decisions setting interest rates)"
+          },
+          {
+            "published_epoch": 1793350800.0,
+            "retrieval_finished": 1793550326.110544,
+            "retrieval_started": 1793550325.2636192,
+            "source": "ECB",
+            "source_url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr261030~e92c3c838c.en.html",
+            "title": "Results of the ECB Survey of Professional Forecasters for the fourth quarter of 2026"
+          },
+          {
+            "published_epoch": 1793363425.0,
+            "retrieval_finished": 1793550326.229442,
+            "retrieval_started": 1793550326.1109796,
+            "source": "BLS",
+            "source_url": "https://www.bls.gov/bls/",
+            "title": "Major Economic Indicators Latest Numbers"
+          }
+        ],
+        "series": [
+          {
+            "change": -0.0699999999999994,
+            "date": "2026-10-29",
+            "freshness": "DAILY_OBSERVATION",
+            "prior_date": "2026-10-28",
+            "series": "DGS10",
+            "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10",
+            "value": 4.98
+          },
+          {
+            "change": -0.05999999999999961,
+            "date": "2026-10-29",
+            "freshness": "DAILY_OBSERVATION",
+            "prior_date": "2026-10-28",
+            "series": "DGS2",
+            "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2",
+            "value": 4.61
+          },
+          {
+            "change": -0.03289999999999793,
+            "date": "2026-10-23",
+            "freshness": "STALE",
+            "prior_date": "2026-10-22",
+            "series": "DTWEXBGS",
+            "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DTWEXBGS",
+            "value": 121.3202
+          }
+        ],
+        "status": "VERIFIED",
+        "summary": "5 dated official release headlines; 3 daily macro series measured."
+      }
+    }
+  ],
+  "execution_authorized": false,
+  "interpretation_authority": "UNVERIFIED_MODEL_INFERENCE",
+  "oracle": {
+    "finding": "5 dated official release headlines; 3 daily macro series measured.",
+    "status": "VERIFIED"
+  },
+  "paths": [
+    "automation_intelligence/native_research_v1/cycles/native-41325943613-1/evidence.json",
+    "automation_intelligence/native_research_v1/cycles/native-41325943613-1/macro.json"
+  ],
+  "schema_version": "icarus-mcp-event-v1",
+  "severity": "MEDIUM",
+  "source": "MACRO_AUTOMATION",
+  "status": "VERIFIED",
+  "summary": "5 dated official release headlines; 3 daily macro series measured.",
+  "supermesh_x": {
+    "finding": "5 dated official release headlines; 3 daily macro series measured.",
+    "status": "VERIFIED"
+  },
+  "surface": [
+    "macro native research"
+  ],
+  "worker": "GITHUB_NATIVE_RESEARCH_V1"
+}

@@ -1,6 +1,6 @@
-# Data health — 2026-11-01 13:30 UTC
+# Data health — 2026-11-01 13:52 UTC
 
-**FAILING** 36 · **BLOCKED** 7 · **STALE** 4 · **DEGRADED** 3 · **OK** 36
+**FAILING** 37 · **BLOCKED** 7 · **STALE** 3 · **DEGRADED** 3 · **OK** 36
 
 ## Needs attention
 
@@ -42,6 +42,7 @@
 | feed:databento_zw_5m | FAILING | root not in CL_DATABENTO_ROOTS |
 | workflow:cl-depth-sweep.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/41304742747 |
 | workflow:databento-depth-research-context.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/41298118231 |
+| workflow:interrepo-peer-intelligence.yml | FAILING | latest run cancelled: https://github.com/reppiks490/Icarus-engine/actions/runs/41313303824 |
 | provider:alpaca | BLOCKED | no key reaches the runner |
 | provider:finnhub | BLOCKED | BLOCKED_AUTHENTICATION |
 | provider:intrinio | BLOCKED | no key reaches the runner |
@@ -49,10 +50,9 @@
 | provider:tickstream | BLOCKED | no key reaches the runner |
 | provider:twelve | BLOCKED | BLOCKED |
 | provider:unusual_whales | BLOCKED | BLOCKED_AUTHENTICATION |
-| workflow:interrepo-peer-intelligence.yml | STALE | last success 3.8 h ago (expected within 1 h) |
-| workflow:provider-exhaustive-collection.yml | STALE | last success 5.9 h ago (expected within 3 h) |
-| workflow:provider-supplemental-collection.yml | STALE | last success 6.7 h ago (expected within 3 h) |
-| workflow:provider-supplemental-promote.yml | STALE | last success 6.7 h ago (expected within 3 h) |
+| workflow:provider-exhaustive-collection.yml | STALE | last success 6.2 h ago (expected within 3 h) |
+| workflow:provider-supplemental-collection.yml | STALE | last success 7.1 h ago (expected within 3 h) |
+| workflow:provider-supplemental-promote.yml | STALE | last success 7.1 h ago (expected within 3 h) |
 | provider:alphavantage | DEGRADED | 25038 rows; 3 endpoints denied by plan |
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
 | provider:fmp | DEGRADED | 36 rows; 26 endpoints denied by plan |

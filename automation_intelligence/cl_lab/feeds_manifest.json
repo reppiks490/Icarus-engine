@@ -9,18 +9,18 @@
    "integrity": {
     "dup_index": 0,
     "first": "2026-10-01T18:50:00+00:00",
-    "last": "2026-10-31T17:55:00+00:00",
+    "last": "2026-11-01T00:25:00+00:00",
     "max_gap_minutes": 5.0,
     "non_monotonic": 0,
     "nonpositive": 0,
     "ohlc_violations": 0,
-    "rows": 8630
+    "rows": 8708
    },
    "kind": "coinbase",
    "name": "btcusd_cb_5m",
    "notes": [],
    "requests": null,
-   "sha256": "65f18c5c7cd0e83ffcb0544b3e45a27b19877cc707668510fc816e1279af1093",
+   "sha256": "b5d935471c618ab92add7640d88ddf299e985259e55efad7a85d5f8bd74fbb10",
    "source": null,
    "status": "ok"
   },
@@ -38,8 +38,11 @@
    },
    "kind": "binance",
    "name": "btcusdt_5m",
-   "notes": [],
-   "requests": 0,
+   "notes": [
+    "2026-10: HTTP 404 for https://data.binance.vision/data/spot/monthly/klines/BTCUSDT/5m/BTCUSDT-5m-2026-10.zip",
+    "2026-10-31: HTTP 404 for https://data.binance.vision/data/spot/daily/klines/BTCUSDT/5m/BTCUSDT-5m-2026-10-31.zip"
+   ],
+   "requests": 2,
    "sha256": "0d690791d248840061c86864e0bf1779305f99bd3455a761149d9498b3d70134",
    "source": null,
    "status": "ok"
@@ -991,8 +994,11 @@
    },
    "kind": "binance",
    "name": "ethusdt_5m",
-   "notes": [],
-   "requests": 0,
+   "notes": [
+    "2026-10: HTTP 404 for https://data.binance.vision/data/spot/monthly/klines/ETHUSDT/5m/ETHUSDT-5m-2026-10.zip",
+    "2026-10-31: HTTP 404 for https://data.binance.vision/data/spot/daily/klines/ETHUSDT/5m/ETHUSDT-5m-2026-10-31.zip"
+   ],
+   "requests": 2,
    "sha256": "46c37c21d1fad3224aeec57f3efcc894d023731451dbdcbfda15b35890adcf24",
    "source": null,
    "status": "ok"
@@ -1172,6 +1178,6 @@
    "status": "ok"
   }
  },
- "generated_at": "2026-10-31T17:56:36.974843+00:00",
+ "generated_at": "2026-11-01T00:26:14.910136+00:00",
  "schema": "cl_lab.feeds.manifest/1"
 }

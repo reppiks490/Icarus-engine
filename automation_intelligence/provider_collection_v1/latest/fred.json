@@ -2,17 +2,17 @@
   "catalog": {
     "asset_datasets_collected": 89,
     "asset_templates": 21,
-    "assets": 40111,
+    "assets": 40117,
     "collected_operations": 17,
     "denied_operations": 0,
     "operations": 31,
-    "pending_pages": 1180,
+    "pending_pages": 1190,
     "qualification": "INCOMPLETE_UNTIL_EVERY_OPERATION_ASSET_PAGE_TIME_RANGE_AND_TRANSPORT_IS_VERIFIED",
     "unresolved_operations": 0
   },
   "chatgpt_tokens_used": 0,
   "checkpoint_status": "ENCRYPTED_AES256_GCM",
-  "completed_at_utc": "2026-11-01T07:33:46.911791+00:00",
+  "completed_at_utc": "2026-11-01T15:08:55.536229+00:00",
   "databento_excluded": true,
   "execution_authorized": false,
   "paid_model_calls": 0,
@@ -21,55 +21,9 @@
       "archive_status": [
         "ENCRYPTED_AES256_GCM"
       ],
-      "blocked": [
-        {
-          "asset_specific": true,
-          "failure_code": "500",
-          "operation": "fred:get:/series"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "500",
-          "operation": "fred:get:/source/releases"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "500",
-          "operation": "fred:get:/release/dates"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "500",
-          "operation": "fred:get:/source/releases"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "500",
-          "operation": "fred:get:/release"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "500",
-          "operation": "fred:get:/release/series"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "500",
-          "operation": "fred:get:/series/categories"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "500",
-          "operation": "fred:get:/series/categories"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "500",
-          "operation": "fred:get:/release/series"
-        }
-      ],
-      "collected_pages": 11,
-      "collected_rows": 13,
+      "blocked": [],
+      "collected_pages": 20,
+      "collected_rows": 33,
       "credential_present": true,
       "endpoint_count": 31,
       "requests": 20,
@@ -77,11 +31,23 @@
         {
           "features": {
             "value": {
-              "maximum": 82.0,
-              "mean": 74.75,
-              "minimum": 61.0,
-              "samples": 8,
-              "standard_deviation": 6.036348233824818
+              "maximum": 97.0,
+              "mean": 86.11111111111111,
+              "minimum": 69.0,
+              "samples": 9,
+              "standard_deviation": 10.246348340798669
+            }
+          },
+          "operation": "fred:get:/series/observations"
+        },
+        {
+          "features": {
+            "value": {
+              "maximum": 79.0,
+              "mean": 71.2,
+              "minimum": 67.0,
+              "samples": 10,
+              "standard_deviation": 3.2496153618543846
             }
           },
           "operation": "fred:get:/series/observations"
@@ -90,14 +56,21 @@
       "status": "COLLECTED_PARTIAL",
       "substantive_work_performed": true,
       "verified_operations": [
+        "fred:get:/release",
+        "fred:get:/release/series",
         "fred:get:/release/sources",
-        "fred:get:/series/observations"
+        "fred:get:/series",
+        "fred:get:/series/categories",
+        "fred:get:/series/observations",
+        "fred:get:/series/release",
+        "fred:get:/source",
+        "fred:get:/source/releases"
       ]
     }
   },
   "raw_payloads_public": false,
   "requests": 20,
-  "run_id": "providers-41284913199-1-fred",
+  "run_id": "providers-41319239024-1-fred",
   "schema_version": "icarus-provider-collection-cycle-v1",
-  "started_at_utc": "2026-11-01T07:29:25.411170+00:00"
+  "started_at_utc": "2026-11-01T15:04:32.250955+00:00"
 }

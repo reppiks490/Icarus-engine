@@ -1,6 +1,6 @@
-# Data health — 2026-11-02 15:50 UTC
+# Data health — 2026-11-02 15:51 UTC
 
-**FAILING** 36 · **BLOCKED** 7 · **STALE** 6 · **DEGRADED** 3 · **OK** 34
+**FAILING** 36 · **BLOCKED** 7 · **STALE** 5 · **DEGRADED** 3 · **OK** 35
 
 ## Needs attention
 
@@ -49,7 +49,6 @@
 | provider:tickstream | BLOCKED | no key reaches the runner |
 | provider:twelve | BLOCKED | BLOCKED |
 | provider:unusual_whales | BLOCKED | BLOCKED_AUTHENTICATION |
-| workflow:interrepo-peer-intelligence.yml | STALE | last success 1.9 h ago (expected within 1 h) |
 | workflow:native-five-research.yml | STALE | last success 7.6 h ago (expected within 3 h) |
 | workflow:native-provider-access.yml | STALE | last success 8.9 h ago (expected within 8 h) |
 | workflow:official-economic-events.yml | STALE | last success 9.8 h ago (expected within 8 h) |
@@ -61,7 +60,7 @@
 
 ## Delivering
 
-economic_events, feed:btcusd_cb_5m, feed:btcusdt_5m, feed:cboe_skew, feed:cboe_vix, feed:cboe_vix3m, feed:cboe_vix9d, feed:cboe_vvix, feed:cftc_disaggregated_all, feed:cftc_tff_all, feed:cftc_tff_nasdaq, feed:ethusdt_5m, feed:fred_dff, feed:fred_dgs10, feed:fred_dgs2, feed:fred_nasdaq100, feed:fred_t10y2y, feed:fred_vixcls, feed:treasury_auctions, feed:treasury_debt_to_penny, feed:treasury_operating_cash, fred_alfred, provider:eodhd, provider:fred, provider:massive, provider:tiingo, sec_edgar, workflow:cl-lab.yml, workflow:databento-depth-corpus.yml, workflow:depth-vault.yml, workflow:external-data-fabric.yml, workflow:provider-exhaustive-collection.yml, workflow:sec-edgar-data.yml, workflow:tests.yml
+economic_events, feed:btcusd_cb_5m, feed:btcusdt_5m, feed:cboe_skew, feed:cboe_vix, feed:cboe_vix3m, feed:cboe_vix9d, feed:cboe_vvix, feed:cftc_disaggregated_all, feed:cftc_tff_all, feed:cftc_tff_nasdaq, feed:ethusdt_5m, feed:fred_dff, feed:fred_dgs10, feed:fred_dgs2, feed:fred_nasdaq100, feed:fred_t10y2y, feed:fred_vixcls, feed:treasury_auctions, feed:treasury_debt_to_penny, feed:treasury_operating_cash, fred_alfred, provider:eodhd, provider:fred, provider:massive, provider:tiingo, sec_edgar, workflow:cl-lab.yml, workflow:databento-depth-corpus.yml, workflow:depth-vault.yml, workflow:external-data-fabric.yml, workflow:interrepo-peer-intelligence.yml, workflow:provider-exhaustive-collection.yml, workflow:sec-edgar-data.yml, workflow:tests.yml
 
 ## Order-book data
 

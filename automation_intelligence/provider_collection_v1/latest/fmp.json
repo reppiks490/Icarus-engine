@@ -1,54 +1,61 @@
 {
   "catalog": {
-    "asset_datasets_collected": 5,
+    "asset_datasets_collected": 6,
     "asset_templates": 109,
     "assets": 6770,
-    "collected_operations": 8,
-    "denied_operations": 6,
+    "collected_operations": 9,
+    "denied_operations": 2,
     "operations": 230,
-    "pending_pages": 858,
+    "pending_pages": 871,
     "qualification": "INCOMPLETE_UNTIL_EVERY_OPERATION_ASSET_PAGE_TIME_RANGE_AND_TRANSPORT_IS_VERIFIED",
     "unresolved_operations": 0
   },
   "chatgpt_tokens_used": 0,
   "checkpoint_status": "ENCRYPTED_AES256_GCM",
-  "completed_at_utc": "2026-11-01T23:38:15.939282+00:00",
+  "completed_at_utc": "2026-11-02T06:00:25.084306+00:00",
   "databento_excluded": true,
   "execution_authorized": false,
   "paid_model_calls": 0,
   "providers": {
     "fmp": {
-      "archive_status": [],
+      "archive_status": [
+        "ENCRYPTED_AES256_GCM"
+      ],
       "blocked": [
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/etf/asset-exposure"
+          "operation": "fmp:get:/balance-sheet-statement-ttm"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/technical-indicators/tema"
+          "operation": "fmp:get:/batch-aftermarket-quote"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/etf/sector-weightings"
+          "operation": "fmp:get:/batch-aftermarket-trade"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "400",
+          "operation": "fmp:get:/exchange-market-hours"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/technical-indicators/williams"
+          "operation": "fmp:get:/batch-exchange-quote"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/etf/country-weightings"
+          "operation": "fmp:get:/financial-statement-full-as-reported"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/technical-indicators/wma"
+          "operation": "fmp:get:/batch-quote"
         },
         {
           "asset_specific": true,
@@ -58,17 +65,32 @@
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/acquisition-of-beneficial-ownership"
+          "operation": "fmp:get:/batch-quote-short"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/etf/holdings"
+          "operation": "fmp:get:/funds/disclosure"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/aftermarket-quote"
+          "operation": "fmp:get:/cash-flow-statement"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/cash-flow-statement-as-reported"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/funds/disclosure-dates"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/cash-flow-statement-growth"
         },
         {
           "asset_specific": true,
@@ -78,63 +100,27 @@
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/aftermarket-trade"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/etf/info"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/analyst-estimates"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/financial-reports-xlsx"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/balance-sheet-statement"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/etf/sector-weightings"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/balance-sheet-statement-as-reported"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/financial-scores"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/balance-sheet-statement-growth"
+          "operation": "fmp:get:/cash-flow-statement-ttm"
         }
       ],
-      "collected_pages": 0,
-      "collected_rows": 0,
+      "collected_pages": 4,
+      "collected_rows": 6772,
       "credential_present": true,
       "endpoint_count": 230,
       "requests": 20,
       "research_features": [],
-      "status": "BLOCKED",
-      "substantive_work_performed": false,
-      "verified_operations": []
+      "status": "COLLECTED_PARTIAL",
+      "substantive_work_performed": true,
+      "verified_operations": [
+        "fmp:get:/cryptocurrency-list",
+        "fmp:get:/forex-list",
+        "fmp:get:/index-list"
+      ]
     }
   },
   "raw_payloads_public": false,
   "requests": 20,
-  "run_id": "providers-41362652635-1-fmp",
+  "run_id": "providers-41396783367-1-fmp",
   "schema_version": "icarus-provider-collection-cycle-v1",
-  "started_at_utc": "2026-11-01T23:34:06.394951+00:00"
+  "started_at_utc": "2026-11-02T05:56:14.279075+00:00"
 }

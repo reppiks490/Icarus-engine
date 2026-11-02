@@ -1,6 +1,6 @@
-# Data health — 2026-11-02 18:26 UTC
+# Data health — 2026-11-02 18:31 UTC
 
-**FAILING** 36 · **BLOCKED** 7 · **STALE** 4 · **DEGRADED** 3 · **OK** 36
+**FAILING** 37 · **BLOCKED** 7 · **STALE** 3 · **DEGRADED** 3 · **OK** 36
 
 ## Needs attention
 
@@ -42,6 +42,7 @@
 | feed:databento_zw_5m | FAILING | root not in CL_DATABENTO_ROOTS |
 | workflow:cl-depth-sweep.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/41456924539 |
 | workflow:databento-depth-research-context.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/41435978301 |
+| workflow:interrepo-peer-intelligence.yml | FAILING | latest run cancelled: https://github.com/reppiks490/Icarus-engine/actions/runs/41501033985 |
 | provider:alpaca | BLOCKED | no key reaches the runner |
 | provider:finnhub | BLOCKED | BLOCKED_AUTHENTICATION |
 | provider:intrinio | BLOCKED | no key reaches the runner |
@@ -49,9 +50,8 @@
 | provider:tickstream | BLOCKED | no key reaches the runner |
 | provider:twelve | BLOCKED | BLOCKED |
 | provider:unusual_whales | BLOCKED | BLOCKED_AUTHENTICATION |
-| workflow:interrepo-peer-intelligence.yml | STALE | last success 2.6 h ago (expected within 1 h) |
-| workflow:native-provider-access.yml | STALE | last success 11.5 h ago (expected within 8 h) |
-| workflow:provider-supplemental-collection.yml | STALE | last success 6.8 h ago (expected within 3 h) |
+| workflow:native-provider-access.yml | STALE | last success 11.6 h ago (expected within 8 h) |
+| workflow:provider-supplemental-collection.yml | STALE | last success 6.9 h ago (expected within 3 h) |
 | workflow:provider-supplemental-promote.yml | STALE | last success 6.8 h ago (expected within 3 h) |
 | provider:alphavantage | DEGRADED | 25039 rows; 3 endpoints denied by plan |
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |

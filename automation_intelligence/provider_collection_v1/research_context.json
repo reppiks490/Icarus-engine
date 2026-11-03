@@ -32,32 +32,32 @@
         "asset_datasets_collected": 0,
         "asset_templates": 0,
         "assets": 0,
-        "collected_operations": 15,
+        "collected_operations": 20,
         "denied_operations": 3,
         "operations": 28,
-        "pending_pages": 10,
+        "pending_pages": 5,
         "qualification": "INCOMPLETE_UNTIL_EVERY_OPERATION_ASSET_PAGE_TIME_RANGE_AND_TRANSPORT_IS_VERIFIED",
         "unresolved_operations": 0
       },
       "collected_pages": 5,
-      "collected_rows": 43446,
-      "completed_at_utc": "2026-11-03T12:17:43.534953+00:00",
+      "collected_rows": 12133,
+      "completed_at_utc": "2026-11-03T19:48:05.004835+00:00",
       "credential_present": true,
       "last_successful_receipt": {
         "catalog": {
           "asset_datasets_collected": 0,
           "asset_templates": 0,
           "assets": 0,
-          "collected_operations": 15,
+          "collected_operations": 20,
           "denied_operations": 3,
           "operations": 28,
-          "pending_pages": 10,
+          "pending_pages": 5,
           "qualification": "INCOMPLETE_UNTIL_EVERY_OPERATION_ASSET_PAGE_TIME_RANGE_AND_TRANSPORT_IS_VERIFIED",
           "unresolved_operations": 0
         },
         "collected_pages": 5,
-        "collected_rows": 43446,
-        "completed_at_utc": "2026-11-03T12:17:43.534953+00:00",
+        "collected_rows": 12133,
+        "completed_at_utc": "2026-11-03T19:48:05.004835+00:00",
         "credential_present": true,
         "historical_only": true,
         "requests": 5,
@@ -65,29 +65,65 @@
           {
             "features": {
               "value": {
-                "maximum": 15.84,
-                "mean": 5.8036552831470445,
-                "minimum": 0.52,
-                "samples": 16193,
-                "standard_deviation": 2.925946472206213
+                "maximum": 13.5492019749684,
+                "mean": 3.757704479117809,
+                "minimum": -0.355546266299747,
+                "samples": 65,
+                "standard_deviation": 2.721827819168775
               }
             },
-            "operation": "alphavantage:get:TREASURY_YIELD"
+            "operation": "alphavantage:get:INFLATION"
           },
           {
             "features": {
               "value": {
-                "maximum": 22.36,
-                "mean": 4.593230128690598,
-                "minimum": 0.04,
-                "samples": 26420,
-                "standard_deviation": 3.5402884956069993
+                "maximum": 14.8,
+                "mean": 5.652966101694915,
+                "minimum": 2.5,
+                "samples": 944,
+                "standard_deviation": 1.7026312186282522
               }
             },
-            "operation": "alphavantage:get:FEDERAL_FUNDS_RATE"
+            "operation": "alphavantage:get:UNEMPLOYMENT"
+          },
+          {
+            "features": {
+              "value": {
+                "maximum": 694088.0,
+                "mean": 344918.8057553957,
+                "minimum": 126717.0,
+                "samples": 417,
+                "standard_deviation": 138025.85763752306
+              }
+            },
+            "operation": "alphavantage:get:RETAIL_SALES"
+          },
+          {
+            "features": {
+              "value": {
+                "maximum": 368559.0,
+                "mean": 210400.28125,
+                "minimum": 103025.0,
+                "samples": 416,
+                "standard_deviation": 50952.180664581836
+              }
+            },
+            "operation": "alphavantage:get:DURABLES"
+          },
+          {
+            "features": {
+              "value": {
+                "maximum": 143.95,
+                "mean": 54.54340462871611,
+                "minimum": 9.1,
+                "samples": 9117,
+                "standard_deviation": 33.06108505670562
+              }
+            },
+            "operation": "alphavantage:get:BRENT"
           }
         ],
-        "run_id": "supplemental-41634339571-alphavantage",
+        "run_id": "supplemental-41706184629-alphavantage",
         "status": "COLLECTED_PARTIAL",
         "substantive_work_performed": true
       },
@@ -96,29 +132,65 @@
         {
           "features": {
             "value": {
-              "maximum": 15.84,
-              "mean": 5.8036552831470445,
-              "minimum": 0.52,
-              "samples": 16193,
-              "standard_deviation": 2.925946472206213
+              "maximum": 13.5492019749684,
+              "mean": 3.757704479117809,
+              "minimum": -0.355546266299747,
+              "samples": 65,
+              "standard_deviation": 2.721827819168775
             }
           },
-          "operation": "alphavantage:get:TREASURY_YIELD"
+          "operation": "alphavantage:get:INFLATION"
         },
         {
           "features": {
             "value": {
-              "maximum": 22.36,
-              "mean": 4.593230128690598,
-              "minimum": 0.04,
-              "samples": 26420,
-              "standard_deviation": 3.5402884956069993
+              "maximum": 14.8,
+              "mean": 5.652966101694915,
+              "minimum": 2.5,
+              "samples": 944,
+              "standard_deviation": 1.7026312186282522
             }
           },
-          "operation": "alphavantage:get:FEDERAL_FUNDS_RATE"
+          "operation": "alphavantage:get:UNEMPLOYMENT"
+        },
+        {
+          "features": {
+            "value": {
+              "maximum": 694088.0,
+              "mean": 344918.8057553957,
+              "minimum": 126717.0,
+              "samples": 417,
+              "standard_deviation": 138025.85763752306
+            }
+          },
+          "operation": "alphavantage:get:RETAIL_SALES"
+        },
+        {
+          "features": {
+            "value": {
+              "maximum": 368559.0,
+              "mean": 210400.28125,
+              "minimum": 103025.0,
+              "samples": 416,
+              "standard_deviation": 50952.180664581836
+            }
+          },
+          "operation": "alphavantage:get:DURABLES"
+        },
+        {
+          "features": {
+            "value": {
+              "maximum": 143.95,
+              "mean": 54.54340462871611,
+              "minimum": 9.1,
+              "samples": 9117,
+              "standard_deviation": 33.06108505670562
+            }
+          },
+          "operation": "alphavantage:get:BRENT"
         }
       ],
-      "run_id": "supplemental-41634339571-alphavantage",
+      "run_id": "supplemental-41706184629-alphavantage",
       "status": "COLLECTED_PARTIAL",
       "substantive_work_performed": true
     },
@@ -204,12 +276,12 @@
       },
       "collected_pages": 0,
       "collected_rows": 0,
-      "completed_at_utc": "2026-11-03T12:16:50.848905+00:00",
+      "completed_at_utc": "2026-11-03T19:46:36.145096+00:00",
       "credential_present": true,
       "last_successful_receipt": null,
       "requests": 1,
       "research_features": [],
-      "run_id": "supplemental-41634339571-finnhub",
+      "run_id": "supplemental-41706184629-finnhub",
       "status": "BLOCKED_AUTHENTICATION",
       "substantive_work_performed": false
     },
@@ -595,7 +667,7 @@
       },
       "collected_pages": 0,
       "collected_rows": 0,
-      "completed_at_utc": "2026-11-03T12:16:54.002195+00:00",
+      "completed_at_utc": "2026-11-03T19:46:39.464225+00:00",
       "credential_present": true,
       "last_successful_receipt": {
         "catalog": {
@@ -654,18 +726,18 @@
       },
       "requests": 1,
       "research_features": [],
-      "run_id": "supplemental-41634339571-unusual_whales",
+      "run_id": "supplemental-41706184629-unusual_whales",
       "status": "BLOCKED_AUTHENTICATION",
       "substantive_work_performed": false
     }
   },
   "raw_payloads_included": false,
   "schema_version": "icarus-provider-research-context-v1",
-  "snapshot_at_utc": "2026-11-03T15:12:25.519795+00:00",
+  "snapshot_at_utc": "2026-11-03T19:48:05.004835+00:00",
   "source_root": "automation_intelligence/provider_collection_v1/latest+automation_intelligence/provider_collection_v1/cycles",
   "summary": {
     "collected_pages": 58,
-    "collected_rows": 64815,
+    "collected_rows": 33502,
     "providers_blocked": 8,
     "providers_substantive": 4,
     "providers_total": 14,

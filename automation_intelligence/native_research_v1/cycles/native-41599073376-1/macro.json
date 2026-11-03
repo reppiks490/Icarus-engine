@@ -1,0 +1,81 @@
+{
+  "automation_id": "github-native-research-v1",
+  "blockers": [
+    "Release titles establish publication, not macro surprise or causal impact.",
+    "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+    "No consensus estimates acquired; economic surprise remains unknown."
+  ],
+  "chatgpt_tokens_used": 0,
+  "code_revision": "3fac16fda92b139832e2fb7bfc31c69cc07dbd11",
+  "completed_at_utc": "2026-11-03T07:53:52.517889Z",
+  "event_paths": [],
+  "evidence": [
+    "automation_intelligence/native_research_v1/cycles/native-41599073376-1/evidence.json"
+  ],
+  "execution_authorized": false,
+  "input_sha256": "e0ca8e952bf73914bb2da1348139f2598fefe0c77f3c77a44097f9cd097b9adb",
+  "lane": "macro",
+  "local_interpretation": {
+    "authority": "UNVERIFIED_MODEL_INFERENCE",
+    "reason": "No semantic change",
+    "status": "NOT_RUN"
+  },
+  "measurements": {
+    "gaps": [
+      "Release titles establish publication, not macro surprise or causal impact.",
+      "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+      "No consensus estimates acquired; economic surprise remains unknown."
+    ],
+    "limits": "Publication and daily change are facts; surprise, causality and intraday propagation remain unverified.",
+    "releases": [
+      {
+        "published_epoch": 1793611800.0,
+        "retrieval_finished": 1793692431.708672,
+        "retrieval_started": 1793692431.1364994,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp.261102~70003226e9.en.html",
+        "title": "Boris Vuj\u010di\u0107: Integrated, open and resilient: Europe\u2019s strengths in a fragmenting world"
+      }
+    ],
+    "series": [
+      {
+        "change": -0.040000000000000036,
+        "date": "2026-10-30",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-10-29",
+        "series": "DGS10",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10",
+        "value": 4.94
+      },
+      {
+        "change": -0.05000000000000071,
+        "date": "2026-10-30",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-10-29",
+        "series": "DGS2",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2",
+        "value": 4.56
+      },
+      {
+        "change": -0.07049999999999557,
+        "date": "2026-10-30",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-10-29",
+        "series": "DTWEXBGS",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DTWEXBGS",
+        "value": 121.6656
+      }
+    ],
+    "status": "VERIFIED",
+    "summary": "1 dated official release headlines; 3 daily macro series measured."
+  },
+  "outcome": "NO_MATERIAL_DELTA",
+  "paid_model_calls": 0,
+  "prior_receipt_path": "automation_intelligence/native_research_v1/cycles/native-41561769584-1/macro.json",
+  "run_id": "native-41599073376-1-macro",
+  "schema_version": "icarus-research-run-v1",
+  "started_at_utc": "2026-11-03T07:53:52.469596Z",
+  "substantive_work_performed": true,
+  "summary": "1 dated official release headlines; 3 daily macro series measured.",
+  "worker": "GITHUB_ACTIONS"
+}

@@ -1,6 +1,6 @@
-# Data health — 2026-11-03 20:02 UTC
+# Data health — 2026-11-03 21:15 UTC
 
-**FAILING** 37 · **BLOCKED** 7 · **STALE** 3 · **DEGRADED** 3 · **OK** 36
+**FAILING** 37 · **BLOCKED** 6 · **STALE** 3 · **DEGRADED** 4 · **OK** 36
 
 ## Needs attention
 
@@ -40,22 +40,22 @@
 | feed:databento_zs_5m | FAILING | root not in CL_DATABENTO_ROOTS |
 | feed:databento_zt_5m | FAILING | root not in CL_DATABENTO_ROOTS |
 | feed:databento_zw_5m | FAILING | root not in CL_DATABENTO_ROOTS |
-| workflow:cl-depth-sweep.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/41640726779 |
-| workflow:databento-depth-research-context.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/41623749522 |
+| workflow:cl-depth-sweep.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/41718812140 |
+| workflow:databento-depth-research-context.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/41718812033 |
 | workflow:native-provider-access.yml | FAILING | latest run cancelled: https://github.com/reppiks490/Icarus-engine/actions/runs/41707294209 |
 | provider:alpaca | BLOCKED | no key reaches the runner |
 | provider:finnhub | BLOCKED | BLOCKED_AUTHENTICATION |
 | provider:intrinio | BLOCKED | no key reaches the runner |
 | provider:quiver | BLOCKED | no key reaches the runner |
 | provider:tickstream | BLOCKED | no key reaches the runner |
-| provider:twelve | BLOCKED | BLOCKED |
 | provider:unusual_whales | BLOCKED | BLOCKED_AUTHENTICATION |
-| workflow:interrepo-peer-intelligence.yml | STALE | last success 1.1 h ago (expected within 1 h) |
-| workflow:provider-exhaustive-collection.yml | STALE | last success 4.8 h ago (expected within 3 h) |
-| workflow:sec-edgar-data.yml | STALE | last success 4.3 h ago (expected within 3 h) |
+| workflow:interrepo-peer-intelligence.yml | STALE | last success 2.3 h ago (expected within 1 h) |
+| workflow:provider-exhaustive-collection.yml | STALE | last success 6.0 h ago (expected within 3 h) |
+| workflow:sec-edgar-data.yml | STALE | last success 5.5 h ago (expected within 3 h) |
 | provider:alphavantage | DEGRADED | 12133 rows; 3 endpoints denied by plan |
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
 | provider:fmp | DEGRADED | dedicated fabric live (3 calls, 37 known rows); generic sampler blocked; 2 endpoints denied by plan |
+| provider:twelve | DEGRADED | key present but 0 rows (COLLECTED_PARTIAL) |
 
 ## Delivering
 

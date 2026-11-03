@@ -1,6 +1,6 @@
-# Data health — 2026-11-03 11:28 UTC
+# Data health — 2026-11-03 12:18 UTC
 
-**FAILING** 36 · **BLOCKED** 6 · **STALE** 5 · **DEGRADED** 4 · **OK** 35
+**FAILING** 36 · **BLOCKED** 6 · **STALE** 4 · **DEGRADED** 4 · **OK** 36
 
 ## Needs attention
 
@@ -48,11 +48,10 @@
 | provider:quiver | BLOCKED | no key reaches the runner |
 | provider:tickstream | BLOCKED | no key reaches the runner |
 | provider:unusual_whales | BLOCKED | BLOCKED_AUTHENTICATION |
-| workflow:official-economic-events.yml | STALE | last success 10.5 h ago (expected within 8 h) |
-| workflow:provider-exhaustive-collection.yml | STALE | last success 4.6 h ago (expected within 3 h) |
-| workflow:provider-supplemental-collection.yml | STALE | last success 7.8 h ago (expected within 3 h) |
-| workflow:provider-supplemental-promote.yml | STALE | last success 7.8 h ago (expected within 3 h) |
-| workflow:sec-edgar-data.yml | STALE | last success 3.6 h ago (expected within 3 h) |
+| workflow:official-economic-events.yml | STALE | last success 11.3 h ago (expected within 8 h) |
+| workflow:provider-exhaustive-collection.yml | STALE | last success 5.5 h ago (expected within 3 h) |
+| workflow:provider-supplemental-promote.yml | STALE | last success 8.6 h ago (expected within 3 h) |
+| workflow:sec-edgar-data.yml | STALE | last success 4.4 h ago (expected within 3 h) |
 | provider:alphavantage | DEGRADED | 165 rows; 3 endpoints denied by plan |
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
 | provider:fmp | DEGRADED | 6772 rows; 2 endpoints denied by plan |
@@ -60,11 +59,11 @@
 
 ## Delivering
 
-economic_events, feed:btcusd_cb_5m, feed:btcusdt_5m, feed:cboe_skew, feed:cboe_vix, feed:cboe_vix3m, feed:cboe_vix9d, feed:cboe_vvix, feed:cftc_disaggregated_all, feed:cftc_tff_all, feed:cftc_tff_nasdaq, feed:ethusdt_5m, feed:fred_dff, feed:fred_dgs10, feed:fred_dgs2, feed:fred_nasdaq100, feed:fred_t10y2y, feed:fred_vixcls, feed:treasury_auctions, feed:treasury_debt_to_penny, feed:treasury_operating_cash, fred_alfred, provider:eodhd, provider:fred, provider:massive, provider:tiingo, sec_edgar, workflow:cl-lab.yml, workflow:databento-depth-corpus.yml, workflow:depth-vault.yml, workflow:external-data-fabric.yml, workflow:interrepo-peer-intelligence.yml, workflow:native-five-research.yml, workflow:native-provider-access.yml, workflow:tests.yml
+economic_events, feed:btcusd_cb_5m, feed:btcusdt_5m, feed:cboe_skew, feed:cboe_vix, feed:cboe_vix3m, feed:cboe_vix9d, feed:cboe_vvix, feed:cftc_disaggregated_all, feed:cftc_tff_all, feed:cftc_tff_nasdaq, feed:ethusdt_5m, feed:fred_dff, feed:fred_dgs10, feed:fred_dgs2, feed:fred_nasdaq100, feed:fred_t10y2y, feed:fred_vixcls, feed:treasury_auctions, feed:treasury_debt_to_penny, feed:treasury_operating_cash, fred_alfred, provider:eodhd, provider:fred, provider:massive, provider:tiingo, sec_edgar, workflow:cl-lab.yml, workflow:databento-depth-corpus.yml, workflow:depth-vault.yml, workflow:external-data-fabric.yml, workflow:interrepo-peer-intelligence.yml, workflow:native-five-research.yml, workflow:native-provider-access.yml, workflow:provider-supplemental-collection.yml, workflow:tests.yml
 
 ## Order-book data
 
-Vaulted files: {'bars_primary': 33, 'bars_secondary': 2, 'bars_third': 1, 'corpus': 135, 'panel': 13, 'sweep': 10} (key: HKDF(DATABENTO_API_KEY)). Last vault decrypt/hash check: OK at 2026-11-02T11:20:38+00:00 with 0 failures. D1 status: {'D1-A': 'INSUFFICIENT_DATA', 'D1-B': 'INSUFFICIENT_DATA', 'days': 4}.
+Vaulted files: {'bars_primary': 33, 'bars_secondary': 2, 'bars_third': 1, 'corpus': 135, 'panel': 13, 'sweep': 10} (key: HKDF(DATABENTO_API_KEY)). Last vault decrypt/hash check: OK at 2026-11-03T11:49:39+00:00 with 0 failures. D1 status: {'D1-A': 'INSUFFICIENT_DATA', 'D1-B': 'INSUFFICIENT_DATA', 'days': 4}.
 
 | Budget | Cap | Spent | Left |
 |---|---|---|---|

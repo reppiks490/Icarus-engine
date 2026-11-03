@@ -2,28 +2,80 @@
   "catalog": {
     "asset_datasets_collected": 1,
     "asset_templates": 162,
-    "assets": 72562,
+    "assets": 72674,
     "collected_operations": 7,
     "denied_operations": 1,
     "operations": 185,
-    "pending_pages": 974,
+    "pending_pages": 1007,
     "qualification": "INCOMPLETE_UNTIL_EVERY_OPERATION_ASSET_PAGE_TIME_RANGE_AND_TRANSPORT_IS_VERIFIED",
     "unresolved_operations": 4
   },
   "chatgpt_tokens_used": 0,
   "checkpoint_status": "ENCRYPTED_AES256_GCM",
-  "completed_at_utc": "2026-11-02T23:35:57.079120+00:00",
+  "completed_at_utc": "2026-11-03T06:46:43.216333+00:00",
   "databento_excluded": true,
   "execution_authorized": false,
   "paid_model_calls": 0,
   "providers": {
     "twelve": {
-      "archive_status": [],
+      "archive_status": [
+        "ENCRYPTED_AES256_GCM"
+      ],
       "blocked": [
+        {
+          "asset_specific": false,
+          "failure_code": "PAYLOAD_LIMIT_INCOMPLETE",
+          "operation": "twelve:get:/funds"
+        },
+        {
+          "asset_specific": false,
+          "failure_code": "PAYLOAD_LIMIT_INCOMPLETE",
+          "operation": "twelve:get:/stocks"
+        },
         {
           "asset_specific": true,
           "failure_code": "403",
-          "operation": "twelve:get:/income_statement"
+          "operation": "twelve:get:/macd_slope"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "404",
+          "operation": "twelve:get:/macdext"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "404",
+          "operation": "twelve:get:/mama"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "403",
+          "operation": "twelve:get:/market_cap"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "404",
+          "operation": "twelve:get:/max"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "404",
+          "operation": "twelve:get:/maxindex"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "404",
+          "operation": "twelve:get:/mcginley_dynamic"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "403",
+          "operation": "twelve:get:/rvol"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "404",
+          "operation": "twelve:get:/medprice"
         },
         {
           "asset_specific": true,
@@ -32,109 +84,32 @@
         },
         {
           "asset_specific": true,
-          "failure_code": "403",
-          "operation": "twelve:get:/income_statement/consolidated"
-        },
-        {
-          "asset_specific": true,
           "failure_code": "404",
-          "operation": "twelve:get:/linearreg"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "403",
-          "operation": "twelve:get:/insider_transactions"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "404",
-          "operation": "twelve:get:/linearregangle"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "403",
-          "operation": "twelve:get:/institutional_holders"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "404",
-          "operation": "twelve:get:/linearregintercept"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "403",
-          "operation": "twelve:get:/ipo_calendar"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "404",
-          "operation": "twelve:get:/linearregslope"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "404",
-          "operation": "twelve:get:/kama"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "404",
-          "operation": "twelve:get:/ln"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "403",
-          "operation": "twelve:get:/recommendations"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "404",
-          "operation": "twelve:get:/log10"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "404",
-          "operation": "twelve:get:/keltner"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "404",
-          "operation": "twelve:get:/logo"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "403",
-          "operation": "twelve:get:/revenue_estimate"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "404",
-          "operation": "twelve:get:/ma"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "403",
-          "operation": "twelve:get:/key_executives"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "404",
-          "operation": "twelve:get:/macd"
+          "operation": "twelve:get:/mfi"
         }
       ],
-      "collected_pages": 0,
-      "collected_rows": 0,
+      "collected_pages": 7,
+      "collected_rows": 72458,
       "credential_present": true,
       "endpoint_count": 185,
       "requests": 20,
       "research_features": [],
-      "status": "BLOCKED",
-      "substantive_work_performed": false,
-      "verified_operations": []
+      "status": "COLLECTED_PARTIAL",
+      "substantive_work_performed": true,
+      "verified_operations": [
+        "twelve:get:/bonds",
+        "twelve:get:/commodities",
+        "twelve:get:/cryptocurrencies",
+        "twelve:get:/etfs",
+        "twelve:get:/exchanges",
+        "twelve:get:/forex_pairs",
+        "twelve:get:/market_state"
+      ]
     }
   },
   "raw_payloads_public": false,
   "requests": 20,
-  "run_id": "providers-41545659198-1-twelve",
+  "run_id": "providers-41591438620-1-twelve",
   "schema_version": "icarus-provider-collection-cycle-v1",
-  "started_at_utc": "2026-11-02T23:31:29.064712+00:00"
+  "started_at_utc": "2026-11-03T06:42:02.014156+00:00"
 }

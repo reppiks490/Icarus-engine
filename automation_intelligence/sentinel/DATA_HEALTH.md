@@ -1,6 +1,6 @@
-# Data health — 2026-11-04 00:53 UTC
+# Data health — 2026-11-04 01:21 UTC
 
-**FAILING** 38 · **BLOCKED** 6 · **STALE** 1 · **DEGRADED** 4 · **OK** 37
+**FAILING** 39 · **BLOCKED** 6 · **DEGRADED** 4 · **OK** 37
 
 ## Needs attention
 
@@ -42,6 +42,7 @@
 | feed:databento_zw_5m | FAILING | root not in CL_DATABENTO_ROOTS |
 | workflow:cl-depth-sweep.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/41732189781 |
 | workflow:databento-depth-research-context.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/41718812033 |
+| workflow:interrepo-peer-intelligence.yml | FAILING | latest run cancelled: https://github.com/reppiks490/Icarus-engine/actions/runs/41753409564 |
 | workflow:native-provider-access.yml | FAILING | latest run cancelled: https://github.com/reppiks490/Icarus-engine/actions/runs/41707294209 |
 | workflow:provider-exhaustive-collection.yml | FAILING | latest run cancelled: https://github.com/reppiks490/Icarus-engine/actions/runs/41717278193 |
 | provider:alpaca | BLOCKED | no key reaches the runner |
@@ -50,7 +51,6 @@
 | provider:quiver | BLOCKED | no key reaches the runner |
 | provider:tickstream | BLOCKED | no key reaches the runner |
 | provider:unusual_whales | BLOCKED | BLOCKED_AUTHENTICATION |
-| workflow:interrepo-peer-intelligence.yml | STALE | last success 1.1 h ago (expected within 1 h) |
 | provider:alphavantage | DEGRADED | 25040 rows; 3 endpoints denied by plan |
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
 | provider:fmp | DEGRADED | dedicated fabric live (3 calls, 37 known rows); generic sampler blocked; 2 endpoints denied by plan |

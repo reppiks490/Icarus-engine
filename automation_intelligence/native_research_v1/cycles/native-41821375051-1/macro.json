@@ -1,0 +1,108 @@
+{
+  "automation_id": "github-native-research-v1",
+  "blockers": [
+    "Release titles establish publication, not macro surprise or causal impact.",
+    "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+    "No consensus estimates acquired; economic surprise remains unknown."
+  ],
+  "chatgpt_tokens_used": 0,
+  "code_revision": "11518238b2d6407bceaa7ae7159dc006b2af5e42",
+  "completed_at_utc": "2026-11-04T11:37:09.515844Z",
+  "event_paths": [
+    "automation_intelligence/mcp_interface/events/native-41821375051-1_native_macro.json"
+  ],
+  "evidence": [
+    "automation_intelligence/native_research_v1/cycles/native-41821375051-1/evidence.json"
+  ],
+  "execution_authorized": false,
+  "input_sha256": "e6a3ae73ada62171ad64ab1cca56b6b266875c47b59f164ea5a73f4b3b71f337",
+  "lane": "macro",
+  "local_interpretation": {
+    "authority": "UNVERIFIED_MODEL_INFERENCE",
+    "model": "Qwen/Qwen3-1.7B-GGUF@90862c4:Q8_0",
+    "payload": {
+      "conflicts": [],
+      "data_gaps": [],
+      "execution_authorized": false,
+      "lane": "macro",
+      "net_new_delta": "LOCAL_NEXT_TEST_SELECTION",
+      "summary": "Does the next official release change the daily macro context?"
+    },
+    "response_id": "local-3dc1754c694e11cb5673d914",
+    "status": "GENERATED"
+  },
+  "measurements": {
+    "gaps": [
+      "Release titles establish publication, not macro surprise or causal impact.",
+      "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+      "No consensus estimates acquired; economic surprise remains unknown."
+    ],
+    "limits": "Publication and daily change are facts; surprise, causality and intraday propagation remain unverified.",
+    "releases": [
+      {
+        "published_epoch": 1793750400.0,
+        "retrieval_finished": 1793792219.553882,
+        "retrieval_started": 1793792218.9099114,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr261104~caf181d7ac.en.html",
+        "title": "ECB wage tracker suggests slightly higher wage growth in first three quarters of 2027 compared with the full year of 2026"
+      },
+      {
+        "published_epoch": 1793611800.0,
+        "retrieval_finished": 1793792219.553882,
+        "retrieval_started": 1793792218.9099114,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp.261102~70003226e9.en.html",
+        "title": "Boris Vuj\u010di\u0107: Integrated, open and resilient: Europe\u2019s strengths in a fragmenting world"
+      },
+      {
+        "published_epoch": 1793718020.0,
+        "retrieval_finished": 1793792219.7109544,
+        "retrieval_started": 1793792219.554338,
+        "source": "BLS",
+        "source_url": "https://www.bls.gov/bls/",
+        "title": "Major Economic Indicators Latest Numbers"
+      }
+    ],
+    "series": [
+      {
+        "change": -0.03000000000000025,
+        "date": "2026-11-02",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-10-30",
+        "series": "DGS10",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10",
+        "value": 4.91
+      },
+      {
+        "change": 0.03000000000000025,
+        "date": "2026-11-02",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-10-30",
+        "series": "DGS2",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2",
+        "value": 4.59
+      },
+      {
+        "change": -0.07049999999999557,
+        "date": "2026-10-30",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-10-29",
+        "series": "DTWEXBGS",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DTWEXBGS",
+        "value": 121.6656
+      }
+    ],
+    "status": "VERIFIED",
+    "summary": "3 dated official release headlines; 3 daily macro series measured."
+  },
+  "outcome": "MATERIAL_DELTA",
+  "paid_model_calls": 0,
+  "prior_receipt_path": "automation_intelligence/native_research_v1/cycles/native-41793682549-1/macro.json",
+  "run_id": "native-41821375051-1-macro",
+  "schema_version": "icarus-research-run-v1",
+  "started_at_utc": "2026-11-04T11:37:00.045969Z",
+  "substantive_work_performed": true,
+  "summary": "3 dated official release headlines; 3 daily macro series measured.",
+  "worker": "GITHUB_ACTIONS"
+}

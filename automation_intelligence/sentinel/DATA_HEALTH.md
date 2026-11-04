@@ -1,6 +1,6 @@
-# Data health — 2026-11-04 14:48 UTC
+# Data health — 2026-11-04 15:47 UTC
 
-**FAILING** 37 · **BLOCKED** 6 · **STALE** 7 · **DEGRADED** 3 · **OK** 33
+**FAILING** 38 · **BLOCKED** 6 · **STALE** 6 · **DEGRADED** 3 · **OK** 33
 
 ## Needs attention
 
@@ -42,6 +42,7 @@
 | feed:databento_zw_5m | FAILING | root not in CL_DATABENTO_ROOTS |
 | workflow:cl-depth-sweep.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/41836944729 |
 | workflow:databento-depth-research-context.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/41818607645 |
+| workflow:interrepo-peer-intelligence.yml | FAILING | latest run cancelled: https://github.com/reppiks490/Icarus-engine/actions/runs/41861090721 |
 | workflow:native-provider-access.yml | FAILING | latest run cancelled: https://github.com/reppiks490/Icarus-engine/actions/runs/41789400806 |
 | provider:alpaca | BLOCKED | no key reaches the runner |
 | provider:finnhub | BLOCKED | BLOCKED_AUTHENTICATION |
@@ -49,13 +50,12 @@
 | provider:quiver | BLOCKED | no key reaches the runner |
 | provider:tickstream | BLOCKED | no key reaches the runner |
 | provider:unusual_whales | BLOCKED | BLOCKED_AUTHENTICATION |
-| workflow:interrepo-peer-intelligence.yml | STALE | last success 3.2 h ago (expected within 1 h) |
-| workflow:native-five-research.yml | STALE | last success 3.2 h ago (expected within 3 h) |
-| workflow:official-economic-events.yml | STALE | last success 8.4 h ago (expected within 8 h) |
-| workflow:provider-exhaustive-collection.yml | STALE | last success 5.6 h ago (expected within 3 h) |
-| workflow:provider-supplemental-collection.yml | STALE | last success 6.8 h ago (expected within 3 h) |
-| workflow:provider-supplemental-promote.yml | STALE | last success 6.8 h ago (expected within 3 h) |
-| workflow:sec-edgar-data.yml | STALE | last success 5.2 h ago (expected within 3 h) |
+| workflow:native-five-research.yml | STALE | last success 4.2 h ago (expected within 3 h) |
+| workflow:official-economic-events.yml | STALE | last success 9.4 h ago (expected within 8 h) |
+| workflow:provider-exhaustive-collection.yml | STALE | last success 6.5 h ago (expected within 3 h) |
+| workflow:provider-supplemental-collection.yml | STALE | last success 7.8 h ago (expected within 3 h) |
+| workflow:provider-supplemental-promote.yml | STALE | last success 7.8 h ago (expected within 3 h) |
+| workflow:sec-edgar-data.yml | STALE | last success 6.2 h ago (expected within 3 h) |
 | provider:alphavantage | DEGRADED | 1366 rows; 3 endpoints denied by plan |
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
 | provider:fmp | DEGRADED | 6772 rows; 2 endpoints denied by plan |

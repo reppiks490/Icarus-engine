@@ -1,0 +1,100 @@
+{
+  "at_utc": "2026-11-04T21:35:46.246918Z",
+  "category": "AUDIT",
+  "event_id": "native-41917124180-1-native-macro",
+  "evidence": [
+    {
+      "classification": "FACT",
+      "code_revision": "734853fb9cd133194fd646dd73c3898d32e8d603",
+      "evidence_sha256": "77da665c01f9cf3521d64ef5ce59bbb80c086567d955614f542c7ee3d1b575ad",
+      "measurement": {
+        "gaps": [
+          "Release titles establish publication, not macro surprise or causal impact.",
+          "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+          "No consensus estimates acquired; economic surprise remains unknown."
+        ],
+        "limits": "Publication and daily change are facts; surprise, causality and intraday propagation remain unverified.",
+        "releases": [
+          {
+            "published_epoch": 1793750400.0,
+            "retrieval_finished": 1793828145.495328,
+            "retrieval_started": 1793828144.5251987,
+            "source": "ECB",
+            "source_url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr261104~caf181d7ac.en.html",
+            "title": "ECB wage tracker suggests slightly higher wage growth in first three quarters of 2027 compared with the full year of 2026"
+          },
+          {
+            "published_epoch": 1793611800.0,
+            "retrieval_finished": 1793828145.495328,
+            "retrieval_started": 1793828144.5251987,
+            "source": "ECB",
+            "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp.261102~70003226e9.en.html",
+            "title": "Boris Vuj\u010di\u0107: Integrated, open and resilient: Europe\u2019s strengths in a fragmenting world"
+          },
+          {
+            "published_epoch": 1793718020.0,
+            "retrieval_finished": 1793828145.9033515,
+            "retrieval_started": 1793828145.4956954,
+            "source": "BLS",
+            "source_url": "https://www.bls.gov/bls/",
+            "title": "Major Economic Indicators Latest Numbers"
+          }
+        ],
+        "series": [
+          {
+            "change": 0.040000000000000036,
+            "date": "2026-11-03",
+            "freshness": "DAILY_OBSERVATION",
+            "prior_date": "2026-11-02",
+            "series": "DGS10",
+            "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10",
+            "value": 4.95
+          },
+          {
+            "change": 0.020000000000000462,
+            "date": "2026-11-03",
+            "freshness": "DAILY_OBSERVATION",
+            "prior_date": "2026-11-02",
+            "series": "DGS2",
+            "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2",
+            "value": 4.61
+          },
+          {
+            "change": -0.07049999999999557,
+            "date": "2026-10-30",
+            "freshness": "DAILY_OBSERVATION",
+            "prior_date": "2026-10-29",
+            "series": "DTWEXBGS",
+            "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DTWEXBGS",
+            "value": 121.6656
+          }
+        ],
+        "status": "VERIFIED",
+        "summary": "3 dated official release headlines; 3 daily macro series measured."
+      }
+    }
+  ],
+  "execution_authorized": false,
+  "interpretation_authority": "UNVERIFIED_MODEL_INFERENCE",
+  "oracle": {
+    "finding": "3 dated official release headlines; 3 daily macro series measured.",
+    "status": "VERIFIED"
+  },
+  "paths": [
+    "automation_intelligence/native_research_v1/cycles/native-41917124180-1/evidence.json",
+    "automation_intelligence/native_research_v1/cycles/native-41917124180-1/macro.json"
+  ],
+  "schema_version": "icarus-mcp-event-v1",
+  "severity": "MEDIUM",
+  "source": "MACRO_AUTOMATION",
+  "status": "VERIFIED",
+  "summary": "3 dated official release headlines; 3 daily macro series measured.",
+  "supermesh_x": {
+    "finding": "3 dated official release headlines; 3 daily macro series measured.",
+    "status": "VERIFIED"
+  },
+  "surface": [
+    "macro native research"
+  ],
+  "worker": "GITHUB_NATIVE_RESEARCH_V1"
+}

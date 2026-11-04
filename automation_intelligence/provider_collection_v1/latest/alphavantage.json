@@ -12,7 +12,7 @@
   },
   "chatgpt_tokens_used": 0,
   "checkpoint_status": "ENCRYPTED_AES256_GCM",
-  "completed_at_utc": "2026-11-04T16:32:08.237226+00:00",
+  "completed_at_utc": "2026-11-04T22:08:54.143189+00:00",
   "databento_excluded": true,
   "execution_authorized": false,
   "paid_model_calls": 0,
@@ -23,42 +23,48 @@
       ],
       "blocked": [],
       "collected_pages": 5,
-      "collected_rows": 165,
+      "collected_rows": 43450,
       "credential_present": true,
       "endpoint_count": 28,
       "requests": 5,
       "research_features": [
         {
           "features": {
-            "close": {
-              "maximum": 779.09,
-              "mean": 759.6517000000001,
-              "minimum": 728.99,
-              "samples": 100,
-              "standard_deviation": 12.880848501166367
-            },
-            "volume": {
-              "maximum": 85945227.0,
-              "mean": 45632795.12,
-              "minimum": 18685018.0,
-              "samples": 100,
-              "standard_deviation": 13076287.52614095
+            "value": {
+              "maximum": 15.84,
+              "mean": 5.803600098802031,
+              "minimum": 0.52,
+              "samples": 16194,
+              "standard_deviation": 2.925864557411068
             }
           },
-          "operation": "alphavantage:get:TIME_SERIES_DAILY"
+          "operation": "alphavantage:get:TREASURY_YIELD"
+        },
+        {
+          "features": {
+            "value": {
+              "maximum": 22.36,
+              "mean": 4.59314915036164,
+              "minimum": 0.04,
+              "samples": 26423,
+              "standard_deviation": 3.540095668756865
+            }
+          },
+          "operation": "alphavantage:get:FEDERAL_FUNDS_RATE"
         }
       ],
       "status": "COLLECTED_PARTIAL",
       "substantive_work_performed": true,
       "verified_operations": [
-        "alphavantage:get:CONGRESS_TRADES",
-        "alphavantage:get:TIME_SERIES_DAILY"
+        "alphavantage:get:DIVIDENDS",
+        "alphavantage:get:FEDERAL_FUNDS_RATE",
+        "alphavantage:get:TREASURY_YIELD"
       ]
     }
   },
   "raw_payloads_public": false,
   "requests": 5,
-  "run_id": "supplemental-41867957239-alphavantage",
+  "run_id": "supplemental-41922460363-alphavantage",
   "schema_version": "icarus-provider-collection-cycle-v1",
-  "started_at_utc": "2026-11-04T16:31:14.920373+00:00"
+  "started_at_utc": "2026-11-04T22:08:00.399898+00:00"
 }

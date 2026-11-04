@@ -1,18 +1,18 @@
 {
   "catalog": {
-    "asset_datasets_collected": 1,
+    "asset_datasets_collected": 3,
     "asset_templates": 109,
     "assets": 6770,
-    "collected_operations": 4,
+    "collected_operations": 6,
     "denied_operations": 2,
     "operations": 230,
-    "pending_pages": 1016,
+    "pending_pages": 1025,
     "qualification": "INCOMPLETE_UNTIL_EVERY_OPERATION_ASSET_PAGE_TIME_RANGE_AND_TRANSPORT_IS_VERIFIED",
     "unresolved_operations": 0
   },
   "chatgpt_tokens_used": 0,
   "checkpoint_status": "ENCRYPTED_AES256_GCM",
-  "completed_at_utc": "2026-11-04T17:23:21.496592+00:00",
+  "completed_at_utc": "2026-11-04T22:43:07.587449+00:00",
   "databento_excluded": true,
   "execution_authorized": false,
   "paid_model_calls": 0,
@@ -25,7 +25,22 @@
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/key-metrics-ttm"
+          "operation": "fmp:get:/news/forex"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/ratios"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/key-metrics"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/ratios-ttm"
         },
         {
           "asset_specific": true,
@@ -35,12 +50,27 @@
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/income-statement-ttm"
+          "operation": "fmp:get:/revenue-geographic-segmentation"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/key-metrics-ttm"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/revenue-product-segmentation"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
           "operation": "fmp:get:/news/stock"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/search-exchange-variants"
         },
         {
           "asset_specific": true,
@@ -55,12 +85,7 @@
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/insider-trading/statistics"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/price-target-consensus"
+          "operation": "fmp:get:/sec-filings-search/symbol"
         },
         {
           "asset_specific": true,
@@ -70,12 +95,12 @@
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/price-target-summary"
+          "operation": "fmp:get:/price-target-consensus"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/institutional-ownership/extract-analytics/holder"
+          "operation": "fmp:get:/senate-trades"
         },
         {
           "asset_specific": true,
@@ -85,40 +110,10 @@
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/quote"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/institutional-ownership/symbol-positions-summary"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/quote-short"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/news/crypto"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/ratings-historical"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/key-executives"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/ratings-snapshot"
+          "operation": "fmp:get:/shares-float"
         }
       ],
-      "collected_pages": 1,
+      "collected_pages": 2,
       "collected_rows": 0,
       "credential_present": true,
       "endpoint_count": 230,
@@ -131,7 +126,7 @@
   },
   "raw_payloads_public": false,
   "requests": 20,
-  "run_id": "providers-41874949816-1-fmp",
+  "run_id": "providers-41926974995-1-fmp",
   "schema_version": "icarus-provider-collection-cycle-v1",
-  "started_at_utc": "2026-11-04T17:19:10.671441+00:00"
+  "started_at_utc": "2026-11-04T22:38:57.116559+00:00"
 }

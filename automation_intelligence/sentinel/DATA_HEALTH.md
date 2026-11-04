@@ -1,6 +1,6 @@
-# Data health — 2026-11-04 21:25 UTC
+# Data health — 2026-11-04 21:36 UTC
 
-**FAILING** 36 · **BLOCKED** 7 · **STALE** 5 · **DEGRADED** 4 · **OK** 34
+**FAILING** 37 · **BLOCKED** 7 · **STALE** 4 · **DEGRADED** 4 · **OK** 34
 
 ## Needs attention
 
@@ -40,8 +40,9 @@
 | feed:databento_zs_5m | FAILING | root not in CL_DATABENTO_ROOTS |
 | feed:databento_zt_5m | FAILING | root not in CL_DATABENTO_ROOTS |
 | feed:databento_zw_5m | FAILING | root not in CL_DATABENTO_ROOTS |
-| workflow:cl-depth-sweep.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/41908652436 |
+| workflow:cl-depth-sweep.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/41915595308 |
 | workflow:databento-depth-research-context.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/41915595291 |
+| workflow:interrepo-peer-intelligence.yml | FAILING | latest run cancelled: https://github.com/reppiks490/Icarus-engine/actions/runs/41917622175 |
 | provider:alpaca | BLOCKED | no key reaches the runner |
 | provider:finnhub | BLOCKED | BLOCKED_AUTHENTICATION |
 | provider:intrinio | BLOCKED | no key reaches the runner |
@@ -49,11 +50,10 @@
 | provider:tickstream | BLOCKED | no key reaches the runner |
 | provider:twelve | BLOCKED | BLOCKED |
 | provider:unusual_whales | BLOCKED | BLOCKED_AUTHENTICATION |
-| workflow:interrepo-peer-intelligence.yml | STALE | last success 2.5 h ago (expected within 1 h) |
-| workflow:provider-exhaustive-collection.yml | STALE | last success 3.7 h ago (expected within 3 h) |
-| workflow:provider-supplemental-collection.yml | STALE | last success 4.9 h ago (expected within 3 h) |
-| workflow:provider-supplemental-promote.yml | STALE | last success 4.8 h ago (expected within 3 h) |
-| workflow:sec-edgar-data.yml | STALE | last success 4.2 h ago (expected within 3 h) |
+| workflow:provider-exhaustive-collection.yml | STALE | last success 3.9 h ago (expected within 3 h) |
+| workflow:provider-supplemental-collection.yml | STALE | last success 5.1 h ago (expected within 3 h) |
+| workflow:provider-supplemental-promote.yml | STALE | last success 5.0 h ago (expected within 3 h) |
+| workflow:sec-edgar-data.yml | STALE | last success 4.3 h ago (expected within 3 h) |
 | provider:alphavantage | DEGRADED | 165 rows; 3 endpoints denied by plan |
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
 | provider:eodhd | DEGRADED | dedicated fabric live (11 calls, 2510 known rows); generic sampler blocked |

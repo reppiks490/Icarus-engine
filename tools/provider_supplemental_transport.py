@@ -79,7 +79,14 @@ def request(provider, path, params, key):
         return base.request(provider, path, params, key)
 
     spec = core.PROVIDERS[provider]
-    if not path.startswith("/") or "://" in path or ".." in path or core.SECRET.search(path):
+    # Resource names (for example list_tokens) are not credential fields.
+    # Keep query data separate and reject ambiguous/encoded URL structure.
+    if (
+        not path.startswith("/") or path.startswith("//")
+        or "://" in path or ".." in path
+        or any(char in path for char in "?#\\%")
+        or any(char.isspace() or ord(char) < 32 or ord(char) == 127 for char in path)
+    ):
         raise ValueError("unsafe path")
 
     safe = {}

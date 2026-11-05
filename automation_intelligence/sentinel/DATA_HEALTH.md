@@ -1,6 +1,6 @@
-# Data health — 2026-11-05 03:41 UTC
+# Data health — 2026-11-05 06:30 UTC
 
-**FAILING** 36 · **BLOCKED** 7 · **DEGRADED** 4 · **OK** 39
+**FAILING** 36 · **BLOCKED** 7 · **STALE** 6 · **DEGRADED** 4 · **OK** 33
 
 ## Needs attention
 
@@ -49,6 +49,12 @@
 | provider:quiver | BLOCKED | no key reaches the runner |
 | provider:tickstream | BLOCKED | no key reaches the runner |
 | provider:unusual_whales | BLOCKED | BLOCKED_AUTHENTICATION |
+| workflow:native-five-research.yml | STALE | last success 4.7 h ago (expected within 3 h) |
+| workflow:native-provider-access.yml | STALE | last success 10.4 h ago (expected within 8 h) |
+| workflow:official-economic-events.yml | STALE | last success 10.7 h ago (expected within 8 h) |
+| workflow:provider-supplemental-collection.yml | STALE | last success 3.8 h ago (expected within 3 h) |
+| workflow:provider-supplemental-promote.yml | STALE | last success 3.7 h ago (expected within 3 h) |
+| workflow:sec-edgar-data.yml | STALE | last success 4.7 h ago (expected within 3 h) |
 | provider:alphavantage | DEGRADED | 12138 rows; 3 endpoints denied by plan |
 | provider:eodhd | DEGRADED | dedicated fabric live (11 calls, 2510 known rows); generic sampler blocked |
 | provider:fmp | DEGRADED | 31 rows; 2 endpoints denied by plan |
@@ -56,7 +62,7 @@
 
 ## Delivering
 
-economic_events, feed:btcusd_cb_5m, feed:btcusdt_5m, feed:cboe_skew, feed:cboe_vix, feed:cboe_vix3m, feed:cboe_vix9d, feed:cboe_vvix, feed:cftc_disaggregated_all, feed:cftc_tff_all, feed:cftc_tff_nasdaq, feed:ethusdt_5m, feed:fred_dff, feed:fred_dgs10, feed:fred_dgs2, feed:fred_nasdaq100, feed:fred_t10y2y, feed:fred_vixcls, feed:treasury_auctions, feed:treasury_debt_to_penny, feed:treasury_operating_cash, fred_alfred, provider:fred, provider:massive, provider:tiingo, sec_edgar, workflow:cl-lab.yml, workflow:databento-depth-corpus.yml, workflow:depth-vault.yml, workflow:external-data-fabric.yml, workflow:interrepo-peer-intelligence.yml, workflow:native-five-research.yml, workflow:native-provider-access.yml, workflow:official-economic-events.yml, workflow:provider-exhaustive-collection.yml, workflow:provider-supplemental-collection.yml, workflow:provider-supplemental-promote.yml, workflow:sec-edgar-data.yml, workflow:tests.yml
+economic_events, feed:btcusd_cb_5m, feed:btcusdt_5m, feed:cboe_skew, feed:cboe_vix, feed:cboe_vix3m, feed:cboe_vix9d, feed:cboe_vvix, feed:cftc_disaggregated_all, feed:cftc_tff_all, feed:cftc_tff_nasdaq, feed:ethusdt_5m, feed:fred_dff, feed:fred_dgs10, feed:fred_dgs2, feed:fred_nasdaq100, feed:fred_t10y2y, feed:fred_vixcls, feed:treasury_auctions, feed:treasury_debt_to_penny, feed:treasury_operating_cash, fred_alfred, provider:fred, provider:massive, provider:tiingo, sec_edgar, workflow:cl-lab.yml, workflow:databento-depth-corpus.yml, workflow:depth-vault.yml, workflow:external-data-fabric.yml, workflow:interrepo-peer-intelligence.yml, workflow:provider-exhaustive-collection.yml, workflow:tests.yml
 
 ## Order-book data
 

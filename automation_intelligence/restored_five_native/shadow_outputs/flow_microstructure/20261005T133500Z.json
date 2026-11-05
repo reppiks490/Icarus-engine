@@ -1,0 +1,53 @@
+{
+  "api_credential_required": false,
+  "canonical_state_mutated": false,
+  "deterministic_facts": {
+    "execution_authorized": false,
+    "expected_RUN_ID": "flow-20261005T133500Z",
+    "fallback_only": true,
+    "observed_worker_RUN_ID": "flow-20261005T133500Z",
+    "observed_worker_RUN_STATUS": "RUN_PERSISTED",
+    "run_id_match": true,
+    "slot_status": "FALLBACK_LIVENESS_ONLY",
+    "substantive_work_claimed": false,
+    "worker_receipt_status": "WATCHDOG_FALLBACK_RECEIPT_PRESENT"
+  },
+  "execution_authorized": false,
+  "inference_backend": "local_gguf",
+  "input_path": "/home/runner/work/Icarus-engine/Icarus-engine/automation_intelligence/restored_five_native/receipts/flow_microstructure/20261005T133500Z.json",
+  "input_sha256": "74cf3bfa7845f76e0ae4d18fa7e2a6020a69c26becf2464bb0e0d1995231b203",
+  "lane": "flow_microstructure",
+  "llama_cpp_sha256": "98020bb5a2a9e0284110e5c110158e18dca984a547d5afde1631fef0f03dd826",
+  "model": "Qwen/Qwen3-1.7B-GGUF@90862c4:Q8_0",
+  "model_advisory": {
+    "conflicts": [
+      "The observed_worker_RUN_STATUS is 'RUN_PERSISTED' but the slot_status is 'FALLBACK_LIVENESS_ONLY', indicating a misma..."
+    ],
+    "data_gaps": [
+      "substantive_work_claimed is false, suggesting no work was claimed by the worker"
+    ],
+    "execution_authorized": false,
+    "non_authoritative": true,
+    "summary": "Fallback-only with status mismatch and no work claimed."
+  },
+  "model_sha256": "061b54daade076b5d3362dac252678d17da8c68f07560be70818cace6590cb1a",
+  "observed_at_utc": "2026-11-05T22:20:40Z",
+  "paid_api_call_made": false,
+  "payload": {
+    "conflicts": [],
+    "data_gaps": [
+      "FALLBACK_LIVENESS_ONLY",
+      "WORKER_RECEIPT_NOT_VERIFIED:WATCHDOG_FALLBACK_RECEIPT_PRESENT",
+      "SUBSTANTIVE_WORK_NOT_PROVEN"
+    ],
+    "execution_authorized": false,
+    "lane": "flow_microstructure",
+    "net_new_delta": "SHADOW_ASSESSMENT_ONLY",
+    "summary": "Fallback-only durability receipt; worker completion is not verified. Observed RUN_ID matches expected. Substantive work is not proven by this durability evidence."
+  },
+  "response_id": "local-c90f3d54bac5c103b68b652d",
+  "response_status": "completed",
+  "run_origin": "GITHUB_NATIVE_LOCAL_GGUF_SHADOW",
+  "schema_version": "restored-five-local-shadow-v2",
+  "substantive_research_source": "DURABLE_REPO_EVIDENCE_ONLY"
+}

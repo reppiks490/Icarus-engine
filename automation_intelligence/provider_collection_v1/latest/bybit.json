@@ -11,28 +11,109 @@
     "unresolved_operations": 0
   },
   "chatgpt_tokens_used": 0,
-  "completed_at_utc": "2026-11-04T22:39:07.755305+00:00",
+  "completed_at_utc": "2026-11-05T03:35:27.957977+00:00",
   "databento_excluded": true,
   "execution_authorized": false,
   "paid_model_calls": 0,
   "providers": {
     "bybit": {
       "archive_status": [],
-      "blocked": [],
+      "blocked": [
+        {
+          "asset_specific": false,
+          "failure_code": "403",
+          "operation": "bybit:get:/v5/market/instruments-info:spot"
+        },
+        {
+          "asset_specific": false,
+          "failure_code": "403",
+          "operation": "bybit:get:/v5/market/instruments-info:linear"
+        },
+        {
+          "asset_specific": false,
+          "failure_code": "403",
+          "operation": "bybit:get:/v5/market/instruments-info:inverse"
+        },
+        {
+          "asset_specific": false,
+          "failure_code": "403",
+          "operation": "bybit:get:/v5/market/instruments-info:option"
+        },
+        {
+          "asset_specific": false,
+          "failure_code": "403",
+          "operation": "bybit:get:/v5/market/tickers:spot"
+        },
+        {
+          "asset_specific": false,
+          "failure_code": "403",
+          "operation": "bybit:get:/v5/market/tickers:linear"
+        },
+        {
+          "asset_specific": false,
+          "failure_code": "403",
+          "operation": "bybit:get:/v5/market/tickers:inverse"
+        },
+        {
+          "asset_specific": false,
+          "failure_code": "403",
+          "operation": "bybit:get:/v5/market/tickers:option"
+        },
+        {
+          "asset_specific": false,
+          "failure_code": "403",
+          "operation": "bybit:get:/v5/market/insurance:spot"
+        },
+        {
+          "asset_specific": false,
+          "failure_code": "403",
+          "operation": "bybit:get:/v5/market/insurance:linear"
+        },
+        {
+          "asset_specific": false,
+          "failure_code": "403",
+          "operation": "bybit:get:/v5/market/insurance:inverse"
+        },
+        {
+          "asset_specific": false,
+          "failure_code": "403",
+          "operation": "bybit:get:/v5/market/insurance:option"
+        },
+        {
+          "asset_specific": false,
+          "failure_code": "403",
+          "operation": "bybit:get:/v5/market/historical-volatility:spot"
+        },
+        {
+          "asset_specific": false,
+          "failure_code": "403",
+          "operation": "bybit:get:/v5/market/historical-volatility:linear"
+        },
+        {
+          "asset_specific": false,
+          "failure_code": "403",
+          "operation": "bybit:get:/v5/market/historical-volatility:inverse"
+        },
+        {
+          "asset_specific": false,
+          "failure_code": "403",
+          "operation": "bybit:get:/v5/market/historical-volatility:option"
+        }
+      ],
       "collected_pages": 0,
       "collected_rows": 0,
       "credential_present": false,
       "endpoint_count": 56,
-      "requests": 0,
+      "requests": 16,
       "research_features": [],
-      "status": "NO_READY_JOBS",
+      "status": "BLOCKED",
       "substantive_work_performed": false,
       "verified_operations": []
     }
   },
   "raw_payloads_public": false,
-  "requests": 0,
-  "run_id": "providers-41926974995-1-bybit",
+  "requests": 16,
+  "run_id": "providers-41961784616-1-bybit",
   "schema_version": "icarus-provider-collection-cycle-v1",
-  "started_at_utc": "2026-11-04T22:39:07.754010+00:00"
+  "started_at_utc": "2026-11-05T03:31:59.221303+00:00"
 }

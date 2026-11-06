@@ -3,16 +3,16 @@
     "asset_datasets_collected": 0,
     "asset_templates": 0,
     "assets": 0,
-    "collected_operations": 20,
+    "collected_operations": 17,
     "denied_operations": 3,
     "operations": 28,
-    "pending_pages": 5,
+    "pending_pages": 8,
     "qualification": "INCOMPLETE_UNTIL_EVERY_OPERATION_ASSET_PAGE_TIME_RANGE_AND_TRANSPORT_IS_VERIFIED",
     "unresolved_operations": 0
   },
   "chatgpt_tokens_used": 0,
   "checkpoint_status": "ENCRYPTED_AES256_GCM",
-  "completed_at_utc": "2026-11-06T07:19:29.760680+00:00",
+  "completed_at_utc": "2026-11-06T15:21:15.470360+00:00",
   "databento_excluded": true,
   "execution_authorized": false,
   "paid_model_calls": 0,
@@ -21,9 +21,25 @@
       "archive_status": [
         "ENCRYPTED_AES256_GCM"
       ],
-      "blocked": [],
-      "collected_pages": 5,
-      "collected_rows": 43454,
+      "blocked": [
+        {
+          "asset_specific": false,
+          "failure_code": "403",
+          "operation": "alphavantage:get:TIME_SERIES_INTRADAY"
+        },
+        {
+          "asset_specific": false,
+          "failure_code": "403",
+          "operation": "alphavantage:get:NEWS_SENTIMENT"
+        },
+        {
+          "asset_specific": false,
+          "failure_code": "403",
+          "operation": "alphavantage:get:OVERVIEW"
+        }
+      ],
+      "collected_pages": 2,
+      "collected_rows": 1010,
       "credential_present": true,
       "endpoint_count": 28,
       "requests": 5,
@@ -31,40 +47,39 @@
         {
           "features": {
             "value": {
-              "maximum": 15.84,
-              "mean": 5.803491602864912,
-              "minimum": 0.52,
-              "samples": 16196,
-              "standard_deviation": 2.9257002004216464
+              "maximum": 13.5492019749684,
+              "mean": 3.757704479117809,
+              "minimum": -0.355546266299747,
+              "samples": 65,
+              "standard_deviation": 2.721827819168775
             }
           },
-          "operation": "alphavantage:get:TREASURY_YIELD"
+          "operation": "alphavantage:get:INFLATION"
         },
         {
           "features": {
             "value": {
-              "maximum": 22.36,
-              "mean": 4.593095175023864,
-              "minimum": 0.04,
-              "samples": 26425,
-              "standard_deviation": 3.5399671349842374
+              "maximum": 14.8,
+              "mean": 5.652966101694915,
+              "minimum": 2.5,
+              "samples": 944,
+              "standard_deviation": 1.7026312186282522
             }
           },
-          "operation": "alphavantage:get:FEDERAL_FUNDS_RATE"
+          "operation": "alphavantage:get:UNEMPLOYMENT"
         }
       ],
       "status": "COLLECTED_PARTIAL",
       "substantive_work_performed": true,
       "verified_operations": [
-        "alphavantage:get:DIVIDENDS",
-        "alphavantage:get:FEDERAL_FUNDS_RATE",
-        "alphavantage:get:TREASURY_YIELD"
+        "alphavantage:get:INFLATION",
+        "alphavantage:get:UNEMPLOYMENT"
       ]
     }
   },
   "raw_payloads_public": false,
   "requests": 5,
-  "run_id": "supplemental-42179996990-alphavantage",
+  "run_id": "supplemental-42242069637-alphavantage",
   "schema_version": "icarus-provider-collection-cycle-v1",
-  "started_at_utc": "2026-11-06T07:18:36.627552+00:00"
+  "started_at_utc": "2026-11-06T15:20:22.392296+00:00"
 }

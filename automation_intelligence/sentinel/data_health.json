@@ -82,8 +82,7 @@
   "BLOCKED": 7,
   "DEGRADED": 3,
   "FAILING": 36,
-  "OK": 39,
-  "UNKNOWN": 1
+  "OK": 40
  },
  "depth": {
   "budgets": {
@@ -154,7 +153,7 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-11-06T02:49:36+00:00",
+ "generated_at": "2026-11-06T02:50:53+00:00",
  "research": {
   "champions": 0,
   "cl_last_run": "2026-11-06T01:50:31.856774+00:00",
@@ -506,17 +505,12 @@
    "why": "no key; keyless endpoints only, none ready"
   },
   {
-   "age_h": 24.1,
+   "age_h": 0.0,
    "path": "automation_intelligence/cl_lab/external_data_fabric.json",
-   "rows": 31,
+   "rows": 28,
    "source": "provider:fmp",
    "verdict": "DEGRADED",
-   "why": "31 rows; 2 endpoints denied by plan"
-  },
-  {
-   "source": "workflow:interrepo-peer-intelligence.yml",
-   "verdict": "UNKNOWN",
-   "why": "no completed run on main"
+   "why": "28 rows; 2 endpoints denied by plan"
   },
   {
    "age_h": 6.9,
@@ -666,14 +660,14 @@
    "why": "16754 rows to 2026-11-04T00:00"
   },
   {
-   "age_h": 1.0,
+   "age_h": 1.1,
    "rows": 197145,
    "source": "fred_alfred",
    "verdict": "OK",
    "why": "39/39 series ok"
   },
   {
-   "age_h": 24.1,
+   "age_h": 0.0,
    "path": "automation_intelligence/cl_lab/external_data_fabric.json",
    "rows": 2510,
    "source": "provider:eodhd",
@@ -697,12 +691,12 @@
    "why": "20000 rows"
   },
   {
-   "age_h": 24.1,
+   "age_h": 0.0,
    "path": "automation_intelligence/cl_lab/external_data_fabric.json",
-   "rows": 47617,
+   "rows": 47627,
    "source": "provider:tiingo",
    "verdict": "OK",
-   "why": "47617 rows"
+   "why": "47627 rows"
   },
   {
    "age_h": 0.5,
@@ -718,10 +712,10 @@
    "why": "last success 1.0 h ago"
   },
   {
-   "age_h": 0.9,
+   "age_h": 1.0,
    "source": "workflow:databento-depth-corpus.yml",
    "verdict": "OK",
-   "why": "last success 0.9 h ago"
+   "why": "last success 1.0 h ago"
   },
   {
    "age_h": 0.9,
@@ -730,10 +724,16 @@
    "why": "last success 0.9 h ago"
   },
   {
-   "age_h": 24.0,
+   "age_h": 0.0,
    "source": "workflow:external-data-fabric.yml",
    "verdict": "OK",
-   "why": "last success 24.0 h ago"
+   "why": "last success 0.0 h ago"
+  },
+  {
+   "age_h": 0.0,
+   "source": "workflow:interrepo-peer-intelligence.yml",
+   "verdict": "OK",
+   "why": "last success 0.0 h ago"
   },
   {
    "age_h": 0.0,
@@ -754,10 +754,10 @@
    "why": "last success 6.9 h ago"
   },
   {
-   "age_h": 1.1,
+   "age_h": 1.2,
    "source": "workflow:provider-exhaustive-collection.yml",
    "verdict": "OK",
-   "why": "last success 1.1 h ago"
+   "why": "last success 1.2 h ago"
   },
   {
    "age_h": 2.3,
@@ -778,10 +778,10 @@
    "why": "last success 0.2 h ago"
   },
   {
-   "age_h": 273.8,
+   "age_h": 273.9,
    "source": "workflow:tests.yml",
    "verdict": "OK",
-   "why": "last success 273.8 h ago"
+   "why": "last success 273.9 h ago"
   }
  ]
 }

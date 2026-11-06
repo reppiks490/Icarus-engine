@@ -82,8 +82,8 @@
   "BLOCKED": 7,
   "DEGRADED": 3,
   "FAILING": 36,
-  "OK": 35,
-  "STALE": 5
+  "OK": 36,
+  "STALE": 4
  },
  "depth": {
   "budgets": {
@@ -154,7 +154,7 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-11-06T07:19:51+00:00",
+ "generated_at": "2026-11-06T07:20:53+00:00",
  "research": {
   "champions": 0,
   "cl_last_run": "2026-11-06T01:50:31.856774+00:00",
@@ -442,7 +442,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 6.8,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/finnhub.json",
    "rows": 0,
    "source": "provider:finnhub",
@@ -482,7 +482,7 @@
    "why": "BLOCKED"
   },
   {
-   "age_h": 6.8,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/unusual_whales.json",
    "rows": 0,
    "source": "provider:unusual_whales",
@@ -502,16 +502,10 @@
    "why": "last success 10.9 h ago (expected within 8 h)"
   },
   {
-   "age_h": 5.6,
+   "age_h": 5.7,
    "source": "workflow:provider-exhaustive-collection.yml",
    "verdict": "STALE",
-   "why": "last success 5.6 h ago (expected within 3 h)"
-  },
-  {
-   "age_h": 6.8,
-   "source": "workflow:provider-supplemental-promote.yml",
-   "verdict": "STALE",
-   "why": "last success 6.8 h ago (expected within 3 h)"
+   "why": "last success 5.7 h ago (expected within 3 h)"
   },
   {
    "age_h": 4.7,
@@ -520,12 +514,12 @@
    "why": "last success 4.7 h ago (expected within 3 h)"
   },
   {
-   "age_h": 6.8,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/alphavantage.json",
-   "rows": 165,
+   "rows": 43454,
    "source": "provider:alphavantage",
    "verdict": "DEGRADED",
-   "why": "165 rows; 3 endpoints denied by plan"
+   "why": "43454 rows; 3 endpoints denied by plan"
   },
   {
    "age_h": 5.8,
@@ -544,7 +538,7 @@
    "why": "28 rows; 2 endpoints denied by plan"
   },
   {
-   "age_h": 0.5,
+   "age_h": 0.6,
    "rows": 248,
    "source": "economic_events",
    "verdict": "OK",
@@ -691,7 +685,7 @@
    "why": "16754 rows to 2026-11-04T00:00"
   },
   {
-   "age_h": 5.5,
+   "age_h": 5.6,
    "rows": 197145,
    "source": "fred_alfred",
    "verdict": "OK",
@@ -743,10 +737,10 @@
    "why": "last success 5.5 h ago"
   },
   {
-   "age_h": 5.4,
+   "age_h": 5.5,
    "source": "workflow:databento-depth-corpus.yml",
    "verdict": "OK",
-   "why": "last success 5.4 h ago"
+   "why": "last success 5.5 h ago"
   },
   {
    "age_h": 5.4,
@@ -767,10 +761,10 @@
    "why": "last success 0.7 h ago"
   },
   {
-   "age_h": 0.5,
+   "age_h": 0.6,
    "source": "workflow:official-economic-events.yml",
    "verdict": "OK",
-   "why": "last success 0.5 h ago"
+   "why": "last success 0.6 h ago"
   },
   {
    "age_h": 0.0,
@@ -779,10 +773,16 @@
    "why": "last success 0.0 h ago"
   },
   {
-   "age_h": 278.3,
+   "age_h": 0.0,
+   "source": "workflow:provider-supplemental-promote.yml",
+   "verdict": "OK",
+   "why": "last success 0.0 h ago"
+  },
+  {
+   "age_h": 278.4,
    "source": "workflow:tests.yml",
    "verdict": "OK",
-   "why": "last success 278.3 h ago"
+   "why": "last success 278.4 h ago"
   }
  ]
 }

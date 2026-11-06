@@ -1,0 +1,132 @@
+{
+  "automation_id": "github-native-research-v1",
+  "blockers": [
+    "Release titles establish publication, not macro surprise or causal impact.",
+    "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+    "No consensus estimates acquired; economic surprise remains unknown."
+  ],
+  "chatgpt_tokens_used": 0,
+  "code_revision": "eb3570a24fd67123eefa44d30e73f313a482bbac",
+  "completed_at_utc": "2026-11-06T23:31:33.013441Z",
+  "event_paths": [
+    "automation_intelligence/mcp_interface/events/native-42312155347-1_native_macro.json"
+  ],
+  "evidence": [
+    "automation_intelligence/native_research_v1/cycles/native-42312155347-1/evidence.json"
+  ],
+  "execution_authorized": false,
+  "input_sha256": "a648b5f748428a09261bfec5a5e603c7c55a49c520604de9b179e126838709b1",
+  "lane": "macro",
+  "local_interpretation": {
+    "authority": "UNVERIFIED_MODEL_INFERENCE",
+    "model": "Qwen/Qwen3-1.7B-GGUF@90862c4:Q8_0",
+    "payload": {
+      "conflicts": [],
+      "data_gaps": [],
+      "execution_authorized": false,
+      "lane": "macro",
+      "net_new_delta": "LOCAL_NEXT_TEST_SELECTION",
+      "summary": "Does the next official release change the daily macro context?"
+    },
+    "response_id": "local-3dc1754c694e11cb5673d914",
+    "status": "GENERATED"
+  },
+  "measurements": {
+    "gaps": [
+      "Release titles establish publication, not macro surprise or causal impact.",
+      "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+      "No consensus estimates acquired; economic surprise remains unknown."
+    ],
+    "limits": "Publication and daily change are facts; surprise, causality and intraday propagation remain unverified.",
+    "releases": [
+      {
+        "published_epoch": 1793894400.0,
+        "retrieval_finished": 1794007882.3978927,
+        "retrieval_started": 1794007882.2379026,
+        "source": "FED",
+        "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20261105a.htm",
+        "title": "Federal Reserve Board announces termination of enforcement action with Allegiant United Holdings, LLC, Nano Financial Holdings, Inc., and Nano Banc"
+      },
+      {
+        "published_epoch": 1793955600.0,
+        "retrieval_finished": 1794007883.0488942,
+        "retrieval_started": 1794007882.398297,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr261106~356f2fc73a.en.html",
+        "title": "ECB publishes consolidated banking data for end-June 2026"
+      },
+      {
+        "published_epoch": 1793865600.0,
+        "retrieval_finished": 1794007883.0488942,
+        "retrieval_started": 1794007882.398297,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261105_1~5e97d9d5a0.en.html",
+        "title": "Isabel Schnabel: Navigating stormy waters: reflections on monetary policy"
+      },
+      {
+        "published_epoch": 1793863800.0,
+        "retrieval_finished": 1794007883.0488942,
+        "retrieval_started": 1794007882.398297,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261105~6495a0df6f.en.html",
+        "title": "Piero Cipollone: Shaping the future of money"
+      },
+      {
+        "published_epoch": 1793750400.0,
+        "retrieval_finished": 1794007883.0488942,
+        "retrieval_started": 1794007882.398297,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr261104~caf181d7ac.en.html",
+        "title": "ECB wage tracker suggests slightly higher wage growth in first three quarters of 2027 compared with the full year of 2026"
+      },
+      {
+        "published_epoch": 1793971895.0,
+        "retrieval_finished": 1794007883.1979432,
+        "retrieval_started": 1794007883.0492036,
+        "source": "BLS",
+        "source_url": "https://www.bls.gov/bls/",
+        "title": "Major Economic Indicators Latest Numbers"
+      }
+    ],
+    "series": [
+      {
+        "change": -0.0600000000000005,
+        "date": "2026-11-05",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-11-04",
+        "series": "DGS10",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10",
+        "value": 4.84
+      },
+      {
+        "change": -0.1200000000000001,
+        "date": "2026-11-05",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-11-04",
+        "series": "DGS2",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2",
+        "value": 4.46
+      },
+      {
+        "change": -0.07049999999999557,
+        "date": "2026-10-30",
+        "freshness": "STALE",
+        "prior_date": "2026-10-29",
+        "series": "DTWEXBGS",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DTWEXBGS",
+        "value": 121.6656
+      }
+    ],
+    "status": "VERIFIED",
+    "summary": "6 dated official release headlines; 3 daily macro series measured."
+  },
+  "outcome": "MATERIAL_DELTA",
+  "paid_model_calls": 0,
+  "prior_receipt_path": "automation_intelligence/native_research_v1/cycles/native-42300961133-1/macro.json",
+  "run_id": "native-42312155347-1-macro",
+  "schema_version": "icarus-research-run-v1",
+  "started_at_utc": "2026-11-06T23:31:23.909234Z",
+  "substantive_work_performed": true,
+  "summary": "6 dated official release headlines; 3 daily macro series measured.",
+  "worker": "GITHUB_ACTIONS"
+}

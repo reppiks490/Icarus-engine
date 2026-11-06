@@ -82,9 +82,8 @@
   "BLOCKED": 6,
   "DEGRADED": 3,
   "FAILING": 36,
-  "OK": 39,
-  "STALE": 1,
-  "UNKNOWN": 1
+  "OK": 40,
+  "STALE": 1
  },
  "depth": {
   "budgets": {
@@ -155,7 +154,7 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-11-06T22:00:56+00:00",
+ "generated_at": "2026-11-06T22:02:17+00:00",
  "research": {
   "champions": 0,
   "cl_last_run": "2026-11-06T20:09:24.332134+00:00",
@@ -213,7 +212,7 @@
    "why": "root not in CL_DATABENTO_ROOTS"
   },
   {
-   "age_h": 311.8,
+   "age_h": 311.9,
    "rows": 145073,
    "source": "feed:databento_btc_5m",
    "verdict": "FAILING",
@@ -435,7 +434,7 @@
    "why": "latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/42292752431"
   },
   {
-   "age_h": 4.5,
+   "age_h": 4.6,
    "path": "automation_intelligence/provider_collection_v1/latest/alpaca.json",
    "rows": 0,
    "source": "provider:alpaca",
@@ -459,7 +458,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 4.5,
+   "age_h": 4.6,
    "path": "automation_intelligence/provider_collection_v1/latest/quiver.json",
    "rows": 0,
    "source": "provider:quiver",
@@ -467,7 +466,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 4.5,
+   "age_h": 4.6,
    "path": "automation_intelligence/provider_collection_v1/latest/tickstream.json",
    "rows": 0,
    "source": "provider:tickstream",
@@ -483,10 +482,10 @@
    "why": "BLOCKED_AUTHENTICATION"
   },
   {
-   "age_h": 4.3,
+   "age_h": 4.4,
    "source": "workflow:provider-exhaustive-collection.yml",
    "verdict": "STALE",
-   "why": "last success 4.3 h ago (expected within 3 h)"
+   "why": "last success 4.4 h ago (expected within 3 h)"
   },
   {
    "age_h": 1.0,
@@ -497,7 +496,7 @@
    "why": "29563 rows; 3 endpoints denied by plan"
   },
   {
-   "age_h": 4.5,
+   "age_h": 4.6,
    "path": "automation_intelligence/provider_collection_v1/latest/bybit.json",
    "rows": 0,
    "source": "provider:bybit",
@@ -513,11 +512,6 @@
    "why": "6772 rows; 2 endpoints denied by plan"
   },
   {
-   "source": "workflow:interrepo-peer-intelligence.yml",
-   "verdict": "UNKNOWN",
-   "why": "no completed run on main"
-  },
-  {
    "age_h": 2.6,
    "rows": 248,
    "source": "economic_events",
@@ -525,7 +519,7 @@
    "why": "248 events, 109 high impact"
   },
   {
-   "age_h": 1.9,
+   "age_h": 2.0,
    "rows": 10384,
    "source": "feed:btcusd_cb_5m",
    "verdict": "OK",
@@ -665,7 +659,7 @@
    "why": "16754 rows to 2026-11-04T00:00"
   },
   {
-   "age_h": 1.9,
+   "age_h": 2.0,
    "rows": 197152,
    "source": "fred_alfred",
    "verdict": "OK",
@@ -680,7 +674,7 @@
    "why": "2510 rows"
   },
   {
-   "age_h": 4.4,
+   "age_h": 4.5,
    "path": "automation_intelligence/provider_collection_v1/latest/fred.json",
    "rows": 1477,
    "source": "provider:fred",
@@ -704,7 +698,7 @@
    "why": "47627 rows"
   },
   {
-   "age_h": 4.4,
+   "age_h": 4.5,
    "path": "automation_intelligence/provider_collection_v1/latest/twelve.json",
    "rows": 71475,
    "source": "provider:twelve",
@@ -725,10 +719,10 @@
    "why": "last success 1.9 h ago"
   },
   {
-   "age_h": 1.0,
+   "age_h": 1.1,
    "source": "workflow:databento-depth-corpus.yml",
    "verdict": "OK",
-   "why": "last success 1.0 h ago"
+   "why": "last success 1.1 h ago"
   },
   {
    "age_h": 1.0,
@@ -741,6 +735,12 @@
    "source": "workflow:external-data-fabric.yml",
    "verdict": "OK",
    "why": "last success 19.2 h ago"
+  },
+  {
+   "age_h": 0.0,
+   "source": "workflow:interrepo-peer-intelligence.yml",
+   "verdict": "OK",
+   "why": "last success 0.0 h ago"
   },
   {
    "age_h": 0.0,
@@ -779,10 +779,10 @@
    "why": "last success 0.0 h ago"
   },
   {
-   "age_h": 293.0,
+   "age_h": 293.1,
    "source": "workflow:tests.yml",
    "verdict": "OK",
-   "why": "last success 293.0 h ago"
+   "why": "last success 293.1 h ago"
   }
  ]
 }

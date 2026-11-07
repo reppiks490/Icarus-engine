@@ -1,0 +1,83 @@
+{
+  "automation_id": "github-native-research-v1",
+  "blockers": [
+    "bybit_spot: acquisition failed (HTTPError)",
+    "bybit_linear: acquisition failed (HTTPError)",
+    "Direct NQ/MNQ, GC/MGC, SI, DXY and volatility indices not acquired by this public worker.",
+    "Twelve Data and Massive connector credentials not exported; no entitlement inferred.",
+    "No historical trade signs, depth sequence, liquidations, OI, funding or basis collected."
+  ],
+  "chatgpt_tokens_used": 0,
+  "code_revision": "3be449bfa5d52afc9d51963559879c1836a07d4e",
+  "completed_at_utc": "2026-11-07T16:39:53.285316Z",
+  "event_paths": [],
+  "evidence": [
+    "automation_intelligence/native_research_v1/cycles/native-42392180117-1/evidence.json"
+  ],
+  "execution_authorized": false,
+  "input_sha256": "95d622b38ee670a21df22baae303f2204227b17df5b47550eeefa1e9f535e068",
+  "lane": "flow",
+  "local_interpretation": {
+    "authority": "UNVERIFIED_MODEL_INFERENCE",
+    "reason": "No semantic change",
+    "status": "NOT_RUN"
+  },
+  "measurements": {
+    "conflicts": [],
+    "current": [
+      {
+        "baseline_count": 28,
+        "baseline_end": 1794063600,
+        "baseline_start": 1793962800,
+        "end": 1794067200,
+        "lane_key": "coinbase_spot",
+        "provider": "coinbase",
+        "range": 345.1399999999994,
+        "range_z": 1.0956590455949826,
+        "representation": "BTC-USD spot",
+        "start": 1794063600,
+        "state": "ORDINARY",
+        "volume": 195.80489388,
+        "volume_z": 0.3688265265682128
+      },
+      {
+        "baseline_count": 28,
+        "baseline_end": 1794063600,
+        "baseline_start": 1793962800,
+        "end": 1794067200,
+        "lane_key": "kraken_spot",
+        "provider": "kraken",
+        "range": 327.8000000000029,
+        "range_z": 1.045887570074506,
+        "representation": "BTC-USD spot",
+        "start": 1794063600,
+        "state": "ORDINARY",
+        "volume": 44.40363098,
+        "volume_z": 0.09360818927804417
+      }
+    ],
+    "gaps": [
+      "bybit_spot: acquisition failed (HTTPError)",
+      "bybit_linear: acquisition failed (HTTPError)",
+      "Direct NQ/MNQ, GC/MGC, SI, DXY and volatility indices not acquired by this public worker.",
+      "Twelve Data and Massive connector credentials not exported; no entitlement inferred.",
+      "No historical trade signs, depth sequence, liquidations, OI, funding or basis collected."
+    ],
+    "limits": [
+      "Candle volume is representation-specific reported activity, not directional order flow.",
+      "No depth-history, liquidation, absorption or cross-asset causal claim."
+    ],
+    "provider_family_count": 2,
+    "status": "VERIFIED",
+    "summary": "coinbase_spot: ORDINARY; kraken_spot: ORDINARY"
+  },
+  "outcome": "NO_MATERIAL_DELTA",
+  "paid_model_calls": 0,
+  "prior_receipt_path": "automation_intelligence/native_research_v1/cycles/native-42381103360-1/flow.json",
+  "run_id": "native-42392180117-1-flow",
+  "schema_version": "icarus-research-run-v1",
+  "started_at_utc": "2026-11-07T16:39:53.245972Z",
+  "substantive_work_performed": true,
+  "summary": "coinbase_spot: ORDINARY; kraken_spot: ORDINARY",
+  "worker": "GITHUB_ACTIONS"
+}

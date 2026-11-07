@@ -1,6 +1,6 @@
 # Data health — 2026-11-07 14:25 UTC
 
-**FAILING** 37 · **BLOCKED** 7 · **STALE** 3 · **DEGRADED** 4 · **OK** 35
+**FAILING** 36 · **BLOCKED** 7 · **STALE** 3 · **DEGRADED** 4 · **UNKNOWN** 1 · **OK** 35
 
 ## Needs attention
 
@@ -42,7 +42,6 @@
 | feed:databento_zw_5m | FAILING | root not in CL_DATABENTO_ROOTS |
 | workflow:cl-depth-sweep.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/42370311996 |
 | workflow:databento-depth-research-context.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/42363938942 |
-| workflow:interrepo-peer-intelligence.yml | FAILING | latest run cancelled: https://github.com/reppiks490/Icarus-engine/actions/runs/42381311118 |
 | provider:alpaca | BLOCKED | no key reaches the runner |
 | provider:finnhub | BLOCKED | BLOCKED_AUTHENTICATION |
 | provider:intrinio | BLOCKED | no key reaches the runner |
@@ -57,6 +56,7 @@
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
 | provider:eodhd | DEGRADED | dedicated fabric live (11 calls, 2510 known rows); generic sampler blocked |
 | provider:fmp | DEGRADED | dedicated fabric live (3 calls, 27 known rows); generic sampler blocked; 2 endpoints denied by plan |
+| workflow:interrepo-peer-intelligence.yml | UNKNOWN | no completed run on main |
 
 ## Delivering
 

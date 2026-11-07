@@ -81,10 +81,9 @@
  "counts": {
   "BLOCKED": 7,
   "DEGRADED": 4,
-  "FAILING": 36,
+  "FAILING": 37,
   "OK": 35,
-  "STALE": 3,
-  "UNKNOWN": 1
+  "STALE": 3
  },
  "depth": {
   "budgets": {
@@ -155,7 +154,7 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-11-07T14:25:45+00:00",
+ "generated_at": "2026-11-07T14:27:07+00:00",
  "research": {
   "champions": 0,
   "cl_last_run": "2026-11-07T07:50:21.131073+00:00",
@@ -435,7 +434,13 @@
    "why": "latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/42363938942"
   },
   {
-   "age_h": 4.4,
+   "age_h": null,
+   "source": "workflow:interrepo-peer-intelligence.yml",
+   "verdict": "FAILING",
+   "why": "latest run cancelled: https://github.com/reppiks490/Icarus-engine/actions/runs/42381631075"
+  },
+  {
+   "age_h": 4.5,
    "path": "automation_intelligence/provider_collection_v1/latest/alpaca.json",
    "rows": 0,
    "source": "provider:alpaca",
@@ -459,7 +464,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 4.4,
+   "age_h": 4.5,
    "path": "automation_intelligence/provider_collection_v1/latest/quiver.json",
    "rows": 0,
    "source": "provider:quiver",
@@ -467,7 +472,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 4.4,
+   "age_h": 4.5,
    "path": "automation_intelligence/provider_collection_v1/latest/tickstream.json",
    "rows": 0,
    "source": "provider:tickstream",
@@ -517,7 +522,7 @@
    "why": "1466 rows; 3 endpoints denied by plan"
   },
   {
-   "age_h": 4.4,
+   "age_h": 4.5,
    "path": "automation_intelligence/provider_collection_v1/latest/bybit.json",
    "rows": 0,
    "source": "provider:bybit",
@@ -541,11 +546,6 @@
    "why": "dedicated fabric live (3 calls, 27 known rows); generic sampler blocked; 2 endpoints denied by plan"
   },
   {
-   "source": "workflow:interrepo-peer-intelligence.yml",
-   "verdict": "UNKNOWN",
-   "why": "no completed run on main"
-  },
-  {
    "age_h": 1.4,
    "rows": 248,
    "source": "economic_events",
@@ -567,56 +567,56 @@
    "why": "229536 rows to 2026-11-06T23:55"
   },
   {
-   "age_h": 38.4,
+   "age_h": 38.5,
    "rows": 9265,
    "source": "feed:cboe_skew",
    "verdict": "OK",
    "why": "9265 rows to 2026-11-06T00:00"
   },
   {
-   "age_h": 38.4,
+   "age_h": 38.5,
    "rows": 9311,
    "source": "feed:cboe_vix",
    "verdict": "OK",
    "why": "9311 rows to 2026-11-06T00:00"
   },
   {
-   "age_h": 38.4,
+   "age_h": 38.5,
    "rows": 4311,
    "source": "feed:cboe_vix3m",
    "verdict": "OK",
    "why": "4311 rows to 2026-11-06T00:00"
   },
   {
-   "age_h": 38.4,
+   "age_h": 38.5,
    "rows": 3985,
    "source": "feed:cboe_vix9d",
    "verdict": "OK",
    "why": "3985 rows to 2026-11-06T00:00"
   },
   {
-   "age_h": 38.4,
+   "age_h": 38.5,
    "rows": 5142,
    "source": "feed:cboe_vvix",
    "verdict": "OK",
    "why": "5142 rows to 2026-11-06T00:00"
   },
   {
-   "age_h": 110.4,
+   "age_h": 110.5,
    "rows": 187026,
    "source": "feed:cftc_disaggregated_all",
    "verdict": "OK",
    "why": "187026 rows to 2026-11-03T00:00"
   },
   {
-   "age_h": 110.4,
+   "age_h": 110.5,
    "rows": 47322,
    "source": "feed:cftc_tff_all",
    "verdict": "OK",
    "why": "47322 rows to 2026-11-03T00:00"
   },
   {
-   "age_h": 110.4,
+   "age_h": 110.5,
    "rows": 2233,
    "source": "feed:cftc_tff_nasdaq",
    "verdict": "OK",
@@ -630,63 +630,63 @@
    "why": "229536 rows to 2026-11-06T23:55"
   },
   {
-   "age_h": 62.4,
+   "age_h": 62.5,
    "rows": 26426,
    "source": "feed:fred_dff",
    "verdict": "OK",
    "why": "26426 rows to 2026-11-05T00:00"
   },
   {
-   "age_h": 62.4,
+   "age_h": 62.5,
    "rows": 16918,
    "source": "feed:fred_dgs10",
    "verdict": "OK",
    "why": "16918 rows to 2026-11-05T00:00"
   },
   {
-   "age_h": 62.4,
+   "age_h": 62.5,
    "rows": 13158,
    "source": "feed:fred_dgs2",
    "verdict": "OK",
    "why": "13158 rows to 2026-11-05T00:00"
   },
   {
-   "age_h": 38.4,
+   "age_h": 38.5,
    "rows": 10656,
    "source": "feed:fred_nasdaq100",
    "verdict": "OK",
    "why": "10656 rows to 2026-11-06T00:00"
   },
   {
-   "age_h": 38.4,
+   "age_h": 38.5,
    "rows": 13159,
    "source": "feed:fred_t10y2y",
    "verdict": "OK",
    "why": "13159 rows to 2026-11-06T00:00"
   },
   {
-   "age_h": 62.4,
+   "age_h": 62.5,
    "rows": 9613,
    "source": "feed:fred_vixcls",
    "verdict": "OK",
    "why": "9613 rows to 2026-11-05T00:00"
   },
   {
-   "age_h": 398.4,
+   "age_h": 398.5,
    "rows": 11154,
    "source": "feed:treasury_auctions",
    "verdict": "OK",
    "why": "11154 rows to 2026-10-22T00:00"
   },
   {
-   "age_h": 62.4,
+   "age_h": 62.5,
    "rows": 8429,
    "source": "feed:treasury_debt_to_penny",
    "verdict": "OK",
    "why": "8429 rows to 2026-11-05T00:00"
   },
   {
-   "age_h": 62.4,
+   "age_h": 62.5,
    "rows": 16758,
    "source": "feed:treasury_operating_cash",
    "verdict": "OK",
@@ -779,10 +779,10 @@
    "why": "last success 0.1 h ago"
   },
   {
-   "age_h": 309.4,
+   "age_h": 309.5,
    "source": "workflow:tests.yml",
    "verdict": "OK",
-   "why": "last success 309.4 h ago"
+   "why": "last success 309.5 h ago"
   }
  ]
 }

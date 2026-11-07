@@ -1,6 +1,6 @@
-# Data health — 2026-11-07 16:40 UTC
+# Data health — 2026-11-07 16:44 UTC
 
-**FAILING** 36 · **BLOCKED** 6 · **STALE** 1 · **DEGRADED** 3 · **OK** 40
+**FAILING** 37 · **BLOCKED** 6 · **DEGRADED** 3 · **OK** 40
 
 ## Needs attention
 
@@ -42,13 +42,13 @@
 | feed:databento_zw_5m | FAILING | root not in CL_DATABENTO_ROOTS |
 | workflow:cl-depth-sweep.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/42370311996 |
 | workflow:databento-depth-research-context.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/42363938942 |
+| workflow:provider-exhaustive-collection.yml | FAILING | latest run cancelled: https://github.com/reppiks490/Icarus-engine/actions/runs/42391008400 |
 | provider:alpaca | BLOCKED | no key reaches the runner |
 | provider:finnhub | BLOCKED | BLOCKED_AUTHENTICATION |
 | provider:intrinio | BLOCKED | no key reaches the runner |
 | provider:quiver | BLOCKED | no key reaches the runner |
 | provider:tickstream | BLOCKED | no key reaches the runner |
 | provider:unusual_whales | BLOCKED | BLOCKED_AUTHENTICATION |
-| workflow:provider-exhaustive-collection.yml | STALE | last success 6.5 h ago (expected within 3 h) |
 | provider:alphavantage | DEGRADED | 177 rows; 3 endpoints denied by plan |
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
 | provider:fmp | DEGRADED | 27 rows; 2 endpoints denied by plan |

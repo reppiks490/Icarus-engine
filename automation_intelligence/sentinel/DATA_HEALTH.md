@@ -1,4 +1,4 @@
-# Data health — 2026-11-07 01:17 UTC
+# Data health — 2026-11-07 02:57 UTC
 
 **FAILING** 36 · **BLOCKED** 7 · **DEGRADED** 4 · **OK** 39
 
@@ -41,7 +41,7 @@
 | feed:databento_zt_5m | FAILING | root not in CL_DATABENTO_ROOTS |
 | feed:databento_zw_5m | FAILING | root not in CL_DATABENTO_ROOTS |
 | workflow:cl-depth-sweep.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/42323074976 |
-| workflow:databento-depth-research-context.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/42292752431 |
+| workflow:databento-depth-research-context.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/42323075066 |
 | provider:alpaca | BLOCKED | no key reaches the runner |
 | provider:finnhub | BLOCKED | BLOCKED_AUTHENTICATION |
 | provider:intrinio | BLOCKED | no key reaches the runner |
@@ -52,7 +52,7 @@
 | provider:alphavantage | DEGRADED | 6618 rows; 3 endpoints denied by plan |
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
 | provider:eodhd | DEGRADED | dedicated fabric live (11 calls, 2510 known rows); generic sampler blocked |
-| provider:fmp | DEGRADED | dedicated fabric live (3 calls, 28 known rows); generic sampler blocked; 2 endpoints denied by plan |
+| provider:fmp | DEGRADED | dedicated fabric live (3 calls, 27 known rows); generic sampler blocked; 2 endpoints denied by plan |
 
 ## Delivering
 

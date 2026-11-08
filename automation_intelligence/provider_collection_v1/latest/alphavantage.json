@@ -12,7 +12,7 @@
   },
   "chatgpt_tokens_used": 0,
   "checkpoint_status": "ENCRYPTED_AES256_GCM",
-  "completed_at_utc": "2026-11-08T17:14:11.559076+00:00",
+  "completed_at_utc": "2026-11-08T21:21:32.178247+00:00",
   "databento_excluded": true,
   "execution_authorized": false,
   "paid_model_calls": 0,
@@ -23,22 +23,73 @@
       ],
       "blocked": [],
       "collected_pages": 5,
-      "collected_rows": 177,
+      "collected_rows": 44355,
       "credential_present": true,
       "endpoint_count": 28,
       "requests": 5,
-      "research_features": [],
+      "research_features": [
+        {
+          "features": {
+            "value": {
+              "maximum": 15.84,
+              "mean": 5.803432117058722,
+              "minimum": 0.52,
+              "samples": 16197,
+              "standard_deviation": 2.925619677527696
+            }
+          },
+          "operation": "alphavantage:get:TREASURY_YIELD"
+        },
+        {
+          "features": {
+            "value": {
+              "maximum": 22.36,
+              "mean": 4.593068190418738,
+              "minimum": 0.04,
+              "samples": 26426,
+              "standard_deviation": 3.539902873335762
+            }
+          },
+          "operation": "alphavantage:get:FEDERAL_FUNDS_RATE"
+        },
+        {
+          "features": {
+            "value": {
+              "maximum": 13.5492019749684,
+              "mean": 3.757704479117809,
+              "minimum": -0.355546266299747,
+              "samples": 65,
+              "standard_deviation": 2.721827819168775
+            }
+          },
+          "operation": "alphavantage:get:INFLATION"
+        },
+        {
+          "features": {
+            "value": {
+              "maximum": 14.8,
+              "mean": 5.65132275132275,
+              "minimum": 2.5,
+              "samples": 945,
+              "standard_deviation": 1.7024790037664017
+            }
+          },
+          "operation": "alphavantage:get:UNEMPLOYMENT"
+        }
+      ],
       "status": "COLLECTED_PARTIAL",
       "substantive_work_performed": true,
       "verified_operations": [
-        "alphavantage:get:CONGRESS_TRADES",
-        "alphavantage:get:DIVIDENDS"
+        "alphavantage:get:FEDERAL_FUNDS_RATE",
+        "alphavantage:get:INFLATION",
+        "alphavantage:get:TREASURY_YIELD",
+        "alphavantage:get:UNEMPLOYMENT"
       ]
     }
   },
   "raw_payloads_public": false,
   "requests": 5,
-  "run_id": "supplemental-42503847424-alphavantage",
+  "run_id": "supplemental-42524706351-alphavantage",
   "schema_version": "icarus-provider-collection-cycle-v1",
-  "started_at_utc": "2026-11-08T17:13:18.936802+00:00"
+  "started_at_utc": "2026-11-08T21:20:38.810629+00:00"
 }

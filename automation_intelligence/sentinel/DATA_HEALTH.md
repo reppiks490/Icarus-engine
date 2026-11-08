@@ -1,4 +1,4 @@
-# Data health — 2026-11-07 23:50 UTC
+# Data health — 2026-11-08 00:42 UTC
 
 **FAILING** 36 · **BLOCKED** 6 · **DEGRADED** 3 · **OK** 41
 
@@ -50,7 +50,7 @@
 | provider:unusual_whales | BLOCKED | BLOCKED_AUTHENTICATION |
 | provider:alphavantage | DEGRADED | 29563 rows; 3 endpoints denied by plan |
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
-| provider:fmp | DEGRADED | 6771 rows; 2 endpoints denied by plan |
+| provider:fmp | DEGRADED | 27 rows; 2 endpoints denied by plan |
 
 ## Delivering
 

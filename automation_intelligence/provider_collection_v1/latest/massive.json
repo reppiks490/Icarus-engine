@@ -3,8 +3,8 @@
     "asset_datasets_collected": 0,
     "asset_templates": 74,
     "assets": 2068265,
-    "collected_operations": 1,
-    "denied_operations": 0,
+    "collected_operations": 2,
+    "denied_operations": 8,
     "operations": 148,
     "pending_pages": 1430,
     "qualification": "INCOMPLETE_UNTIL_EVERY_OPERATION_ASSET_PAGE_TIME_RANGE_AND_TRANSPORT_IS_VERIFIED",
@@ -12,7 +12,7 @@
   },
   "chatgpt_tokens_used": 0,
   "checkpoint_status": "ENCRYPTED_AES256_GCM",
-  "completed_at_utc": "2026-11-08T15:16:17.407839+00:00",
+  "completed_at_utc": "2026-11-08T19:46:32.194322+00:00",
   "databento_excluded": true,
   "execution_authorized": false,
   "paid_model_calls": 0,
@@ -21,9 +21,55 @@
       "archive_status": [
         "ENCRYPTED_AES256_GCM"
       ],
-      "blocked": [],
-      "collected_pages": 20,
-      "collected_rows": 20000,
+      "blocked": [
+        {
+          "asset_specific": false,
+          "failure_code": "403",
+          "operation": "massive:get:/benzinga/v1/analysts"
+        },
+        {
+          "asset_specific": false,
+          "failure_code": "403",
+          "operation": "massive:get:/benzinga/v1/firms"
+        },
+        {
+          "asset_specific": false,
+          "failure_code": "403",
+          "operation": "massive:get:/consumer-spending/eu/v1/merchant-aggregates"
+        },
+        {
+          "asset_specific": false,
+          "failure_code": "404",
+          "operation": "massive:get:/crypto/v1/exchanges"
+        },
+        {
+          "asset_specific": false,
+          "failure_code": "403",
+          "operation": "massive:get:/etf-global/v1/analytics"
+        },
+        {
+          "asset_specific": false,
+          "failure_code": "403",
+          "operation": "massive:get:/etf-global/v1/constituents"
+        },
+        {
+          "asset_specific": false,
+          "failure_code": "403",
+          "operation": "massive:get:/etf-global/v1/fund-flows"
+        },
+        {
+          "asset_specific": false,
+          "failure_code": "403",
+          "operation": "massive:get:/etf-global/v1/profiles"
+        },
+        {
+          "asset_specific": false,
+          "failure_code": "403",
+          "operation": "massive:get:/etf-global/v1/taxonomies"
+        }
+      ],
+      "collected_pages": 11,
+      "collected_rows": 6943,
       "credential_present": true,
       "endpoint_count": 148,
       "requests": 20,
@@ -31,13 +77,17 @@
       "status": "COLLECTED_PARTIAL",
       "substantive_work_performed": true,
       "verified_operations": [
+        "massive:get:/fed/v1/funding-conditions",
+        "massive:get:/fed/v1/inflation",
+        "massive:get:/fed/v1/inflation-expectations",
+        "massive:get:/fed/v1/labor-market",
         "massive:get:/v3/reference/tickers"
       ]
     }
   },
   "raw_payloads_public": false,
   "requests": 20,
-  "run_id": "providers-42493180123-1-massive",
+  "run_id": "providers-42516077219-1-massive",
   "schema_version": "icarus-provider-collection-cycle-v1",
-  "started_at_utc": "2026-11-08T15:08:41.789867+00:00"
+  "started_at_utc": "2026-11-08T19:39:54.056224+00:00"
 }

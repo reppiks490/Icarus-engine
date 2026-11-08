@@ -3,8 +3,8 @@
     "asset_datasets_collected": 0,
     "asset_templates": 74,
     "assets": 2068265,
-    "collected_operations": 2,
-    "denied_operations": 8,
+    "collected_operations": 5,
+    "denied_operations": 11,
     "operations": 148,
     "pending_pages": 1430,
     "qualification": "INCOMPLETE_UNTIL_EVERY_OPERATION_ASSET_PAGE_TIME_RANGE_AND_TRANSPORT_IS_VERIFIED",
@@ -12,7 +12,7 @@
   },
   "chatgpt_tokens_used": 0,
   "checkpoint_status": "ENCRYPTED_AES256_GCM",
-  "completed_at_utc": "2026-11-08T19:46:32.194322+00:00",
+  "completed_at_utc": "2026-11-08T23:48:16.102776+00:00",
   "databento_excluded": true,
   "execution_authorized": false,
   "paid_model_calls": 0,
@@ -24,52 +24,42 @@
       "blocked": [
         {
           "asset_specific": false,
-          "failure_code": "403",
-          "operation": "massive:get:/benzinga/v1/analysts"
-        },
-        {
-          "asset_specific": false,
-          "failure_code": "403",
-          "operation": "massive:get:/benzinga/v1/firms"
-        },
-        {
-          "asset_specific": false,
-          "failure_code": "403",
-          "operation": "massive:get:/consumer-spending/eu/v1/merchant-aggregates"
+          "failure_code": "404",
+          "operation": "massive:get:/forex/v1/exchanges"
         },
         {
           "asset_specific": false,
           "failure_code": "404",
-          "operation": "massive:get:/crypto/v1/exchanges"
+          "operation": "massive:get:/futures/v1/products/new"
+        },
+        {
+          "asset_specific": false,
+          "failure_code": "404",
+          "operation": "massive:get:/options/v1/exchanges"
+        },
+        {
+          "asset_specific": false,
+          "failure_code": "404",
+          "operation": "massive:get:/stocks/v1/exchanges"
         },
         {
           "asset_specific": false,
           "failure_code": "403",
-          "operation": "massive:get:/etf-global/v1/analytics"
+          "operation": "massive:get:/v1/conversion/{from}/{to}"
         },
         {
           "asset_specific": false,
           "failure_code": "403",
-          "operation": "massive:get:/etf-global/v1/constituents"
+          "operation": "massive:get:/v1/historic/crypto/{from}/{to}/{date}"
         },
         {
           "asset_specific": false,
           "failure_code": "403",
-          "operation": "massive:get:/etf-global/v1/fund-flows"
-        },
-        {
-          "asset_specific": false,
-          "failure_code": "403",
-          "operation": "massive:get:/etf-global/v1/profiles"
-        },
-        {
-          "asset_specific": false,
-          "failure_code": "403",
-          "operation": "massive:get:/etf-global/v1/taxonomies"
+          "operation": "massive:get:/v1/historic/forex/{from}/{to}/{date}"
         }
       ],
-      "collected_pages": 11,
-      "collected_rows": 6943,
+      "collected_pages": 13,
+      "collected_rows": 716,
       "credential_present": true,
       "endpoint_count": 148,
       "requests": 20,
@@ -77,17 +67,20 @@
       "status": "COLLECTED_PARTIAL",
       "substantive_work_performed": true,
       "verified_operations": [
-        "massive:get:/fed/v1/funding-conditions",
-        "massive:get:/fed/v1/inflation",
-        "massive:get:/fed/v1/inflation-expectations",
-        "massive:get:/fed/v1/labor-market",
-        "massive:get:/v3/reference/tickers"
+        "massive:get:/fed/v1/treasury-yields",
+        "massive:get:/futures/v1/exchanges",
+        "massive:get:/futures/v1/market-status",
+        "massive:get:/futures/v1/products",
+        "massive:get:/futures/v1/schedules",
+        "massive:get:/stocks/filings/vX/13-F",
+        "massive:get:/stocks/taxonomies/vX/disclosures",
+        "massive:get:/stocks/taxonomies/vX/risk-factors"
       ]
     }
   },
   "raw_payloads_public": false,
   "requests": 20,
-  "run_id": "providers-42516077219-1-massive",
+  "run_id": "providers-42536309264-1-massive",
   "schema_version": "icarus-provider-collection-cycle-v1",
-  "started_at_utc": "2026-11-08T19:39:54.056224+00:00"
+  "started_at_utc": "2026-11-08T23:41:44.749391+00:00"
 }

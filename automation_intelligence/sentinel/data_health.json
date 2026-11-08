@@ -82,8 +82,8 @@
   "BLOCKED": 7,
   "DEGRADED": 4,
   "FAILING": 36,
-  "OK": 34,
-  "STALE": 5
+  "OK": 35,
+  "STALE": 4
  },
  "depth": {
   "budgets": {
@@ -154,7 +154,7 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-11-08T13:54:47+00:00",
+ "generated_at": "2026-11-08T13:56:31+00:00",
  "research": {
   "champions": 0,
   "cl_last_run": "2026-11-08T07:59:41.523348+00:00",
@@ -212,7 +212,7 @@
    "why": "root not in CL_DATABENTO_ROOTS"
   },
   {
-   "age_h": 351.7,
+   "age_h": 351.8,
    "rows": 145073,
    "source": "feed:databento_btc_5m",
    "verdict": "FAILING",
@@ -434,7 +434,7 @@
    "why": "latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/42471714297"
   },
   {
-   "age_h": 6.6,
+   "age_h": 6.7,
    "path": "automation_intelligence/provider_collection_v1/latest/alpaca.json",
    "rows": 0,
    "source": "provider:alpaca",
@@ -450,7 +450,7 @@
    "why": "BLOCKED_AUTHENTICATION"
   },
   {
-   "age_h": 6.6,
+   "age_h": 6.7,
    "path": "automation_intelligence/provider_collection_v1/latest/intrinio.json",
    "rows": 0,
    "source": "provider:intrinio",
@@ -466,7 +466,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 6.6,
+   "age_h": 6.7,
    "path": "automation_intelligence/provider_collection_v1/latest/tickstream.json",
    "rows": 0,
    "source": "provider:tickstream",
@@ -488,12 +488,6 @@
    "source": "provider:unusual_whales",
    "verdict": "BLOCKED",
    "why": "BLOCKED_AUTHENTICATION"
-  },
-  {
-   "age_h": 2.8,
-   "source": "workflow:interrepo-peer-intelligence.yml",
-   "verdict": "STALE",
-   "why": "last success 2.8 h ago (expected within 1 h)"
   },
   {
    "age_h": 6.5,
@@ -528,7 +522,7 @@
    "why": "1466 rows; 3 endpoints denied by plan"
   },
   {
-   "age_h": 6.6,
+   "age_h": 6.7,
    "path": "automation_intelligence/provider_collection_v1/latest/bybit.json",
    "rows": 0,
    "source": "provider:bybit",
@@ -755,10 +749,16 @@
    "why": "last success 0.2 h ago"
   },
   {
-   "age_h": 35.5,
+   "age_h": 35.6,
    "source": "workflow:external-data-fabric.yml",
    "verdict": "OK",
-   "why": "last success 35.5 h ago"
+   "why": "last success 35.6 h ago"
+  },
+  {
+   "age_h": 0.0,
+   "source": "workflow:interrepo-peer-intelligence.yml",
+   "verdict": "OK",
+   "why": "last success 0.0 h ago"
   },
   {
    "age_h": 0.0,
@@ -779,10 +779,10 @@
    "why": "last success 0.5 h ago"
   },
   {
-   "age_h": 332.9,
+   "age_h": 333.0,
    "source": "workflow:tests.yml",
    "verdict": "OK",
-   "why": "last success 332.9 h ago"
+   "why": "last success 333.0 h ago"
   }
  ]
 }

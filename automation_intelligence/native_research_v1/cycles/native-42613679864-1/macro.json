@@ -1,0 +1,89 @@
+{
+  "automation_id": "github-native-research-v1",
+  "blockers": [
+    "Release titles establish publication, not macro surprise or causal impact.",
+    "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+    "No consensus estimates acquired; economic surprise remains unknown."
+  ],
+  "chatgpt_tokens_used": 0,
+  "code_revision": "d80258d5e451b1eae32a1949da12964ceeae5b17",
+  "completed_at_utc": "2026-11-09T12:05:19.327407Z",
+  "event_paths": [],
+  "evidence": [
+    "automation_intelligence/native_research_v1/cycles/native-42613679864-1/evidence.json"
+  ],
+  "execution_authorized": false,
+  "input_sha256": "4644aa241a2c30cedcf5ad6d5a4f786d08287ab3cb21d843637dd7941374939a",
+  "lane": "macro",
+  "local_interpretation": {
+    "authority": "UNVERIFIED_MODEL_INFERENCE",
+    "reason": "No semantic change",
+    "status": "NOT_RUN"
+  },
+  "measurements": {
+    "gaps": [
+      "Release titles establish publication, not macro surprise or causal impact.",
+      "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+      "No consensus estimates acquired; economic surprise remains unknown."
+    ],
+    "limits": "Publication and daily change are facts; surprise, causality and intraday propagation remain unverified.",
+    "releases": [
+      {
+        "published_epoch": 1794060000.0,
+        "retrieval_finished": 1794225906.305095,
+        "retrieval_started": 1794225905.4469578,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/inter/date/2026/html/ecb.in261107~e7b86fc4ce.en.html",
+        "title": "Christine Lagarde: Interview with Yomiuri Shimbun"
+      },
+      {
+        "published_epoch": 1793971895.0,
+        "retrieval_finished": 1794225906.4440417,
+        "retrieval_started": 1794225906.3053613,
+        "source": "BLS",
+        "source_url": "https://www.bls.gov/bls/",
+        "title": "Major Economic Indicators Latest Numbers"
+      }
+    ],
+    "series": [
+      {
+        "change": -0.0600000000000005,
+        "date": "2026-11-05",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-11-04",
+        "series": "DGS10",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10",
+        "value": 4.84
+      },
+      {
+        "change": -0.1200000000000001,
+        "date": "2026-11-05",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-11-04",
+        "series": "DGS2",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2",
+        "value": 4.46
+      },
+      {
+        "change": -0.07049999999999557,
+        "date": "2026-10-30",
+        "freshness": "STALE",
+        "prior_date": "2026-10-29",
+        "series": "DTWEXBGS",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DTWEXBGS",
+        "value": 121.6656
+      }
+    ],
+    "status": "VERIFIED",
+    "summary": "2 dated official release headlines; 3 daily macro series measured."
+  },
+  "outcome": "NO_MATERIAL_DELTA",
+  "paid_model_calls": 0,
+  "prior_receipt_path": "automation_intelligence/native_research_v1/cycles/native-42595393069-1/macro.json",
+  "run_id": "native-42613679864-1-macro",
+  "schema_version": "icarus-research-run-v1",
+  "started_at_utc": "2026-11-09T12:05:06.633544Z",
+  "substantive_work_performed": true,
+  "summary": "2 dated official release headlines; 3 daily macro series measured.",
+  "worker": "GITHUB_ACTIONS"
+}

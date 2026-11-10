@@ -1,6 +1,6 @@
-# Data health — 2026-11-10 18:05 UTC
+# Data health — 2026-11-10 18:31 UTC
 
-**FAILING** 37 · **BLOCKED** 7 · **STALE** 5 · **DEGRADED** 4 · **OK** 33
+**FAILING** 36 · **BLOCKED** 7 · **STALE** 4 · **DEGRADED** 4 · **UNKNOWN** 1 · **OK** 34
 
 ## Needs attention
 
@@ -42,7 +42,6 @@
 | feed:databento_zw_5m | FAILING | root not in CL_DATABENTO_ROOTS |
 | workflow:cl-depth-sweep.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/42827843995 |
 | workflow:databento-depth-research-context.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/42807266731 |
-| workflow:interrepo-peer-intelligence.yml | FAILING | latest run cancelled: https://github.com/reppiks490/Icarus-engine/actions/runs/42871539057 |
 | provider:alpaca | BLOCKED | no key reaches the runner |
 | provider:finnhub | BLOCKED | BLOCKED_AUTHENTICATION |
 | provider:intrinio | BLOCKED | no key reaches the runner |
@@ -50,19 +49,19 @@
 | provider:tickstream | BLOCKED | no key reaches the runner |
 | provider:twelve | BLOCKED | BLOCKED |
 | provider:unusual_whales | BLOCKED | BLOCKED_AUTHENTICATION |
-| workflow:native-five-research.yml | STALE | last success 5.1 h ago (expected within 3 h) |
-| workflow:native-provider-access.yml | STALE | last success 10.2 h ago (expected within 8 h) |
-| workflow:official-economic-events.yml | STALE | last success 10.8 h ago (expected within 8 h) |
-| workflow:provider-supplemental-collection.yml | STALE | last success 6.4 h ago (expected within 3 h) |
-| workflow:provider-supplemental-promote.yml | STALE | last success 6.4 h ago (expected within 3 h) |
+| workflow:native-provider-access.yml | STALE | last success 10.6 h ago (expected within 8 h) |
+| workflow:official-economic-events.yml | STALE | last success 11.2 h ago (expected within 8 h) |
+| workflow:provider-supplemental-collection.yml | STALE | last success 6.8 h ago (expected within 3 h) |
+| workflow:provider-supplemental-promote.yml | STALE | last success 6.8 h ago (expected within 3 h) |
 | provider:alphavantage | DEGRADED | 44357 rows; 3 endpoints denied by plan |
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
 | provider:fmp | DEGRADED | 23 rows; 2 endpoints denied by plan |
 | provider:massive | DEGRADED | 20000 rows; 15 endpoints denied by plan |
+| workflow:interrepo-peer-intelligence.yml | UNKNOWN | no completed run on main |
 
 ## Delivering
 
-economic_events, feed:btcusd_cb_5m, feed:btcusdt_5m, feed:cboe_skew, feed:cboe_vix, feed:cboe_vix3m, feed:cboe_vix9d, feed:cboe_vvix, feed:cftc_disaggregated_all, feed:cftc_tff_all, feed:cftc_tff_nasdaq, feed:ethusdt_5m, feed:fred_dff, feed:fred_dgs10, feed:fred_dgs2, feed:fred_nasdaq100, feed:fred_t10y2y, feed:fred_vixcls, feed:treasury_auctions, feed:treasury_debt_to_penny, feed:treasury_operating_cash, fred_alfred, provider:eodhd, provider:fred, provider:tiingo, sec_edgar, workflow:cl-lab.yml, workflow:databento-depth-corpus.yml, workflow:depth-vault.yml, workflow:external-data-fabric.yml, workflow:provider-exhaustive-collection.yml, workflow:sec-edgar-data.yml, workflow:tests.yml
+economic_events, feed:btcusd_cb_5m, feed:btcusdt_5m, feed:cboe_skew, feed:cboe_vix, feed:cboe_vix3m, feed:cboe_vix9d, feed:cboe_vvix, feed:cftc_disaggregated_all, feed:cftc_tff_all, feed:cftc_tff_nasdaq, feed:ethusdt_5m, feed:fred_dff, feed:fred_dgs10, feed:fred_dgs2, feed:fred_nasdaq100, feed:fred_t10y2y, feed:fred_vixcls, feed:treasury_auctions, feed:treasury_debt_to_penny, feed:treasury_operating_cash, fred_alfred, provider:eodhd, provider:fred, provider:tiingo, sec_edgar, workflow:cl-lab.yml, workflow:databento-depth-corpus.yml, workflow:depth-vault.yml, workflow:external-data-fabric.yml, workflow:native-five-research.yml, workflow:provider-exhaustive-collection.yml, workflow:sec-edgar-data.yml, workflow:tests.yml
 
 ## Order-book data
 

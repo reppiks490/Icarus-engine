@@ -1,18 +1,18 @@
 {
   "catalog": {
-    "asset_datasets_collected": 5,
+    "asset_datasets_collected": 6,
     "asset_templates": 109,
     "assets": 6770,
-    "collected_operations": 9,
+    "collected_operations": 10,
     "denied_operations": 2,
     "operations": 230,
-    "pending_pages": 1265,
+    "pending_pages": 1277,
     "qualification": "INCOMPLETE_UNTIL_EVERY_OPERATION_ASSET_PAGE_TIME_RANGE_AND_TRANSPORT_IS_VERIFIED",
     "unresolved_operations": 0
   },
   "chatgpt_tokens_used": 0,
   "checkpoint_status": "ENCRYPTED_AES256_GCM",
-  "completed_at_utc": "2026-11-10T23:22:02.764382+00:00",
+  "completed_at_utc": "2026-11-11T06:09:37.384552+00:00",
   "databento_excluded": true,
   "execution_authorized": false,
   "paid_model_calls": 0,
@@ -25,81 +25,86 @@
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/income-statement-ttm"
+          "operation": "fmp:get:/stock-price-change"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/revenue-geographic-segmentation"
+          "operation": "fmp:get:/technical-indicators/adx"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/revenue-product-segmentation"
+          "operation": "fmp:get:/technical-indicators/dema"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/insider-trading/statistics"
+          "operation": "fmp:get:/key-metrics"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/search-exchange-variants"
+          "operation": "fmp:get:/technical-indicators/ema"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/market-capitalization-batch"
+          "operation": "fmp:get:/news/forex"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/institutional-ownership/extract-analytics/holder"
+          "operation": "fmp:get:/technical-indicators/rsi"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/sec-filings-search/symbol"
+          "operation": "fmp:get:/key-metrics-ttm"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/institutional-ownership/symbol-positions-summary"
+          "operation": "fmp:get:/technical-indicators/sma"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/senate-trades"
+          "operation": "fmp:get:/technical-indicators/standarddeviation"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/news/crypto"
+          "operation": "fmp:get:/levered-discounted-cash-flow"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/shares-float"
+          "operation": "fmp:get:/technical-indicators/tema"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/key-executives"
+          "operation": "fmp:get:/news/press-releases"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/splits"
+          "operation": "fmp:get:/technical-indicators/williams"
         },
         {
           "asset_specific": true,
-          "failure_code": "400",
-          "operation": "fmp:get:/exchange-market-hours"
+          "failure_code": "402",
+          "operation": "fmp:get:/market-capitalization"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/technical-indicators/wma"
         }
       ],
-      "collected_pages": 5,
-      "collected_rows": 63,
+      "collected_pages": 4,
+      "collected_rows": 3980,
       "credential_present": true,
       "endpoint_count": 230,
       "requests": 20,
@@ -107,13 +112,15 @@
       "status": "COLLECTED_PARTIAL",
       "substantive_work_performed": true,
       "verified_operations": [
-        "fmp:get:/treasury-rates"
+        "fmp:get:/cryptocurrency-list",
+        "fmp:get:/forex-list",
+        "fmp:get:/index-list"
       ]
     }
   },
   "raw_payloads_public": false,
   "requests": 20,
-  "run_id": "providers-42921787683-1-fmp",
+  "run_id": "providers-42969853705-1-fmp",
   "schema_version": "icarus-provider-collection-cycle-v1",
-  "started_at_utc": "2026-11-10T23:17:49.662700+00:00"
+  "started_at_utc": "2026-11-11T06:05:28.612214+00:00"
 }

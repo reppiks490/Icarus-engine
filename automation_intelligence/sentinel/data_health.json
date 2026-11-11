@@ -82,8 +82,8 @@
   "BLOCKED": 6,
   "DEGRADED": 7,
   "FAILING": 36,
-  "OK": 33,
-  "STALE": 4
+  "OK": 34,
+  "STALE": 3
  },
  "depth": {
   "budgets": {
@@ -154,7 +154,7 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-11-11T23:00:09+00:00",
+ "generated_at": "2026-11-11T23:01:41+00:00",
  "research": {
   "champions": 0,
   "cl_last_run": "2026-11-11T08:25:12.941544+00:00",
@@ -212,7 +212,7 @@
    "why": "root not in CL_DATABENTO_ROOTS"
   },
   {
-   "age_h": 432.8,
+   "age_h": 432.9,
    "rows": 145073,
    "source": "feed:databento_btc_5m",
    "verdict": "FAILING",
@@ -434,7 +434,7 @@
    "why": "latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/43108462657"
   },
   {
-   "age_h": 1.5,
+   "age_h": 1.6,
    "path": "automation_intelligence/provider_collection_v1/latest/alpaca.json",
    "rows": 0,
    "source": "provider:alpaca",
@@ -442,7 +442,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 6.5,
+   "age_h": 0.1,
    "path": "automation_intelligence/provider_collection_v1/latest/finnhub.json",
    "rows": 0,
    "source": "provider:finnhub",
@@ -450,7 +450,7 @@
    "why": "BLOCKED_AUTHENTICATION"
   },
   {
-   "age_h": 1.5,
+   "age_h": 1.6,
    "path": "automation_intelligence/provider_collection_v1/latest/intrinio.json",
    "rows": 0,
    "source": "provider:intrinio",
@@ -466,7 +466,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 1.5,
+   "age_h": 1.6,
    "path": "automation_intelligence/provider_collection_v1/latest/tickstream.json",
    "rows": 0,
    "source": "provider:tickstream",
@@ -474,7 +474,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 6.5,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/unusual_whales.json",
    "rows": 0,
    "source": "provider:unusual_whales",
@@ -500,18 +500,12 @@
    "why": "last success 5.4 h ago (expected within 3 h)"
   },
   {
-   "age_h": 6.4,
-   "source": "workflow:provider-supplemental-promote.yml",
-   "verdict": "STALE",
-   "why": "last success 6.4 h ago (expected within 3 h)"
-  },
-  {
-   "age_h": 6.4,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/alphavantage.json",
-   "rows": 177,
+   "rows": 44361,
    "source": "provider:alphavantage",
    "verdict": "DEGRADED",
-   "why": "177 rows; 3 endpoints denied by plan"
+   "why": "44361 rows; 3 endpoints denied by plan"
   },
   {
    "age_h": 1.6,
@@ -709,7 +703,7 @@
    "why": "16766 rows to 2026-11-09T00:00"
   },
   {
-   "age_h": 14.6,
+   "age_h": 14.7,
    "rows": 197193,
    "source": "fred_alfred",
    "verdict": "OK",
@@ -724,17 +718,17 @@
    "why": "21 rows"
   },
   {
-   "age_h": 1.5,
+   "age_h": 1.6,
    "rows": 2395,
    "source": "sec_edgar",
    "verdict": "OK",
    "why": "2395 filings"
   },
   {
-   "age_h": 0.9,
+   "age_h": 1.0,
    "source": "workflow:databento-depth-corpus.yml",
    "verdict": "OK",
-   "why": "last success 0.9 h ago"
+   "why": "last success 1.0 h ago"
   },
   {
    "age_h": 0.9,
@@ -773,10 +767,16 @@
    "why": "last success 0.0 h ago"
   },
   {
-   "age_h": 1.5,
+   "age_h": 0.0,
+   "source": "workflow:provider-supplemental-promote.yml",
+   "verdict": "OK",
+   "why": "last success 0.0 h ago"
+  },
+  {
+   "age_h": 1.6,
    "source": "workflow:sec-edgar-data.yml",
    "verdict": "OK",
-   "why": "last success 1.5 h ago"
+   "why": "last success 1.6 h ago"
   },
   {
    "age_h": 414.0,

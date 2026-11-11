@@ -82,8 +82,8 @@
   "BLOCKED": 6,
   "DEGRADED": 4,
   "FAILING": 36,
-  "OK": 36,
-  "STALE": 4
+  "OK": 37,
+  "STALE": 3
  },
  "depth": {
   "budgets": {
@@ -154,7 +154,7 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-11-11T08:19:26+00:00",
+ "generated_at": "2026-11-11T08:20:08+00:00",
  "research": {
   "champions": 0,
   "cl_last_run": "2026-11-11T01:31:27.478534+00:00",
@@ -494,12 +494,6 @@
    "why": "last success 5.4 h ago (expected within 3 h)"
   },
   {
-   "age_h": 7.5,
-   "source": "workflow:provider-supplemental-collection.yml",
-   "verdict": "STALE",
-   "why": "last success 7.5 h ago (expected within 3 h)"
-  },
-  {
    "age_h": 7.4,
    "source": "workflow:provider-supplemental-promote.yml",
    "verdict": "STALE",
@@ -685,7 +679,7 @@
    "why": "16766 rows to 2026-11-09T00:00"
   },
   {
-   "age_h": 6.8,
+   "age_h": 6.9,
    "rows": 197191,
    "source": "fred_alfred",
    "verdict": "OK",
@@ -724,7 +718,7 @@
    "why": "71557 rows"
   },
   {
-   "age_h": 2.2,
+   "age_h": 2.3,
    "rows": 2395,
    "source": "sec_edgar",
    "verdict": "OK",
@@ -773,16 +767,22 @@
    "why": "last success 2.1 h ago"
   },
   {
-   "age_h": 2.2,
-   "source": "workflow:sec-edgar-data.yml",
+   "age_h": 0.0,
+   "source": "workflow:provider-supplemental-collection.yml",
    "verdict": "OK",
-   "why": "last success 2.2 h ago"
+   "why": "last success 0.0 h ago"
   },
   {
-   "age_h": 399.3,
+   "age_h": 2.3,
+   "source": "workflow:sec-edgar-data.yml",
+   "verdict": "OK",
+   "why": "last success 2.3 h ago"
+  },
+  {
+   "age_h": 399.4,
    "source": "workflow:tests.yml",
    "verdict": "OK",
-   "why": "last success 399.3 h ago"
+   "why": "last success 399.4 h ago"
   }
  ]
 }

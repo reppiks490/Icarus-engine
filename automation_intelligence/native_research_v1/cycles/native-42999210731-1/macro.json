@@ -1,0 +1,105 @@
+{
+  "automation_id": "github-native-research-v1",
+  "blockers": [
+    "Release titles establish publication, not macro surprise or causal impact.",
+    "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+    "No consensus estimates acquired; economic surprise remains unknown."
+  ],
+  "chatgpt_tokens_used": 0,
+  "code_revision": "9ca397e17ab2583920671d6baab94605c4194a4a",
+  "completed_at_utc": "2026-11-11T09:57:50.880006Z",
+  "event_paths": [],
+  "evidence": [
+    "automation_intelligence/native_research_v1/cycles/native-42999210731-1/evidence.json"
+  ],
+  "execution_authorized": false,
+  "input_sha256": "317415363b6e7082d84a65272c0dffcf9796cd9935fe00910ca5121204b4a28c",
+  "lane": "macro",
+  "local_interpretation": {
+    "authority": "UNVERIFIED_MODEL_INFERENCE",
+    "reason": "No semantic change",
+    "status": "NOT_RUN"
+  },
+  "measurements": {
+    "gaps": [
+      "Release titles establish publication, not macro surprise or causal impact.",
+      "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+      "No consensus estimates acquired; economic surprise remains unknown."
+    ],
+    "limits": "Publication and daily change are facts; surprise, causality and intraday propagation remain unverified.",
+    "releases": [
+      {
+        "published_epoch": 1794258000.0,
+        "retrieval_finished": 1794391070.2058308,
+        "retrieval_started": 1794391070.1724782,
+        "source": "FED",
+        "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/orders20261109a.htm",
+        "title": "Federal Reserve Board announces approval of two applications by Mutual Federal Bancorp, MHC, and MFB Bancorp, Inc."
+      },
+      {
+        "published_epoch": 1794329100.0,
+        "retrieval_finished": 1794391070.4951463,
+        "retrieval_started": 1794391070.2061656,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261110_1~9725b7aa07.en.html",
+        "title": "Philip R. Lane: The science and practice of monetary policy communication: the ECB experience"
+      },
+      {
+        "published_epoch": 1794319200.0,
+        "retrieval_finished": 1794391070.4951463,
+        "retrieval_started": 1794391070.2061656,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261110~9422461bad.en.html",
+        "title": "Piero Cipollone: Cash and the digital euro: two sides of the same coin"
+      },
+      {
+        "published_epoch": 1794317423.0,
+        "retrieval_finished": 1794391070.6603272,
+        "retrieval_started": 1794391070.4953663,
+        "source": "BLS",
+        "source_url": "https://www.bls.gov/bls/",
+        "title": "Major Economic Indicators Latest Numbers"
+      }
+    ],
+    "series": [
+      {
+        "change": 0.019999999999999574,
+        "date": "2026-11-09",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-11-06",
+        "series": "DGS10",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10",
+        "value": 4.88
+      },
+      {
+        "change": 0.04999999999999982,
+        "date": "2026-11-09",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-11-06",
+        "series": "DGS2",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2",
+        "value": 4.56
+      },
+      {
+        "change": 0.37420000000000186,
+        "date": "2026-11-06",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-11-05",
+        "series": "DTWEXBGS",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DTWEXBGS",
+        "value": 121.8803
+      }
+    ],
+    "status": "VERIFIED",
+    "summary": "4 dated official release headlines; 3 daily macro series measured."
+  },
+  "outcome": "NO_MATERIAL_DELTA",
+  "paid_model_calls": 0,
+  "prior_receipt_path": "automation_intelligence/native_research_v1/cycles/native-42986183875-1/macro.json",
+  "run_id": "native-42999210731-1-macro",
+  "schema_version": "icarus-research-run-v1",
+  "started_at_utc": "2026-11-11T09:57:50.830719Z",
+  "substantive_work_performed": true,
+  "summary": "4 dated official release headlines; 3 daily macro series measured.",
+  "worker": "GITHUB_ACTIONS"
+}

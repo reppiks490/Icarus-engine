@@ -81,8 +81,8 @@
  "counts": {
   "BLOCKED": 6,
   "DEGRADED": 6,
-  "FAILING": 36,
-  "OK": 36,
+  "FAILING": 37,
+  "OK": 35,
   "STALE": 2
  },
  "depth": {
@@ -154,7 +154,7 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-11-12T04:17:39+00:00",
+ "generated_at": "2026-11-12T04:18:59+00:00",
  "research": {
   "champions": 0,
   "cl_last_run": "2026-11-12T02:35:09.642477+00:00",
@@ -261,7 +261,7 @@
    "why": "root not in CL_DATABENTO_ROOTS"
   },
   {
-   "age_h": 438.0,
+   "age_h": 438.1,
    "rows": 158216,
    "source": "feed:databento_mbt_5m",
    "verdict": "FAILING",
@@ -380,7 +380,7 @@
    "why": "root not in CL_DATABENTO_ROOTS"
   },
   {
-   "age_h": 466.0,
+   "age_h": 466.1,
    "rows": 109524,
    "source": "feed:databento_zc_5m",
    "verdict": "FAILING",
@@ -401,7 +401,7 @@
    "why": "root not in CL_DATABENTO_ROOTS"
   },
   {
-   "age_h": 466.0,
+   "age_h": 466.1,
    "rows": 111964,
    "source": "feed:databento_zs_5m",
    "verdict": "FAILING",
@@ -415,7 +415,7 @@
    "why": "root not in CL_DATABENTO_ROOTS"
   },
   {
-   "age_h": 466.0,
+   "age_h": 466.1,
    "rows": 110367,
    "source": "feed:databento_zw_5m",
    "verdict": "FAILING",
@@ -434,7 +434,13 @@
    "why": "latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/43142962358"
   },
   {
-   "age_h": 1.3,
+   "age_h": null,
+   "source": "workflow:interrepo-peer-intelligence.yml",
+   "verdict": "FAILING",
+   "why": "latest run cancelled: https://github.com/reppiks490/Icarus-engine/actions/runs/43153943017"
+  },
+  {
+   "age_h": 1.4,
    "path": "automation_intelligence/provider_collection_v1/latest/alpaca.json",
    "rows": 0,
    "source": "provider:alpaca",
@@ -458,7 +464,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 1.3,
+   "age_h": 1.4,
    "path": "automation_intelligence/provider_collection_v1/latest/quiver.json",
    "rows": 0,
    "source": "provider:quiver",
@@ -466,7 +472,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 1.3,
+   "age_h": 1.4,
    "path": "automation_intelligence/provider_collection_v1/latest/tickstream.json",
    "rows": 0,
    "source": "provider:tickstream",
@@ -502,7 +508,7 @@
    "why": "29563 rows; 3 endpoints denied by plan"
   },
   {
-   "age_h": 1.3,
+   "age_h": 1.4,
    "path": "automation_intelligence/provider_collection_v1/latest/bybit.json",
    "rows": 0,
    "source": "provider:bybit",
@@ -510,7 +516,7 @@
    "why": "no key; keyless endpoints only, none ready"
   },
   {
-   "age_h": 0.9,
+   "age_h": 1.0,
    "path": "automation_intelligence/cl_lab/external_data_fabric.json",
    "rows": 2510,
    "source": "provider:eodhd",
@@ -518,7 +524,7 @@
    "why": "dedicated fabric live (11 calls, 2510 known rows); generic sampler blocked; 8 endpoints denied by plan"
   },
   {
-   "age_h": 0.9,
+   "age_h": 1.0,
    "path": "automation_intelligence/cl_lab/external_data_fabric.json",
    "rows": 21,
    "source": "provider:fmp",
@@ -534,7 +540,7 @@
    "why": "20000 rows; 15 endpoints denied by plan"
   },
   {
-   "age_h": 0.9,
+   "age_h": 1.0,
    "path": "automation_intelligence/cl_lab/external_data_fabric.json",
    "rows": 47667,
    "source": "provider:tiingo",
@@ -712,7 +718,7 @@
    "why": "140 rows"
   },
   {
-   "age_h": 1.3,
+   "age_h": 1.4,
    "rows": 2395,
    "source": "sec_edgar",
    "verdict": "OK",
@@ -725,28 +731,22 @@
    "why": "last success 1.7 h ago"
   },
   {
-   "age_h": 1.6,
+   "age_h": 1.7,
    "source": "workflow:databento-depth-corpus.yml",
+   "verdict": "OK",
+   "why": "last success 1.7 h ago"
+  },
+  {
+   "age_h": 1.6,
+   "source": "workflow:depth-vault.yml",
    "verdict": "OK",
    "why": "last success 1.6 h ago"
   },
   {
-   "age_h": 1.5,
-   "source": "workflow:depth-vault.yml",
-   "verdict": "OK",
-   "why": "last success 1.5 h ago"
-  },
-  {
-   "age_h": 0.9,
+   "age_h": 1.0,
    "source": "workflow:external-data-fabric.yml",
    "verdict": "OK",
-   "why": "last success 0.9 h ago"
-  },
-  {
-   "age_h": 0.0,
-   "source": "workflow:interrepo-peer-intelligence.yml",
-   "verdict": "OK",
-   "why": "last success 0.0 h ago"
+   "why": "last success 1.0 h ago"
   },
   {
    "age_h": 0.1,
@@ -773,10 +773,10 @@
    "why": "last success 0.0 h ago"
   },
   {
-   "age_h": 1.3,
+   "age_h": 1.4,
    "source": "workflow:sec-edgar-data.yml",
    "verdict": "OK",
-   "why": "last success 1.3 h ago"
+   "why": "last success 1.4 h ago"
   },
   {
    "age_h": 419.3,

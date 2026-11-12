@@ -1,6 +1,6 @@
-# Data health — 2026-11-12 16:56 UTC
+# Data health — 2026-11-12 19:07 UTC
 
-**FAILING** 36 · **BLOCKED** 7 · **STALE** 8 · **DEGRADED** 5 · **OK** 30
+**FAILING** 36 · **BLOCKED** 6 · **STALE** 6 · **DEGRADED** 7 · **OK** 31
 
 ## Needs attention
 
@@ -43,29 +43,28 @@
 | workflow:cl-depth-sweep.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/43232868254 |
 | workflow:databento-depth-research-context.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/43209230531 |
 | provider:alpaca | BLOCKED | no key reaches the runner |
-| provider:bybit | BLOCKED | no key reaches the runner |
 | provider:finnhub | BLOCKED | BLOCKED_AUTHENTICATION |
 | provider:intrinio | BLOCKED | no key reaches the runner |
 | provider:quiver | BLOCKED | no key reaches the runner |
 | provider:tickstream | BLOCKED | no key reaches the runner |
 | provider:unusual_whales | BLOCKED | BLOCKED_AUTHENTICATION |
-| workflow:cl-lab.yml | STALE | last success 14.3 h ago (expected within 14 h) |
-| workflow:native-five-research.yml | STALE | last success 3.7 h ago (expected within 3 h) |
-| workflow:native-provider-access.yml | STALE | last success 9.1 h ago (expected within 8 h) |
-| workflow:official-economic-events.yml | STALE | last success 9.7 h ago (expected within 8 h) |
-| workflow:provider-exhaustive-collection.yml | STALE | last success 5.8 h ago (expected within 3 h) |
-| workflow:provider-supplemental-collection.yml | STALE | last success 3.7 h ago (expected within 3 h) |
-| workflow:provider-supplemental-promote.yml | STALE | last success 3.7 h ago (expected within 3 h) |
-| workflow:sec-edgar-data.yml | STALE | last success 3.9 h ago (expected within 3 h) |
+| workflow:cl-lab.yml | STALE | last success 16.5 h ago (expected within 14 h) |
+| workflow:native-five-research.yml | STALE | last success 5.9 h ago (expected within 3 h) |
+| workflow:native-provider-access.yml | STALE | last success 11.3 h ago (expected within 8 h) |
+| workflow:official-economic-events.yml | STALE | last success 11.9 h ago (expected within 8 h) |
+| workflow:provider-supplemental-collection.yml | STALE | last success 5.9 h ago (expected within 3 h) |
+| workflow:provider-supplemental-promote.yml | STALE | last success 5.9 h ago (expected within 3 h) |
 | provider:alphavantage | DEGRADED | 6624 rows; 3 endpoints denied by plan |
-| provider:eodhd | DEGRADED | 2510 rows; 10 endpoints denied by plan |
-| provider:fmp | DEGRADED | 4061 rows; 2 endpoints denied by plan |
+| provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
+| provider:eodhd | DEGRADED | 2510 rows; 13 endpoints denied by plan |
+| provider:fmp | DEGRADED | 50 rows; 2 endpoints denied by plan |
 | provider:massive | DEGRADED | 20000 rows; 15 endpoints denied by plan |
 | provider:tiingo | DEGRADED | 47667 rows; 4 endpoints denied by plan |
+| provider:twelve | DEGRADED | key present but 0 rows (COLLECTED_PARTIAL) |
 
 ## Delivering
 
-economic_events, feed:btcusd_cb_5m, feed:btcusdt_5m, feed:cboe_skew, feed:cboe_vix, feed:cboe_vix3m, feed:cboe_vix9d, feed:cboe_vvix, feed:cftc_disaggregated_all, feed:cftc_tff_all, feed:cftc_tff_nasdaq, feed:ethusdt_5m, feed:fred_dff, feed:fred_dgs10, feed:fred_dgs2, feed:fred_nasdaq100, feed:fred_t10y2y, feed:fred_vixcls, feed:treasury_auctions, feed:treasury_debt_to_penny, feed:treasury_operating_cash, fred_alfred, provider:fred, provider:twelve, sec_edgar, workflow:databento-depth-corpus.yml, workflow:depth-vault.yml, workflow:external-data-fabric.yml, workflow:interrepo-peer-intelligence.yml, workflow:tests.yml
+economic_events, feed:btcusd_cb_5m, feed:btcusdt_5m, feed:cboe_skew, feed:cboe_vix, feed:cboe_vix3m, feed:cboe_vix9d, feed:cboe_vvix, feed:cftc_disaggregated_all, feed:cftc_tff_all, feed:cftc_tff_nasdaq, feed:ethusdt_5m, feed:fred_dff, feed:fred_dgs10, feed:fred_dgs2, feed:fred_nasdaq100, feed:fred_t10y2y, feed:fred_vixcls, feed:treasury_auctions, feed:treasury_debt_to_penny, feed:treasury_operating_cash, fred_alfred, provider:fred, sec_edgar, workflow:databento-depth-corpus.yml, workflow:depth-vault.yml, workflow:external-data-fabric.yml, workflow:interrepo-peer-intelligence.yml, workflow:provider-exhaustive-collection.yml, workflow:sec-edgar-data.yml, workflow:tests.yml
 
 ## Order-book data
 

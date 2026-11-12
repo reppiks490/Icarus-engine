@@ -82,8 +82,8 @@
   "BLOCKED": 6,
   "DEGRADED": 7,
   "FAILING": 36,
-  "OK": 34,
-  "STALE": 2,
+  "OK": 35,
+  "STALE": 1,
   "UNKNOWN": 1
  },
  "depth": {
@@ -155,7 +155,7 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-11-12T21:04:39+00:00",
+ "generated_at": "2026-11-12T21:06:32+00:00",
  "research": {
   "champions": 0,
   "cl_last_run": "2026-11-12T02:35:09.642477+00:00",
@@ -262,7 +262,7 @@
    "why": "root not in CL_DATABENTO_ROOTS"
   },
   {
-   "age_h": 454.8,
+   "age_h": 454.9,
    "rows": 158216,
    "source": "feed:databento_mbt_5m",
    "verdict": "FAILING",
@@ -381,7 +381,7 @@
    "why": "root not in CL_DATABENTO_ROOTS"
   },
   {
-   "age_h": 482.8,
+   "age_h": 482.9,
    "rows": 109524,
    "source": "feed:databento_zc_5m",
    "verdict": "FAILING",
@@ -402,7 +402,7 @@
    "why": "root not in CL_DATABENTO_ROOTS"
   },
   {
-   "age_h": 482.8,
+   "age_h": 482.9,
    "rows": 111964,
    "source": "feed:databento_zs_5m",
    "verdict": "FAILING",
@@ -416,7 +416,7 @@
    "why": "root not in CL_DATABENTO_ROOTS"
   },
   {
-   "age_h": 482.8,
+   "age_h": 482.9,
    "rows": 110367,
    "source": "feed:databento_zw_5m",
    "verdict": "FAILING",
@@ -443,7 +443,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 7.9,
+   "age_h": 0.1,
    "path": "automation_intelligence/provider_collection_v1/latest/finnhub.json",
    "rows": 0,
    "source": "provider:finnhub",
@@ -467,7 +467,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 2.0,
+   "age_h": 2.1,
    "path": "automation_intelligence/provider_collection_v1/latest/tickstream.json",
    "rows": 0,
    "source": "provider:tickstream",
@@ -475,7 +475,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 7.9,
+   "age_h": 0.1,
    "path": "automation_intelligence/provider_collection_v1/latest/unusual_whales.json",
    "rows": 0,
    "source": "provider:unusual_whales",
@@ -489,18 +489,12 @@
    "why": "last success 18.5 h ago (expected within 14 h)"
   },
   {
-   "age_h": 7.9,
-   "source": "workflow:provider-supplemental-promote.yml",
-   "verdict": "STALE",
-   "why": "last success 7.9 h ago (expected within 3 h)"
-  },
-  {
-   "age_h": 7.9,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/alphavantage.json",
-   "rows": 6624,
+   "rows": 1467,
    "source": "provider:alphavantage",
    "verdict": "DEGRADED",
-   "why": "6624 rows; 3 endpoints denied by plan"
+   "why": "1467 rows; 3 endpoints denied by plan"
   },
   {
    "age_h": 2.2,
@@ -511,7 +505,7 @@
    "why": "no key; keyless endpoints only, none ready"
   },
   {
-   "age_h": 17.7,
+   "age_h": 17.8,
    "path": "automation_intelligence/cl_lab/external_data_fabric.json",
    "rows": 2510,
    "source": "provider:eodhd",
@@ -535,7 +529,7 @@
    "why": "20000 rows; 15 endpoints denied by plan"
   },
   {
-   "age_h": 17.7,
+   "age_h": 17.8,
    "path": "automation_intelligence/cl_lab/external_data_fabric.json",
    "rows": 47667,
    "source": "provider:tiingo",
@@ -725,10 +719,10 @@
    "why": "2396 filings"
   },
   {
-   "age_h": 9.6,
+   "age_h": 9.7,
    "source": "workflow:databento-depth-corpus.yml",
    "verdict": "OK",
-   "why": "last success 9.6 h ago"
+   "why": "last success 9.7 h ago"
   },
   {
    "age_h": 5.6,
@@ -737,10 +731,10 @@
    "why": "last success 5.6 h ago"
   },
   {
-   "age_h": 17.7,
+   "age_h": 17.8,
    "source": "workflow:external-data-fabric.yml",
    "verdict": "OK",
-   "why": "last success 17.7 h ago"
+   "why": "last success 17.8 h ago"
   },
   {
    "age_h": 0.5,
@@ -769,6 +763,12 @@
   {
    "age_h": 0.0,
    "source": "workflow:provider-supplemental-collection.yml",
+   "verdict": "OK",
+   "why": "last success 0.0 h ago"
+  },
+  {
+   "age_h": 0.0,
+   "source": "workflow:provider-supplemental-promote.yml",
    "verdict": "OK",
    "why": "last success 0.0 h ago"
   },

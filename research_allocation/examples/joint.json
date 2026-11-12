@@ -1,0 +1,40 @@
+{
+  "id": "joint",
+  "members": [
+    "left",
+    "right"
+  ],
+  "outcomes": {
+    "aa": {
+      "left": "a",
+      "right": "a"
+    },
+    "ab": {
+      "left": "a",
+      "right": "b"
+    },
+    "ba": {
+      "left": "b",
+      "right": "a"
+    },
+    "bb": {
+      "left": "b",
+      "right": "b"
+    }
+  },
+  "likelihood": {
+    "A": {
+      "aa": 0.5,
+      "ab": 0,
+      "ba": 0,
+      "bb": 0.5
+    },
+    "B": {
+      "aa": 0,
+      "ab": 0.5,
+      "ba": 0.5,
+      "bb": 0
+    }
+  },
+  "reference": "synthetic XOR observation"
+}

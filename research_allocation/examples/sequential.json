@@ -1,0 +1,81 @@
+{
+  "schema_version": "atlas.decision.v1",
+  "id": "synthetic-two-state",
+  "states": [
+    "A",
+    "B"
+  ],
+  "prior": {
+    "A": 0.5,
+    "B": 0.5
+  },
+  "utility": {
+    "choose_A": {
+      "A": 1,
+      "B": 0
+    },
+    "choose_B": {
+      "A": 0,
+      "B": 1
+    },
+    "defer": {
+      "A": 0,
+      "B": 0
+    }
+  },
+  "utility_unit": "synthetic_utility",
+  "provenance": {
+    "kind": "synthetic",
+    "reference": "analytical unit example"
+  },
+  "experiments": [
+    {
+      "id": "first",
+      "outcomes": [
+        "a",
+        "b"
+      ],
+      "likelihood": {
+        "A": {
+          "a": 0.5,
+          "b": 0.5
+        },
+        "B": {
+          "a": 0,
+          "b": 1
+        }
+      },
+      "available": true,
+      "reference": "synthetic finite model",
+      "cost": {
+        "low": 0.05,
+        "high": 0.05,
+        "unit": "synthetic_utility"
+      }
+    },
+    {
+      "id": "second",
+      "outcomes": [
+        "a",
+        "b"
+      ],
+      "likelihood": {
+        "A": {
+          "a": 1,
+          "b": 0
+        },
+        "B": {
+          "a": 0,
+          "b": 1
+        }
+      },
+      "available": true,
+      "reference": "synthetic finite model",
+      "cost": {
+        "low": 0.1,
+        "high": 0.1,
+        "unit": "synthetic_utility"
+      }
+    }
+  ]
+}

@@ -97,6 +97,22 @@ def test_runtime_public_collectors_are_explicit_but_not_misreported_as_always_on
         assert needle in feeds
 
 
+def test_eia_spot_snapshots_are_federated_as_staged_research_only_context() -> None:
+    source = _sources()["eia_spot_context"]
+    assert source["required_for_all_ai_units"] is True
+    assert source["credential_state"] == "PUBLIC"
+    assert source["ingestion_state"] == "STAGED_CONTENT_UNVERIFIED"
+    assert source["consumption_state"] == "EVIDENCE_ONLY"
+    assert source["workflow"] is None
+    assert source["runtime_status"] == "STATIC_SNAPSHOT_RESEARCH_PANEL_ONLY"
+    assert "reppiks490/Icarus:icarus_engine/data/research_context/manifest.json" in source["evidence_paths"]
+    assert "reppiks490/Icarus:icarus_engine/server.py" in source["evidence_paths"]
+    assert source["series_ids"] == ["eia-brent-daily", "eia-wti-daily", "eia-natural-gas-daily"]
+    assert source["data_role"] == "SPOT_CONTEXT_ONLY"
+    assert source["automatically_refreshed"] is False
+    assert source["execution_authorized"] is False
+
+
 def test_federation_directive_names_runtime_and_internal_evidence_surfaces() -> None:
     text = DIRECTIVE.read_text().lower()
     for phrase in (

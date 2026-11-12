@@ -28,6 +28,11 @@ Arithmetic that follows from the targets (do not re-derive):
 
 ## 2. Where things stand (verified, not claimed)
 
+- 2026-10-26 cloud repair: the supplemental UW transport now admits the documented
+  `/api/crypto/list_tokens` resource while rejecting ambiguous URL structure and
+  preserving header-only credentials. Transport/core collection regressions:
+  65 passed offline. This does not establish provider authentication or entitlement.
+
 - **No setup is proven.** `automation_intelligence/cl_lab/champions.json` is empty. Nothing is
   execution-authorized.
 - CL lab: 492 pre-registered rules on MNQ/BTC/ETH and 2,160 explorer attempts: none survived.

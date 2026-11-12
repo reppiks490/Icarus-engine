@@ -47,6 +47,24 @@ from .regression_jobs import start as start_regression, get as get_regression
 from .continuous_jobs import start as start_continuous_history, get as get_continuous_history
 from .walkforward_jobs import start as start_walkforward, get as get_walkforward
 
+_TOKEN_ENV_NAMES = ("ICARUS_TOKEN", "ICARUS_ADMIN_TOKEN", "ADMIN_TOKEN")
+_TOKEN_PLACEHOLDERS = frozenset({"icarus", "replace-me", "replace-me-too", "change-me", "change-me-too", "changeme", "your-token"})
+
+
+def configured_owner_token() -> str:
+    for name in _TOKEN_ENV_NAMES:
+        token = os.environ.get(name, "").strip()
+        if token and token.casefold() not in _TOKEN_PLACEHOLDERS:
+            return token
+    return ""
+
+
+def resolve_owner_token(token=None) -> str:
+    resolved = configured_owner_token() if token is None else str(token).strip()
+    if not resolved or resolved.casefold() in _TOKEN_PLACEHOLDERS:
+        raise ValueError("Set a unique non-placeholder ICARUS_TOKEN before starting Icarus")
+    return resolved
+
 
 def _no_json_constants(name: str):
     raise ValueError(f"{name} is not allowed")
@@ -104,7 +122,8 @@ COMMANDS = [
 ]
 
 
-def serve(port: Portfolio, http_port: int = 8791, token: str = "icarus", start: bool = True):
+def serve(port: Portfolio, http_port: int = 8791, token: str | None = None, start: bool = True):
+    token = resolve_owner_token(token)
     html_path = Path(__file__).parent / "dashboard.html"
     meta = load_meta()
     research = ResearchWorkspace(port)

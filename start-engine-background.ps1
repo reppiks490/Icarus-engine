@@ -28,7 +28,6 @@
 [CmdletBinding()]
 param(
     [int]    $Port    = 8791,
-    [string] $Token   = $env:ICARUS_ADMIN_TOKEN,
     [string] $PidFile = (Join-Path $PSScriptRoot ".engine.pid"),
     [string] $LogFile = (Join-Path $PSScriptRoot "logs\engine.log"),
     [switch] $Force
@@ -36,6 +35,19 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
+
+if ([string]::IsNullOrWhiteSpace($env:ICARUS_TOKEN)) {
+    if (-not [string]::IsNullOrWhiteSpace($env:ICARUS_ADMIN_TOKEN)) {
+        $env:ICARUS_TOKEN = $env:ICARUS_ADMIN_TOKEN
+    } elseif (-not [string]::IsNullOrWhiteSpace($env:ADMIN_TOKEN)) {
+        $env:ICARUS_TOKEN = $env:ADMIN_TOKEN
+    } else {
+        throw "Set ICARUS_TOKEN in this PowerShell process before starting the engine."
+    }
+}
+if ($env:ICARUS_TOKEN.Trim().ToLowerInvariant() -in @('icarus', 'replace-me', 'replace-me-too', 'change-me', 'change-me-too', 'changeme', 'your-token')) {
+    throw "ICARUS_TOKEN is a placeholder. Configure a unique local secret before starting the engine."
+}
 
 $pidFile = $PidFile
 $healthUrl = "http://127.0.0.1:$Port/healthz"
@@ -76,7 +88,6 @@ $logDir = Split-Path -Parent $LogFile
 if (-not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir -Force | Out-Null }
 
 $arguments = @("-m", "icarus_engine.cli", "run", "--port", "$Port")
-if ($Token) { $arguments += @("--token", $Token) }
 
 $process = Start-Process -FilePath "python" `
                          -ArgumentList $arguments `

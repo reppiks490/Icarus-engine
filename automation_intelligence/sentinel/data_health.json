@@ -82,8 +82,8 @@
   "BLOCKED": 6,
   "DEGRADED": 7,
   "FAILING": 36,
-  "OK": 33,
-  "STALE": 4
+  "OK": 34,
+  "STALE": 3
  },
  "depth": {
   "budgets": {
@@ -154,10 +154,10 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-11-12T02:34:54+00:00",
+ "generated_at": "2026-11-12T02:35:34+00:00",
  "research": {
   "champions": 0,
-  "cl_last_run": "2026-11-11T08:25:12.941544+00:00",
+  "cl_last_run": "2026-11-12T02:35:09.642477+00:00",
   "pulse": {
    "CANDLES": "REJECTED",
    "HA_HA_FILLS": "ARTIFACT_REFERENCE",
@@ -482,16 +482,10 @@
    "why": "BLOCKED_AUTHENTICATION"
   },
   {
-   "age_h": 18.2,
-   "source": "workflow:cl-lab.yml",
-   "verdict": "STALE",
-   "why": "last success 18.2 h ago (expected within 14 h)"
-  },
-  {
-   "age_h": 4.9,
+   "age_h": 5.0,
    "source": "workflow:provider-exhaustive-collection.yml",
    "verdict": "STALE",
-   "why": "last success 4.9 h ago (expected within 3 h)"
+   "why": "last success 5.0 h ago (expected within 3 h)"
   },
   {
    "age_h": 3.6,
@@ -569,53 +563,53 @@
    "why": "248 events, 109 high impact"
   },
   {
-   "age_h": 18.2,
-   "rows": 11683,
+   "age_h": 0.1,
+   "rows": 11901,
    "source": "feed:btcusd_cb_5m",
    "verdict": "OK",
-   "why": "11683 rows to 2026-11-11T08:20"
+   "why": "11901 rows to 2026-11-12T02:30"
   },
   {
-   "age_h": 26.7,
-   "rows": 230688,
+   "age_h": 2.7,
+   "rows": 230976,
    "source": "feed:btcusdt_5m",
    "verdict": "OK",
-   "why": "230688 rows to 2026-11-10T23:55"
+   "why": "230976 rows to 2026-11-11T23:55"
   },
   {
-   "age_h": 50.6,
-   "rows": 9267,
+   "age_h": 26.6,
+   "rows": 9268,
    "source": "feed:cboe_skew",
    "verdict": "OK",
-   "why": "9267 rows to 2026-11-10T00:00"
+   "why": "9268 rows to 2026-11-11T00:00"
   },
   {
-   "age_h": 50.6,
-   "rows": 9313,
+   "age_h": 26.6,
+   "rows": 9314,
    "source": "feed:cboe_vix",
    "verdict": "OK",
-   "why": "9313 rows to 2026-11-10T00:00"
+   "why": "9314 rows to 2026-11-11T00:00"
   },
   {
-   "age_h": 50.6,
-   "rows": 4313,
+   "age_h": 26.6,
+   "rows": 4314,
    "source": "feed:cboe_vix3m",
    "verdict": "OK",
-   "why": "4313 rows to 2026-11-10T00:00"
+   "why": "4314 rows to 2026-11-11T00:00"
   },
   {
-   "age_h": 50.6,
-   "rows": 3987,
+   "age_h": 26.6,
+   "rows": 3988,
    "source": "feed:cboe_vix9d",
    "verdict": "OK",
-   "why": "3987 rows to 2026-11-10T00:00"
+   "why": "3988 rows to 2026-11-11T00:00"
   },
   {
-   "age_h": 50.6,
-   "rows": 5144,
+   "age_h": 26.6,
+   "rows": 5145,
    "source": "feed:cboe_vvix",
    "verdict": "OK",
-   "why": "5144 rows to 2026-11-10T00:00"
+   "why": "5145 rows to 2026-11-11T00:00"
   },
   {
    "age_h": 218.6,
@@ -639,11 +633,11 @@
    "why": "2233 rows to 2026-11-03T00:00"
   },
   {
-   "age_h": 26.7,
-   "rows": 230688,
+   "age_h": 2.7,
+   "rows": 230976,
    "source": "feed:ethusdt_5m",
    "verdict": "OK",
-   "why": "230688 rows to 2026-11-10T23:55"
+   "why": "230976 rows to 2026-11-11T23:55"
   },
   {
    "age_h": 74.6,
@@ -681,11 +675,11 @@
    "why": "13161 rows to 2026-11-10T00:00"
   },
   {
-   "age_h": 74.6,
-   "rows": 9615,
+   "age_h": 50.6,
+   "rows": 9616,
    "source": "feed:fred_vixcls",
    "verdict": "OK",
-   "why": "9615 rows to 2026-11-09T00:00"
+   "why": "9616 rows to 2026-11-10T00:00"
   },
   {
    "age_h": 506.6,
@@ -709,8 +703,8 @@
    "why": "16766 rows to 2026-11-09T00:00"
   },
   {
-   "age_h": 18.2,
-   "rows": 197193,
+   "age_h": 0.1,
+   "rows": 197194,
    "source": "fred_alfred",
    "verdict": "OK",
    "why": "39/39 series ok"
@@ -729,6 +723,12 @@
    "source": "sec_edgar",
    "verdict": "OK",
    "why": "2395 filings"
+  },
+  {
+   "age_h": 0.0,
+   "source": "workflow:cl-lab.yml",
+   "verdict": "OK",
+   "why": "last success 0.0 h ago"
   },
   {
    "age_h": 4.5,
@@ -755,10 +755,10 @@
    "why": "last success 0.0 h ago"
   },
   {
-   "age_h": 2.8,
+   "age_h": 2.9,
    "source": "workflow:native-five-research.yml",
    "verdict": "OK",
-   "why": "last success 2.8 h ago"
+   "why": "last success 2.9 h ago"
   },
   {
    "age_h": 6.6,

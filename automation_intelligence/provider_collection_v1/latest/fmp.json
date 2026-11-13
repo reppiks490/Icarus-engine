@@ -1,18 +1,18 @@
 {
   "catalog": {
-    "asset_datasets_collected": 10,
+    "asset_datasets_collected": 7,
     "asset_templates": 109,
     "assets": 6770,
-    "collected_operations": 11,
+    "collected_operations": 12,
     "denied_operations": 2,
     "operations": 230,
-    "pending_pages": 1332,
+    "pending_pages": 1345,
     "qualification": "INCOMPLETE_UNTIL_EVERY_OPERATION_ASSET_PAGE_TIME_RANGE_AND_TRANSPORT_IS_VERIFIED",
     "unresolved_operations": 0
   },
   "chatgpt_tokens_used": 0,
   "checkpoint_status": "ENCRYPTED_AES256_GCM",
-  "completed_at_utc": "2026-11-12T19:01:03.353146+00:00",
+  "completed_at_utc": "2026-11-13T00:22:22.370890+00:00",
   "databento_excluded": true,
   "execution_authorized": false,
   "paid_model_calls": 0,
@@ -25,87 +25,87 @@
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/financial-statement-full-as-reported"
+          "operation": "fmp:get:/ratios-ttm"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/sec-filings-search/symbol"
+          "operation": "fmp:get:/historical-chart/1min"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/funds/disclosure"
+          "operation": "fmp:get:/historical-chart/30min"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/ratings-snapshot"
+          "operation": "fmp:get:/historical-chart/4hour"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/funds/disclosure-dates"
+          "operation": "fmp:get:/stock-price-change"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/funds/disclosure-holders-latest"
+          "operation": "fmp:get:/historical-chart/5min"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/governance-executive-compensation"
+          "operation": "fmp:get:/revenue-geographic-segmentation"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/senate-trades"
+          "operation": "fmp:get:/historical-employee-count"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/grades"
+          "operation": "fmp:get:/technical-indicators/adx"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/ratios"
+          "operation": "fmp:get:/historical-market-capitalization"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/grades-consensus"
+          "operation": "fmp:get:/technical-indicators/dema"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/shares-float"
+          "operation": "fmp:get:/historical-price-eod/dividend-adjusted"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/grades-historical"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "400",
-          "operation": "fmp:get:/exchange-market-hours"
+          "operation": "fmp:get:/technical-indicators/ema"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/historical-chart/15min"
+          "operation": "fmp:get:/historical-price-eod/full"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/splits"
+          "operation": "fmp:get:/historical-price-eod/light"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/historical-chart/1hour"
+          "operation": "fmp:get:/technical-indicators/rsi"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/historical-price-eod/non-split-adjusted"
         }
       ],
       "collected_pages": 3,
@@ -117,26 +117,26 @@
         {
           "features": {
             "price": {
-              "maximum": 24.52,
-              "mean": 4.690188,
-              "minimum": 0.1031,
+              "maximum": 80.99,
+              "mean": 5.2056879999999985,
+              "minimum": 0.235,
               "samples": 50,
-              "standard_deviation": 6.0057173664314245
+              "standard_deviation": 11.239712768583367
             }
           },
-          "operation": "fmp:get:/biggest-gainers"
+          "operation": "fmp:get:/biggest-losers"
         }
       ],
       "status": "COLLECTED_PARTIAL",
       "substantive_work_performed": true,
       "verified_operations": [
-        "fmp:get:/biggest-gainers"
+        "fmp:get:/biggest-losers"
       ]
     }
   },
   "raw_payloads_public": false,
   "requests": 20,
-  "run_id": "providers-43284327705-1-fmp",
+  "run_id": "providers-43335786422-1-fmp",
   "schema_version": "icarus-provider-collection-cycle-v1",
-  "started_at_utc": "2026-11-12T18:56:52.738503+00:00"
+  "started_at_utc": "2026-11-13T00:18:13.746108+00:00"
 }

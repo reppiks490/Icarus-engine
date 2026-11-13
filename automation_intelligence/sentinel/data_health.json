@@ -82,8 +82,7 @@
   "BLOCKED": 7,
   "DEGRADED": 6,
   "FAILING": 36,
-  "OK": 35,
-  "STALE": 1,
+  "OK": 36,
   "UNKNOWN": 1
  },
  "depth": {
@@ -155,7 +154,7 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-11-13T02:06:37+00:00",
+ "generated_at": "2026-11-13T02:07:46+00:00",
  "research": {
   "champions": 0,
   "cl_last_run": "2026-11-12T02:35:09.642477+00:00",
@@ -213,7 +212,7 @@
    "why": "root not in CL_DATABENTO_ROOTS"
   },
   {
-   "age_h": 459.9,
+   "age_h": 460.0,
    "rows": 145073,
    "source": "feed:databento_btc_5m",
    "verdict": "FAILING",
@@ -443,7 +442,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 5.1,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/finnhub.json",
    "rows": 0,
    "source": "provider:finnhub",
@@ -475,7 +474,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 1.7,
+   "age_h": 1.8,
    "path": "automation_intelligence/provider_collection_v1/latest/twelve.json",
    "rows": 0,
    "source": "provider:twelve",
@@ -483,7 +482,7 @@
    "why": "BLOCKED"
   },
   {
-   "age_h": 5.1,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/unusual_whales.json",
    "rows": 0,
    "source": "provider:unusual_whales",
@@ -491,18 +490,12 @@
    "why": "BLOCKED_AUTHENTICATION"
   },
   {
-   "age_h": 5.0,
-   "source": "workflow:provider-supplemental-promote.yml",
-   "verdict": "STALE",
-   "why": "last success 5.0 h ago (expected within 3 h)"
-  },
-  {
-   "age_h": 5.0,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/alphavantage.json",
-   "rows": 1467,
+   "rows": 177,
    "source": "provider:alphavantage",
    "verdict": "DEGRADED",
-   "why": "1467 rows; 3 endpoints denied by plan"
+   "why": "177 rows; 3 endpoints denied by plan"
   },
   {
    "age_h": 1.7,
@@ -521,7 +514,7 @@
    "why": "dedicated fabric live (11 calls, 2510 known rows); generic sampler blocked; 15 endpoints denied by plan"
   },
   {
-   "age_h": 1.7,
+   "age_h": 1.8,
    "path": "automation_intelligence/provider_collection_v1/latest/fmp.json",
    "rows": 50,
    "source": "provider:fmp",
@@ -749,10 +742,10 @@
    "why": "last success 0.6 h ago"
   },
   {
-   "age_h": 5.5,
+   "age_h": 5.6,
    "source": "workflow:native-provider-access.yml",
    "verdict": "OK",
-   "why": "last success 5.5 h ago"
+   "why": "last success 5.6 h ago"
   },
   {
    "age_h": 6.2,
@@ -761,14 +754,20 @@
    "why": "last success 6.2 h ago"
   },
   {
-   "age_h": 1.6,
+   "age_h": 1.7,
    "source": "workflow:provider-exhaustive-collection.yml",
    "verdict": "OK",
-   "why": "last success 1.6 h ago"
+   "why": "last success 1.7 h ago"
   },
   {
    "age_h": 0.0,
    "source": "workflow:provider-supplemental-collection.yml",
+   "verdict": "OK",
+   "why": "last success 0.0 h ago"
+  },
+  {
+   "age_h": 0.0,
+   "source": "workflow:provider-supplemental-promote.yml",
    "verdict": "OK",
    "why": "last success 0.0 h ago"
   },

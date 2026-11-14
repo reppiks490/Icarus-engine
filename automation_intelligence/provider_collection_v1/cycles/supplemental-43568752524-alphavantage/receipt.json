@@ -1,0 +1,76 @@
+{
+  "catalog": {
+    "asset_datasets_collected": 0,
+    "asset_templates": 0,
+    "assets": 0,
+    "collected_operations": 17,
+    "denied_operations": 3,
+    "operations": 28,
+    "pending_pages": 8,
+    "qualification": "INCOMPLETE_UNTIL_EVERY_OPERATION_ASSET_PAGE_TIME_RANGE_AND_TRANSPORT_IS_VERIFIED",
+    "unresolved_operations": 0
+  },
+  "chatgpt_tokens_used": 0,
+  "checkpoint_status": "ENCRYPTED_AES256_GCM",
+  "completed_at_utc": "2026-11-14T06:57:55.854828+00:00",
+  "databento_excluded": true,
+  "execution_authorized": false,
+  "paid_model_calls": 0,
+  "providers": {
+    "alphavantage": {
+      "archive_status": [
+        "ENCRYPTED_AES256_GCM"
+      ],
+      "blocked": [],
+      "collected_pages": 5,
+      "collected_rows": 7331,
+      "credential_present": true,
+      "endpoint_count": 28,
+      "requests": 5,
+      "research_features": [
+        {
+          "features": {
+            "close": {
+              "maximum": 124720.09,
+              "mean": 22543.102149108516,
+              "minimum": 0.05,
+              "samples": 5965,
+              "standard_deviation": 31285.909609076734
+            },
+            "volume": {
+              "maximum": 212195781011.71082,
+              "mean": 21183150712.08939,
+              "minimum": 0.0,
+              "samples": 5965,
+              "standard_deviation": 35059398855.93052
+            }
+          },
+          "operation": "alphavantage:get:DIGITAL_CURRENCY_DAILY"
+        },
+        {
+          "features": {
+            "value": {
+              "maximum": 337.511,
+              "mean": 92.93812673992672,
+              "minimum": 9.7,
+              "samples": 1365,
+              "standard_deviation": 91.66940979133844
+            }
+          },
+          "operation": "alphavantage:get:CPI"
+        }
+      ],
+      "status": "COLLECTED_PARTIAL",
+      "substantive_work_performed": true,
+      "verified_operations": [
+        "alphavantage:get:CPI",
+        "alphavantage:get:DIGITAL_CURRENCY_DAILY"
+      ]
+    }
+  },
+  "raw_payloads_public": false,
+  "requests": 5,
+  "run_id": "supplemental-43568752524-alphavantage",
+  "schema_version": "icarus-provider-collection-cycle-v1",
+  "started_at_utc": "2026-11-14T06:57:03.231985+00:00"
+}

@@ -82,8 +82,8 @@
   "BLOCKED": 6,
   "DEGRADED": 6,
   "FAILING": 36,
-  "OK": 36,
-  "STALE": 2
+  "OK": 37,
+  "STALE": 1
  },
  "depth": {
   "budgets": {
@@ -154,7 +154,7 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-11-14T19:28:02+00:00",
+ "generated_at": "2026-11-14T19:29:35+00:00",
  "research": {
   "champions": 0,
   "cl_last_run": "2026-11-14T18:55:45.899315+00:00",
@@ -442,7 +442,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 5.0,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/finnhub.json",
    "rows": 0,
    "source": "provider:finnhub",
@@ -474,7 +474,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 5.0,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/unusual_whales.json",
    "rows": 0,
    "source": "provider:unusual_whales",
@@ -482,27 +482,21 @@
    "why": "BLOCKED_AUTHENTICATION"
   },
   {
-   "age_h": 3.6,
+   "age_h": 3.7,
    "source": "workflow:native-five-research.yml",
    "verdict": "STALE",
-   "why": "last success 3.6 h ago (expected within 3 h)"
+   "why": "last success 3.7 h ago (expected within 3 h)"
   },
   {
-   "age_h": 5.0,
-   "source": "workflow:provider-supplemental-promote.yml",
-   "verdict": "STALE",
-   "why": "last success 5.0 h ago (expected within 3 h)"
-  },
-  {
-   "age_h": 5.0,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/alphavantage.json",
-   "rows": 166,
+   "rows": 17035,
    "source": "provider:alphavantage",
    "verdict": "DEGRADED",
-   "why": "166 rows; 3 endpoints denied by plan"
+   "why": "17035 rows; 3 endpoints denied by plan"
   },
   {
-   "age_h": 2.3,
+   "age_h": 2.4,
    "path": "automation_intelligence/provider_collection_v1/latest/bybit.json",
    "rows": 0,
    "source": "provider:bybit",
@@ -518,7 +512,7 @@
    "why": "2510 rows; 28 endpoints denied by plan"
   },
   {
-   "age_h": 2.3,
+   "age_h": 2.4,
    "path": "automation_intelligence/provider_collection_v1/latest/fmp.json",
    "rows": 4080,
    "source": "provider:fmp",
@@ -542,14 +536,14 @@
    "why": "47687 rows; 4 endpoints denied by plan"
   },
   {
-   "age_h": 1.4,
+   "age_h": 1.5,
    "rows": 248,
    "source": "economic_events",
    "verdict": "OK",
    "why": "248 events, 109 high impact"
   },
   {
-   "age_h": 0.6,
+   "age_h": 0.7,
    "rows": 12673,
    "source": "feed:btcusd_cb_5m",
    "verdict": "OK",
@@ -696,7 +690,7 @@
    "why": "39/39 series ok"
   },
   {
-   "age_h": 2.3,
+   "age_h": 2.4,
    "path": "automation_intelligence/provider_collection_v1/latest/fred.json",
    "rows": 545,
    "source": "provider:fred",
@@ -704,7 +698,7 @@
    "why": "545 rows"
   },
   {
-   "age_h": 2.3,
+   "age_h": 2.4,
    "path": "automation_intelligence/provider_collection_v1/latest/twelve.json",
    "rows": 71554,
    "source": "provider:twelve",
@@ -719,10 +713,10 @@
    "why": "2397 filings"
   },
   {
-   "age_h": 0.5,
+   "age_h": 0.6,
    "source": "workflow:cl-lab.yml",
    "verdict": "OK",
-   "why": "last success 0.5 h ago"
+   "why": "last success 0.6 h ago"
   },
   {
    "age_h": 0.5,
@@ -731,10 +725,10 @@
    "why": "last success 0.5 h ago"
   },
   {
-   "age_h": 0.4,
+   "age_h": 0.5,
    "source": "workflow:depth-vault.yml",
    "verdict": "OK",
-   "why": "last success 0.4 h ago"
+   "why": "last success 0.5 h ago"
   },
   {
    "age_h": 16.8,
@@ -755,10 +749,10 @@
    "why": "last success 0.9 h ago"
   },
   {
-   "age_h": 1.4,
+   "age_h": 1.5,
    "source": "workflow:official-economic-events.yml",
    "verdict": "OK",
-   "why": "last success 1.4 h ago"
+   "why": "last success 1.5 h ago"
   },
   {
    "age_h": 2.3,
@@ -769,6 +763,12 @@
   {
    "age_h": 0.0,
    "source": "workflow:provider-supplemental-collection.yml",
+   "verdict": "OK",
+   "why": "last success 0.0 h ago"
+  },
+  {
+   "age_h": 0.0,
+   "source": "workflow:provider-supplemental-promote.yml",
    "verdict": "OK",
    "why": "last success 0.0 h ago"
   },

@@ -1,6 +1,6 @@
 # Data health — 2026-11-15 22:09 UTC
 
-**FAILING** 40 · **BLOCKED** 7 · **STALE** 2 · **DEGRADED** 6 · **OK** 31
+**FAILING** 39 · **BLOCKED** 7 · **STALE** 2 · **DEGRADED** 6 · **UNKNOWN** 1 · **OK** 31
 
 ## Needs attention
 
@@ -45,7 +45,6 @@
 | feed:treasury_operating_cash | FAILING | FeedError: HTTP 503 for https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v1/accounting/dts/operating_cash_balance?sort=record_date&page%5Bsize%5D |
 | workflow:cl-depth-sweep.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/43767501575 |
 | workflow:databento-depth-research-context.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/43758161246 |
-| workflow:interrepo-peer-intelligence.yml | FAILING | latest run cancelled: https://github.com/reppiks490/Icarus-engine/actions/runs/43766954509 |
 | provider:alpaca | BLOCKED | no key reaches the runner |
 | provider:finnhub | BLOCKED | BLOCKED_AUTHENTICATION |
 | provider:intrinio | BLOCKED | no key reaches the runner |
@@ -61,6 +60,7 @@
 | provider:fmp | DEGRADED | 174 rows; 2 endpoints denied by plan |
 | provider:massive | DEGRADED | 20000 rows; 7 endpoints denied by plan |
 | provider:tiingo | DEGRADED | 47687 rows; 4 endpoints denied by plan |
+| workflow:interrepo-peer-intelligence.yml | UNKNOWN | no completed run on main |
 
 ## Delivering
 

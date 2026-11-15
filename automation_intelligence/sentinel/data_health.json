@@ -81,9 +81,10 @@
  "counts": {
   "BLOCKED": 7,
   "DEGRADED": 6,
-  "FAILING": 40,
+  "FAILING": 39,
   "OK": 31,
-  "STALE": 2
+  "STALE": 2,
+  "UNKNOWN": 1
  },
  "depth": {
   "budgets": {
@@ -154,7 +155,7 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-11-15T22:09:29+00:00",
+ "generated_at": "2026-11-15T22:09:57+00:00",
  "research": {
   "champions": 0,
   "cl_last_run": "2026-11-15T08:27:21.112095+00:00",
@@ -455,12 +456,6 @@
    "why": "latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/43758161246"
   },
   {
-   "age_h": null,
-   "source": "workflow:interrepo-peer-intelligence.yml",
-   "verdict": "FAILING",
-   "why": "latest run cancelled: https://github.com/reppiks490/Icarus-engine/actions/runs/43766954509"
-  },
-  {
    "age_h": 0.4,
    "path": "automation_intelligence/provider_collection_v1/latest/alpaca.json",
    "rows": 0,
@@ -575,6 +570,11 @@
    "source": "provider:tiingo",
    "verdict": "DEGRADED",
    "why": "47687 rows; 4 endpoints denied by plan"
+  },
+  {
+   "source": "workflow:interrepo-peer-intelligence.yml",
+   "verdict": "UNKNOWN",
+   "why": "no completed run on main"
   },
   {
    "age_h": 3.3,

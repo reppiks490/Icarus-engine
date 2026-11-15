@@ -1,0 +1,136 @@
+{
+  "catalog": {
+    "asset_datasets_collected": 4,
+    "asset_templates": 109,
+    "assets": 6770,
+    "collected_operations": 14,
+    "denied_operations": 2,
+    "operations": 230,
+    "pending_pages": 1490,
+    "qualification": "INCOMPLETE_UNTIL_EVERY_OPERATION_ASSET_PAGE_TIME_RANGE_AND_TRANSPORT_IS_VERIFIED",
+    "unresolved_operations": 0
+  },
+  "chatgpt_tokens_used": 0,
+  "checkpoint_status": "ENCRYPTED_AES256_GCM",
+  "completed_at_utc": "2026-11-15T17:08:55.753985+00:00",
+  "databento_excluded": true,
+  "execution_authorized": false,
+  "paid_model_calls": 0,
+  "providers": {
+    "fmp": {
+      "archive_status": [
+        "ENCRYPTED_AES256_GCM"
+      ],
+      "blocked": [
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/funds/disclosure"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/funds/disclosure-dates"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/funds/disclosure-holders-latest"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/aftermarket-trade"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/governance-executive-compensation"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/financial-reports-json"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/grades"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/grades-consensus"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/financial-reports-xlsx"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/grades-historical"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/analyst-estimates"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/historical-chart/15min"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/financial-scores"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/historical-chart/1hour"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/historical-chart/1min"
+        }
+      ],
+      "collected_pages": 5,
+      "collected_rows": 4098,
+      "credential_present": true,
+      "endpoint_count": 230,
+      "requests": 20,
+      "research_features": [
+        {
+          "features": {
+            "price": {
+              "maximum": 735.0,
+              "mean": 221.83576999999994,
+              "minimum": 0.0,
+              "samples": 100,
+              "standard_deviation": 324.6536508057447
+            }
+          },
+          "operation": "fmp:get:/insider-trading/latest"
+        }
+      ],
+      "status": "COLLECTED_PARTIAL",
+      "substantive_work_performed": true,
+      "verified_operations": [
+        "fmp:get:/cryptocurrency-list",
+        "fmp:get:/forex-list",
+        "fmp:get:/index-list",
+        "fmp:get:/insider-trading-transaction-type",
+        "fmp:get:/insider-trading/latest"
+      ]
+    }
+  },
+  "raw_payloads_public": false,
+  "requests": 20,
+  "run_id": "providers-43738896374-1-fmp",
+  "schema_version": "icarus-provider-collection-cycle-v1",
+  "started_at_utc": "2026-11-15T17:04:45.775092+00:00"
+}

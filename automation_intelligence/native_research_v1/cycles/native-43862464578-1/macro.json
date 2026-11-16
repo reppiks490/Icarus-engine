@@ -1,0 +1,97 @@
+{
+  "automation_id": "github-native-research-v1",
+  "blockers": [
+    "Release titles establish publication, not macro surprise or causal impact.",
+    "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+    "No consensus estimates acquired; economic surprise remains unknown."
+  ],
+  "chatgpt_tokens_used": 0,
+  "code_revision": "8a5df6ce8109270dbbc5111b5af32b0a483c40d6",
+  "completed_at_utc": "2026-11-16T12:03:27.047886Z",
+  "event_paths": [],
+  "evidence": [
+    "automation_intelligence/native_research_v1/cycles/native-43862464578-1/evidence.json"
+  ],
+  "execution_authorized": false,
+  "input_sha256": "aee98f2a9a7c60bc4a12bbc5da19408678ec3b53f8e6edf16ae4c4c23f731d94",
+  "lane": "macro",
+  "local_interpretation": {
+    "authority": "UNVERIFIED_MODEL_INFERENCE",
+    "reason": "No semantic change",
+    "status": "NOT_RUN"
+  },
+  "measurements": {
+    "gaps": [
+      "Release titles establish publication, not macro surprise or causal impact.",
+      "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+      "No consensus estimates acquired; economic surprise remains unknown."
+    ],
+    "limits": "Publication and daily change are facts; surprise, causality and intraday propagation remain unverified.",
+    "releases": [
+      {
+        "published_epoch": 1794604500.0,
+        "retrieval_finished": 1794830605.9449883,
+        "retrieval_started": 1794830605.9050465,
+        "source": "FED",
+        "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/bcreg20261113a.htm",
+        "title": "Agencies extend comment period for proposed third-party risk management guidance"
+      },
+      {
+        "published_epoch": 1794817800.0,
+        "retrieval_finished": 1794830606.4170802,
+        "retrieval_started": 1794830605.9454007,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261116~db374b56ab.en.html",
+        "title": "Boris Vuj\u010di\u0107: Risks and resilience in the euro area financial system"
+      },
+      {
+        "published_epoch": 1794582062.0,
+        "retrieval_finished": 1794830606.5748863,
+        "retrieval_started": 1794830606.417337,
+        "source": "BLS",
+        "source_url": "https://www.bls.gov/bls/",
+        "title": "Major Economic Indicators Latest Numbers"
+      }
+    ],
+    "series": [
+      {
+        "change": 0.11999999999999922,
+        "date": "2026-11-12",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-11-10",
+        "series": "DGS10",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10",
+        "value": 5.1
+      },
+      {
+        "change": 0.1299999999999999,
+        "date": "2026-11-12",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-11-10",
+        "series": "DGS2",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2",
+        "value": 4.86
+      },
+      {
+        "change": 0.37420000000000186,
+        "date": "2026-11-06",
+        "freshness": "STALE",
+        "prior_date": "2026-11-05",
+        "series": "DTWEXBGS",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DTWEXBGS",
+        "value": 121.8803
+      }
+    ],
+    "status": "VERIFIED",
+    "summary": "3 dated official release headlines; 3 daily macro series measured."
+  },
+  "outcome": "NO_MATERIAL_DELTA",
+  "paid_model_calls": 0,
+  "prior_receipt_path": "automation_intelligence/native_research_v1/cycles/native-43833442740-1/macro.json",
+  "run_id": "native-43862464578-1-macro",
+  "schema_version": "icarus-research-run-v1",
+  "started_at_utc": "2026-11-16T12:03:26.998223Z",
+  "substantive_work_performed": true,
+  "summary": "3 dated official release headlines; 3 daily macro series measured.",
+  "worker": "GITHUB_ACTIONS"
+}

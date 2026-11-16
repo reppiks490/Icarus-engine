@@ -82,8 +82,8 @@
   "BLOCKED": 6,
   "DEGRADED": 5,
   "FAILING": 36,
-  "OK": 36,
-  "STALE": 3
+  "OK": 37,
+  "STALE": 2
  },
  "depth": {
   "budgets": {
@@ -154,7 +154,7 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-11-16T22:31:23+00:00",
+ "generated_at": "2026-11-16T22:32:27+00:00",
  "research": {
   "champions": 0,
   "cl_last_run": "2026-11-16T08:37:08.640272+00:00",
@@ -442,7 +442,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 0.0,
+   "age_h": 0.1,
    "path": "automation_intelligence/provider_collection_v1/latest/finnhub.json",
    "rows": 0,
    "source": "provider:finnhub",
@@ -474,7 +474,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 0.0,
+   "age_h": 0.1,
    "path": "automation_intelligence/provider_collection_v1/latest/unusual_whales.json",
    "rows": 0,
    "source": "provider:unusual_whales",
@@ -488,19 +488,13 @@
    "why": "last success 1.6 h ago (expected within 1 h)"
   },
   {
-   "age_h": 3.4,
-   "source": "workflow:native-five-research.yml",
-   "verdict": "STALE",
-   "why": "last success 3.4 h ago (expected within 3 h)"
-  },
-  {
    "age_h": 15.1,
    "source": "workflow:native-provider-access.yml",
    "verdict": "STALE",
    "why": "last success 15.1 h ago (expected within 8 h)"
   },
   {
-   "age_h": 0.0,
+   "age_h": 0.1,
    "path": "automation_intelligence/provider_collection_v1/latest/alphavantage.json",
    "rows": 7333,
    "source": "provider:alphavantage",
@@ -516,7 +510,7 @@
    "why": "no key; keyless endpoints only, none ready"
   },
   {
-   "age_h": 67.8,
+   "age_h": 67.9,
    "path": "automation_intelligence/cl_lab/external_data_fabric.json",
    "rows": 2510,
    "source": "provider:eodhd",
@@ -524,7 +518,7 @@
    "why": "2510 rows; 29 endpoints denied by plan"
   },
   {
-   "age_h": 2.0,
+   "age_h": 2.1,
    "path": "automation_intelligence/provider_collection_v1/latest/fmp.json",
    "rows": 4038,
    "source": "provider:fmp",
@@ -532,7 +526,7 @@
    "why": "4038 rows; 2 endpoints denied by plan"
   },
   {
-   "age_h": 67.8,
+   "age_h": 67.9,
    "path": "automation_intelligence/cl_lab/external_data_fabric.json",
    "rows": 47687,
    "source": "provider:tiingo",
@@ -749,6 +743,12 @@
    "why": "last success 67.8 h ago"
   },
   {
+   "age_h": 0.0,
+   "source": "workflow:native-five-research.yml",
+   "verdict": "OK",
+   "why": "last success 0.0 h ago"
+  },
+  {
    "age_h": 0.5,
    "source": "workflow:official-economic-events.yml",
    "verdict": "OK",
@@ -761,10 +761,10 @@
    "why": "last success 1.8 h ago"
   },
   {
-   "age_h": 0.0,
+   "age_h": 0.1,
    "source": "workflow:provider-supplemental-collection.yml",
    "verdict": "OK",
-   "why": "last success 0.0 h ago"
+   "why": "last success 0.1 h ago"
   },
   {
    "age_h": 0.0,
@@ -779,10 +779,10 @@
    "why": "last success 2.1 h ago"
   },
   {
-   "age_h": 533.5,
+   "age_h": 533.6,
    "source": "workflow:tests.yml",
    "verdict": "OK",
-   "why": "last success 533.5 h ago"
+   "why": "last success 533.6 h ago"
   }
  ]
 }

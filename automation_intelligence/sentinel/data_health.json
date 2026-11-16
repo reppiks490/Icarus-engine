@@ -81,8 +81,8 @@
  "counts": {
   "BLOCKED": 7,
   "DEGRADED": 6,
-  "FAILING": 39,
-  "OK": 32,
+  "FAILING": 36,
+  "OK": 35,
   "STALE": 2
  },
  "depth": {
@@ -150,14 +150,14 @@
   "vault_verify": {
    "failures": 0,
    "verdict": "OK",
-   "verified_at": "2026-11-15T01:19:48+00:00"
+   "verified_at": "2026-11-16T01:25:55+00:00"
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-11-16T01:25:11+00:00",
+ "generated_at": "2026-11-16T01:26:04+00:00",
  "research": {
   "champions": 0,
-  "cl_last_run": "2026-11-15T08:27:21.112095+00:00",
+  "cl_last_run": "2026-11-16T01:25:30.900570+00:00",
   "pulse": {
    "CANDLES": "REJECTED",
    "HA_HA_FILLS": "ARTIFACT_REFERENCE",
@@ -423,27 +423,6 @@
   },
   {
    "age_h": null,
-   "rows": 0,
-   "source": "feed:treasury_auctions",
-   "verdict": "FAILING",
-   "why": "FeedError: TimeoutError: The read operation timed out for https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v1/accounting/od/auctions_query?sort=a"
-  },
-  {
-   "age_h": null,
-   "rows": 0,
-   "source": "feed:treasury_debt_to_penny",
-   "verdict": "FAILING",
-   "why": "FeedError: TimeoutError: The read operation timed out for https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounting/od/debt_to_penny?sort=re"
-  },
-  {
-   "age_h": null,
-   "rows": 0,
-   "source": "feed:treasury_operating_cash",
-   "verdict": "FAILING",
-   "why": "FeedError: HTTP 503 for https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v1/accounting/dts/operating_cash_balance?sort=record_date&page%5Bsize%5D"
-  },
-  {
-   "age_h": null,
    "source": "workflow:cl-depth-sweep.yml",
    "verdict": "FAILING",
    "why": "latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/43767501575"
@@ -578,11 +557,11 @@
    "why": "248 events, 109 high impact"
   },
   {
-   "age_h": 6.0,
-   "rows": 12968,
+   "age_h": 0.1,
+   "rows": 13039,
    "source": "feed:btcusd_cb_5m",
    "verdict": "OK",
-   "why": "12968 rows to 2026-11-15T19:25"
+   "why": "13039 rows to 2026-11-16T01:20"
   },
   {
    "age_h": 25.5,
@@ -697,7 +676,28 @@
    "why": "9618 rows to 2026-11-12T00:00"
   },
   {
-   "age_h": 5.9,
+   "age_h": 601.4,
+   "rows": 11154,
+   "source": "feed:treasury_auctions",
+   "verdict": "OK",
+   "why": "11154 rows to 2026-10-22T00:00"
+  },
+  {
+   "age_h": 97.4,
+   "rows": 8433,
+   "source": "feed:treasury_debt_to_penny",
+   "verdict": "OK",
+   "why": "8433 rows to 2026-11-12T00:00"
+  },
+  {
+   "age_h": 97.4,
+   "rows": 16774,
+   "source": "feed:treasury_operating_cash",
+   "verdict": "OK",
+   "why": "16774 rows to 2026-11-12T00:00"
+  },
+  {
+   "age_h": 0.1,
    "rows": 197250,
    "source": "fred_alfred",
    "verdict": "OK",
@@ -719,10 +719,10 @@
    "why": "2397 filings"
   },
   {
-   "age_h": 5.8,
+   "age_h": 0.0,
    "source": "workflow:cl-lab.yml",
    "verdict": "OK",
-   "why": "last success 5.8 h ago"
+   "why": "last success 0.0 h ago"
   },
   {
    "age_h": 5.0,
@@ -755,10 +755,10 @@
    "why": "last success 2.2 h ago"
   },
   {
-   "age_h": 6.2,
+   "age_h": 6.3,
    "source": "workflow:native-provider-access.yml",
    "verdict": "OK",
-   "why": "last success 6.2 h ago"
+   "why": "last success 6.3 h ago"
   },
   {
    "age_h": 6.6,
@@ -779,10 +779,10 @@
    "why": "last success 2.3 h ago"
   },
   {
-   "age_h": 512.4,
+   "age_h": 512.5,
    "source": "workflow:tests.yml",
    "verdict": "OK",
-   "why": "last success 512.4 h ago"
+   "why": "last success 512.5 h ago"
   }
  ]
 }

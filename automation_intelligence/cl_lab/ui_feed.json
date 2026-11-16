@@ -22,82 +22,85 @@
     "best": [
      {
       "dsr": 0.0,
-      "family": "sweep",
-      "id": "x22990bf96dc",
+      "family": "noise",
+      "id": "x0f502c9503f",
       "params": {
-       "cond": "vix_inverted",
-       "depth_ticks": 2,
-       "exit": "2R",
-       "level": "pd",
+       "check": 15,
+       "cond": "dow_mon",
+       "lookback": 14,
+       "mult": 1.0,
+       "regime": "vol_hi",
+       "trail": "band"
+      },
+      "status": "REJECTED",
+      "tune_t": 0.261,
+      "tune_trades": 7
+     },
+     {
+      "dsr": 0.0,
+      "family": "sweep",
+      "id": "x988515ae392",
+      "params": {
+       "cond": "prev_down",
+       "depth_ticks": 4,
+       "exit": "eod",
+       "level": "on",
+       "mode": "reverse",
+       "regime": "vol_hi",
+       "window": "day"
+      },
+      "status": "REJECTED",
+      "tune_t": 0.175,
+      "tune_trades": 23
+     },
+     {
+      "dsr": 0.0,
+      "family": "sweep",
+      "id": "x94517f1a645",
+      "params": {
+       "cond": "gap_down",
+       "depth_ticks": 16,
+       "exit": "eod",
+       "level": "on",
+       "mode": "reverse",
+       "regime": "vol_hi",
+       "window": "day"
+      },
+      "status": "REJECTED",
+      "tune_t": -0.025,
+      "tune_trades": 21
+     },
+     {
+      "dsr": 0.0,
+      "family": "gap",
+      "id": "x8a3a32a609f",
+      "params": {
+       "cond": "gap_down",
+       "exit": "12:00",
+       "mode": "fade",
+       "regime": "vol_lo",
+       "thr": "q80"
+      },
+      "status": "REJECTED",
+      "tune_t": -0.376,
+      "tune_trades": 9
+     },
+     {
+      "dsr": 0.0,
+      "family": "sweep",
+      "id": "xb2996d9f365",
+      "params": {
+       "cond": "gap_up",
+       "depth_ticks": 8,
+       "exit": "eod",
+       "level": "on",
        "mode": "continue",
        "regime": "all",
        "window": "day"
       },
       "status": "REJECTED",
-      "tune_t": 0.135,
-      "tune_trades": 44
-     },
-     {
-      "dsr": 0.0,
-      "family": "imom",
-      "id": "xc21e4c227e7",
-      "params": {
-       "base": "prevclose",
-       "cond": "on_narrow",
-       "entry": "14:30",
-       "min_abs": "none",
-       "regime": "all",
-       "t1": "11:30"
-      },
-      "status": "REJECTED",
-      "tune_t": -0.091,
-      "tune_trades": 125
-     },
-     {
-      "dsr": 0.0,
-      "family": "imom",
-      "id": "x75db09ecf9a",
-      "params": {
-       "base": "open",
-       "cond": "gap_down",
-       "entry": "15:30",
-       "min_abs": "q50",
-       "regime": "vol_lo",
-       "t1": "10:00"
-      },
-      "status": "REJECTED",
-      "tune_t": -0.095,
-      "tune_trades": 27
-     },
-     {
-      "dsr": 0.0,
-      "family": "vwap",
-      "id": "x4abe59d3b19",
-      "params": {
-       "check": 5,
-       "cond": "on_narrow",
-       "regime": "vol_hi",
-       "side": "long",
-       "start": "10:30"
-      },
-      "status": "REJECTED",
-      "tune_t": -0.86,
-      "tune_trades": 87
-     },
-     {
-      "dsr": 0.0,
-      "family": "vwap",
-      "id": "xedafecd50e8",
-      "params": {
-       "check": 30,
-       "cond": "dow_mon",
-       "regime": "all",
-       "side": "both",
-       "start": "10:30"
-      },
-      "status": "REJECTED",
-      "tune_t": -0.905,
-      "tune_trades": 162
+      "tune_t": -0.779,
+      "tune_trades": 127
      }
     ],
     "diagnostics": {
@@ -105,16 +108,16 @@
      "candidates": 24,
      "forward_sessions": 30,
      "hold_sessions": 263,
-     "m_eff": 23.0,
+     "m_eff": 21.0,
      "metric": "returns",
-     "pbo": 0.5497,
-     "prior_trials": 2549,
+     "pbo": 0.6434,
+     "prior_trials": 2573,
      "reached_hold": 0,
-     "spa_p": 0.998,
+     "spa_p": 0.999,
      "tune_sessions": 282,
-     "var_sr": 0.01410957
+     "var_sr": 0.00974771
     },
-    "explored_before": 2424,
+    "explored_before": 2448,
     "promoted": [],
     "status_counts": {
      "REJECTED": 24
@@ -298,85 +301,84 @@
     "best": [
      {
       "dsr": 0.0,
-      "family": "orb",
-      "id": "x4910fbaaebe",
+      "family": "noise",
+      "id": "xb0af0add726",
       "params": {
-       "cond": "none",
-       "entry_mode": "breakout_close",
-       "or_min": 5,
-       "regime": "vol_lo",
-       "side": "long",
-       "stop": "or_opposite",
-       "target": "eod"
+       "check": 60,
+       "cond": "gap_up",
+       "lookback": 30,
+       "mult": 1.0,
+       "regime": "all",
+       "trail": "band_vwap"
       },
       "status": "REJECTED",
-      "tune_t": 1.592,
-      "tune_trades": 62
-     },
-     {
-      "dsr": 0.0,
-      "family": "sweep",
-      "id": "x714ad3b7320",
-      "params": {
-       "cond": "vix_inverted",
-       "depth_ticks": 2,
-       "exit": "2R",
-       "level": "on",
-       "mode": "reverse",
-       "regime": "vol_hi",
-       "window": "am"
-      },
-      "status": "REJECTED",
-      "tune_t": 1.395,
-      "tune_trades": 15
+      "tune_t": 1.513,
+      "tune_trades": 78
      },
      {
       "dsr": 0.0,
       "family": "noise",
-      "id": "x8b983a34ab8",
+      "id": "x1e8313fdb1a",
       "params": {
        "check": 15,
-       "cond": "dow_mid",
-       "lookback": 14,
+       "cond": "gap_up",
+       "lookback": 5,
        "mult": 1.5,
-       "regime": "vol_lo",
-       "trail": "band"
-      },
-      "status": "REJECTED",
-      "tune_t": 1.361,
-      "tune_trades": 37
-     },
-     {
-      "dsr": 0.0,
-      "family": "noise",
-      "id": "xceba9e483c7",
-      "params": {
-       "check": 30,
-       "cond": "prev_down",
-       "lookback": 20,
-       "mult": 2.0,
        "regime": "vol_lo",
        "trail": "band_vwap"
       },
       "status": "REJECTED",
-      "tune_t": 1.333,
-      "tune_trades": 21
+      "tune_t": 1.469,
+      "tune_trades": 49
+     },
+     {
+      "dsr": 0.0,
+      "family": "imom",
+      "id": "xecff0058821",
+      "params": {
+       "base": "prevclose",
+       "cond": "dow_mid",
+       "entry": "15:00",
+       "min_abs": "q50",
+       "regime": "vol_lo",
+       "t1": "10:30"
+      },
+      "status": "REJECTED",
+      "tune_t": 1.437,
+      "tune_trades": 17
      },
      {
       "dsr": 0.0,
       "family": "noise",
-      "id": "x4acd1112c86",
+      "id": "x57262ec68be",
       "params": {
        "check": 30,
-       "cond": "prev_down",
+       "cond": "vix_high",
        "lookback": 14,
        "mult": 1.5,
        "regime": "vol_lo",
        "trail": "band"
       },
       "status": "REJECTED",
-      "tune_t": 1.238,
-      "tune_trades": 35
+      "tune_t": 1.134,
+      "tune_trades": 15
+     },
+     {
+      "dsr": 0.0,
+      "family": "orb",
+      "id": "x2734a97e60d",
+      "params": {
+       "cond": "gap_up",
+       "entry_mode": "breakout_close",
+       "or_min": 30,
+       "regime": "all",
+       "side": "long",
+       "stop": "or_opposite",
+       "target": "10R"
+      },
+      "status": "REJECTED",
+      "tune_t": 1.079,
+      "tune_trades": 109
      }
     ],
     "diagnostics": {
@@ -386,14 +388,14 @@
      "hold_sessions": 263,
      "m_eff": 18.0,
      "metric": "returns",
-     "pbo": 0.2662,
-     "prior_trials": 2542,
+     "pbo": 0.361,
+     "prior_trials": 2566,
      "reached_hold": 0,
-     "spa_p": 0.563,
+     "spa_p": 0.565,
      "tune_sessions": 282,
-     "var_sr": 0.00748669
+     "var_sr": 0.00957247
     },
-    "explored_before": 2424,
+    "explored_before": 2448,
     "promoted": [],
     "status_counts": {
      "REJECTED": 24
@@ -627,88 +629,84 @@
     "batch": 24,
     "best": [
      {
-      "dsr": 0.0002,
+      "dsr": 0.006,
       "family": "orb",
-      "id": "xb5b9dac9d4c",
+      "id": "xb1f0744c980",
       "params": {
-       "cond": "none",
-       "entry_mode": "first_candle_dir",
-       "or_min": 5,
-       "regime": "vol_hi",
-       "side": "long",
-       "stop": "candle",
-       "target": "eod"
-      },
-      "status": "REJECTED",
-      "tune_t": 1.068,
-      "tune_trades": 42
-     },
-     {
-      "dsr": 0.0004,
-      "family": "orb",
-      "id": "xabde738ba45",
-      "params": {
-       "cond": "dow_mon",
+       "cond": "vix_high",
        "entry_mode": "breakout_close",
-       "or_min": 5,
+       "or_min": 60,
        "regime": "vol_hi",
-       "side": "long",
+       "side": "both",
        "stop": "atr10",
-       "target": "10R"
+       "target": "2R"
       },
       "status": "REJECTED",
-      "tune_t": 0.871,
-      "tune_trades": 11
+      "tune_t": 1.304,
+      "tune_trades": 64
      },
      {
       "dsr": 0.0005,
       "family": "noise",
-      "id": "xa2397372d05",
+      "id": "x8d2011f7da9",
       "params": {
-       "check": 30,
-       "cond": "vix_high",
+       "check": 15,
+       "cond": "dow_fri",
        "lookback": 20,
-       "mult": 1.25,
-       "regime": "all",
-       "trail": "band"
+       "mult": 1.0,
+       "regime": "vol_hi",
+       "trail": "band_vwap"
       },
       "status": "REJECTED",
-      "tune_t": 0.803,
-      "tune_trades": 69
+      "tune_t": 1.164,
+      "tune_trades": 17
      },
      {
-      "dsr": 0.0038,
-      "family": "orb",
-      "id": "xdde38d7908b",
+      "dsr": 0.0126,
+      "family": "imom",
+      "id": "xf228d4346d4",
       "params": {
-       "cond": "prev_up",
+       "base": "open",
+       "cond": "dow_mid",
+       "entry": "14:30",
+       "min_abs": "none",
+       "regime": "all",
+       "t1": "11:00"
+      },
+      "status": "REJECTED",
+      "tune_t": 1.137,
+      "tune_trades": 150
+     },
+     {
+      "dsr": 0.0043,
+      "family": "orb",
+      "id": "x574109c3a2f",
+      "params": {
+       "cond": "on_wide",
        "entry_mode": "breakout_close",
-       "or_min": 15,
-       "regime": "vol_hi",
+       "or_min": 10,
+       "regime": "all",
        "side": "both",
        "stop": "or_opposite",
-       "target": "eod"
+       "target": "2R"
       },
       "status": "REJECTED",
-      "tune_t": 0.712,
-      "tune_trades": 47
+      "tune_t": 1.068,
+      "tune_trades": 111
      },
      {
-      "dsr": 0.004,
-      "family": "sweep",
-      "id": "xb800528137d",
+      "dsr": 0.0031,
+      "family": "tod",
+      "id": "xc60e6472150",
       "params": {
-       "cond": "gap_up",
-       "depth_ticks": 0,
-       "exit": "2R",
-       "level": "pd",
-       "mode": "reverse",
+       "cond": "vix_contango",
+       "lookback": 5,
        "regime": "all",
-       "window": "day"
+       "which": "first"
       },
       "status": "REJECTED",
-      "tune_t": 0.644,
-      "tune_trades": 87
+      "tune_t": 0.993,
+      "tune_trades": 196
      }
     ],
     "diagnostics": {
@@ -718,14 +716,14 @@
      "hold_sessions": 260,
      "m_eff": 21.0,
      "metric": "points",
-     "pbo": 0.8503,
-     "prior_trials": 2538,
+     "pbo": 0.6552,
+     "prior_trials": 2562,
      "reached_hold": 0,
-     "spa_p": 0.961,
+     "spa_p": 0.823,
      "tune_sessions": 264,
-     "var_sr": 0.00316819
+     "var_sr": 0.00422486
     },
-    "explored_before": 2424,
+    "explored_before": 2448,
     "promoted": [],
     "status_counts": {
      "REJECTED": 24
@@ -1407,7 +1405,7 @@
   "degraded_sources": [
    "BLS"
   ],
-  "generated_at": "2026-11-15T06:33:38.564967+00:00",
+  "generated_at": "2026-11-15T18:51:38.570030+00:00",
   "high_impact_current": 109,
   "high_impact_within_24h": 0,
   "next_high_impact": {
@@ -1415,7 +1413,7 @@
    "event_date": "2026-12-04",
    "event_key": "14aa9122c6145c2427c1195d",
    "impact": "high",
-   "minutes_to_event": 27662.9,
+   "minutes_to_event": 26644.8,
    "reference_period": "November 2026",
    "scheduled_at_et": "2026-12-04T08:30:00-05:00",
    "scheduled_at_utc": "2026-12-04T13:30:00+00:00",
@@ -1456,7 +1454,7 @@
     "event_date": "2026-11-17",
     "event_key": "352c5025d41811e8a889d83d",
     "impact": "medium",
-    "minutes_to_event": 3182.9,
+    "minutes_to_event": 2164.8,
     "reference_period": "October 2026",
     "scheduled_at_et": "2026-11-17T08:30:00-05:00",
     "scheduled_at_utc": "2026-11-17T13:30:00+00:00",
@@ -1470,7 +1468,7 @@
     "event_date": "2026-11-20",
     "event_key": "9c3e1d7b1fd24e6ae11a5b5a",
     "impact": "low",
-    "minutes_to_event": 7592.9,
+    "minutes_to_event": 6574.8,
     "reference_period": "October 2026",
     "scheduled_at_et": "2026-11-20T10:00:00-05:00",
     "scheduled_at_utc": "2026-11-20T15:00:00+00:00",
@@ -1484,7 +1482,7 @@
     "event_date": "2026-12-01",
     "event_key": "45db2785c09020326a423aca",
     "impact": "medium",
-    "minutes_to_event": 23432.9,
+    "minutes_to_event": 22414.8,
     "reference_period": "October 2026",
     "scheduled_at_et": "2026-12-01T10:00:00-05:00",
     "scheduled_at_utc": "2026-12-01T15:00:00+00:00",
@@ -1498,7 +1496,7 @@
     "event_date": "2026-12-04",
     "event_key": "14aa9122c6145c2427c1195d",
     "impact": "high",
-    "minutes_to_event": 27662.9,
+    "minutes_to_event": 26644.8,
     "reference_period": "November 2026",
     "scheduled_at_et": "2026-12-04T08:30:00-05:00",
     "scheduled_at_utc": "2026-12-04T13:30:00+00:00",
@@ -1512,7 +1510,7 @@
     "event_date": "2026-12-08",
     "event_key": "eeb435c6d9b90b60a25882e9",
     "impact": "medium",
-    "minutes_to_event": 33422.9,
+    "minutes_to_event": 32404.8,
     "reference_period": "Third Quarter 2026",
     "scheduled_at_et": "2026-12-08T08:30:00-05:00",
     "scheduled_at_utc": "2026-12-08T13:30:00+00:00",
@@ -1540,7 +1538,7 @@
     "event_date": "2026-12-10",
     "event_key": "2d64608cd510f9e9ca838be8",
     "impact": "high",
-    "minutes_to_event": 36302.9,
+    "minutes_to_event": 35284.8,
     "reference_period": "November 2026",
     "scheduled_at_et": "2026-12-10T08:30:00-05:00",
     "scheduled_at_utc": "2026-12-10T13:30:00+00:00",
@@ -1554,7 +1552,7 @@
     "event_date": "2026-12-10",
     "event_key": "97a1d246430278bab388dd45",
     "impact": "low",
-    "minutes_to_event": 36302.9,
+    "minutes_to_event": 35284.8,
     "reference_period": "November 2026",
     "scheduled_at_et": "2026-12-10T08:30:00-05:00",
     "scheduled_at_utc": "2026-12-10T13:30:00+00:00",
@@ -1568,7 +1566,7 @@
     "event_date": "2026-12-15",
     "event_key": "decd91e0ae7113d782939767",
     "impact": "high",
-    "minutes_to_event": 43502.9,
+    "minutes_to_event": 42484.8,
     "reference_period": "November 2026",
     "scheduled_at_et": "2026-12-15T08:30:00-05:00",
     "scheduled_at_utc": "2026-12-15T13:30:00+00:00",
@@ -1582,7 +1580,7 @@
     "event_date": "2026-12-16",
     "event_key": "5b8a50b1890a0d241013a475",
     "impact": "low",
-    "minutes_to_event": 45032.9,
+    "minutes_to_event": 44014.8,
     "reference_period": "September 2026",
     "scheduled_at_et": "2026-12-16T10:00:00-05:00",
     "scheduled_at_utc": "2026-12-16T15:00:00+00:00",
@@ -1596,7 +1594,7 @@
     "event_date": "2026-12-17",
     "event_key": "cbc4baf052cab2401578b2d3",
     "impact": "medium",
-    "minutes_to_event": 46382.9,
+    "minutes_to_event": 45364.8,
     "reference_period": "November 2026",
     "scheduled_at_et": "2026-12-17T08:30:00-05:00",
     "scheduled_at_utc": "2026-12-17T13:30:00+00:00",
@@ -1610,7 +1608,7 @@
     "event_date": "2026-12-18",
     "event_key": "ba2544eb374914e29dd92d49",
     "impact": "low",
-    "minutes_to_event": 47912.9,
+    "minutes_to_event": 46894.8,
     "reference_period": "November 2026",
     "scheduled_at_et": "2026-12-18T10:00:00-05:00",
     "scheduled_at_utc": "2026-12-18T15:00:00+00:00",
@@ -1710,7 +1708,7 @@
   "treasury_debt_to_penny": "ok",
   "treasury_operating_cash": "ok"
  },
- "generated_at": "2026-11-15T08:27:06.824806+00:00",
+ "generated_at": "2026-11-16T01:25:13.205671+00:00",
  "integrity": {
   "basis_check": {
    "jumps": [],
@@ -1922,7 +1920,7 @@
   ]
  },
  "production_decision_authorized": false,
- "run_id": "cl-lab-86856de490a02305",
+ "run_id": "cl-lab-3e59fa8b6837d1ba",
  "schema": "cl_lab.ui_feed/1",
  "ui_state": "RESEARCH ONLY"
 }

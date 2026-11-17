@@ -1,101 +1,104 @@
 {
   "catalog": {
-    "asset_datasets_collected": 2,
+    "asset_datasets_collected": 1,
     "asset_templates": 162,
     "assets": 73398,
-    "collected_operations": 8,
+    "collected_operations": 7,
     "denied_operations": 0,
     "operations": 185,
-    "pending_pages": 1536,
+    "pending_pages": 1547,
     "qualification": "INCOMPLETE_UNTIL_EVERY_OPERATION_ASSET_PAGE_TIME_RANGE_AND_TRANSPORT_IS_VERIFIED",
     "unresolved_operations": 4
   },
   "chatgpt_tokens_used": 0,
   "checkpoint_status": "ENCRYPTED_AES256_GCM",
-  "completed_at_utc": "2026-11-17T03:53:13.750682+00:00",
+  "completed_at_utc": "2026-11-17T13:20:27.320471+00:00",
   "databento_excluded": true,
   "execution_authorized": false,
   "paid_model_calls": 0,
   "providers": {
     "twelve": {
-      "archive_status": [
-        "ENCRYPTED_AES256_GCM"
-      ],
+      "archive_status": [],
       "blocked": [
         {
-          "asset_specific": false,
-          "failure_code": "PAYLOAD_LIMIT_INCOMPLETE",
-          "operation": "twelve:get:/funds"
-        },
-        {
-          "asset_specific": false,
-          "failure_code": "PAYLOAD_LIMIT_INCOMPLETE",
-          "operation": "twelve:get:/stocks"
-        },
-        {
           "asset_specific": true,
-          "failure_code": "403",
-          "operation": "twelve:get:/mutual_funds/world"
+          "failure_code": "404",
+          "operation": "twelve:get:/div"
         },
         {
           "asset_specific": true,
           "failure_code": "404",
-          "operation": "twelve:get:/dema"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "403",
-          "operation": "twelve:get:/mutual_funds/world/composition"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "403",
-          "operation": "twelve:get:/recommendations"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "403",
-          "operation": "twelve:get:/mutual_funds/world/performance"
+          "operation": "twelve:get:/obv"
         },
         {
           "asset_specific": true,
           "failure_code": "404",
-          "operation": "twelve:get:/minindex"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "403",
-          "operation": "twelve:get:/mutual_funds/world/purchase_info"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "403",
-          "operation": "twelve:get:/revenue_estimate"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "403",
-          "operation": "twelve:get:/mutual_funds/world/ratings"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "403",
-          "operation": "twelve:get:/direct_holders"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "403",
-          "operation": "twelve:get:/mutual_funds/world/risk"
+          "operation": "twelve:get:/rocr"
         },
         {
           "asset_specific": true,
           "failure_code": "404",
-          "operation": "twelve:get:/roc"
+          "operation": "twelve:get:/percent_b"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "404",
+          "operation": "twelve:get:/dx"
         },
         {
           "asset_specific": true,
           "failure_code": "403",
-          "operation": "twelve:get:/mutual_funds/world/summary"
+          "operation": "twelve:get:/pivot_points_hl"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "404",
+          "operation": "twelve:get:/rocr100"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "404",
+          "operation": "twelve:get:/plus_di"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "403",
+          "operation": "twelve:get:/dividends"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "404",
+          "operation": "twelve:get:/plus_dm"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "404",
+          "operation": "twelve:get:/rsi"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "404",
+          "operation": "twelve:get:/ppo"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "403",
+          "operation": "twelve:get:/dividends_calendar"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "404",
+          "operation": "twelve:get:/press_releases"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "403",
+          "operation": "twelve:get:/rvol"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "400",
+          "operation": "twelve:get:/price"
         },
         {
           "asset_specific": true,
@@ -105,33 +108,33 @@
         {
           "asset_specific": true,
           "failure_code": "403",
-          "operation": "twelve:get:/mutual_funds/world/sustainability"
+          "operation": "twelve:get:/price_target"
         },
         {
           "asset_specific": true,
           "failure_code": "404",
-          "operation": "twelve:get:/rocp"
+          "operation": "twelve:get:/sar"
         },
         {
           "asset_specific": true,
-          "failure_code": "404",
-          "operation": "twelve:get:/natr"
+          "failure_code": "403",
+          "operation": "twelve:get:/profile"
         }
       ],
-      "collected_pages": 1,
+      "collected_pages": 0,
       "collected_rows": 0,
       "credential_present": true,
       "endpoint_count": 185,
       "requests": 20,
       "research_features": [],
-      "status": "COLLECTED_PARTIAL",
+      "status": "BLOCKED",
       "substantive_work_performed": false,
       "verified_operations": []
     }
   },
   "raw_payloads_public": false,
   "requests": 20,
-  "run_id": "providers-44012590546-1-twelve",
+  "run_id": "providers-44090811493-1-twelve",
   "schema_version": "icarus-provider-collection-cycle-v1",
-  "started_at_utc": "2026-11-17T03:48:35.596636+00:00"
+  "started_at_utc": "2026-11-17T13:16:06.865434+00:00"
 }

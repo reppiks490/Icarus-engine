@@ -82,8 +82,8 @@
   "BLOCKED": 6,
   "DEGRADED": 5,
   "FAILING": 36,
-  "OK": 37,
-  "STALE": 2
+  "OK": 38,
+  "STALE": 1
  },
  "depth": {
   "budgets": {
@@ -154,7 +154,7 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-11-18T14:31:19+00:00",
+ "generated_at": "2026-11-18T14:33:01+00:00",
  "research": {
   "champions": 0,
   "cl_last_run": "2026-11-18T09:07:24.116747+00:00",
@@ -442,7 +442,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 9.8,
+   "age_h": 0.1,
    "path": "automation_intelligence/provider_collection_v1/latest/finnhub.json",
    "rows": 0,
    "source": "provider:finnhub",
@@ -474,7 +474,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 9.8,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/unusual_whales.json",
    "rows": 0,
    "source": "provider:unusual_whales",
@@ -482,24 +482,18 @@
    "why": "BLOCKED_AUTHENTICATION"
   },
   {
-   "age_h": 5.2,
+   "age_h": 5.3,
    "source": "workflow:native-five-research.yml",
    "verdict": "STALE",
-   "why": "last success 5.2 h ago (expected within 3 h)"
+   "why": "last success 5.3 h ago (expected within 3 h)"
   },
   {
-   "age_h": 9.8,
-   "source": "workflow:provider-supplemental-promote.yml",
-   "verdict": "STALE",
-   "why": "last success 9.8 h ago (expected within 3 h)"
-  },
-  {
-   "age_h": 9.8,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/alphavantage.json",
-   "rows": 29409,
+   "rows": 7335,
    "source": "provider:alphavantage",
    "verdict": "DEGRADED",
-   "why": "29409 rows; 3 endpoints denied by plan"
+   "why": "7335 rows; 3 endpoints denied by plan"
   },
   {
    "age_h": 0.6,
@@ -541,7 +535,7 @@
    "why": "248 events, 109 high impact"
   },
   {
-   "age_h": 5.5,
+   "age_h": 5.6,
    "rows": 13707,
    "source": "feed:btcusd_cb_5m",
    "verdict": "OK",
@@ -555,56 +549,56 @@
    "why": "232704 rows to 2026-11-17T23:55"
   },
   {
-   "age_h": 38.5,
+   "age_h": 38.6,
    "rows": 9272,
    "source": "feed:cboe_skew",
    "verdict": "OK",
    "why": "9272 rows to 2026-11-17T00:00"
   },
   {
-   "age_h": 38.5,
+   "age_h": 38.6,
    "rows": 9318,
    "source": "feed:cboe_vix",
    "verdict": "OK",
    "why": "9318 rows to 2026-11-17T00:00"
   },
   {
-   "age_h": 38.5,
+   "age_h": 38.6,
    "rows": 4318,
    "source": "feed:cboe_vix3m",
    "verdict": "OK",
    "why": "4318 rows to 2026-11-17T00:00"
   },
   {
-   "age_h": 38.5,
+   "age_h": 38.6,
    "rows": 3992,
    "source": "feed:cboe_vix9d",
    "verdict": "OK",
    "why": "3992 rows to 2026-11-17T00:00"
   },
   {
-   "age_h": 38.5,
+   "age_h": 38.6,
    "rows": 5149,
    "source": "feed:cboe_vvix",
    "verdict": "OK",
    "why": "5149 rows to 2026-11-17T00:00"
   },
   {
-   "age_h": 206.5,
+   "age_h": 206.6,
    "rows": 187306,
    "source": "feed:cftc_disaggregated_all",
    "verdict": "OK",
    "why": "187306 rows to 2026-11-10T00:00"
   },
   {
-   "age_h": 206.5,
+   "age_h": 206.6,
    "rows": 47420,
    "source": "feed:cftc_tff_all",
    "verdict": "OK",
    "why": "47420 rows to 2026-11-10T00:00"
   },
   {
-   "age_h": 206.5,
+   "age_h": 206.6,
    "rows": 2236,
    "source": "feed:cftc_tff_nasdaq",
    "verdict": "OK",
@@ -618,77 +612,77 @@
    "why": "232704 rows to 2026-11-17T23:55"
   },
   {
-   "age_h": 62.5,
+   "age_h": 62.6,
    "rows": 26437,
    "source": "feed:fred_dff",
    "verdict": "OK",
    "why": "26437 rows to 2026-11-16T00:00"
   },
   {
-   "age_h": 62.5,
+   "age_h": 62.6,
    "rows": 16925,
    "source": "feed:fred_dgs10",
    "verdict": "OK",
    "why": "16925 rows to 2026-11-16T00:00"
   },
   {
-   "age_h": 62.5,
+   "age_h": 62.6,
    "rows": 13165,
    "source": "feed:fred_dgs2",
    "verdict": "OK",
    "why": "13165 rows to 2026-11-16T00:00"
   },
   {
-   "age_h": 38.5,
+   "age_h": 38.6,
    "rows": 10663,
    "source": "feed:fred_nasdaq100",
    "verdict": "OK",
    "why": "10663 rows to 2026-11-17T00:00"
   },
   {
-   "age_h": 38.5,
+   "age_h": 38.6,
    "rows": 13166,
    "source": "feed:fred_t10y2y",
    "verdict": "OK",
    "why": "13166 rows to 2026-11-17T00:00"
   },
   {
-   "age_h": 62.5,
+   "age_h": 62.6,
    "rows": 9620,
    "source": "feed:fred_vixcls",
    "verdict": "OK",
    "why": "9620 rows to 2026-11-16T00:00"
   },
   {
-   "age_h": 662.5,
+   "age_h": 662.6,
    "rows": 11154,
    "source": "feed:treasury_auctions",
    "verdict": "OK",
    "why": "11154 rows to 2026-10-22T00:00"
   },
   {
-   "age_h": 62.5,
+   "age_h": 62.6,
    "rows": 8435,
    "source": "feed:treasury_debt_to_penny",
    "verdict": "OK",
    "why": "8435 rows to 2026-11-16T00:00"
   },
   {
-   "age_h": 62.5,
+   "age_h": 62.6,
    "rows": 16782,
    "source": "feed:treasury_operating_cash",
    "verdict": "OK",
    "why": "16782 rows to 2026-11-16T00:00"
   },
   {
-   "age_h": 5.4,
+   "age_h": 5.5,
    "rows": 197280,
    "source": "fred_alfred",
    "verdict": "OK",
    "why": "39/39 series ok"
   },
   {
-   "age_h": 0.5,
+   "age_h": 0.6,
    "path": "automation_intelligence/provider_collection_v1/latest/fred.json",
    "rows": 31,
    "source": "provider:fred",
@@ -704,7 +698,7 @@
    "why": "20000 rows"
   },
   {
-   "age_h": 0.5,
+   "age_h": 0.6,
    "path": "automation_intelligence/provider_collection_v1/latest/twelve.json",
    "rows": 2,
    "source": "provider:twelve",
@@ -725,16 +719,16 @@
    "why": "last success 5.4 h ago"
   },
   {
-   "age_h": 2.6,
+   "age_h": 2.7,
    "source": "workflow:databento-depth-corpus.yml",
    "verdict": "OK",
-   "why": "last success 2.6 h ago"
+   "why": "last success 2.7 h ago"
   },
   {
-   "age_h": 2.5,
+   "age_h": 2.6,
    "source": "workflow:depth-vault.yml",
    "verdict": "OK",
-   "why": "last success 2.5 h ago"
+   "why": "last success 2.6 h ago"
   },
   {
    "age_h": 10.7,
@@ -761,14 +755,20 @@
    "why": "last success 7.0 h ago"
   },
   {
-   "age_h": 0.4,
+   "age_h": 0.5,
    "source": "workflow:provider-exhaustive-collection.yml",
    "verdict": "OK",
-   "why": "last success 0.4 h ago"
+   "why": "last success 0.5 h ago"
   },
   {
    "age_h": 0.0,
    "source": "workflow:provider-supplemental-collection.yml",
+   "verdict": "OK",
+   "why": "last success 0.0 h ago"
+  },
+  {
+   "age_h": 0.0,
+   "source": "workflow:provider-supplemental-promote.yml",
    "verdict": "OK",
    "why": "last success 0.0 h ago"
   },
@@ -779,10 +779,10 @@
    "why": "last success 0.6 h ago"
   },
   {
-   "age_h": 573.5,
+   "age_h": 573.6,
    "source": "workflow:tests.yml",
    "verdict": "OK",
-   "why": "last success 573.5 h ago"
+   "why": "last success 573.6 h ago"
   }
  ]
 }

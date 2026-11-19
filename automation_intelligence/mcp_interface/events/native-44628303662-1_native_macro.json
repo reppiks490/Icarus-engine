@@ -1,0 +1,124 @@
+{
+  "at_utc": "2026-11-19T22:30:09.165997Z",
+  "category": "AUDIT",
+  "event_id": "native-44628303662-1-native-macro",
+  "evidence": [
+    {
+      "classification": "FACT",
+      "code_revision": "605d08e2babbf7f64ef10871504af32a749ee63c",
+      "evidence_sha256": "177ad268d3d08098764354d73619295bb24cd6b50ddd169c249c5ce31acba867",
+      "measurement": {
+        "gaps": [
+          "Release titles establish publication, not macro surprise or causal impact.",
+          "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+          "No consensus estimates acquired; economic surprise remains unknown."
+        ],
+        "limits": "Publication and daily change are facts; surprise, causality and intraday propagation remain unverified.",
+        "releases": [
+          {
+            "published_epoch": 1795104000.0,
+            "retrieval_finished": 1795127408.3811827,
+            "retrieval_started": 1795127408.3097084,
+            "source": "FED",
+            "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20261119a.htm",
+            "title": "Federal Reserve Board issues enforcement action with former employee of First Security Bancorp"
+          },
+          {
+            "published_epoch": 1795028400.0,
+            "retrieval_finished": 1795127408.3811827,
+            "retrieval_started": 1795127408.3097084,
+            "source": "FED",
+            "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261118a.htm",
+            "title": "Minutes of the Federal Open Market Committee, October 27-28, 2026"
+          },
+          {
+            "published_epoch": 1794992400.0,
+            "retrieval_finished": 1795127408.885323,
+            "retrieval_started": 1795127408.381648,
+            "source": "ECB",
+            "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261118~86f1e8147e.en.pdf",
+            "title": "Boris Vuj\u010di\u0107: Financial Stability Review - November 2026"
+          },
+          {
+            "published_epoch": 1794992400.0,
+            "retrieval_finished": 1795127408.885323,
+            "retrieval_started": 1795127408.381648,
+            "source": "ECB",
+            "source_url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr261118~83c5c60158.en.html",
+            "title": "Risks from AI valuations, fiscal imbalances and geoeconomic tensions weigh on financial stability outlook"
+          },
+          {
+            "published_epoch": 1794940200.0,
+            "retrieval_finished": 1795127408.885323,
+            "retrieval_started": 1795127408.381648,
+            "source": "ECB",
+            "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261117~7f5d3b1a0e.en.pdf",
+            "title": "Philip R. Lane: The practice and science of monetary policy communication: the ECB experience"
+          },
+          {
+            "published_epoch": 1795014023.0,
+            "retrieval_finished": 1795127408.9893496,
+            "retrieval_started": 1795127408.885627,
+            "source": "BLS",
+            "source_url": "https://www.bls.gov/bls/",
+            "title": "Major Economic Indicators Latest Numbers"
+          }
+        ],
+        "series": [
+          {
+            "change": -0.02999999999999936,
+            "date": "2026-11-18",
+            "freshness": "DAILY_OBSERVATION",
+            "prior_date": "2026-11-17",
+            "series": "DGS10",
+            "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10",
+            "value": 5.07
+          },
+          {
+            "change": 0.0,
+            "date": "2026-11-18",
+            "freshness": "DAILY_OBSERVATION",
+            "prior_date": "2026-11-17",
+            "series": "DGS2",
+            "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2",
+            "value": 4.8
+          },
+          {
+            "change": 0.10699999999999932,
+            "date": "2026-11-13",
+            "freshness": "DAILY_OBSERVATION",
+            "prior_date": "2026-11-12",
+            "series": "DTWEXBGS",
+            "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DTWEXBGS",
+            "value": 122.6503
+          }
+        ],
+        "status": "VERIFIED",
+        "summary": "6 dated official release headlines; 3 daily macro series measured."
+      }
+    }
+  ],
+  "execution_authorized": false,
+  "interpretation_authority": "UNVERIFIED_MODEL_INFERENCE",
+  "oracle": {
+    "finding": "6 dated official release headlines; 3 daily macro series measured.",
+    "status": "VERIFIED"
+  },
+  "paths": [
+    "automation_intelligence/native_research_v1/cycles/native-44628303662-1/evidence.json",
+    "automation_intelligence/native_research_v1/cycles/native-44628303662-1/macro.json"
+  ],
+  "schema_version": "icarus-mcp-event-v1",
+  "severity": "MEDIUM",
+  "source": "MACRO_AUTOMATION",
+  "status": "VERIFIED",
+  "summary": "6 dated official release headlines; 3 daily macro series measured.",
+  "supermesh_x": {
+    "finding": "6 dated official release headlines; 3 daily macro series measured.",
+    "status": "VERIFIED"
+  },
+  "surface": [
+    "macro native research"
+  ],
+  "worker": "GITHUB_NATIVE_RESEARCH_V1"
+}

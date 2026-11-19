@@ -82,8 +82,8 @@
   "BLOCKED": 8,
   "DEGRADED": 3,
   "FAILING": 36,
-  "OK": 35,
-  "STALE": 4
+  "OK": 36,
+  "STALE": 3
  },
  "depth": {
   "budgets": {
@@ -154,7 +154,7 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-11-19T13:22:55+00:00",
+ "generated_at": "2026-11-19T13:24:42+00:00",
  "research": {
   "champions": 0,
   "cl_last_run": "2026-11-19T02:52:09.935581+00:00",
@@ -261,7 +261,7 @@
    "why": "root not in CL_DATABENTO_ROOTS"
   },
   {
-   "age_h": 615.1,
+   "age_h": 615.2,
    "rows": 158216,
    "source": "feed:databento_mbt_5m",
    "verdict": "FAILING",
@@ -380,7 +380,7 @@
    "why": "root not in CL_DATABENTO_ROOTS"
   },
   {
-   "age_h": 643.1,
+   "age_h": 643.2,
    "rows": 109524,
    "source": "feed:databento_zc_5m",
    "verdict": "FAILING",
@@ -401,7 +401,7 @@
    "why": "root not in CL_DATABENTO_ROOTS"
   },
   {
-   "age_h": 643.1,
+   "age_h": 643.2,
    "rows": 111964,
    "source": "feed:databento_zs_5m",
    "verdict": "FAILING",
@@ -415,7 +415,7 @@
    "why": "root not in CL_DATABENTO_ROOTS"
   },
   {
-   "age_h": 643.1,
+   "age_h": 643.2,
    "rows": 110367,
    "source": "feed:databento_zw_5m",
    "verdict": "FAILING",
@@ -442,7 +442,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 0.1,
+   "age_h": 0.2,
    "path": "automation_intelligence/provider_collection_v1/latest/bybit.json",
    "rows": 0,
    "source": "provider:bybit",
@@ -498,12 +498,6 @@
    "why": "BLOCKED_AUTHENTICATION"
   },
   {
-   "age_h": 4.4,
-   "source": "workflow:interrepo-peer-intelligence.yml",
-   "verdict": "STALE",
-   "why": "last success 4.4 h ago (expected within 1 h)"
-  },
-  {
    "age_h": 5.7,
    "source": "workflow:native-five-research.yml",
    "verdict": "STALE",
@@ -516,10 +510,10 @@
    "why": "last success 9.6 h ago (expected within 3 h)"
   },
   {
-   "age_h": 9.5,
+   "age_h": 9.6,
    "source": "workflow:provider-supplemental-promote.yml",
    "verdict": "STALE",
-   "why": "last success 9.5 h ago (expected within 3 h)"
+   "why": "last success 9.6 h ago (expected within 3 h)"
   },
   {
    "age_h": 9.6,
@@ -530,7 +524,7 @@
    "why": "17038 rows; 3 endpoints denied by plan"
   },
   {
-   "age_h": 9.5,
+   "age_h": 9.6,
    "path": "automation_intelligence/cl_lab/external_data_fabric.json",
    "rows": 2510,
    "source": "provider:eodhd",
@@ -538,7 +532,7 @@
    "why": "2510 rows; 19 endpoints denied by plan"
   },
   {
-   "age_h": 9.5,
+   "age_h": 9.6,
    "path": "automation_intelligence/cl_lab/external_data_fabric.json",
    "rows": 23,
    "source": "provider:fmp",
@@ -546,14 +540,14 @@
    "why": "23 rows; 16 endpoints denied by plan"
   },
   {
-   "age_h": 5.9,
+   "age_h": 6.0,
    "rows": 248,
    "source": "economic_events",
    "verdict": "OK",
    "why": "248 events, 109 high impact"
   },
   {
-   "age_h": 10.6,
+   "age_h": 10.7,
    "rows": 13920,
    "source": "feed:btcusd_cb_5m",
    "verdict": "OK",
@@ -700,7 +694,7 @@
    "why": "39/39 series ok"
   },
   {
-   "age_h": 0.3,
+   "age_h": 0.4,
    "path": "automation_intelligence/provider_collection_v1/latest/fred.json",
    "rows": 1029,
    "source": "provider:fred",
@@ -716,7 +710,7 @@
    "why": "20000 rows"
   },
   {
-   "age_h": 9.5,
+   "age_h": 9.6,
    "path": "automation_intelligence/cl_lab/external_data_fabric.json",
    "rows": 47717,
    "source": "provider:tiingo",
@@ -724,7 +718,7 @@
    "why": "47717 rows"
   },
   {
-   "age_h": 0.4,
+   "age_h": 0.5,
    "rows": 2398,
    "source": "sec_edgar",
    "verdict": "OK",
@@ -749,10 +743,16 @@
    "why": "last success 1.4 h ago"
   },
   {
-   "age_h": 9.5,
+   "age_h": 9.6,
    "source": "workflow:external-data-fabric.yml",
    "verdict": "OK",
-   "why": "last success 9.5 h ago"
+   "why": "last success 9.6 h ago"
+  },
+  {
+   "age_h": 0.0,
+   "source": "workflow:interrepo-peer-intelligence.yml",
+   "verdict": "OK",
+   "why": "last success 0.0 h ago"
   },
   {
    "age_h": 5.3,
@@ -761,10 +761,10 @@
    "why": "last success 5.3 h ago"
   },
   {
-   "age_h": 5.9,
+   "age_h": 6.0,
    "source": "workflow:official-economic-events.yml",
    "verdict": "OK",
-   "why": "last success 5.9 h ago"
+   "why": "last success 6.0 h ago"
   },
   {
    "age_h": 0.0,
@@ -773,10 +773,10 @@
    "why": "last success 0.0 h ago"
   },
   {
-   "age_h": 0.4,
+   "age_h": 0.5,
    "source": "workflow:sec-edgar-data.yml",
    "verdict": "OK",
-   "why": "last success 0.4 h ago"
+   "why": "last success 0.5 h ago"
   },
   {
    "age_h": 596.4,

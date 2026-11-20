@@ -1,0 +1,148 @@
+{
+  "automation_id": "github-native-research-v1",
+  "blockers": [
+    "Release titles establish publication, not macro surprise or causal impact.",
+    "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+    "No consensus estimates acquired; economic surprise remains unknown."
+  ],
+  "chatgpt_tokens_used": 0,
+  "code_revision": "2d4074aa7cb6a87ba764a5d593a62178cb2e75cd",
+  "completed_at_utc": "2026-11-20T21:38:40.148411Z",
+  "event_paths": [
+    "automation_intelligence/mcp_interface/events/native-44820791328-1_native_macro.json"
+  ],
+  "evidence": [
+    "automation_intelligence/native_research_v1/cycles/native-44820791328-1/evidence.json"
+  ],
+  "execution_authorized": false,
+  "input_sha256": "1e527dd6c8773813108d618733ea140a10bfaaf9aa45b05893d27215bb63e06f",
+  "lane": "macro",
+  "local_interpretation": {
+    "authority": "UNVERIFIED_MODEL_INFERENCE",
+    "model": "Qwen/Qwen3-1.7B-GGUF@90862c4:Q8_0",
+    "payload": {
+      "conflicts": [],
+      "data_gaps": [],
+      "execution_authorized": false,
+      "lane": "macro",
+      "net_new_delta": "LOCAL_NEXT_TEST_SELECTION",
+      "summary": "Does the next official release change the daily macro context?"
+    },
+    "response_id": "local-3dc1754c694e11cb5673d914",
+    "status": "GENERATED"
+  },
+  "measurements": {
+    "gaps": [
+      "Release titles establish publication, not macro surprise or causal impact.",
+      "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+      "No consensus estimates acquired; economic surprise remains unknown."
+    ],
+    "limits": "Publication and daily change are facts; surprise, causality and intraday propagation remain unverified.",
+    "releases": [
+      {
+        "published_epoch": 1795209300.0,
+        "retrieval_finished": 1795210700.9743881,
+        "retrieval_started": 1795210700.8926737,
+        "source": "FED",
+        "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/other20261120b.htm",
+        "title": "Federal Reserve announces College Fed Challenge winners"
+      },
+      {
+        "published_epoch": 1795186800.0,
+        "retrieval_finished": 1795210700.9743881,
+        "retrieval_started": 1795210700.8926737,
+        "source": "FED",
+        "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/other20261120a.htm",
+        "title": "Federal Reserve Board releases results from survey of senior financial officers at banks about their strategies and practices for managing reserve balances"
+      },
+      {
+        "published_epoch": 1795104000.0,
+        "retrieval_finished": 1795210700.9743881,
+        "retrieval_started": 1795210700.8926737,
+        "source": "FED",
+        "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/enforcement20261119a.htm",
+        "title": "Federal Reserve Board issues enforcement action with former employee of First Security Bancorp"
+      },
+      {
+        "published_epoch": 1795028400.0,
+        "retrieval_finished": 1795210700.9743881,
+        "retrieval_started": 1795210700.8926737,
+        "source": "FED",
+        "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261118a.htm",
+        "title": "Minutes of the Federal Open Market Committee, October 27-28, 2026"
+      },
+      {
+        "published_epoch": 1795163400.0,
+        "retrieval_finished": 1795210701.594567,
+        "retrieval_started": 1795210700.9746943,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261120~e52bcc4db2.en.html",
+        "title": "Christine Lagarde: Acting in time"
+      },
+      {
+        "published_epoch": 1794992400.0,
+        "retrieval_finished": 1795210701.594567,
+        "retrieval_started": 1795210700.9746943,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261118~86f1e8147e.en.pdf",
+        "title": "Boris Vuj\u010di\u0107: Financial Stability Review - November 2026"
+      },
+      {
+        "published_epoch": 1794992400.0,
+        "retrieval_finished": 1795210701.594567,
+        "retrieval_started": 1795210700.9746943,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr261118~83c5c60158.en.html",
+        "title": "Risks from AI valuations, fiscal imbalances and geoeconomic tensions weigh on financial stability outlook"
+      },
+      {
+        "published_epoch": 1795187004.0,
+        "retrieval_finished": 1795210701.751707,
+        "retrieval_started": 1795210701.5947728,
+        "source": "BLS",
+        "source_url": "https://www.bls.gov/bls/",
+        "title": "Major Economic Indicators Latest Numbers"
+      }
+    ],
+    "series": [
+      {
+        "change": -0.03000000000000025,
+        "date": "2026-11-19",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-11-18",
+        "series": "DGS10",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10",
+        "value": 5.04
+      },
+      {
+        "change": -0.040000000000000036,
+        "date": "2026-11-19",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-11-18",
+        "series": "DGS2",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2",
+        "value": 4.76
+      },
+      {
+        "change": 0.10699999999999932,
+        "date": "2026-11-13",
+        "freshness": "STALE",
+        "prior_date": "2026-11-12",
+        "series": "DTWEXBGS",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DTWEXBGS",
+        "value": 122.6503
+      }
+    ],
+    "status": "VERIFIED",
+    "summary": "8 dated official release headlines; 3 daily macro series measured."
+  },
+  "outcome": "MATERIAL_DELTA",
+  "paid_model_calls": 0,
+  "prior_receipt_path": "automation_intelligence/native_research_v1/cycles/native-44814509425-1/macro.json",
+  "run_id": "native-44820791328-1-macro",
+  "schema_version": "icarus-research-run-v1",
+  "started_at_utc": "2026-11-20T21:38:22.289714Z",
+  "substantive_work_performed": true,
+  "summary": "8 dated official release headlines; 3 daily macro series measured.",
+  "worker": "GITHUB_ACTIONS"
+}

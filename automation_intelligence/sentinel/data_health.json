@@ -82,8 +82,8 @@
   "BLOCKED": 6,
   "DEGRADED": 5,
   "FAILING": 36,
-  "OK": 37,
-  "STALE": 2
+  "OK": 38,
+  "STALE": 1
  },
  "depth": {
   "budgets": {
@@ -154,7 +154,7 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-11-20T03:42:54+00:00",
+ "generated_at": "2026-11-20T03:44:38+00:00",
  "research": {
   "champions": 0,
   "cl_last_run": "2026-11-19T21:51:09.577704+00:00",
@@ -212,7 +212,7 @@
    "why": "root not in CL_DATABENTO_ROOTS"
   },
   {
-   "age_h": 629.5,
+   "age_h": 629.6,
    "rows": 145073,
    "source": "feed:databento_btc_5m",
    "verdict": "FAILING",
@@ -442,7 +442,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 5.3,
+   "age_h": 0.1,
    "path": "automation_intelligence/provider_collection_v1/latest/finnhub.json",
    "rows": 0,
    "source": "provider:finnhub",
@@ -458,7 +458,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 0.5,
+   "age_h": 0.6,
    "path": "automation_intelligence/provider_collection_v1/latest/quiver.json",
    "rows": 0,
    "source": "provider:quiver",
@@ -474,7 +474,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 5.3,
+   "age_h": 0.1,
    "path": "automation_intelligence/provider_collection_v1/latest/unusual_whales.json",
    "rows": 0,
    "source": "provider:unusual_whales",
@@ -488,18 +488,12 @@
    "why": "last success 4.4 h ago (expected within 3 h)"
   },
   {
-   "age_h": 5.3,
-   "source": "workflow:provider-supplemental-promote.yml",
-   "verdict": "STALE",
-   "why": "last success 5.3 h ago (expected within 3 h)"
-  },
-  {
-   "age_h": 5.3,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/alphavantage.json",
-   "rows": 29421,
+   "rows": 7337,
    "source": "provider:alphavantage",
    "verdict": "DEGRADED",
-   "why": "29421 rows; 3 endpoints denied by plan"
+   "why": "7337 rows; 3 endpoints denied by plan"
   },
   {
    "age_h": 0.6,
@@ -510,7 +504,7 @@
    "why": "no key; keyless endpoints only, none ready"
   },
   {
-   "age_h": 23.9,
+   "age_h": 0.0,
    "path": "automation_intelligence/cl_lab/external_data_fabric.json",
    "rows": 2510,
    "source": "provider:eodhd",
@@ -518,7 +512,7 @@
    "why": "2510 rows; 14 endpoints denied by plan"
   },
   {
-   "age_h": 23.9,
+   "age_h": 0.0,
    "path": "automation_intelligence/cl_lab/external_data_fabric.json",
    "rows": 23,
    "source": "provider:fmp",
@@ -681,7 +675,7 @@
    "why": "16790 rows to 2026-11-18T00:00"
   },
   {
-   "age_h": 5.9,
+   "age_h": 6.0,
    "rows": 197317,
    "source": "fred_alfred",
    "verdict": "OK",
@@ -696,7 +690,7 @@
    "why": "127 rows"
   },
   {
-   "age_h": 0.4,
+   "age_h": 0.5,
    "path": "automation_intelligence/provider_collection_v1/latest/massive.json",
    "rows": 20000,
    "source": "provider:massive",
@@ -704,12 +698,12 @@
    "why": "20000 rows"
   },
   {
-   "age_h": 23.9,
+   "age_h": 0.0,
    "path": "automation_intelligence/cl_lab/external_data_fabric.json",
-   "rows": 47717,
+   "rows": 47727,
    "source": "provider:tiingo",
    "verdict": "OK",
-   "why": "47717 rows"
+   "why": "47727 rows"
   },
   {
    "age_h": 0.6,
@@ -731,22 +725,22 @@
    "why": "last success 5.0 h ago"
   },
   {
-   "age_h": 3.7,
+   "age_h": 3.8,
    "source": "workflow:depth-vault.yml",
    "verdict": "OK",
-   "why": "last success 3.7 h ago"
+   "why": "last success 3.8 h ago"
   },
   {
-   "age_h": 23.9,
+   "age_h": 0.0,
    "source": "workflow:external-data-fabric.yml",
    "verdict": "OK",
-   "why": "last success 23.9 h ago"
+   "why": "last success 0.0 h ago"
   },
   {
-   "age_h": 0.3,
+   "age_h": 0.4,
    "source": "workflow:interrepo-peer-intelligence.yml",
    "verdict": "OK",
-   "why": "last success 0.3 h ago"
+   "why": "last success 0.4 h ago"
   },
   {
    "age_h": 6.7,
@@ -773,16 +767,22 @@
    "why": "last success 0.0 h ago"
   },
   {
+   "age_h": 0.0,
+   "source": "workflow:provider-supplemental-promote.yml",
+   "verdict": "OK",
+   "why": "last success 0.0 h ago"
+  },
+  {
    "age_h": 0.6,
    "source": "workflow:sec-edgar-data.yml",
    "verdict": "OK",
    "why": "last success 0.6 h ago"
   },
   {
-   "age_h": 610.7,
+   "age_h": 610.8,
    "source": "workflow:tests.yml",
    "verdict": "OK",
-   "why": "last success 610.7 h ago"
+   "why": "last success 610.8 h ago"
   }
  ]
 }

@@ -1,6 +1,6 @@
-# Data health — 2026-11-21 19:46 UTC
+# Data health — 2026-11-21 19:48 UTC
 
-**FAILING** 36 · **BLOCKED** 6 · **STALE** 4 · **DEGRADED** 4 · **OK** 36
+**FAILING** 36 · **BLOCKED** 6 · **STALE** 3 · **DEGRADED** 4 · **OK** 37
 
 ## Needs attention
 
@@ -50,7 +50,6 @@
 | provider:unusual_whales | BLOCKED | BLOCKED_AUTHENTICATION |
 | workflow:cl-lab.yml | STALE | last success 16.9 h ago (expected within 14 h) |
 | workflow:interrepo-peer-intelligence.yml | STALE | last success 1.5 h ago (expected within 1 h) |
-| workflow:native-five-research.yml | STALE | last success 3.1 h ago (expected within 3 h) |
 | workflow:native-provider-access.yml | STALE | last success 12.0 h ago (expected within 8 h) |
 | provider:alphavantage | DEGRADED | 14424 rows; 3 endpoints denied by plan |
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
@@ -59,7 +58,7 @@
 
 ## Delivering
 
-economic_events, feed:btcusd_cb_5m, feed:btcusdt_5m, feed:cboe_skew, feed:cboe_vix, feed:cboe_vix3m, feed:cboe_vix9d, feed:cboe_vvix, feed:cftc_disaggregated_all, feed:cftc_tff_all, feed:cftc_tff_nasdaq, feed:ethusdt_5m, feed:fred_dff, feed:fred_dgs10, feed:fred_dgs2, feed:fred_nasdaq100, feed:fred_t10y2y, feed:fred_vixcls, feed:treasury_auctions, feed:treasury_debt_to_penny, feed:treasury_operating_cash, fred_alfred, provider:fred, provider:massive, provider:tiingo, provider:twelve, sec_edgar, workflow:databento-depth-corpus.yml, workflow:depth-vault.yml, workflow:external-data-fabric.yml, workflow:official-economic-events.yml, workflow:provider-exhaustive-collection.yml, workflow:provider-supplemental-collection.yml, workflow:provider-supplemental-promote.yml, workflow:sec-edgar-data.yml, workflow:tests.yml
+economic_events, feed:btcusd_cb_5m, feed:btcusdt_5m, feed:cboe_skew, feed:cboe_vix, feed:cboe_vix3m, feed:cboe_vix9d, feed:cboe_vvix, feed:cftc_disaggregated_all, feed:cftc_tff_all, feed:cftc_tff_nasdaq, feed:ethusdt_5m, feed:fred_dff, feed:fred_dgs10, feed:fred_dgs2, feed:fred_nasdaq100, feed:fred_t10y2y, feed:fred_vixcls, feed:treasury_auctions, feed:treasury_debt_to_penny, feed:treasury_operating_cash, fred_alfred, provider:fred, provider:massive, provider:tiingo, provider:twelve, sec_edgar, workflow:databento-depth-corpus.yml, workflow:depth-vault.yml, workflow:external-data-fabric.yml, workflow:native-five-research.yml, workflow:official-economic-events.yml, workflow:provider-exhaustive-collection.yml, workflow:provider-supplemental-collection.yml, workflow:provider-supplemental-promote.yml, workflow:sec-edgar-data.yml, workflow:tests.yml
 
 ## Order-book data
 

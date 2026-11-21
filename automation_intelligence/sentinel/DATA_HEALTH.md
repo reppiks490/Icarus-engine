@@ -1,4 +1,4 @@
-# Data health — 2026-11-21 02:49 UTC
+# Data health — 2026-11-21 03:36 UTC
 
 **FAILING** 36 · **BLOCKED** 6 · **DEGRADED** 5 · **OK** 39
 
@@ -40,8 +40,8 @@
 | feed:databento_zs_5m | FAILING | root not in CL_DATABENTO_ROOTS |
 | feed:databento_zt_5m | FAILING | root not in CL_DATABENTO_ROOTS |
 | feed:databento_zw_5m | FAILING | root not in CL_DATABENTO_ROOTS |
-| workflow:cl-depth-sweep.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/44836572335 |
-| workflow:databento-depth-research-context.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/44828084735 |
+| workflow:cl-depth-sweep.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/44858676719 |
+| workflow:databento-depth-research-context.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/44858676670 |
 | provider:alpaca | BLOCKED | no key reaches the runner |
 | provider:finnhub | BLOCKED | BLOCKED_AUTHENTICATION |
 | provider:intrinio | BLOCKED | no key reaches the runner |
@@ -51,7 +51,7 @@
 | provider:alphavantage | DEGRADED | 43545 rows; 3 endpoints denied by plan |
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
 | provider:eodhd | DEGRADED | dedicated fabric live (11 calls, 2510 known rows); generic sampler blocked; 7 endpoints denied by plan |
-| provider:fmp | DEGRADED | dedicated fabric live (3 calls, 23 known rows); generic sampler blocked; 27 endpoints denied by plan |
+| provider:fmp | DEGRADED | dedicated fabric live (3 calls, 21 known rows); generic sampler blocked; 27 endpoints denied by plan |
 | provider:twelve | DEGRADED | key present but 0 rows (COLLECTED_PARTIAL) |
 
 ## Delivering
@@ -76,7 +76,7 @@ Vaulted files: {'bars_primary': 33, 'bars_secondary': 2, 'bars_third': 1, 'corpu
 
 ## Research
 
-Champions: 0. Pulse variants: {'CANDLES': 'REJECTED', 'HA_HA_FILLS': 'ARTIFACT_REFERENCE', 'HA_REAL_FILLS': 'REJECTED'}. CL lab last run: 2026-11-20T09:11:56.448921+00:00.
+Champions: 0. Pulse variants: {'CANDLES': 'REJECTED', 'HA_HA_FILLS': 'ARTIFACT_REFERENCE', 'HA_REAL_FILLS': 'REJECTED'}. CL lab last run: 2026-11-21T02:51:57.514457+00:00.
 
 ## Coordination (Claude, ChatGPT, Atlas)
 

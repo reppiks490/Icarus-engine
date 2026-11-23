@@ -1,0 +1,89 @@
+{
+  "automation_id": "github-native-research-v1",
+  "blockers": [
+    "Release titles establish publication, not macro surprise or causal impact.",
+    "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+    "No consensus estimates acquired; economic surprise remains unknown."
+  ],
+  "chatgpt_tokens_used": 0,
+  "code_revision": "368fbff06fa7f858b725981ea4bb48593e9f4d21",
+  "completed_at_utc": "2026-11-23T22:58:33.360863Z",
+  "event_paths": [],
+  "evidence": [
+    "automation_intelligence/native_research_v1/cycles/native-45283921109-1/evidence.json"
+  ],
+  "execution_authorized": false,
+  "input_sha256": "119c8fea5ac6456bb79129d56e10e03eeafb853e7296d7582743dbc4992dc52d",
+  "lane": "macro",
+  "local_interpretation": {
+    "authority": "UNVERIFIED_MODEL_INFERENCE",
+    "reason": "No semantic change",
+    "status": "NOT_RUN"
+  },
+  "measurements": {
+    "gaps": [
+      "Release titles establish publication, not macro surprise or causal impact.",
+      "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+      "No consensus estimates acquired; economic surprise remains unknown."
+    ],
+    "limits": "Publication and daily change are facts; surprise, causality and intraday propagation remain unverified.",
+    "releases": [
+      {
+        "published_epoch": 1795444200.0,
+        "retrieval_finished": 1795474712.9723985,
+        "retrieval_started": 1795474712.3024313,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261123~b5816801a0.en.pdf",
+        "title": "Philip R. Lane: Climate change and monetary policy"
+      },
+      {
+        "published_epoch": 1795428000.0,
+        "retrieval_finished": 1795474712.9723985,
+        "retrieval_started": 1795474712.3024313,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr261123~76b6f57b74.en.html",
+        "title": "ECB expands acceptance of DLT-based assets as eligible Eurosystem collateral"
+      }
+    ],
+    "series": [
+      {
+        "change": -0.1200000000000001,
+        "date": "2026-11-20",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-11-19",
+        "series": "DGS10",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10",
+        "value": 4.92
+      },
+      {
+        "change": -0.1299999999999999,
+        "date": "2026-11-20",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-11-19",
+        "series": "DGS2",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2",
+        "value": 4.63
+      },
+      {
+        "change": 0.07250000000000512,
+        "date": "2026-11-20",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-11-19",
+        "series": "DTWEXBGS",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DTWEXBGS",
+        "value": 123.5978
+      }
+    ],
+    "status": "VERIFIED",
+    "summary": "2 dated official release headlines; 3 daily macro series measured."
+  },
+  "outcome": "NO_MATERIAL_DELTA",
+  "paid_model_calls": 0,
+  "prior_receipt_path": "automation_intelligence/native_research_v1/cycles/native-45281996983-1/macro.json",
+  "run_id": "native-45283921109-1-macro",
+  "schema_version": "icarus-research-run-v1",
+  "started_at_utc": "2026-11-23T22:58:33.319583Z",
+  "substantive_work_performed": true,
+  "summary": "2 dated official release headlines; 3 daily macro series measured.",
+  "worker": "GITHUB_ACTIONS"
+}

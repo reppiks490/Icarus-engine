@@ -82,8 +82,8 @@
   "BLOCKED": 7,
   "DEGRADED": 4,
   "FAILING": 36,
-  "OK": 35,
-  "STALE": 4
+  "OK": 36,
+  "STALE": 3
  },
  "depth": {
   "budgets": {
@@ -154,7 +154,7 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-11-24T23:16:00+00:00",
+ "generated_at": "2026-11-24T23:18:00+00:00",
  "research": {
   "champions": 0,
   "cl_last_run": "2026-11-24T11:39:21.292437+00:00",
@@ -261,7 +261,7 @@
    "why": "root not in CL_DATABENTO_ROOTS"
   },
   {
-   "age_h": 745.0,
+   "age_h": 745.1,
    "rows": 158216,
    "source": "feed:databento_mbt_5m",
    "verdict": "FAILING",
@@ -380,7 +380,7 @@
    "why": "root not in CL_DATABENTO_ROOTS"
   },
   {
-   "age_h": 773.0,
+   "age_h": 773.1,
    "rows": 109524,
    "source": "feed:databento_zc_5m",
    "verdict": "FAILING",
@@ -401,7 +401,7 @@
    "why": "root not in CL_DATABENTO_ROOTS"
   },
   {
-   "age_h": 773.0,
+   "age_h": 773.1,
    "rows": 111964,
    "source": "feed:databento_zs_5m",
    "verdict": "FAILING",
@@ -415,7 +415,7 @@
    "why": "root not in CL_DATABENTO_ROOTS"
   },
   {
-   "age_h": 773.0,
+   "age_h": 773.1,
    "rows": 110367,
    "source": "feed:databento_zw_5m",
    "verdict": "FAILING",
@@ -442,7 +442,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 10.4,
+   "age_h": 0.1,
    "path": "automation_intelligence/provider_collection_v1/latest/finnhub.json",
    "rows": 0,
    "source": "provider:finnhub",
@@ -458,7 +458,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 5.6,
+   "age_h": 5.7,
    "path": "automation_intelligence/provider_collection_v1/latest/quiver.json",
    "rows": 0,
    "source": "provider:quiver",
@@ -482,7 +482,7 @@
    "why": "BLOCKED"
   },
   {
-   "age_h": 10.4,
+   "age_h": 0.1,
    "path": "automation_intelligence/provider_collection_v1/latest/unusual_whales.json",
    "rows": 0,
    "source": "provider:unusual_whales",
@@ -496,33 +496,27 @@
    "why": "last success 4.1 h ago (expected within 3 h)"
   },
   {
-   "age_h": 5.4,
+   "age_h": 5.5,
    "source": "workflow:provider-exhaustive-collection.yml",
    "verdict": "STALE",
-   "why": "last success 5.4 h ago (expected within 3 h)"
+   "why": "last success 5.5 h ago (expected within 3 h)"
   },
   {
-   "age_h": 10.3,
-   "source": "workflow:provider-supplemental-promote.yml",
-   "verdict": "STALE",
-   "why": "last success 10.3 h ago (expected within 3 h)"
-  },
-  {
-   "age_h": 4.9,
+   "age_h": 5.0,
    "source": "workflow:sec-edgar-data.yml",
    "verdict": "STALE",
-   "why": "last success 4.9 h ago (expected within 3 h)"
+   "why": "last success 5.0 h ago (expected within 3 h)"
   },
   {
-   "age_h": 10.4,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/alphavantage.json",
-   "rows": 43547,
+   "rows": 12085,
    "source": "provider:alphavantage",
    "verdict": "DEGRADED",
-   "why": "43547 rows; 3 endpoints denied by plan"
+   "why": "12085 rows; 3 endpoints denied by plan"
   },
   {
-   "age_h": 5.6,
+   "age_h": 5.7,
    "path": "automation_intelligence/provider_collection_v1/latest/bybit.json",
    "rows": 0,
    "source": "provider:bybit",
@@ -761,10 +755,10 @@
    "why": "last success 0.9 h ago"
   },
   {
-   "age_h": 0.4,
+   "age_h": 0.5,
    "source": "workflow:native-provider-access.yml",
    "verdict": "OK",
-   "why": "last success 0.4 h ago"
+   "why": "last success 0.5 h ago"
   },
   {
    "age_h": 0.8,
@@ -775,6 +769,12 @@
   {
    "age_h": 0.0,
    "source": "workflow:provider-supplemental-collection.yml",
+   "verdict": "OK",
+   "why": "last success 0.0 h ago"
+  },
+  {
+   "age_h": 0.0,
+   "source": "workflow:provider-supplemental-promote.yml",
    "verdict": "OK",
    "why": "last success 0.0 h ago"
   },

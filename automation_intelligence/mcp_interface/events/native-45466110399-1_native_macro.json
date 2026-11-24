@@ -1,0 +1,108 @@
+{
+  "at_utc": "2026-11-24T19:09:07.472740Z",
+  "category": "AUDIT",
+  "event_id": "native-45466110399-1-native-macro",
+  "evidence": [
+    {
+      "classification": "FACT",
+      "code_revision": "358f317c05068dae6bff0b2845aa37b35be134c7",
+      "evidence_sha256": "98269f38b4776af2016fdb94aa48782ab319ddb87bba53fd78f2f2fbf39cbd9d",
+      "measurement": {
+        "gaps": [
+          "Release titles establish publication, not macro surprise or causal impact.",
+          "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+          "No consensus estimates acquired; economic surprise remains unknown."
+        ],
+        "limits": "Publication and daily change are facts; surprise, causality and intraday propagation remain unverified.",
+        "releases": [
+          {
+            "published_epoch": 1795546800.0,
+            "retrieval_finished": 1795547346.4290912,
+            "retrieval_started": 1795547346.3511372,
+            "source": "FED",
+            "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261124a.htm",
+            "title": "Minutes of the Board's discount rate meetings on October 19 and October 28, 2026"
+          },
+          {
+            "published_epoch": 1795518000.0,
+            "retrieval_finished": 1795547347.0947332,
+            "retrieval_started": 1795547346.4294815,
+            "source": "ECB",
+            "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261124~17928e5456.en.html",
+            "title": "Boris Vuj\u010di\u0107: Resilience in an age of shocks: lessons from central and eastern Europe"
+          },
+          {
+            "published_epoch": 1795444200.0,
+            "retrieval_finished": 1795547347.0947332,
+            "retrieval_started": 1795547346.4294815,
+            "source": "ECB",
+            "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261123~b5816801a0.en.pdf",
+            "title": "Philip R. Lane: Climate change and monetary policy"
+          },
+          {
+            "published_epoch": 1795428000.0,
+            "retrieval_finished": 1795547347.0947332,
+            "retrieval_started": 1795547346.4294815,
+            "source": "ECB",
+            "source_url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr261123~76b6f57b74.en.html",
+            "title": "ECB expands acceptance of DLT-based assets as eligible Eurosystem collateral"
+          }
+        ],
+        "series": [
+          {
+            "change": -0.1200000000000001,
+            "date": "2026-11-20",
+            "freshness": "DAILY_OBSERVATION",
+            "prior_date": "2026-11-19",
+            "series": "DGS10",
+            "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10",
+            "value": 4.92
+          },
+          {
+            "change": -0.1299999999999999,
+            "date": "2026-11-20",
+            "freshness": "DAILY_OBSERVATION",
+            "prior_date": "2026-11-19",
+            "series": "DGS2",
+            "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2",
+            "value": 4.63
+          },
+          {
+            "change": 0.07250000000000512,
+            "date": "2026-11-20",
+            "freshness": "DAILY_OBSERVATION",
+            "prior_date": "2026-11-19",
+            "series": "DTWEXBGS",
+            "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DTWEXBGS",
+            "value": 123.5978
+          }
+        ],
+        "status": "VERIFIED",
+        "summary": "4 dated official release headlines; 3 daily macro series measured."
+      }
+    }
+  ],
+  "execution_authorized": false,
+  "interpretation_authority": "UNVERIFIED_MODEL_INFERENCE",
+  "oracle": {
+    "finding": "4 dated official release headlines; 3 daily macro series measured.",
+    "status": "VERIFIED"
+  },
+  "paths": [
+    "automation_intelligence/native_research_v1/cycles/native-45466110399-1/evidence.json",
+    "automation_intelligence/native_research_v1/cycles/native-45466110399-1/macro.json"
+  ],
+  "schema_version": "icarus-mcp-event-v1",
+  "severity": "MEDIUM",
+  "source": "MACRO_AUTOMATION",
+  "status": "VERIFIED",
+  "summary": "4 dated official release headlines; 3 daily macro series measured.",
+  "supermesh_x": {
+    "finding": "4 dated official release headlines; 3 daily macro series measured.",
+    "status": "VERIFIED"
+  },
+  "surface": [
+    "macro native research"
+  ],
+  "worker": "GITHUB_NATIVE_RESEARCH_V1"
+}

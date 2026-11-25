@@ -9,18 +9,18 @@
    "integrity": {
     "dup_index": 0,
     "first": "2026-10-01T18:50:00+00:00",
-    "last": "2026-11-25T10:25:00+00:00",
+    "last": "2026-11-25T22:40:00+00:00",
     "max_gap_minutes": 5.0,
     "non_monotonic": 0,
     "nonpositive": 0,
     "ohlc_violations": 0,
-    "rows": 15740
+    "rows": 15887
    },
    "kind": "coinbase",
    "name": "btcusd_cb_5m",
    "notes": [],
    "requests": null,
-   "sha256": "778b429a9fef46e441277fd20c5c599a73588e0b4b25df73da7a896737e17337",
+   "sha256": "5d2e2cd693d129f29a5597abbd394ce7cca9db8094f2f6b83f0741624ee880cd",
    "source": null,
    "status": "ok"
   },
@@ -39,7 +39,7 @@
    "kind": "binance",
    "name": "btcusdt_5m",
    "notes": [],
-   "requests": 1,
+   "requests": 0,
    "sha256": "9fb0d5abd124ca2a4ad503b33d8bc1e4f1396b2d6d1a13d7289a0047138a51c0",
    "source": null,
    "status": "ok"
@@ -992,7 +992,7 @@
    "kind": "binance",
    "name": "ethusdt_5m",
    "notes": [],
-   "requests": 1,
+   "requests": 0,
    "sha256": "b465485812f1826f5e33939f8472fb3c1cd795ae0dcdeeb3eaacbbb982350c99",
    "source": null,
    "status": "ok"
@@ -1002,15 +1002,15 @@
    "integrity": {
     "dup_index": 0,
     "first": "1954-07-01T00:00:00",
-    "last": "2026-11-23T00:00:00",
+    "last": "2026-11-24T00:00:00",
     "non_monotonic": 0,
-    "rows": 26444
+    "rows": 26445
    },
    "kind": "fred",
    "name": "fred_dff",
    "notes": [],
    "requests": 1,
-   "sha256": "e5b190473257c76437c4c62b23ec40a16ed99ad72f8af5fa3765c9b7b450e88f",
+   "sha256": "209a3a6faf2f2772aadfa80635beba1733f6f3b970dadbf322de0721a4af1ba1",
    "source": null,
    "status": "ok"
   },
@@ -1019,15 +1019,15 @@
    "integrity": {
     "dup_index": 0,
     "first": "1962-01-02T00:00:00",
-    "last": "2026-11-23T00:00:00",
+    "last": "2026-11-24T00:00:00",
     "non_monotonic": 0,
-    "rows": 16930
+    "rows": 16931
    },
    "kind": "fred",
    "name": "fred_dgs10",
    "notes": [],
    "requests": 1,
-   "sha256": "2b7fe13aee943d89234a2117503270e4375c7caf462388eb8484c41ce802479c",
+   "sha256": "957160c6992fcbc23352d6fbc79aa6a14170d36ce44a46d5efa45edbfd96bf02",
    "source": null,
    "status": "ok"
   },
@@ -1036,15 +1036,15 @@
    "integrity": {
     "dup_index": 0,
     "first": "1976-06-01T00:00:00",
-    "last": "2026-11-23T00:00:00",
+    "last": "2026-11-24T00:00:00",
     "non_monotonic": 0,
-    "rows": 13170
+    "rows": 13171
    },
    "kind": "fred",
    "name": "fred_dgs2",
    "notes": [],
    "requests": 1,
-   "sha256": "20067654c2c86b9179ce4c744890f28c2304176465a73f3853b8ef2f9e7577ef",
+   "sha256": "568ac6ea02eb276c55b4d47ef774de106ab2d16c8376e7bf75fb0dd7b4db4779",
    "source": null,
    "status": "ok"
   },
@@ -1070,15 +1070,15 @@
    "integrity": {
     "dup_index": 0,
     "first": "1976-06-01T00:00:00",
-    "last": "2026-11-24T00:00:00",
+    "last": "2026-11-25T00:00:00",
     "non_monotonic": 0,
-    "rows": 13171
+    "rows": 13172
    },
    "kind": "fred",
    "name": "fred_t10y2y",
    "notes": [],
    "requests": 1,
-   "sha256": "792163cf12d5f17d55b8fe53b36182e828e3a1ca21c800a8741f4bb7d9cb47dc",
+   "sha256": "6f03dbe2ec1009ab40184b62c9005652a4bb7c4fbfd033fa3a100e25fdbd6264",
    "source": null,
    "status": "ok"
   },
@@ -1087,15 +1087,15 @@
    "integrity": {
     "dup_index": 0,
     "first": "1990-01-02T00:00:00",
-    "last": "2026-11-23T00:00:00",
+    "last": "2026-11-24T00:00:00",
     "non_monotonic": 0,
-    "rows": 9625
+    "rows": 9626
    },
    "kind": "fred",
    "name": "fred_vixcls",
    "notes": [],
    "requests": 1,
-   "sha256": "55ef42100c908e4db1b7453b0d6c0557a0a2f63d0bae4e68ec71b9a131fe3858",
+   "sha256": "d4ecabd5406193b6f8380ecc0116fc45ab2177d9d23b99266998be6c6a691b86",
    "source": null,
    "status": "ok"
   },
@@ -1126,30 +1126,21 @@
   },
   "treasury_debt_to_penny": {
    "dataset": "debt_to_penny",
-   "error": null,
+   "error": "FeedError: TimeoutError: The read operation timed out for https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounting/od/debt_to_penny?sort=record_date&page%5Bsize%5D=10000&page%5Bnumber%5D=1&filter=record_date%3Agte%3A2026-10-19",
    "integrity": {
-    "dates": 8440,
-    "duplicate_records": 0,
-    "first": "1993-04-01T00:00:00",
-    "last": "2026-11-23T00:00:00",
-    "missing_dates": 0,
-    "rows": 8440
+    "rows": 0
    },
    "kind": "treasury",
    "name": "treasury_debt_to_penny",
-   "notes": [
-    "dataset=debt_to_penny;revision_window_start=2026-10-19"
-   ],
-   "requests": null,
-   "sha256": "9c8bc1ac624ac9d9e6847d925cbc9f671287ad1a559509d99098fd5b5b59aea8",
+   "sha256": null,
    "source": "U.S. Treasury Fiscal Data API",
-   "status": "ok"
+   "status": "error"
   },
   "treasury_operating_cash": {
    "dataset": "operating_cash",
    "error": null,
    "integrity": {
-    "dates": 5310,
+    "dates": 5311,
     "duplicate_records": 0,
     "first": "2005-10-03T00:00:00",
     "identity_columns": [
@@ -1157,9 +1148,9 @@
      "account_type",
      "src_line_nbr"
     ],
-    "last": "2026-11-23T00:00:00",
+    "last": "2026-11-24T00:00:00",
     "missing_dates": 0,
-    "rows": 16802
+    "rows": 16806
    },
    "kind": "treasury",
    "name": "treasury_operating_cash",
@@ -1167,11 +1158,11 @@
     "dataset=operating_cash;revision_window_start=2026-10-19"
    ],
    "requests": null,
-   "sha256": "fdc6b3327bd633cd7ae9d0e3d6643fa3379e73e3bc2ab16f82cd76406585d248",
+   "sha256": "e75823543fffa5a71b36f4a3c99602996b5e5cb5285f0de9781e121e10656614",
    "source": "U.S. Treasury Fiscal Data API",
    "status": "ok"
   }
  },
- "generated_at": "2026-11-25T10:26:09.541941+00:00",
+ "generated_at": "2026-11-25T22:44:47.632603+00:00",
  "schema": "cl_lab.feeds.manifest/1"
 }

@@ -82,8 +82,8 @@
   "BLOCKED": 6,
   "DEGRADED": 4,
   "FAILING": 37,
-  "OK": 34,
-  "STALE": 5
+  "OK": 35,
+  "STALE": 4
  },
  "depth": {
   "budgets": {
@@ -154,7 +154,7 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-11-26T10:01:19+00:00",
+ "generated_at": "2026-11-26T10:02:57+00:00",
  "research": {
   "champions": 0,
   "cl_last_run": "2026-11-25T10:29:21.841022+00:00",
@@ -449,7 +449,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 8.9,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/finnhub.json",
    "rows": 0,
    "source": "provider:finnhub",
@@ -481,7 +481,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 8.9,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/unusual_whales.json",
    "rows": 0,
    "source": "provider:unusual_whales",
@@ -489,28 +489,22 @@
    "why": "BLOCKED_AUTHENTICATION"
   },
   {
-   "age_h": 4.4,
+   "age_h": 4.5,
    "source": "workflow:interrepo-peer-intelligence.yml",
    "verdict": "STALE",
-   "why": "last success 4.4 h ago (expected within 1 h)"
+   "why": "last success 4.5 h ago (expected within 1 h)"
   },
   {
-   "age_h": 4.5,
+   "age_h": 4.6,
    "source": "workflow:native-five-research.yml",
    "verdict": "STALE",
-   "why": "last success 4.5 h ago (expected within 3 h)"
+   "why": "last success 4.6 h ago (expected within 3 h)"
   },
   {
-   "age_h": 4.8,
+   "age_h": 4.9,
    "source": "workflow:provider-exhaustive-collection.yml",
    "verdict": "STALE",
-   "why": "last success 4.8 h ago (expected within 3 h)"
-  },
-  {
-   "age_h": 8.8,
-   "source": "workflow:provider-supplemental-promote.yml",
-   "verdict": "STALE",
-   "why": "last success 8.8 h ago (expected within 3 h)"
+   "why": "last success 4.9 h ago (expected within 3 h)"
   },
   {
    "age_h": 5.0,
@@ -519,12 +513,12 @@
    "why": "last success 5.0 h ago (expected within 3 h)"
   },
   {
-   "age_h": 8.9,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/alphavantage.json",
-   "rows": 65,
+   "rows": 43553,
    "source": "provider:alphavantage",
    "verdict": "DEGRADED",
-   "why": "65 rows; 3 endpoints denied by plan"
+   "why": "43553 rows; 3 endpoints denied by plan"
   },
   {
    "age_h": 5.0,
@@ -543,7 +537,7 @@
    "why": "2921 rows; 1 endpoints denied by plan"
   },
   {
-   "age_h": 4.9,
+   "age_h": 5.0,
    "path": "automation_intelligence/provider_collection_v1/latest/fmp.json",
    "rows": 3982,
    "source": "provider:fmp",
@@ -698,7 +692,7 @@
    "why": "39/39 series ok"
   },
   {
-   "age_h": 4.9,
+   "age_h": 5.0,
    "path": "automation_intelligence/provider_collection_v1/latest/fred.json",
    "rows": 923,
    "source": "provider:fred",
@@ -714,7 +708,7 @@
    "why": "20000 rows"
   },
   {
-   "age_h": 5.6,
+   "age_h": 5.7,
    "path": "automation_intelligence/cl_lab/external_data_fabric.json",
    "rows": 47767,
    "source": "provider:tiingo",
@@ -755,16 +749,16 @@
    "why": "last success 8.8 h ago"
   },
   {
-   "age_h": 5.6,
+   "age_h": 5.7,
    "source": "workflow:external-data-fabric.yml",
    "verdict": "OK",
-   "why": "last success 5.6 h ago"
+   "why": "last success 5.7 h ago"
   },
   {
-   "age_h": 1.0,
+   "age_h": 1.1,
    "source": "workflow:native-provider-access.yml",
    "verdict": "OK",
-   "why": "last success 1.0 h ago"
+   "why": "last success 1.1 h ago"
   },
   {
    "age_h": 1.7,
@@ -779,10 +773,16 @@
    "why": "last success 0.0 h ago"
   },
   {
-   "age_h": 761.0,
+   "age_h": 0.0,
+   "source": "workflow:provider-supplemental-promote.yml",
+   "verdict": "OK",
+   "why": "last success 0.0 h ago"
+  },
+  {
+   "age_h": 761.1,
    "source": "workflow:tests.yml",
    "verdict": "OK",
-   "why": "last success 761.0 h ago"
+   "why": "last success 761.1 h ago"
   }
  ]
 }

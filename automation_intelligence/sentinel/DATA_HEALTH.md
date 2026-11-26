@@ -1,6 +1,6 @@
-# Data health — 2026-11-26 10:02 UTC
+# Data health — 2026-11-26 10:05 UTC
 
-**FAILING** 37 · **BLOCKED** 6 · **STALE** 4 · **DEGRADED** 4 · **OK** 35
+**FAILING** 36 · **BLOCKED** 6 · **STALE** 4 · **DEGRADED** 4 · **OK** 36
 
 ## Needs attention
 
@@ -40,7 +40,6 @@
 | feed:databento_zs_5m | FAILING | root not in CL_DATABENTO_ROOTS |
 | feed:databento_zt_5m | FAILING | root not in CL_DATABENTO_ROOTS |
 | feed:databento_zw_5m | FAILING | root not in CL_DATABENTO_ROOTS |
-| feed:treasury_debt_to_penny | FAILING | FeedError: TimeoutError: The read operation timed out for https://api.fiscaldata.treasury.gov/services/api/fiscal_service/v2/accounting/od/debt_to_penny?sort=re |
 | workflow:cl-depth-sweep.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/45734030555 |
 | workflow:databento-depth-research-context.yml | FAILING | latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/45723576237 |
 | provider:alpaca | BLOCKED | no key reaches the runner |
@@ -52,7 +51,7 @@
 | workflow:interrepo-peer-intelligence.yml | STALE | last success 4.5 h ago (expected within 1 h) |
 | workflow:native-five-research.yml | STALE | last success 4.6 h ago (expected within 3 h) |
 | workflow:provider-exhaustive-collection.yml | STALE | last success 4.9 h ago (expected within 3 h) |
-| workflow:sec-edgar-data.yml | STALE | last success 5.0 h ago (expected within 3 h) |
+| workflow:sec-edgar-data.yml | STALE | last success 5.1 h ago (expected within 3 h) |
 | provider:alphavantage | DEGRADED | 43553 rows; 3 endpoints denied by plan |
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
 | provider:eodhd | DEGRADED | 2921 rows; 1 endpoints denied by plan |
@@ -60,7 +59,7 @@
 
 ## Delivering
 
-economic_events, feed:btcusd_cb_5m, feed:btcusdt_5m, feed:cboe_skew, feed:cboe_vix, feed:cboe_vix3m, feed:cboe_vix9d, feed:cboe_vvix, feed:cftc_disaggregated_all, feed:cftc_tff_all, feed:cftc_tff_nasdaq, feed:ethusdt_5m, feed:fred_dff, feed:fred_dgs10, feed:fred_dgs2, feed:fred_nasdaq100, feed:fred_t10y2y, feed:fred_vixcls, feed:treasury_auctions, feed:treasury_operating_cash, fred_alfred, provider:fred, provider:massive, provider:tiingo, provider:twelve, sec_edgar, workflow:cl-lab.yml, workflow:databento-depth-corpus.yml, workflow:depth-vault.yml, workflow:external-data-fabric.yml, workflow:native-provider-access.yml, workflow:official-economic-events.yml, workflow:provider-supplemental-collection.yml, workflow:provider-supplemental-promote.yml, workflow:tests.yml
+economic_events, feed:btcusd_cb_5m, feed:btcusdt_5m, feed:cboe_skew, feed:cboe_vix, feed:cboe_vix3m, feed:cboe_vix9d, feed:cboe_vvix, feed:cftc_disaggregated_all, feed:cftc_tff_all, feed:cftc_tff_nasdaq, feed:ethusdt_5m, feed:fred_dff, feed:fred_dgs10, feed:fred_dgs2, feed:fred_nasdaq100, feed:fred_t10y2y, feed:fred_vixcls, feed:treasury_auctions, feed:treasury_debt_to_penny, feed:treasury_operating_cash, fred_alfred, provider:fred, provider:massive, provider:tiingo, provider:twelve, sec_edgar, workflow:cl-lab.yml, workflow:databento-depth-corpus.yml, workflow:depth-vault.yml, workflow:external-data-fabric.yml, workflow:native-provider-access.yml, workflow:official-economic-events.yml, workflow:provider-supplemental-collection.yml, workflow:provider-supplemental-promote.yml, workflow:tests.yml
 
 ## Order-book data
 
@@ -80,7 +79,7 @@ Vaulted files: {'bars_primary': 33, 'bars_secondary': 2, 'bars_third': 1, 'corpu
 
 ## Research
 
-Champions: 0. Pulse variants: {'CANDLES': 'REJECTED', 'HA_HA_FILLS': 'ARTIFACT_REFERENCE', 'HA_REAL_FILLS': 'REJECTED'}. CL lab last run: 2026-11-25T10:29:21.841022+00:00.
+Champions: 0. Pulse variants: {'CANDLES': 'REJECTED', 'HA_HA_FILLS': 'ARTIFACT_REFERENCE', 'HA_REAL_FILLS': 'REJECTED'}. CL lab last run: 2026-11-26T10:04:55.160359+00:00.
 
 ## Coordination (Claude, ChatGPT, Atlas)
 

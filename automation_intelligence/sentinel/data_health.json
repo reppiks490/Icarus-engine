@@ -82,8 +82,8 @@
   "BLOCKED": 8,
   "DEGRADED": 3,
   "FAILING": 37,
-  "OK": 32,
-  "STALE": 6
+  "OK": 33,
+  "STALE": 5
  },
  "depth": {
   "budgets": {
@@ -154,7 +154,7 @@
   }
  },
  "execution_authorized": false,
- "generated_at": "2026-11-26T19:48:25+00:00",
+ "generated_at": "2026-11-26T19:50:11+00:00",
  "research": {
   "champions": 0,
   "cl_last_run": "2026-11-26T10:04:55.160359+00:00",
@@ -212,7 +212,7 @@
    "why": "root not in CL_DATABENTO_ROOTS"
   },
   {
-   "age_h": 789.6,
+   "age_h": 789.7,
    "rows": 145073,
    "source": "feed:databento_btc_5m",
    "verdict": "FAILING",
@@ -434,7 +434,7 @@
    "why": "latest run failure: https://github.com/reppiks490/Icarus-engine/actions/runs/45823067136"
   },
   {
-   "age_h": 14.6,
+   "age_h": 14.7,
    "source": "workflow:provider-exhaustive-collection.yml",
    "verdict": "FAILING",
    "why": "latest run cancelled: https://github.com/reppiks490/Icarus-engine/actions/runs/45845646785"
@@ -448,7 +448,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 4.4,
+   "age_h": 4.5,
    "path": "automation_intelligence/provider_collection_v1/latest/bybit.json",
    "rows": 0,
    "source": "provider:bybit",
@@ -456,7 +456,7 @@
    "why": "no key reaches the runner"
   },
   {
-   "age_h": 9.8,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/finnhub.json",
    "rows": 0,
    "source": "provider:finnhub",
@@ -496,7 +496,7 @@
    "why": "BLOCKED"
   },
   {
-   "age_h": 9.8,
+   "age_h": 0.1,
    "path": "automation_intelligence/provider_collection_v1/latest/unusual_whales.json",
    "rows": 0,
    "source": "provider:unusual_whales",
@@ -510,10 +510,10 @@
    "why": "last success 3.6 h ago (expected within 1 h)"
   },
   {
-   "age_h": 4.0,
+   "age_h": 4.1,
    "source": "workflow:native-five-research.yml",
    "verdict": "STALE",
-   "why": "last success 4.0 h ago (expected within 3 h)"
+   "why": "last success 4.1 h ago (expected within 3 h)"
   },
   {
    "age_h": 10.8,
@@ -528,27 +528,21 @@
    "why": "last success 11.5 h ago (expected within 8 h)"
   },
   {
-   "age_h": 9.8,
-   "source": "workflow:provider-supplemental-promote.yml",
-   "verdict": "STALE",
-   "why": "last success 9.8 h ago (expected within 3 h)"
-  },
-  {
-   "age_h": 4.6,
+   "age_h": 4.7,
    "source": "workflow:sec-edgar-data.yml",
    "verdict": "STALE",
-   "why": "last success 4.6 h ago (expected within 3 h)"
+   "why": "last success 4.7 h ago (expected within 3 h)"
   },
   {
-   "age_h": 9.8,
+   "age_h": 0.0,
    "path": "automation_intelligence/provider_collection_v1/latest/alphavantage.json",
-   "rows": 43553,
+   "rows": 22760,
    "source": "provider:alphavantage",
    "verdict": "DEGRADED",
-   "why": "43553 rows; 3 endpoints denied by plan"
+   "why": "22760 rows; 3 endpoints denied by plan"
   },
   {
-   "age_h": 15.4,
+   "age_h": 15.5,
    "path": "automation_intelligence/cl_lab/external_data_fabric.json",
    "rows": 2510,
    "source": "provider:eodhd",
@@ -556,7 +550,7 @@
    "why": "dedicated fabric live (11 calls, 2510 known rows); generic sampler blocked; 1 endpoints denied by plan"
   },
   {
-   "age_h": 14.7,
+   "age_h": 14.8,
    "path": "automation_intelligence/provider_collection_v1/latest/fmp.json",
    "rows": 3982,
    "source": "provider:fmp",
@@ -726,7 +720,7 @@
    "why": "7 rows"
   },
   {
-   "age_h": 4.5,
+   "age_h": 4.6,
    "path": "automation_intelligence/provider_collection_v1/latest/massive.json",
    "rows": 20000,
    "source": "provider:massive",
@@ -734,7 +728,7 @@
    "why": "20000 rows"
   },
   {
-   "age_h": 15.4,
+   "age_h": 15.5,
    "path": "automation_intelligence/cl_lab/external_data_fabric.json",
    "rows": 47767,
    "source": "provider:tiingo",
@@ -749,10 +743,10 @@
    "why": "2401 filings"
   },
   {
-   "age_h": 9.7,
+   "age_h": 9.8,
    "source": "workflow:cl-lab.yml",
    "verdict": "OK",
-   "why": "last success 9.7 h ago"
+   "why": "last success 9.8 h ago"
   },
   {
    "age_h": 7.0,
@@ -767,10 +761,10 @@
    "why": "last success 2.6 h ago"
   },
   {
-   "age_h": 15.4,
+   "age_h": 15.5,
    "source": "workflow:external-data-fabric.yml",
    "verdict": "OK",
-   "why": "last success 15.4 h ago"
+   "why": "last success 15.5 h ago"
   },
   {
    "age_h": 0.0,
@@ -779,10 +773,16 @@
    "why": "last success 0.0 h ago"
   },
   {
-   "age_h": 770.8,
+   "age_h": 0.0,
+   "source": "workflow:provider-supplemental-promote.yml",
+   "verdict": "OK",
+   "why": "last success 0.0 h ago"
+  },
+  {
+   "age_h": 770.9,
    "source": "workflow:tests.yml",
    "verdict": "OK",
-   "why": "last success 770.8 h ago"
+   "why": "last success 770.9 h ago"
   }
  ]
 }

@@ -1,114 +1,56 @@
 {
   "catalog": {
-    "asset_datasets_collected": 1,
+    "asset_datasets_collected": 2,
     "asset_templates": 109,
     "assets": 6771,
-    "collected_operations": 4,
+    "collected_operations": 5,
     "denied_operations": 43,
     "operations": 230,
-    "pending_pages": 1847,
+    "pending_pages": 1857,
     "qualification": "INCOMPLETE_UNTIL_EVERY_OPERATION_ASSET_PAGE_TIME_RANGE_AND_TRANSPORT_IS_VERIFIED",
     "unresolved_operations": 0
   },
   "chatgpt_tokens_used": 0,
   "checkpoint_status": "ENCRYPTED_AES256_GCM",
-  "completed_at_utc": "2026-11-25T22:33:53.962794+00:00",
+  "completed_at_utc": "2026-11-26T05:04:53.588843+00:00",
   "databento_excluded": true,
   "execution_authorized": false,
   "paid_model_calls": 0,
   "providers": {
     "fmp": {
-      "archive_status": [],
+      "archive_status": [
+        "ENCRYPTED_AES256_GCM"
+      ],
       "blocked": [
         {
           "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/market-capitalization-batch"
+          "failure_code": "400",
+          "operation": "fmp:get:/exchange-market-hours"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/earnings"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/market-capitalization"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/employee-count"
+          "operation": "fmp:get:/financial-growth"
         },
         {
           "asset_specific": false,
           "failure_code": "402",
-          "operation": "fmp:get:/institutional-ownership/industry-summary"
+          "operation": "fmp:get:/ipos-calendar"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/enterprise-values"
+          "operation": "fmp:get:/financial-reports-json"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/market-capitalization-batch"
+          "operation": "fmp:get:/news/stock"
         },
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/esg-disclosures"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/news/crypto"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/esg-ratings"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/news/crypto"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/etf/asset-exposure"
-        },
-        {
-          "asset_specific": false,
-          "failure_code": "402",
-          "operation": "fmp:get:/institutional-ownership/latest"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/etf/country-weightings"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/news/forex"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/etf/holdings"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/news/forex"
-        },
-        {
-          "asset_specific": true,
-          "failure_code": "402",
-          "operation": "fmp:get:/etf/info"
+          "operation": "fmp:get:/financial-reports-xlsx"
         },
         {
           "asset_specific": true,
@@ -118,23 +60,67 @@
         {
           "asset_specific": true,
           "failure_code": "402",
-          "operation": "fmp:get:/etf/sector-weightings"
+          "operation": "fmp:get:/financial-scores"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/owner-earnings"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/financial-statement-full-as-reported"
+        },
+        {
+          "asset_specific": false,
+          "failure_code": "402",
+          "operation": "fmp:get:/ipos-disclosure"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/funds/disclosure"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/price-target-consensus"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/funds/disclosure-dates"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/news/stock"
+        },
+        {
+          "asset_specific": true,
+          "failure_code": "402",
+          "operation": "fmp:get:/funds/disclosure-holders-latest"
         }
       ],
-      "collected_pages": 0,
-      "collected_rows": 0,
+      "collected_pages": 4,
+      "collected_rows": 3982,
       "credential_present": true,
       "endpoint_count": 230,
       "requests": 20,
       "research_features": [],
-      "status": "BLOCKED",
-      "substantive_work_performed": false,
-      "verified_operations": []
+      "status": "COLLECTED_PARTIAL",
+      "substantive_work_performed": true,
+      "verified_operations": [
+        "fmp:get:/cryptocurrency-list",
+        "fmp:get:/forex-list",
+        "fmp:get:/index-list"
+      ]
     }
   },
   "raw_payloads_public": false,
   "requests": 20,
-  "run_id": "providers-45713437226-1-fmp",
+  "run_id": "providers-45758557418-1-fmp",
   "schema_version": "icarus-provider-collection-cycle-v1",
-  "started_at_utc": "2026-11-25T22:29:42.948196+00:00"
+  "started_at_utc": "2026-11-26T05:00:40.580529+00:00"
 }

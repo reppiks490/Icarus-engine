@@ -1,0 +1,140 @@
+{
+  "automation_id": "github-native-research-v1",
+  "blockers": [
+    "Release titles establish publication, not macro surprise or causal impact.",
+    "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+    "No consensus estimates acquired; economic surprise remains unknown."
+  ],
+  "chatgpt_tokens_used": 0,
+  "code_revision": "9dcce937b7449316f13fce0157a41bec5537a7ee",
+  "completed_at_utc": "2026-11-27T00:51:10.897843Z",
+  "event_paths": [
+    "automation_intelligence/mcp_interface/events/native-45918710253-1_native_macro.json"
+  ],
+  "evidence": [
+    "automation_intelligence/native_research_v1/cycles/native-45918710253-1/evidence.json"
+  ],
+  "execution_authorized": false,
+  "input_sha256": "0dc993c8d18e935ca5bd1a240f2ef6986b794b3c38e6b55a5faa3bffd87f9e5a",
+  "lane": "macro",
+  "local_interpretation": {
+    "authority": "UNVERIFIED_MODEL_INFERENCE",
+    "model": "Qwen/Qwen3-1.7B-GGUF@90862c4:Q8_0",
+    "payload": {
+      "conflicts": [],
+      "data_gaps": [],
+      "execution_authorized": false,
+      "lane": "macro",
+      "net_new_delta": "LOCAL_NEXT_TEST_SELECTION",
+      "summary": "Does the next official release change the daily macro context?"
+    },
+    "response_id": "local-3dc1754c694e11cb5673d914",
+    "status": "GENERATED"
+  },
+  "measurements": {
+    "gaps": [
+      "Release titles establish publication, not macro surprise or causal impact.",
+      "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+      "No consensus estimates acquired; economic surprise remains unknown."
+    ],
+    "limits": "Publication and daily change are facts; surprise, causality and intraday propagation remain unverified.",
+    "releases": [
+      {
+        "published_epoch": 1795636800.0,
+        "retrieval_finished": 1795740653.7963588,
+        "retrieval_started": 1795740653.748371,
+        "source": "FED",
+        "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/bcreg20261125b.htm",
+        "title": "Agencies announce dollar thresholds for applicability of truth in lending and consumer leasing rules for consumer credit and lease transactions"
+      },
+      {
+        "published_epoch": 1795636800.0,
+        "retrieval_finished": 1795740653.7963588,
+        "retrieval_started": 1795740653.748371,
+        "source": "FED",
+        "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/bcreg20261125a.htm",
+        "title": "Agencies announce dollar thresholds for smaller loan exemption from appraisal requirements for higher-priced mortgage loans"
+      },
+      {
+        "published_epoch": 1795546800.0,
+        "retrieval_finished": 1795740653.7963588,
+        "retrieval_started": 1795740653.748371,
+        "source": "FED",
+        "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261124a.htm",
+        "title": "Minutes of the Board's discount rate meetings on October 19 and October 28, 2026"
+      },
+      {
+        "published_epoch": 1795696200.0,
+        "retrieval_finished": 1795740654.4918883,
+        "retrieval_started": 1795740653.7967143,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/accounts/2026/html/ecb.mg261126~ccf28c8071.en.html",
+        "title": "Meeting of 28-29 October 2026"
+      },
+      {
+        "published_epoch": 1795627800.0,
+        "retrieval_finished": 1795740654.4918883,
+        "retrieval_started": 1795740653.7967143,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr261125_1~6333a90f3a.en.html",
+        "title": "ECB and Sveriges Riksbank conclude agreement for Sweden to join T2"
+      },
+      {
+        "published_epoch": 1795600800.0,
+        "retrieval_finished": 1795740654.4918883,
+        "retrieval_started": 1795740653.7967143,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr261125~26d1ade228.en.html",
+        "title": "Card payments edge past cash in shops; euro area consumers want both"
+      },
+      {
+        "published_epoch": 1795518000.0,
+        "retrieval_finished": 1795740654.4918883,
+        "retrieval_started": 1795740653.7967143,
+        "source": "ECB",
+        "source_url": "https://www.ecb.europa.eu//press/key/date/2026/html/ecb.sp261124~17928e5456.en.html",
+        "title": "Boris Vuj\u010di\u0107: Resilience in an age of shocks: lessons from central and eastern Europe"
+      }
+    ],
+    "series": [
+      {
+        "change": -0.009999999999999787,
+        "date": "2026-11-24",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-11-23",
+        "series": "DGS10",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10",
+        "value": 4.91
+      },
+      {
+        "change": 0.0,
+        "date": "2026-11-24",
+        "freshness": "DAILY_OBSERVATION",
+        "prior_date": "2026-11-23",
+        "series": "DGS2",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2",
+        "value": 4.63
+      },
+      {
+        "change": 0.07250000000000512,
+        "date": "2026-11-20",
+        "freshness": "STALE",
+        "prior_date": "2026-11-19",
+        "series": "DTWEXBGS",
+        "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DTWEXBGS",
+        "value": 123.5978
+      }
+    ],
+    "status": "VERIFIED",
+    "summary": "7 dated official release headlines; 3 daily macro series measured."
+  },
+  "outcome": "MATERIAL_DELTA",
+  "paid_model_calls": 0,
+  "prior_receipt_path": "automation_intelligence/native_research_v1/cycles/native-45899038930-1/macro.json",
+  "run_id": "native-45918710253-1-macro",
+  "schema_version": "icarus-research-run-v1",
+  "started_at_utc": "2026-11-27T00:50:55.788256Z",
+  "substantive_work_performed": true,
+  "summary": "7 dated official release headlines; 3 daily macro series measured.",
+  "worker": "GITHUB_ACTIONS"
+}

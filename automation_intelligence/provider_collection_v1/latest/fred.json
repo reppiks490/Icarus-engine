@@ -3,16 +3,16 @@
     "asset_datasets_collected": 57,
     "asset_templates": 21,
     "assets": 64134,
-    "collected_operations": 16,
+    "collected_operations": 17,
     "denied_operations": 0,
     "operations": 31,
-    "pending_pages": 2081,
+    "pending_pages": 2091,
     "qualification": "INCOMPLETE_UNTIL_EVERY_OPERATION_ASSET_PAGE_TIME_RANGE_AND_TRANSPORT_IS_VERIFIED",
     "unresolved_operations": 0
   },
   "chatgpt_tokens_used": 0,
   "checkpoint_status": "ENCRYPTED_AES256_GCM",
-  "completed_at_utc": "2026-11-26T23:54:38.423831+00:00",
+  "completed_at_utc": "2026-11-27T08:26:22.119543+00:00",
   "databento_excluded": true,
   "execution_authorized": false,
   "paid_model_calls": 0,
@@ -23,7 +23,7 @@
       ],
       "blocked": [],
       "collected_pages": 20,
-      "collected_rows": 526,
+      "collected_rows": 484,
       "credential_present": true,
       "endpoint_count": 31,
       "requests": 20,
@@ -31,35 +31,11 @@
         {
           "features": {
             "value": {
-              "maximum": 81.0,
-              "mean": 73.0,
-              "minimum": 69.0,
+              "maximum": 48.0,
+              "mean": 40.0,
+              "minimum": 29.0,
               "samples": 10,
-              "standard_deviation": 3.6606010435446255
-            }
-          },
-          "operation": "fred:get:/series/observations"
-        },
-        {
-          "features": {
-            "value": {
-              "maximum": 43.0,
-              "mean": 35.4,
-              "minimum": 26.0,
-              "samples": 10,
-              "standard_deviation": 5.462600113499066
-            }
-          },
-          "operation": "fred:get:/series/observations"
-        },
-        {
-          "features": {
-            "value": {
-              "maximum": 95.0,
-              "mean": 79.0,
-              "minimum": 57.0,
-              "samples": 9,
-              "standard_deviation": 15.173075568988056
+              "standard_deviation": 5.639148871948674
             }
           },
           "operation": "fred:get:/series/observations"
@@ -69,18 +45,20 @@
       "substantive_work_performed": true,
       "verified_operations": [
         "fred:get:/release",
-        "fred:get:/release/series",
+        "fred:get:/release/sources",
+        "fred:get:/releases",
         "fred:get:/series",
         "fred:get:/series/categories",
         "fred:get:/series/observations",
         "fred:get:/series/release",
-        "fred:get:/source"
+        "fred:get:/source/releases",
+        "fred:get:/sources"
       ]
     }
   },
   "raw_payloads_public": false,
   "requests": 20,
-  "run_id": "providers-45913030741-1-fred",
+  "run_id": "providers-45964565591-1-fred",
   "schema_version": "icarus-provider-collection-cycle-v1",
-  "started_at_utc": "2026-11-26T23:50:03.098748+00:00"
+  "started_at_utc": "2026-11-27T08:21:45.192283+00:00"
 }

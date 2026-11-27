@@ -1,0 +1,132 @@
+{
+  "at_utc": "2026-11-27T19:44:42.597338Z",
+  "category": "AUDIT",
+  "event_id": "native-46058036738-1-native-macro",
+  "evidence": [
+    {
+      "classification": "FACT",
+      "code_revision": "53f5c5ae5087b4b7d1b852490a487657383d7683",
+      "evidence_sha256": "c1a31188c0c8cf656d7cd8e54049e699b12f4013ac87258333746f78113ca53c",
+      "measurement": {
+        "gaps": [
+          "Release titles establish publication, not macro surprise or causal impact.",
+          "DGS10/DGS2/DTWEXBGS are daily series; no synchronous intraday macro inference.",
+          "No consensus estimates acquired; economic surprise remains unknown."
+        ],
+        "limits": "Publication and daily change are facts; surprise, causality and intraday propagation remain unverified.",
+        "releases": [
+          {
+            "published_epoch": 1795636800.0,
+            "retrieval_finished": 1795808681.5336823,
+            "retrieval_started": 1795808681.471092,
+            "source": "FED",
+            "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/bcreg20261125b.htm",
+            "title": "Agencies announce dollar thresholds for applicability of truth in lending and consumer leasing rules for consumer credit and lease transactions"
+          },
+          {
+            "published_epoch": 1795636800.0,
+            "retrieval_finished": 1795808681.5336823,
+            "retrieval_started": 1795808681.471092,
+            "source": "FED",
+            "source_url": "https://www.federalreserve.gov/newsevents/pressreleases/bcreg20261125a.htm",
+            "title": "Agencies announce dollar thresholds for smaller loan exemption from appraisal requirements for higher-priced mortgage loans"
+          },
+          {
+            "published_epoch": 1795788000.0,
+            "retrieval_finished": 1795808682.024263,
+            "retrieval_started": 1795808681.5340126,
+            "source": "ECB",
+            "source_url": "https://www.ecb.europa.eu//press/govcdec/otherdec/2026/html/ecb.gc261127~13ecadc0f2.en.html",
+            "title": "Decisions taken by the Governing Council of the ECB (in addition to decisions setting interest rates)"
+          },
+          {
+            "published_epoch": 1795770000.0,
+            "retrieval_finished": 1795808682.024263,
+            "retrieval_started": 1795808681.5340126,
+            "source": "ECB",
+            "source_url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr261127~2e53af695e.en.html",
+            "title": "ECB Consumer Expectations Survey results \u2013 October 2026"
+          },
+          {
+            "published_epoch": 1795696200.0,
+            "retrieval_finished": 1795808682.024263,
+            "retrieval_started": 1795808681.5340126,
+            "source": "ECB",
+            "source_url": "https://www.ecb.europa.eu//press/accounts/2026/html/ecb.mg261126~ccf28c8071.en.html",
+            "title": "Meeting of 28-29 October 2026"
+          },
+          {
+            "published_epoch": 1795627800.0,
+            "retrieval_finished": 1795808682.024263,
+            "retrieval_started": 1795808681.5340126,
+            "source": "ECB",
+            "source_url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr261125_1~6333a90f3a.en.html",
+            "title": "ECB and Sveriges Riksbank conclude agreement for Sweden to join T2"
+          },
+          {
+            "published_epoch": 1795600800.0,
+            "retrieval_finished": 1795808682.024263,
+            "retrieval_started": 1795808681.5340126,
+            "source": "ECB",
+            "source_url": "https://www.ecb.europa.eu//press/pr/date/2026/html/ecb.pr261125~26d1ade228.en.html",
+            "title": "Card payments edge past cash in shops; euro area consumers want both"
+          }
+        ],
+        "series": [
+          {
+            "change": -0.009999999999999787,
+            "date": "2026-11-24",
+            "freshness": "DAILY_OBSERVATION",
+            "prior_date": "2026-11-23",
+            "series": "DGS10",
+            "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10",
+            "value": 4.91
+          },
+          {
+            "change": 0.0,
+            "date": "2026-11-24",
+            "freshness": "DAILY_OBSERVATION",
+            "prior_date": "2026-11-23",
+            "series": "DGS2",
+            "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS2",
+            "value": 4.63
+          },
+          {
+            "change": 0.07250000000000512,
+            "date": "2026-11-20",
+            "freshness": "STALE",
+            "prior_date": "2026-11-19",
+            "series": "DTWEXBGS",
+            "source_url": "https://fred.stlouisfed.org/graph/fredgraph.csv?id=DTWEXBGS",
+            "value": 123.5978
+          }
+        ],
+        "status": "VERIFIED",
+        "summary": "7 dated official release headlines; 3 daily macro series measured."
+      }
+    }
+  ],
+  "execution_authorized": false,
+  "interpretation_authority": "UNVERIFIED_MODEL_INFERENCE",
+  "oracle": {
+    "finding": "7 dated official release headlines; 3 daily macro series measured.",
+    "status": "VERIFIED"
+  },
+  "paths": [
+    "automation_intelligence/native_research_v1/cycles/native-46058036738-1/evidence.json",
+    "automation_intelligence/native_research_v1/cycles/native-46058036738-1/macro.json"
+  ],
+  "schema_version": "icarus-mcp-event-v1",
+  "severity": "MEDIUM",
+  "source": "MACRO_AUTOMATION",
+  "status": "VERIFIED",
+  "summary": "7 dated official release headlines; 3 daily macro series measured.",
+  "supermesh_x": {
+    "finding": "7 dated official release headlines; 3 daily macro series measured.",
+    "status": "VERIFIED"
+  },
+  "surface": [
+    "macro native research"
+  ],
+  "worker": "GITHUB_NATIVE_RESEARCH_V1"
+}

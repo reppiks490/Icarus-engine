@@ -1,4 +1,4 @@
-# Data health — 2026-11-27 03:52 UTC
+# Data health — 2026-11-27 04:59 UTC
 
 **FAILING** 36 · **BLOCKED** 6 · **STALE** 1 · **DEGRADED** 4 · **OK** 39
 
@@ -48,11 +48,11 @@
 | provider:quiver | BLOCKED | no key reaches the runner |
 | provider:tickstream | BLOCKED | no key reaches the runner |
 | provider:unusual_whales | BLOCKED | BLOCKED_AUTHENTICATION |
-| workflow:provider-exhaustive-collection.yml | STALE | last success 3.9 h ago (expected within 3 h) |
+| workflow:provider-exhaustive-collection.yml | STALE | last success 5.0 h ago (expected within 3 h) |
 | provider:alphavantage | DEGRADED | 14435 rows; 3 endpoints denied by plan |
 | provider:bybit | DEGRADED | no key; keyless endpoints only, none ready |
-| provider:eodhd | DEGRADED | dedicated fabric live (11 calls, 2510 known rows); generic sampler blocked; 1 endpoints denied by plan |
-| provider:fmp | DEGRADED | 21 rows; 43 endpoints denied by plan |
+| provider:eodhd | DEGRADED | dedicated fabric live (11 calls, 2500 known rows); generic sampler blocked; 1 endpoints denied by plan |
+| provider:fmp | DEGRADED | 22 rows; 43 endpoints denied by plan |
 
 ## Delivering
 

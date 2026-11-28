@@ -138,7 +138,7 @@ pre.cli { background:var(--surface-2); border:1px solid var(--ring); border-radi
 
 <div class="modal" id="ctl"><div class="box" style="width:min(520px,92vw)">
   <h3 style="margin:0 0 6px">Admin token</h3>
-  <div class="small muted">Commands call the engine's admin API with this token (terminal default <code>icarus</code>). Kept in this browser only.</div>
+  <div class="small muted">Commands call the engine's admin API with this token. Saved in this browser’s local storage after the engine verifies it.</div>
   <div class="row"><input id="token" type="password" placeholder="admin token" style="width:260px"><button id="saveTok">Save</button><span id="ctlOut" class="small muted"></span></div>
   <div class="row" style="justify-content:flex-end"><button id="closeCtl">Close</button></div>
 </div></div>
@@ -176,20 +176,33 @@ let view = solo ? 'asset:' + params.get('asset').toUpperCase() : (location.hash.
 const root = document.documentElement; const savedTheme = localStorage.getItem('icarus-theme') || 'dark';
 root.dataset.theme = window.IcarusExperience ? savedTheme : (savedTheme === 'light' ? 'light' : 'dark');
 $('#btnTheme').onclick = () => { root.dataset.theme = root.dataset.theme==='dark'?'light':'dark'; localStorage.setItem('icarus-theme', root.dataset.theme); if (last) { lastView=null; render(last); } };
-const tokKey = 'icarus-engine-token'; if (!localStorage.getItem(tokKey)) localStorage.setItem(tokKey, 'icarus'); $('#token').value = localStorage.getItem(tokKey);
+const tokKey = 'icarus-engine-token'; $('#token').value = localStorage.getItem(tokKey) || '';
 $('#btnControls').onclick = () => $('#ctl').classList.add('open'); $('#closeCtl').onclick = () => $('#ctl').classList.remove('open');
-$('#saveTok').onclick = () => { localStorage.setItem(tokKey, $('#token').value.trim()); $('#ctlOut').textContent='token saved'; };
+function dashboardToken() { return localStorage.getItem(tokKey) || ''; }
+function requireDashboardToken() { localStorage.removeItem(tokKey); $('#token').value=''; $('#ctlOut').textContent='Token rejected. Enter a valid ICARUS_TOKEN.'; $('#ctl').classList.add('open'); }
+$('#saveTok').onclick = async () => {
+  const candidate=$('#token').value.trim();
+  if(!candidate){$('#ctlOut').textContent='Enter ICARUS_TOKEN first.';return;}
+  $('#ctlOut').textContent='Verifying…';
+  try {
+    const response=await fetch('/api/research',{cache:'no-store',headers:{'Authorization':'Bearer '+candidate}});
+    if(!response.ok){$('#ctlOut').textContent='Token rejected.';return;}
+    localStorage.setItem(tokKey,candidate);$('#ctlOut').textContent='Verified and saved.';$('#ctl').classList.remove('open');
+  } catch(error) { $('#ctlOut').textContent='Could not verify token. Check that the engine is running.'; }
+};
 function toast(msg, bad) { let t = $('#toast'); if (!t) { t = document.createElement('div'); t.id='toast'; t.style.cssText='position:fixed;bottom:18px;left:50%;transform:translateX(-50%);padding:10px 16px;border-radius:10px;z-index:60;font-size:13px;box-shadow:0 6px 24px rgba(0,0,0,.3);max-width:90vw'; document.body.appendChild(t); }
   t.style.background = bad ? 'var(--crit)' : 'var(--s1)'; t.style.color='#fff'; t.textContent = msg; t.style.display='block'; clearTimeout(t._h); t._h = setTimeout(()=>t.style.display='none', 3500); }
 async function admin(path, body, quiet) {
-  const tok = localStorage.getItem(tokKey) || $('#token').value.trim(); if (!tok) { $('#ctl').classList.add('open'); return null; }
+  const tok = dashboardToken(); if (!tok) { $('#ctl').classList.add('open'); return null; }
   const r = await fetch(path, {method:'POST', headers:{'Authorization':'Bearer '+tok,'Content-Type':'application/json'}, body: JSON.stringify(body||{})});
+  if (r.status===401) { requireDashboardToken(); return null; }
   const j = await r.json().catch(()=>({})); const msg = r.ok ? (j.note||'ok') : ('error '+r.status+': '+(j.detail||''));
   if (!quiet) toast(msg, !r.ok); setTimeout(refresh, 400); return r.ok ? j : null;
 }
 async function authed(path) {
-  const tok = localStorage.getItem(tokKey) || $('#token').value.trim(); if (!tok) return null;
+  const tok = dashboardToken(); if (!tok) { $('#ctl').classList.add('open'); return null; }
   const r = await fetch(path, {headers:{'Authorization':'Bearer '+tok}, cache:'no-store'});
+  if (r.status===401) { requireDashboardToken(); return null; }
   return r.ok ? r.json() : null;
 }
 

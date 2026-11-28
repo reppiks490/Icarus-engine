@@ -1,0 +1,26 @@
+{
+  "schema_version": "icarus-mcp-event-v1",
+  "event_id": "20261026T143849Z-cloud-engine-readiness",
+  "at_utc": "2026-10-26T14:38:49Z",
+  "category": "REPAIR",
+  "status": "cloud-verified",
+  "severity": "info",
+  "summary": "The standalone Engine rejects placeholder owner tokens, exposes source-qualified federated data status, and preserves paper-only execution. Cloud validation passed; owner-PC restart and provider freshness remain unverified.",
+  "surface": "Engine authentication, dashboard, CLI, and federated evidence",
+  "source": "Codex cloud validation",
+  "paths": [
+    "icarus_engine/cli.py",
+    "icarus_engine/dashboard.html",
+    "icarus_engine/server.py"
+  ],
+  "evidence": {
+    "head_before_event": "9054fafda0c0afbfc64bd98e902ffd8b20e0f879",
+    "local_tests": "1461 passed, 0 skipped, 0 failed on a fresh origin/main worktree",
+    "github_pr": "https://github.com/reppiks490/Icarus-engine/pull/260",
+    "limitations": [
+      "The cloud suite did not restart the owner Windows process.",
+      "Provider authentication, entitlements, freshness, and downstream consumption require their own evidence."
+    ]
+  },
+  "execution_authorized": false
+}

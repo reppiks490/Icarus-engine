@@ -1,0 +1,22 @@
+{
+  "schema_version": "icarus-mcp-event-v1",
+  "event_id": "20261026T213834Z-supplemental-resource-and-export-repair",
+  "at_utc": "2026-10-26T21:38:34.799294Z",
+  "category": "REPAIR",
+  "status": "offline-verified",
+  "severity": "info",
+  "summary": "Admit documented UW resource names with structural path validation while retaining header-only credentials, query secret filtering and redirect refusal. Scheduled-only peer export policy was retained after contract review.",
+  "surface": "Supplemental provider transport",
+  "source": "Codex compact parallel review",
+  "paths": [
+    "tools/provider_supplemental_transport.py",
+    "tests/test_provider_supplemental_transport.py"
+  ],
+  "evidence": {
+    "local_tests": "1489 passed, 0 skipped, 0 failed in full Engine suite; 65 transport/core collection regressions also passed offline.",
+    "limits": [
+      "No provider calls, authentication/entitlement claims or live broker arming."
+    ]
+  },
+  "execution_authorized": false
+}
